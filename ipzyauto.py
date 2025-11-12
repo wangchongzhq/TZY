@@ -11,7 +11,7 @@ from collections import defaultdict
 # 频道分类（正规区域）
 # =============================================
 CHANNEL_CATEGORIES = {
-    "4K频道": ['CCTV4K', 'CCTV16 4K', '北京卫视4K', '北京IPTV4K', '湖南卫视4K', '山东卫视4K','广东卫视4K', '四川卫视4K', 
+    "4K频道": ['CCTV4K', 'CCTV8K', 'CCTV16 4K', '北京卫视4K', '北京IPTV4K', '湖南卫视4K', '山东卫视4K','广东卫视4K', '四川卫视4K', 
                  '浙江卫视4K', '江苏卫视4K', '东方卫视4K', '深圳卫视4K', '河北卫视4K', '峨眉电影4K', '求索4K', '咪视界4K', '欢笑剧场4K',
                  '苏州4K', '至臻视界4K', '南国都市4K', '翡翠台4K', '百事通电影4K', '百事通少儿4K', '百事通纪实4K', '华数爱上4K'],
 
@@ -53,7 +53,8 @@ CHANNEL_CATEGORIES = {
 # =============================================
 CHANNEL_MAPPING = {
     # 4K频道
-    "CCTV4K": ["CCTV 4K", "CCTV-4K"],
+    "CCTV4K": ["CCTV 4K", "CCTV-4K超高清頻道", "CCTV4K超高清頻道", "CCTV-4K"],
+    "CCTV8K": ["CCTV 8K", "CCTV-8K超高清頻道", "CCTV8K超高清頻道", "CCTV-8K"],
     "CCTV16 4K": ["CCTV16 4K", "CCTV16-4K", "CCTV16 奥林匹克 4K", "CCTV16奥林匹克 4K"],
     "北京卫视4K": ["北京卫视 4K", "北京卫视4K超高清", "北京卫视-4K"],
     "北京IPTV4K": ["北京IPTV 4K", "北京IPTV-4K"],
@@ -632,14 +633,14 @@ def main():
         "https://ghcy.eu.org/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u",
         "https://ghcy.eu.org/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv4.txt",
         "http://106.53.99.30/2025.txt",
-        "https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
-        "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
-        "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
-        "https://ghcy.eu.org/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u",
     ]
     
     user_sources = [
         "http://tv.html-5.me/i/9390107.txt",
+        "https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
+        "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
+        "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
+        "https://ghcy.eu.org/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u",
     ]
     
     urls = default_sources + user_sources
