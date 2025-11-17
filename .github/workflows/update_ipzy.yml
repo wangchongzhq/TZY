@@ -12,6 +12,7 @@ on:
 jobs:
   update-ipzy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30  # 增加超时时间，因为质量检测需要时间
     
     steps:
     - name: Checkout代码
@@ -44,5 +45,5 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git commit -m "自动更新IPZY直播线路 [$(date +'%Y-%m-%d')]"
+        git commit -m "自动更新IPZY高清直播线路 [$(date +'%Y-%m-%d')]"
         git push
