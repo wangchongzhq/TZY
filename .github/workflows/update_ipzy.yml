@@ -3,24 +3,15 @@ name: Update IPZY Channels Daily
 
 
 
+
 on:
-
-  schedule:
-
-    # 北京时间每天凌晨2点运行 (UTC 18:00)
-
-    - cron: '0 18 * * *'
-
-  workflow_dispatch: # 允许手动触发
-
-  push:
-
-    paths:
-
-      - 'collect_ipzy.py'
-
-
-
+  schedule:
+    # 北京时间早晨3点运行 (UTC时间19点，因为GitHub Actions使用UTC时间)
+    - cron: '0 19 * * *'
+  workflow_dispatch:  # 允许手动触发
+  push:
+    branches: [ main ]
+    
 
 jobs:
 
