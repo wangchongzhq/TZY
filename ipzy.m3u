@@ -707,12 +707,12 @@ http://[2409:8087:2001:20:2800:0:df6e:eb07]:80/wh7f454c46tw2051638270_1451102728
 http://[2409:8087:2001:20:2800:0:df6e:eb0c]:80/wh7f454c46tw3969211375_-1190792372/ott.mobaibox.com/PLTV/3/224/3221227623/index.m3u8?icpid=3&RTS=1674379789&from=40&ocs=2_2409:8087:2004:20:2800:0:df6e:ec12_80&popid=40&hms_devid=2040&prioritypopid=40&vqe=3
 http://[2409:8087:2001:20:2800:0:df6e:eb0f]:80/wh7f454c46tw3968988866_1321620950/ott.mobaibox.com/PLTV/3/224/3221227424/index.m3u8?icpid=3&RTS=1674379789&from=40&popid=40&hms_devid=2111&prioritypopid=40&vqe=3
 #EXTINF:-1 tvg-name="CCTV4" tvg-logo="https://kakaxi-1.github.io/IPTV/LOGO/CCTV4.png" group-title="央视频道",CCTV4
+http://111.20.109.150:6610/yinhe/2/ch00000090990000001015/index.m3u9?virtualDomain=yinhe.live_hls.zte.com
 http://1.24.39.180:9003/hls/4/index.m3u8
 http://120.46.223.160/PHP/MG.php?id=631780421
 http://120.46.223.160/PHP/MG.php?id=608807419
 http://124.116.183.146:9901/tsfile/live/0004_1.m3u8
 http://111.20.109.150:6610/yinhe/2/ch00000090990000001333/index.m3u8?virtualDomain=yinhe.live_hls.zte.com
-http://111.20.109.150:6610/yinhe/2/ch00000090990000001015/index.m3u9?virtualDomain=yinhe.live_hls.zte.com
 http://125.227.210.55:8175/VideoInput/play.ts
 http://203.80.165.14:30168/stream/channelid/257019769?profile=pass
 http://39.134.67.108/PLTV/88888888/224/3221225797/1.m3u8
@@ -2915,9 +2915,9 @@ http://[2409:8087:5e08:25::4]:6610/000000001000/5000000011000031109/index.m3u8?c
 http://[2409:8087:1e01:20::3]/PLTV/11/224/3221226147/index.m3u8
 #EXTINF:-1 tvg-name="CCTV16" tvg-logo="https://kakaxi-1.github.io/IPTV/LOGO/CCTV16.png" group-title="央视频道",CCTV16
 http://39.134.24.162/dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221226921/index.m3u8
+http://111.20.109.150:6610/yinhe/2/ch00000090990000002395/index.m3u9?virtualDomain=yinhe.live_hls.zte.com
 http://1.24.39.180:9003/hls/60/index.m3u8
 http://111.20.105.60:6060/yinhe/2/ch00000090990000002395/index.m3u8?virtualDomain=yinhe.live_hls.zte.com
-http://111.20.109.150:6610/yinhe/2/ch00000090990000002395/index.m3u9?virtualDomain=yinhe.live_hls.zte.com
 http://39.134.67.108/PLTV/88888888/224/3221225893/1.m3u8
 http://61.140.126.120:10000/udp/239.77.1.98:5146
 http://113.119.26.200:58888/udp/239.77.0.165:5146
@@ -11996,8 +11996,8 @@ http://114.254.33.58:18888/rtp/239.3.1.54:4120
 http://114.254.39.224:8888/rtp/239.3.1.54:4120
 http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226537/1.m3u8?GuardEncType=2&accountinfo=%7E%7EV2.0%7E7AxXs4eTU2oiWrhopr9sHw%7E_eNUbgU9sJGUcVVduOMKhafLvQUgE_zlz_7pvDimJNNxsM0Bor098BJglrhfEQTl%2CEND
 #EXTINF:-1 tvg-name="CETV3" tvg-logo="https://kakaxi-1.github.io/IPTV/LOGO/CETV3.png" group-title="卫视频道",CETV3
-http://111.20.33.70/PLTV/88888893/224/3221226226/index.m3u8
 http://111.20.109.150:6610/yinhe/2/ch00000090990000001309/index.m3u9?virtualDomain=yinhe.live_hls.zte.com
+http://111.20.33.70/PLTV/88888893/224/3221226226/index.m3u8
 http://[2409:8087:7004:20:1000::22]:6610/yinhe/2/ch00000090990000001309/index.m3u8
 http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226577/1.m3u8?GuardEncType=2&accountinfo=%7E%7EV2.0%7EhE2Z89HKgsQOlN9opVn1iw%7E_eNUbgU9sJGUcVVduOMKhafLvQUgE_zlz_7pvDimJNN03yUnk4zBVk1bynPPL3hZ%2CEND
 #EXTINF:-1 tvg-name="CETV4" tvg-logo="https://kakaxi-1.github.io/IPTV/LOGO/CETV4.png" group-title="卫视频道",CETV4
@@ -12932,8 +12932,8 @@ http://8.138.7.223/tv/fh.php?id=3
 http://42.92.195.203:10000/udp/239.255.30.123:8231
 http://[2409:8087:3869:8021:1001::e5]:6610/PLTV/88888910/224/3221226251/index.m3u8
 #EXTINF:-1 tvg-name="凤凰电影" tvg-logo="https://kakaxi-1.github.io/IPTV/LOGO/凤凰电影.png" group-title="港澳频道",凤凰电影
-http://39.107.120.164:8080/live/diyp_fhdy.m3u8
 http://39.107.120.164:8080/live/diyp_fhdy.flv
+http://39.107.120.164:8080/live/diyp_fhdy.m3u8
 http://106.116.243.172:9999/rtp/239.254.201.1:5214
 http://27.184.65.181:58888/rtp/239.254.201.1:5214
 #EXTINF:-1 tvg-name="CHC动作电影" tvg-logo="https://kakaxi-1.github.io/IPTV/LOGO/CHC动作电影.png" group-title="电影频道",CHC动作电影
@@ -13106,10 +13106,10 @@ http://111.162.205.166:8686/rtp/225.1.1.214:5002
 http://117.12.150.38:4022/rtp/225.1.1.214:5002
 #EXTINF:-1 tvg-name="星空卫视" tvg-logo="https://kakaxi-1.github.io/IPTV/LOGO/星空卫视.png" group-title="电影频道",星空卫视
 http://122.53.222.9:9981/stream/channelid/2084767267?profile=pass
+http://39.107.120.164:8080/live/diyp_xingkong.flv
 http://111.221.137.155:44330/tsfile/live/0139_1.m3u8?key=txiptv
 http://122.224.58.42:85/tsfile/live/1024_1.m3u8?key=txiptv&playlive=1&authid=0###HLS\\n
 http://122.224.58.42:85/tsfile/live/1024_1.m3u8?key=txiptv&playlive=1&authid=0
-http://39.107.120.164:8080/live/diyp_xingkong.flv
 http://171.213.146.177:8188/udp/239.93.0.156:2193
 http://171.213.149.222:8188/udp/239.93.0.156:2193
 http://171.213.149.89:8188/udp/239.93.0.156:2193
@@ -13857,8 +13857,8 @@ http://115.171.216.73:4000/rtp/225.1.8.39:8002
 http://115.171.216.75:4000/rtp/225.1.8.39:8002
 http://[2409:8087:8:21::16]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226556/1.m3u8?
 #EXTINF:-1 tvg-name="CHANNEL[V]" tvg-logo="https://kakaxi-1.github.io/IPTV/LOGO/CHANNEL[V].png" group-title="综合频道",CHANNEL[V]
-http://39.107.120.164:8080/live/diyp_channelv.m3u8
 http://39.107.120.164:8080/live/diyp_channelv.flv
+http://39.107.120.164:8080/live/diyp_channelv.m3u8
 http://203.80.165.14:30168/stream/channelid/1805341817?profile=pass
 #EXTINF:-1 tvg-name="求索纪录" tvg-logo="https://kakaxi-1.github.io/IPTV/LOGO/求索纪录.png" group-title="综合频道",求索纪录
 http://61.140.126.120:10000/udp/239.77.0.21:5146
