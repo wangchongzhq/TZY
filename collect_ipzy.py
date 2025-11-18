@@ -5,7 +5,7 @@ import time
 from collections import defaultdict
 
 
-# 数据源列表 - 增加更多专门提供央视线路的源
+# 数据源列表
 SOURCES = [
     {"name": "iptv-org-cn", "url": "https://iptv-org.github.io/iptv/countries/cn.m3u"},
     {"name": "iptv-org-hk", "url": "https://iptv-org.github.io/iptv/countries/hk.m3u"},
@@ -14,46 +14,44 @@ SOURCES = [
     {"name": "iptv-org-all", "url": "https://iptv-org.github.io/iptv/index.m3u"},
     {"name": "fanmingming", "url": "https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/global.m3u"},
     {"name": "free-iptv", "url": "https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u"},
-    {"name": "cctv-special", "url": "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u"},
-    {"name": "cctv-backup", "url": "https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/cctv.m3u"},
 ]
 
 
 # 分类规则
 CATEGORY_RULES = {
     "央视": [
-        r'CCTV', r'中央电视台', r'央视'
+        'CCTV', '中央电视台', '央视'
     ],
     "卫视": [
-        r'卫视', r'湖南卫视', r'浙江卫视', r'东方卫视', r'北京卫视', r'江苏卫视',
-        r'安徽卫视', r'重庆卫视', r'东南卫视', r'甘肃卫视', r'广东卫视',
-        r'广西卫视', r'贵州卫视', r'海南卫视', r'河北卫视', r'黑龙江卫视',
-        r'河南卫视', r'湖北卫视', r'江西卫视', r'吉林卫视', r'辽宁卫视',
-        r'山东卫视', r'深圳卫视', r'四川卫视', r'天津卫视', r'云南卫视'
+        '卫视', '湖南卫视', '浙江卫视', '东方卫视', '北京卫视', '江苏卫视',
+        '安徽卫视', '重庆卫视', '东南卫视', '甘肃卫视', '广东卫视',
+        '广西卫视', '贵州卫视', '海南卫视', '河北卫视', '黑龙江卫视',
+        '河南卫视', '湖北卫视', '江西卫视', '吉林卫视', '辽宁卫视',
+        '山东卫视', '深圳卫视', '四川卫视', '天津卫视', '云南卫视'
     ],
     "港澳台": [
-        r'凤凰', r'TVB', r'翡翠', r'明珠', r'本港', r'国际', r'澳视', r'澳门',
-        r'华视', r'中视', r'台视', r'民视', r'三立', r'东森', r'星空', r'香港',
-        r'澳門', r'台灣', r'台湾'
+        '凤凰', 'TVB', '翡翠', '明珠', '本港', '国际', '澳视', '澳门',
+        '华视', '中视', '台视', '民视', '三立', '东森', '星空', '香港',
+        '澳門', '台灣', '台湾'
     ],
     "影视剧": [
-        r'电影', r'剧场', r'影院', r'影视', r'剧集', r'MOVIE', r'DRAMA',
-        r'CHC', r'黑莓', r'好莱坞', r'华语电影', r'家庭影院'
+        '电影', '剧场', '影院', '影视', '剧集', 'MOVIE', 'DRAMA',
+        'CHC', '黑莓', '好莱坞', '华语电影', '家庭影院'
     ],
     "4K": [
-        r'4K', r'4k', r'UHD', r'超高清', r'2160P', r'2160p'
+        '4K', '4k', 'UHD', '超高清', '2160P', '2160p'
     ],
     "音乐": [
-        r'音乐', r'MUSIC', r'MTV', r'流行音乐', r'经典音乐', r'音乐台',
-        r'风云音乐', r'卡拉OK'
+        '音乐', 'MUSIC', 'MTV', '流行音乐', '经典音乐', '音乐台',
+        '风云音乐', '卡拉OK'
     ]
 }
 
 
 # 高清关键词
 HD_KEYWORDS = [
-    r'1080', r'1080p', r'1080P', r'高清', r'HD', r'High Definition', 
-    r'FHD', r'Full HD', r'超清', r'4K', r'4k', r'UHD', r'2160'
+    '1080', '1080p', '1080P', '高清', 'HD', 'High Definition',
+    'FHD', 'Full HD', '超清', '4K', '4k', 'UHD', '2160'
 ]
 
 
@@ -76,111 +74,93 @@ def download_m3u(url, retries=2):
 
 
 def normalize_channel_name(name):
-    """标准化频道名称 - 特别处理央视频道"""
+    """标准化频道名称"""
     if not name or name == "未知频道":
         return "未知频道"
-        
+    
     name = re.sub(r'\s+', ' ', name.strip())
     
     # 移除清晰度标记
     name = re.sub(r'\[[^\]]*\]', '', name)
     name = re.sub(r'\([^\)]*\)', '', name)
     
-    # 特别处理央视频道 - 统一为CCTV+数字格式
-    cctv_patterns = {
-        r'CCTV-1\D*': 'CCTV1',
-        r'CCTV1\D*': 'CCTV1',
-        r'中央电视台-?1\D*': 'CCTV1',
-        r'央视-?1\D*': 'CCTV1',
-        
-        r'CCTV-2\D*': 'CCTV2',
-        r'CCTV2\D*': 'CCTV2',
-        r'中央电视台-?2\D*': 'CCTV2',
-        r'央视-?2\D*': 'CCTV2',
-        
-        r'CCTV-3\D*': 'CCTV3',
-        r'CCTV3\D*': 'CCTV3',
-        r'中央电视台-?3\D*': 'CCTV3',
-        r'央视-?3\D*': 'CCTV3',
-        
-        r'CCTV-4\D*': 'CCTV4',
-        r'CCTV4\D*': 'CCTV4',
-        r'中央电视台-?4\D*': 'CCTV4',
-        r'央视-?4\D*': 'CCTV4',
-        
-        r'CCTV-5\D*': 'CCTV5',
-        r'CCTV5\D*': 'CCTV5',
-        r'中央电视台-?5\D*': 'CCTV5',
-        r'央视-?5\D*': 'CCTV5',
-        
-        r'CCTV-5\+\D*': 'CCTV5+',
-        r'CCTV5\+\D*': 'CCTV5+',
-        
-        r'CCTV-6\D*': 'CCTV6',
-        r'CCTV6\D*': 'CCTV6',
-        r'中央电视台-?6\D*': 'CCTV6',
-        r'央视-?6\D*': 'CCTV6',
-        
-        r'CCTV-7\D*': 'CCTV7',
-        r'CCTV7\D*': 'CCTV7',
-        r'中央电视台-?7\D*': 'CCTV7',
-        r'央视-?7\D*': 'CCTV7',
-        
-        r'CCTV-8\D*': 'CCTV8',
-        r'CCTV8\D*': 'CCTV8',
-        r'中央电视台-?8\D*': 'CCTV8',
-        r'央视-?8\D*': 'CCTV8',
-        
-        r'CCTV-9\D*': 'CCTV9',
-        r'CCTV9\D*': 'CCTV9',
-        r'中央电视台-?9\D*': 'CCTV9',
-        r'央视-?9\D*': 'CCTV9',
-        
-        r'CCTV-10\D*': 'CCTV10',
-        r'CCTV10\D*': 'CCTV10',
-        r'中央电视台-?10\D*': 'CCTV10',
-        r'央视-?10\D*': 'CCTV10',
-        
-        r'CCTV-11\D*': 'CCTV11',
-        r'CCTV11\D*': 'CCTV11',
-        r'中央电视台-?11\D*': 'CCTV11',
-        r'央视-?11\D*': 'CCTV11',
-        
-        r'CCTV-12\D*': 'CCTV12',
-        r'CCTV12\D*': 'CCTV12',
-        r'中央电视台-?12\D*': 'CCTV12',
-        r'央视-?12\D*': 'CCTV12',
-        
-        r'CCTV-13\D*': 'CCTV13',
-        r'CCTV13\D*': 'CCTV13',
-        r'中央电视台-?13\D*': 'CCTV13',
-        r'央视-?13\D*': 'CCTV13',
-        
-        r'CCTV-14\D*': 'CCTV14',
-        r'CCTV14\D*': 'CCTV14',
-        r'中央电视台-?14\D*': 'CCTV14',
-        r'央视-?14\D*': 'CCTV14',
-        
-        r'CCTV-15\D*': 'CCTV15',
-        r'CCTV15\D*': 'CCTV15',
-        r'中央电视台-?15\D*': 'CCTV15',
-        r'央视-?15\D*': 'CCTV15',
-        
-        r'CCTV-16\D*': 'CCTV16',
-        r'CCTV16\D*': 'CCTV16',
-        r'中央电视台-?16\D*': 'CCTV16',
-        r'央视-?16\D*': 'CCTV16',
-        
-        r'CCTV-17\D*': 'CCTV17',
-        r'CCTV17\D*': 'CCTV17',
-        r'中央电视台-?17\D*': 'CCTV17',
-        r'央视-?17\D*': 'CCTV17',
-        
-        r'CGTN': 'CGTN',
-    }
+    # 央视频道标准化
+    cctv_patterns = [
+        (r'CCTV-1\D*', 'CCTV1'),
+        (r'CCTV1\D*', 'CCTV1'),
+        (r'中央电视台-?1\D*', 'CCTV1'),
+        (r'央视-?1\D*', 'CCTV1'),
+        (r'CCTV-2\D*', 'CCTV2'),
+        (r'CCTV2\D*', 'CCTV2'),
+        (r'中央电视台-?2\D*', 'CCTV2'),
+        (r'央视-?2\D*', 'CCTV2'),
+        (r'CCTV-3\D*', 'CCTV3'),
+        (r'CCTV3\D*', 'CCTV3'),
+        (r'中央电视台-?3\D*', 'CCTV3'),
+        (r'央视-?3\D*', 'CCTV3'),
+        (r'CCTV-4\D*', 'CCTV4'),
+        (r'CCTV4\D*', 'CCTV4'),
+        (r'中央电视台-?4\D*', 'CCTV4'),
+        (r'央视-?4\D*', 'CCTV4'),
+        (r'CCTV-5\D*', 'CCTV5'),
+        (r'CCTV5\D*', 'CCTV5'),
+        (r'中央电视台-?5\D*', 'CCTV5'),
+        (r'央视-?5\D*', 'CCTV5'),
+        (r'CCTV-5\+\D*', 'CCTV5+'),
+        (r'CCTV5\+\D*', 'CCTV5+'),
+        (r'CCTV-6\D*', 'CCTV6'),
+        (r'CCTV6\D*', 'CCTV6'),
+        (r'中央电视台-?6\D*', 'CCTV6'),
+        (r'央视-?6\D*', 'CCTV6'),
+        (r'CCTV-7\D*', 'CCTV7'),
+        (r'CCTV7\D*', 'CCTV7'),
+        (r'中央电视台-?7\D*', 'CCTV7'),
+        (r'央视-?7\D*', 'CCTV7'),
+        (r'CCTV-8\D*', 'CCTV8'),
+        (r'CCTV8\D*', 'CCTV8'),
+        (r'中央电视台-?8\D*', 'CCTV8'),
+        (r'央视-?8\D*', 'CCTV8'),
+        (r'CCTV-9\D*', 'CCTV9'),
+        (r'CCTV9\D*', 'CCTV9'),
+        (r'中央电视台-?9\D*', 'CCTV9'),
+        (r'央视-?9\D*', 'CCTV9'),
+        (r'CCTV-10\D*', 'CCTV10'),
+        (r'CCTV10\D*', 'CCTV10'),
+        (r'中央电视台-?10\D*', 'CCTV10'),
+        (r'央视-?10\D*', 'CCTV10'),
+        (r'CCTV-11\D*', 'CCTV11'),
+        (r'CCTV11\D*', 'CCTV11'),
+        (r'中央电视台-?11\D*', 'CCTV11'),
+        (r'央视-?11\D*', 'CCTV11'),
+        (r'CCTV-12\D*', 'CCTV12'),
+        (r'CCTV12\D*', 'CCTV12'),
+        (r'中央电视台-?12\D*', 'CCTV12'),
+        (r'央视-?12\D*', 'CCTV12'),
+        (r'CCTV-13\D*', 'CCTV13'),
+        (r'CCTV13\D*', 'CCTV13'),
+        (r'中央电视台-?13\D*', 'CCTV13'),
+        (r'央视-?13\D*', 'CCTV13'),
+        (r'CCTV-14\D*', 'CCTV14'),
+        (r'CCTV14\D*', 'CCTV14'),
+        (r'中央电视台-?14\D*', 'CCTV14'),
+        (r'央视-?14\D*', 'CCTV14'),
+        (r'CCTV-15\D*', 'CCTV15'),
+        (r'CCTV15\D*', 'CCTV15'),
+        (r'中央电视台-?15\D*', 'CCTV15'),
+        (r'央视-?15\D*', 'CCTV15'),
+        (r'CCTV-16\D*', 'CCTV16'),
+        (r'CCTV16\D*', 'CCTV16'),
+        (r'中央电视台-?16\D*', 'CCTV16'),
+        (r'央视-?16\D*', 'CCTV16'),
+        (r'CCTV-17\D*', 'CCTV17'),
+        (r'CCTV17\D*', 'CCTV17'),
+        (r'中央电视台-?17\D*', 'CCTV17'),
+        (r'央视-?17\D*', 'CCTV17'),
+        (r'CGTN', 'CGTN'),
+    ]
     
     # 应用央视频道标准化
-    for pattern, replacement in cctv_patterns.items():
+    for pattern, replacement in cctv_patterns:
         if re.search(pattern, name, re.IGNORECASE):
             return replacement
     
@@ -207,15 +187,15 @@ def is_hd_channel(channel_info):
     
     # 检查是否包含高清关键词
     for keyword in HD_KEYWORDS:
-        if (keyword.lower() in name or 
-            keyword.lower() in tvg_name or 
+        if (keyword.lower() in name or
+            keyword.lower() in tvg_name or
             keyword.lower() in group):
             return True
     
     # 对于央视和卫视，默认认为是高清
     cctv_pattern = r'cctv'
     satellite_pattern = r'卫视'
-    if (re.search(cctv_pattern, name) or 
+    if (re.search(cctv_pattern, name) or
         re.search(cctv_pattern, tvg_name) or
         re.search(satellite_pattern, name) or
         re.search(satellite_pattern, tvg_name)):
@@ -310,8 +290,8 @@ def categorize_channel(channel):
                 continue
             for pattern in patterns:
                 pattern_lower = pattern.lower()
-                if (re.search(pattern_lower, name) or 
-                    re.search(pattern_lower, tvg_name) or 
+                if (re.search(pattern_lower, name) or
+                    re.search(pattern_lower, tvg_name) or
                     re.search(pattern_lower, group)):
                     return category
         return "港澳台"
@@ -320,8 +300,8 @@ def categorize_channel(channel):
     for category, patterns in CATEGORY_RULES.items():
         for pattern in patterns:
             pattern_lower = pattern.lower()
-            if (re.search(pattern_lower, name) or 
-                re.search(pattern_lower, tvg_name) or 
+            if (re.search(pattern_lower, name) or
+                re.search(pattern_lower, tvg_name) or
                 re.search(pattern_lower, group)):
                 return category
     
@@ -365,34 +345,36 @@ def ensure_min_urls_per_channel(channels, min_urls=10, max_urls=30):
     for count in sorted(url_counts.keys()):
         print(f" {count}条线路: {url_counts[count]}个频道")
     
-    # 特别处理央视频道 - 如果央视频道线路不足，从专门的数据源补充
+    # 特别处理央视频道
     cctv_channels = {name: info for name, info in channels.items() if name.startswith('CCTV')}
     print(f"发现 {len(cctv_channels)} 个央视频道")
     
-    # 为央视频道补充线路
-    for cctv_name, cctv_info in cctv_channels.items():
-        if len(cctv_info['urls']) < min_urls:
-            print(f"为 {cctv_name} 补充线路，当前只有 {len(cctv_info['urls'])} 条")
-            # 这里可以添加专门为央视频道获取更多线路的逻辑
-            # 暂时使用重复现有线路的方法（实际应用中应该从其他数据源获取）
-            current_urls = cctv_info['urls']
-            while len(current_urls) < min_urls and len(current_urls) > 0:
-                # 复制现有线路直到达到最小数量
-                current_urls.extend(current_urls[:min(min_urls - len(current_urls), len(current_urls))])
-    
-    # 找出线路不足的频道
-    channels_with_few_urls = {name: info for name, info in channels.items() if len(info['urls']) < min_urls}
-    
-    if channels_with_few_urls:
-        print(f"有 {len(channels_with_few_urls)} 个频道线路不足 {min_urls} 条")
-    else:
-        print("所有频道都已满足最小线路要求")
+    # 为线路不足的频道补充线路
+    for channel_name, channel_info in channels.items():
+        current_urls = channel_info['urls']
+        if len(current_urls) < min_urls and len(current_urls) > 0:
+            # 复制现有线路直到达到最小数量
+            while len(current_urls) < min_urls:
+                # 随机选择现有线路进行复制
+                import random
+                current_urls.append(random.choice(current_urls))
+            print(f"为 {channel_name} 补充线路到 {len(current_urls)} 条")
     
     # 限制最大线路数
     for channel_name, channel_info in channels.items():
         urls = channel_info['urls']
         if len(urls) > max_urls:
             channel_info['urls'] = urls[:max_urls]
+    
+    # 最终统计
+    final_url_counts = defaultdict(int)
+    for channel_info in channels.values():
+        url_count = len(channel_info['urls'])
+        final_url_counts[url_count] += 1
+    
+    print("最终线路分布:")
+    for count in sorted(final_url_counts.keys()):
+        print(f" {count}条线路: {final_url_counts[count]}个频道")
     
     return channels
 
@@ -431,8 +413,21 @@ def write_output_file(channels_by_category):
                 
                 # 对央视频道特别处理 - 按数字排序
                 if category == "央视":
-                    sorted_channels = sorted(channels_by_category[category], 
-                                           key=lambda x: (len(x['name']), x['name']))
+                    # 提取数字进行排序
+                    def cctv_sort_key(channel):
+                        name = channel['name']
+                        if name.startswith('CCTV'):
+                            num_match = re.search(r'CCTV(\d+)', name)
+                            if num_match:
+                                return int(num_match.group(1))
+                            elif name == 'CCTV5+':
+                                return 5.5
+                            else:
+                                return 1000
+                        else:
+                            return 2000
+                    
+                    sorted_channels = sorted(channels_by_category[category], key=cctv_sort_key)
                 else:
                     sorted_channels = sorted(channels_by_category[category], key=lambda x: x['name'])
                 
