@@ -19,6 +19,7 @@ jobs:
       uses: actions/checkout@v3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
+        # 添加这行来获取完整历史记录
         fetch-depth: 0
 
     - name: 设置Python环境
@@ -35,24 +36,25 @@ jobs:
       run: |
         python collect_ipzy.py
 
+    - name: 检查文件变更
+      id: check_changes
+      run: |
+        git add ipzy_channels.txt
+        git diff --staged --quiet || echo "changes=true" >> $GITHUB_OUTPUT
+
     - name: 配置Git
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
 
-    - name: 提交更改
+    - name: 拉取并合并远程更改
       run: |
-        git add ipzy_channels.txt
-        # 尝试提交，如果失败也没关系
-        git commit -m "Auto-update IPZY HD streams [$(date +'%Y-%m-%d')]" || exit 0
+        # 拉取远程更改并尝试合并
+        git pull origin main --rebase --autostash
 
-    - name: 推送更改
+    - name: 提交更新
+      if: steps.check_changes.outputs.changes == 'true'
       run: |
-        # 拉取最新更改并重试推送
-        while true; do
-          git pull --rebase origin main
-          if git push origin main; then
-            break
-          fi
-          sleep 5
-        done
+        git commit -m "Auto-update IPZY HD streams [$(date +'%Y-%m-%d')]"
+        # 使用force-with-lease来安全地推送
+        git push origin main
