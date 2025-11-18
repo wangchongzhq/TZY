@@ -9,15 +9,15 @@ import random
 
 
 SOURCES = [
-    {"name": "fanmingming", "url": "https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/global.m3u"},
-    {"name": "free-iptv", "url": "https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u"},
-    {"name": "iptv-max", "url": "https://raw.githubusercontent.com/iptvmax/iptv/main/China.m3u"},
-    {"name": "asia-iptv", "url": "https://raw.githubusercontent.com/ImMaX2/IPTV-ASIA/master/ASIA.m3u"},
-    {"name": "mitv", "url": "https://raw.githubusercontent.com/mitv/iptv/master/China.m3u"},
-    {"name": "ygbx", "url": "https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u"},
-    {"name": "iptv-pro", "url": "https://raw.githubusercontent.com/iptvpro/iptvpro/main/playlist.m3u"},
-    {"name": "evilcult", "url": "https://raw.githubusercontent.com/EvilCult/iptv-m3u-maker/master/m3u/index.m3u"},
-    {"name": "tv-player", "url": "https://raw.githubusercontent.com/tv-player/tvbox/main/live.txt"},
+    {"name": "fanmingming", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/global.m3u"},
+    {"name": "free-iptv", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u"},
+    {"name": "iptv-max", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/iptvmax/iptv/main/China.m3u"},
+    {"name": "asia-iptv", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/ImMaX2/IPTV-ASIA/master/ASIA.m3u"},
+    {"name": "mitv", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/mitv/iptv/master/China.m3u"},
+    {"name": "ygbx", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u"},
+    {"name": "iptv-pro", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/iptvpro/iptvpro/main/playlist.m3u"},
+    {"name": "evilcult", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/EvilCult/iptv-m3u-maker/master/m3u/index.m3u"},
+    {"name": "tv-player", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/tv-player/tvbox/main/live.txt"},
 ]
 
 
