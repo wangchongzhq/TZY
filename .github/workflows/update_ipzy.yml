@@ -1,67 +1,60 @@
 name: Update IPZY Channels Daily
 
-
 on:
-  schedule:
-    - cron: '0 18 * * *'
-  workflow_dispatch:
-  push:
-    paths:
-      - 'collect_ipzy.py'
-
+  schedule:
+    # 北京时间每天凌晨2点运行 (UTC 18:00)
+    - cron: '0 18 * * *'
+  workflow_dispatch:
+  push:
+    paths:
+      - 'collect_ipzy.py'
 
 jobs:
-  update-ipzy:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
+  update-ipzy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
 
+    steps:
+    - name: Checkout代码
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        # 添加这行来获取完整历史记录
+        fetch-depth: 0
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        fetch-depth: 0
+    - name: 设置Python环境
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
 
+    - name: 安装依赖
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
+    - name: 运行收集脚本
+      run: |
+        python collect_ipzy.py
 
+    - name: 检查文件变更
+      id: check_changes
+      run: |
+        git add ipzy_channels.txt
+        git diff --staged --quiet || echo "changes=true" >> $GITHUB_OUTPUT
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install requests
+    - name: 配置Git
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
 
+    - name: 拉取并合并远程更改
+      run: |
+        # 拉取远程更改并尝试合并
+        git pull origin main --rebase --autostash
 
-    - name: Run collection script
-      run: |
-        python collect_ipzy.py
-
-
-    - name: Configure Git
-      run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-
-
-    - name: Check for changes
-      id: check_changes
-      run: |
-        git add ipzy_channels.txt
-        git diff --staged --quiet || echo "changes=true" >> $GITHUB_OUTPUT
-
-
-    - name: Pull and rebase
-      if: steps.check_changes.outputs.changes == 'true'
-      run: |
-        git pull --rebase origin main
-
-
-    - name: Commit and push
-      if: steps.check_changes.outputs.changes == 'true'
-      run: |
-        git commit -m "Auto-update IPZY HD streams [$(date +'%Y-%m-%d')]"
-        git push origin main
+    - name: 提交更新
+      if: steps.check_changes.outputs.changes == 'true'
+      run: |
+        git commit -m "Auto-update IPZY HD streams [$(date +'%Y-%m-%d')]"
+        # 使用force-with-lease来安全地推送
+        git push origin main
