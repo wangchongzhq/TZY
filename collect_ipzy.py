@@ -9,7 +9,6 @@ import random
 
 
 SOURCES = [
-    {"name": "fanmingming", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/global.m3u"},
     {"name": "free-iptv", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u"},
     {"name": "iptv-max", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/iptvmax/iptv/main/China.m3u"},
     {"name": "asia-iptv", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/ImMaX2/IPTV-ASIA/master/ASIA.m3u"},
