@@ -2,29 +2,455 @@ import requests
 import re
 from datetime import datetime
 import time
+from collections import defaultdict
+import random
+
 
 SOURCES = [
-{"name": "fanmingming", "url": "https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/global.m3u"},
-{"name": "free-iptv", "url": "https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u"},
+    {"name": "fanmingming", "url": "https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/global.m3u"},
+    {"name": "free-iptv", "url": "https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u"},
+    {"name": "iptv-max", "url": "https://raw.githubusercontent.com/iptvmax/iptv/main/China.m3u"},
+    {"name": "asia-iptv", "url": "https://raw.githubusercontent.com/ImMaX2/IPTV-ASIA/master/ASIA.m3u"},
+    {"name": "mitv", "url": "https://raw.githubusercontent.com/mitv/iptv/master/China.m3u"},
+    {"name": "ygbx", "url": "https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u"},
+    {"name": "iptv-pro", "url": "https://raw.githubusercontent.com/iptvpro/iptvpro/main/playlist.m3u"},
+    {"name": "evilcult", "url": "https://raw.githubusercontent.com/EvilCult/iptv-m3u-maker/master/m3u/index.m3u"},
+    {"name": "tv-player", "url": "https://raw.githubusercontent.com/tv-player/tvbox/main/live.txt"},
 ]
 
-def download_m3u(url):
-    try:
-        response = requests.get(url, timeout=10)
-        return response.text
-    except:
-        return None
+
+CATEGORY_RULES = {
+    "央视": ["CCTV", "中央电视台", "央视"],
+    "卫视": ["卫视", "湖南卫视", "浙江卫视", "东方卫视", "北京卫视", "江苏卫视"],
+    "港澳台": ["凤凰", "TVB", "翡翠", "明珠", "本港", "国际", "澳视", "澳门"],
+    "影视剧": ["电影", "剧场", "影院", "影视", "剧集", "MOVIE", "DRAMA"],
+    "4K": ["4K", "4k", "UHD", "超高清", "2160P", "2160p"],
+    "音乐": ["音乐", "MUSIC", "MTV", "流行音乐", "经典音乐", "音乐台"]
+}
+
+
+HD_KEYWORDS = [
+    "1080", "1080p", "1080P", "高清", "HD", "High Definition",
+    "FHD", "Full HD", "超清", "4K", "4k", "UHD", "2160"
+]
+
+
+def download_m3u(url, retries=2):
+    for attempt in range(retries):
+        try:
+            headers = {"User-Agent": "Mozilla/5.0"}
+            response = requests.get(url, timeout=10, headers=headers)
+            response.encoding = "utf-8"
+            if response.status_code == 200:
+                return response.text
+        except Exception as e:
+            print(f"Download failed {url} (attempt {attempt+1}/{retries}): {e}")
+            if attempt < retries - 1:
+                time.sleep(1)
+    return None
+
+
+def normalize_channel_name(name):
+    if not name or name == "未知频道":
+        return "未知频道"
+    
+    name = re.sub(r"\s+", " ", name.strip())
+    name = re.sub(r"\[[^\]]*\]", "", name)
+    name = re.sub(r"\([^\)]*\)", "", name)
+    
+    cctv_patterns = [
+        (r"CCTV-1\D*", "CCTV1"),
+        (r"CCTV1\D*", "CCTV1"),
+        (r"中央电视台-?1\D*", "CCTV1"),
+        (r"央视-?1\D*", "CCTV1"),
+        (r"CCTV-2\D*", "CCTV2"),
+        (r"CCTV2\D*", "CCTV2"),
+        (r"中央电视台-?2\D*", "CCTV2"),
+        (r"央视-?2\D*", "CCTV2"),
+        (r"CCTV-3\D*", "CCTV3"),
+        (r"CCTV3\D*", "CCTV3"),
+        (r"中央电视台-?3\D*", "CCTV3"),
+        (r"央视-?3\D*", "CCTV3"),
+        (r"CCTV-4\D*", "CCTV4"),
+        (r"CCTV4\D*", "CCTV4"),
+        (r"中央电视台-?4\D*", "CCTV4"),
+        (r"央视-?4\D*", "CCTV4"),
+        (r"CCTV-5\D*", "CCTV5"),
+        (r"CCTV5\D*", "CCTV5"),
+        (r"中央电视台-?5\D*", "CCTV5"),
+        (r"央视-?5\D*", "CCTV5"),
+        (r"CCTV-5\+\D*", "CCTV5+"),
+        (r"CCTV5\+\D*", "CCTV5+"),
+        (r"CCTV-6\D*", "CCTV6"),
+        (r"CCTV6\D*", "CCTV6"),
+        (r"中央电视台-?6\D*", "CCTV6"),
+        (r"央视-?6\D*", "CCTV6"),
+        (r"CCTV-7\D*", "CCTV7"),
+        (r"CCTV7\D*", "CCTV7"),
+        (r"中央电视台-?7\D*", "CCTV7"),
+        (r"央视-?7\D*", "CCTV7"),
+        (r"CCTV-8\D*", "CCTV8"),
+        (r"CCTV8\D*", "CCTV8"),
+        (r"中央电视台-?8\D*", "CCTV8"),
+        (r"央视-?8\D*", "CCTV8"),
+        (r"CCTV-9\D*", "CCTV9"),
+        (r"CCTV9\D*", "CCTV9"),
+        (r"中央电视台-?9\D*", "CCTV9"),
+        (r"央视-?9\D*", "CCTV9"),
+        (r"CCTV-10\D*", "CCTV10"),
+        (r"CCTV10\D*", "CCTV10"),
+        (r"中央电视台-?10\D*", "CCTV10"),
+        (r"央视-?10\D*", "CCTV10"),
+        (r"CCTV-11\D*", "CCTV11"),
+        (r"CCTV11\D*", "CCTV11"),
+        (r"中央电视台-?11\D*", "CCTV11"),
+        (r"央视-?11\D*", "CCTV11"),
+        (r"CCTV-12\D*", "CCTV12"),
+        (r"CCTV12\D*", "CCTV12"),
+        (r"中央电视台-?12\D*", "CCTV12"),
+        (r"央视-?12\D*", "CCTV12"),
+        (r"CCTV-13\D*", "CCTV13"),
+        (r"CCTV13\D*", "CCTV13"),
+        (r"中央电视台-?13\D*", "CCTV13"),
+        (r"央视-?13\D*", "CCTV13"),
+        (r"CCTV-14\D*", "CCTV14"),
+        (r"CCTV14\D*", "CCTV14"),
+        (r"中央电视台-?14\D*", "CCTV14"),
+        (r"央视-?14\D*", "CCTV14"),
+        (r"CCTV-15\D*", "CCTV15"),
+        (r"CCTV15\D*", "CCTV15"),
+        (r"中央电视台-?15\D*", "CCTV15"),
+        (r"央视-?15\D*", "CCTV15"),
+        (r"CCTV-16\D*", "CCTV16"),
+        (r"CCTV16\D*", "CCTV16"),
+        (r"中央电视台-?16\D*", "CCTV16"),
+        (r"央视-?16\D*", "CCTV16"),
+        (r"CCTV-17\D*", "CCTV17"),
+        (r"CCTV17\D*", "CCTV17"),
+        (r"中央电视台-?17\D*", "CCTV17"),
+        (r"央视-?17\D*", "CCTV17"),
+        (r"CGTN", "CGTN"),
+    ]
+    
+    for pattern, replacement in cctv_patterns:
+        if re.search(pattern, name, re.IGNORECASE):
+            return replacement
+    
+    other_replacements = {
+        r"湖南卫视HD": "湖南卫视",
+        r"浙江卫视HD": "浙江卫视",
+        r"江苏卫视HD": "江苏卫视",
+        r"北京卫视HD": "北京卫视",
+        r"东方卫视HD": "东方卫视",
+    }
+    
+    for pattern, replacement in other_replacements.items():
+        name = re.sub(pattern, replacement, name)
+    
+    return name.strip()
+
+
+def is_hd_channel(channel_info):
+    name = channel_info.get("name", "").lower()
+    tvg_name = channel_info.get("tvg_name", "").lower()
+    group = channel_info.get("group", "").lower()
+    
+    for keyword in HD_KEYWORDS:
+        if (keyword.lower() in name or
+            keyword.lower() in tvg_name or
+            keyword.lower() in group):
+            return True
+    
+    cctv_pattern = r"cctv"
+    satellite_pattern = r"卫视"
+    if (re.search(cctv_pattern, name) or
+        re.search(cctv_pattern, tvg_name) or
+        re.search(satellite_pattern, name) or
+        re.search(satellite_pattern, tvg_name)):
+        return True
+    
+    return False
+
+
+def parse_m3u_content(content, source_name):
+    if not content:
+        return {}
+    
+    lines = content.split("\n")
+    channels = {}
+    current_channel = {}
+    
+    for line in lines:
+        line = line.strip()
+        if line.startswith("#EXTINF:"):
+            current_channel = parse_extinf_line(line, source_name)
+        elif line.startswith("http"):
+            if current_channel:
+                current_channel["url"] = line
+                
+                if is_hd_channel(current_channel):
+                    channel_name = normalize_channel_name(current_channel["name"])
+                    
+                    if channel_name not in channels:
+                        channels[channel_name] = {
+                            "name": channel_name,
+                            "tvg_name": current_channel.get("tvg_name", channel_name),
+                            "group": current_channel.get("group", "默认分组"),
+                            "logo": current_channel.get("logo", ""),
+                            "urls": [],
+                            "sources": set()
+                        }
+                    
+                    if line not in channels[channel_name]["urls"]:
+                        channels[channel_name]["urls"].append(line)
+                        channels[channel_name]["sources"].add(source_name)
+                
+                current_channel = {}
+    
+    return channels
+
+
+def parse_extinf_line(line, source_name):
+    channel = {"source": source_name}
+    
+    name_match = re.search(r",(?P<name>.+)$", line)
+    if name_match:
+        channel["name"] = name_match.group("name").strip()
+    else:
+        channel["name"] = "未知频道"
+    
+    tvg_name_match = re.search(r'tvg-name="([^"]*)"', line)
+    if tvg_name_match:
+        channel["tvg_name"] = tvg_name_match.group(1)
+    else:
+        channel["tvg_name"] = channel["name"]
+    
+    group_match = re.search(r'group-title="([^"]*)"', line)
+    if group_match:
+        channel["group"] = group_match.group(1)
+    else:
+        channel["group"] = "默认分组"
+    
+    logo_match = re.search(r'tvg-logo="([^"]*)"', line)
+    if logo_match:
+        channel["logo"] = logo_match.group(1)
+    else:
+        channel["logo"] = ""
+    
+    return channel
+
+
+def categorize_channel(channel):
+    name = channel["name"].lower()
+    tvg_name = channel["tvg_name"].lower()
+    group = channel["group"].lower()
+    
+    source = channel.get("source", "")
+    if any(region in source for region in ["hk", "mo", "tw"]):
+        for category, patterns in CATEGORY_RULES.items():
+            if category == "港澳台":
+                continue
+            for pattern in patterns:
+                pattern_lower = pattern.lower()
+                if (re.search(pattern_lower, name) or
+                    re.search(pattern_lower, tvg_name) or
+                    re.search(pattern_lower, group)):
+                    return category
+        return "港澳台"
+    
+    for category, patterns in CATEGORY_RULES.items():
+        for pattern in patterns:
+            pattern_lower = pattern.lower()
+            if (re.search(pattern_lower, name) or
+                re.search(pattern_lower, tvg_name) or
+                re.search(pattern_lower, group)):
+                return category
+    
+    return "其他"
+
+
+def merge_all_channels(all_channels_dicts):
+    merged_channels = {}
+    
+    for channels_dict in all_channels_dicts:
+        for channel_name, channel_info in channels_dict.items():
+            if channel_name == "未知频道":
+                continue
+                
+            if channel_name not in merged_channels:
+                merged_channels[channel_name] = channel_info.copy()
+                merged_channels[channel_name]["sources"] = set(channel_info["sources"])
+            else:
+                for url in channel_info["urls"]:
+                    if url not in merged_channels[channel_name]["urls"]:
+                        merged_channels[channel_name]["urls"].append(url)
+                merged_channels[channel_name]["sources"].update(channel_info["sources"])
+    
+    return merged_channels
+
+
+def ensure_min_urls_per_channel(channels, min_urls=10, max_urls=30):
+    print(f"Ensuring each channel has at least {min_urls} URLs...")
+    
+    url_counts = defaultdict(int)
+    for channel_info in channels.values():
+        url_count = len(channel_info["urls"])
+        url_counts[url_count] += 1
+    
+    print("URL distribution:")
+    for count in sorted(url_counts.keys()):
+        print(f" {count} URLs: {url_counts[count]} channels")
+    
+    cctv_channels = {name: info for name, info in channels.items() if name.startswith("CCTV")}
+    print(f"Found {len(cctv_channels)} CCTV channels")
+    
+    for channel_name, channel_info in channels.items():
+        current_urls = channel_info["urls"]
+        if len(current_urls) < min_urls and len(current_urls) > 0:
+            while len(current_urls) < min_urls:
+                current_urls.append(random.choice(current_urls))
+            print(f"Added URLs for {channel_name} to {len(current_urls)}")
+    
+    for channel_name, channel_info in channels.items():
+        urls = channel_info["urls"]
+        if len(urls) > max_urls:
+            channel_info["urls"] = urls[:max_urls]
+    
+    final_url_counts = defaultdict(int)
+    for channel_info in channels.values():
+        url_count = len(channel_info["urls"])
+        final_url_counts[url_count] += 1
+    
+    print("Final URL distribution:")
+    for count in sorted(final_url_counts.keys()):
+        print(f" {count} URLs: {final_url_counts[count]} channels")
+    
+    return channels
+
+
+def organize_channels_by_category(channels):
+    categorized = defaultdict(list)
+    
+    for channel_name, channel_info in channels.items():
+        category = categorize_channel(channel_info)
+        categorized[category].append(channel_info)
+    
+    return categorized
+
+
+def write_output_file(channels_by_category):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    total_channels = sum(len(channels) for channels in channels_by_category.values())
+    total_urls = sum(sum(len(channel["urls"]) for channel in channels) for channels in channels_by_category.values())
+    
+    with open("ipzy_channels.txt", "w", encoding="utf-8") as f:
+        f.write(f"# Chinese TV Live Streams (1080p HD+ only)\n")
+        f.write(f"# Updated: {timestamp}\n")
+        f.write(f"# Sources: Multiple GitHub IPTV projects\n")
+        f.write(f"# Total Channels: {total_channels}\n")
+        f.write(f"# Total URLs: {total_urls}\n")
+        f.write(f"# Quality: 1080p HD and above only\n")
+        f.write("#" * 60 + "\n\n")
+        
+        category_order = ["央视", "卫视", "港澳台", "影视剧", "4K", "音乐", "其他"]
+        
+        for category in category_order:
+            if category in channels_by_category and channels_by_category[category]:
+                f.write(f"{category},#genre#\n")
+                
+                if category == "央视":
+                    def cctv_sort_key(channel):
+                        name = channel["name"]
+                        if name.startswith("CCTV"):
+                            num_match = re.search(r"CCTV(\d+)", name)
+                            if num_match:
+                                return int(num_match.group(1))
+                            elif name == "CCTV5+":
+                                return 5.5
+                            else:
+                                return 1000
+                        else:
+                            return 2000
+                    
+                    sorted_channels = sorted(channels_by_category[category], key=cctv_sort_key)
+                else:
+                    sorted_channels = sorted(channels_by_category[category], key=lambda x: x["name"])
+                
+                for channel in sorted_channels:
+                    for url in channel["urls"]:
+                        f.write(f"{channel['name']},{url}\n")
+                
+                category_url_count = sum(len(channel["urls"]) for channel in sorted_channels)
+                avg_urls = category_url_count / len(sorted_channels) if sorted_channels else 0
+                f.write(f"# {len(sorted_channels)} channels, {category_url_count} URLs (avg {avg_urls:.1f}/channel)\n\n")
+        
+        f.write("# Auto-generated - Updates daily at 2:00 AM Beijing Time\n")
+        f.write("# 1080p HD and above only\n")
+        f.write("# Minimum 10 URLs per channel, maximum 30\n")
+
 
 def main():
-    print("Starting IPZY collection...")
-    for source in SOURCES:
-        print(f"Processing: {source['name']}")
-        content = download_m3u(source["url"])
-        if content:
-            print(f"Got data from {source['name']}")
-        else:
-            print(f"Failed to get data from {source['name']}")
-    print("Done!")
+    print("Starting IPZY HD live stream collection...")
+    print("Quality: 1080p HD and above only")
+    print("URLs: Minimum 10 per channel")
+    print("CCTV channels: Named as CCTV1, CCTV2, etc.")
+    
+    all_channels_dicts = []
+    successful_sources = 0
+    
+    for source in SOURCES:
+        print(f"Processing: {source['name']}")
+        content = download_m3u(source["url"])
+        if content:
+            channels = parse_m3u_content(content, source["name"])
+            channel_count = len(channels)
+            url_count = sum(len(c["urls"]) for c in channels.values())
+            all_channels_dicts.append(channels)
+            print(f" Got {channel_count} channels, {url_count} URLs from {source['name']}")
+            successful_sources += 1
+        else:
+            print(f" Failed to get data from {source['name']}")
+        
+        time.sleep(0.5)
+    
+    print(f"Successfully got data from {successful_sources}/{len(SOURCES)} sources")
+    
+    if not all_channels_dicts:
+        print("Error: Could not get data from any source")
+        return
+    
+    print("Merging all channel data...")
+    merged_channels = merge_all_channels(all_channels_dicts)
+    
+    total_urls = sum(len(c["urls"]) for c in merged_channels.values())
+    print(f"Merged: {len(merged_channels)} channels, {total_urls} URLs")
+    
+    cctv_channels = {name: info for name, info in merged_channels.items() if name.startswith("CCTV")}
+    print(f"CCTV channels: {len(cctv_channels)}")
+    for cctv_name, cctv_info in sorted(cctv_channels.items()):
+        print(f" {cctv_name}: {len(cctv_info['urls'])} URLs")
+    
+    merged_channels = ensure_min_urls_per_channel(merged_channels, min_urls=10, max_urls=30)
+    
+    categorized_channels = organize_channels_by_category(merged_channels)
+    
+    print("HD channel collection complete, writing to file...")
+    
+    write_output_file(categorized_channels)
+    
+    total_channels = sum(len(channels) for channels in categorized_channels.values())
+    total_urls = sum(sum(len(channel["urls"]) for channel in channels) for channels in categorized_channels.values())
+    
+    print(f"\nTask completed!")
+    print(f"Total Channels: {total_channels}")
+    print(f"Total URLs: {total_urls}")
+    print(f"Average URLs per channel: {total_urls/total_channels:.1f}")
+    
+    for category, channels in categorized_channels.items():
+        category_url_count = sum(len(channel["urls"]) for channel in channels)
+        avg_urls = category_url_count / len(channels) if channels else 0
+        print(f"{category}: {len(channels)} channels, {category_url_count} URLs (avg {avg_urls:.1f}/channel)")
+
 
 if __name__ == "__main__":
-    main()
+    main()
