@@ -14,7 +14,6 @@ SOURCES = [
     {"name": "mitv", "url": "https://raw.githubusercontent.com/mitv/iptv/master/China.m3u"},
     {"name": "ygbx", "url": "https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u"},
     {"name": "iptv-pro", "url": "https://raw.githubusercontent.com/iptvpro/iptvpro/main/playlist.m3u"},
-    {"name": "qingtingjjjjjjj", "url": "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt"},
 ]
 
 
