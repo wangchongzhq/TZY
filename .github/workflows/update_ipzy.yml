@@ -17,10 +17,6 @@ jobs:
     steps:
     - name: Checkout代码
       uses: actions/checkout@v3
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        # 添加这行来获取完整历史记录
-        fetch-depth: 0
 
     - name: 设置Python环境
       uses: actions/setup-python@v4
@@ -42,19 +38,10 @@ jobs:
         git add ipzy_channels.txt
         git diff --staged --quiet || echo "changes=true" >> $GITHUB_OUTPUT
 
-    - name: 配置Git
-      run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-
-    - name: 拉取并合并远程更改
-      run: |
-        # 拉取远程更改并尝试合并
-        git pull origin main --rebase --autostash
-
     - name: 提交更新
       if: steps.check_changes.outputs.changes == 'true'
       run: |
-        git commit -m "Auto-update IPZY HD streams [$(date +'%Y-%m-%d')]"
-        # 使用force-with-lease来安全地推送
-        git push origin main
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -m "自动更新IPZY高清直播线路 [$(date +'%Y-%m-%d')]"
+        git push
