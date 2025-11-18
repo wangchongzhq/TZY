@@ -2,6 +2,7 @@ name: Update IPZY Channels Daily
 
 on:
   schedule:
+    # 北京时间每天凌晨2点运行 (UTC 18:00)
     - cron: '0 18 * * *'
   workflow_dispatch:
   push:
@@ -14,33 +15,44 @@ jobs:
     timeout-minutes: 15
 
     steps:
-    - name: Checkout code
+    - name: Checkout代码
       uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
 
-    - name: Setup Python
+    - name: 设置Python环境
       uses: actions/setup-python@v4
       with:
         python-version: '3.x'
 
-    - name: Install dependencies
+    - name: 安装依赖
       run: |
         python -m pip install --upgrade pip
         pip install requests
 
-    - name: Run collection script
+    - name: 运行收集脚本
       run: |
         python collect_ipzy.py
 
-    - name: Check for changes
-      id: check_changes
+    - name: 配置Git
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+
+    - name: 提交更改
       run: |
         git add ipzy_channels.txt
-        git diff --staged --quiet || echo "changes=true" >> $GITHUB_OUTPUT
+        # 尝试提交，如果失败也没关系
+        git commit -m "Auto-update IPZY HD streams [$(date +'%Y-%m-%d')]" || exit 0
 
-    - name: Commit updates
-      if: steps.check_changes.outputs.changes == 'true'
+    - name: 推送更改
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git commit -m "Auto-update IPZY HD streams [$(date +'%Y-%m-%d')]"
-        git push
+        # 拉取最新更改并重试推送
+        while true; do
+          git pull --rebase origin main
+          if git push origin main; then
+            break
+          fi
+          sleep 5
+        done
