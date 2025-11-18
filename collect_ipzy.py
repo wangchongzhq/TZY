@@ -14,7 +14,8 @@ SOURCES = [
     {"name": "mitv", "url": "https://raw.githubusercontent.com/mitv/iptv/master/China.m3u"},
     {"name": "ygbx", "url": "https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u"},
     {"name": "iptv-pro", "url": "https://raw.githubusercontent.com/iptvpro/iptvpro/main/playlist.m3u"},
-    {"name": "moonkeyhoo", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u"},
+    {"name": "kakaxi-ipv6", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u"},
+    
 ]
 
 
