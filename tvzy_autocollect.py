@@ -28,6 +28,8 @@ class TVSourceCollector:
             # 示例格式:
             #"http://106.53.99.30/2025.txt",
             #"http://tv.html-5.me/i/9390107.txt",
+            #"https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
+
             
            ]
         
