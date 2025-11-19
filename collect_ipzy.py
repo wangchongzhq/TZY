@@ -13,7 +13,16 @@ SOURCES = [
     {"name": "iptv-org-all", "url": "https://iptv-org.github.io/iptv/index.m3u"},
     {"name": "fanmingming", "url": "https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/global.m3u"},
     {"name": "free-iptv", "url": "https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u"},
-]
+    {"name": "moonkeyhoo", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u"},
+    {"name": "kakaxi-ipv6", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u"},
+    {"name": "kakaxi-ipv4", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv4.txt"},
+    {"name": "2025", "url": "http://106.53.99.30/2025.txt"},
+    {"name": "9390107", "url": "http://tv.html-5.me/i/9390107.txt"},
+    {"name": "Supprise0901", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt"},
+    {"name": "ffmking", "url": "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt"},
+    {"name": "qingtingjjjjjjj", "url": "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt"},
+    {"name": "Heiwk", "url": "https://ghcy.eu.org/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u"},
+    ]
 
 # 分类规则
 CATEGORY_RULES = {
