@@ -1,8 +1,8 @@
 # 中国境内电视直播线路 (仅限1080p高清以上)
-# 更新时间: 2025-11-18 23:36:14
+# 更新时间: 2025-11-19 00:17:12
 # 数据来源: 多个GitHub IPTV项目
-# 频道总数: 2838
-# 线路总数: 2932
+# 频道总数: 2837
+# 线路总数: 2931
 # 清晰度要求: 仅保留1080p高清及以上线路
 ############################################################
 
@@ -386,20 +386,24 @@ RADIO DISCOunt TV,https://585b674743bbb.streamlock.net/9030/9030/playlist.m3u8
 RTI La 3,http://69.64.57.208/la3/index.m3u8
 RTL 102.5 Best,https://dd782ed59e2a4e86aabf6fc508674b59.msvdn.net/live/S76960628/OEPHRUIctA0M/playlist_video.m3u8
 RTL 102.5 Bro&Sis,https://dd782ed59e2a4e86aabf6fc508674b59.msvdn.net/live/S75007890/MUGHuxc9dQ3b/playlist_video.m3u8
-RTL 102.5 Napulé,https://dd782ed59e2a4e86aabf6fc508674b59.msvdn.net/live/S27134503/0f9AhuwKlhnZ/playlist_video.m3u8
+RTL 102.5 Caliente,https://dd782ed59e2a4e86aabf6fc508674b59.msvdn.net/live/S8448465/zTYa1Z5Op9ue/playlist_video.m3u8
+RTL 102.5 Disco,https://dd782ed59e2a4e86aabf6fc508674b59.msvdn.net/live/S51100361/0Fb4R3k82b5Z/playlist_video.m3u8
+RTL 102.5 Napulè,https://dd782ed59e2a4e86aabf6fc508674b59.msvdn.net/live/S27134503/0f9AhuwKlhnZ/playlist_video.m3u8
 RTL 102.5 TV,https://dd782ed59e2a4e86aabf6fc508674b59.msvdn.net/live/S97044836/tbbP8T1ZRPBL/playlist_video.m3u8
+RTL 102.5 Traffic,https://dd782ed59e2a4e86aabf6fc508674b59.msvdn.net/live/S38122967/2lyQRIAAGgRR/playlist_video.m3u8
 RTL Gold,https://stream.rtl.lu/data/live/tele/rtlgold/playlist.m3u8
 RTV Vida,https://vidartv2.todostreaming.es/live/radiovida-emisiontvhd.m3u8
 Rabeh Saqer,https://shls-live-enc.edgenextcdn.net/out/v1/ea4275b6dc0840c198c17f6dc6f1ec49/index.m3u8
 Radio Aktual,https://vr1.radioaktual.si/hls/stream.m3u8
 Radio Contact,https://contact-live-hls.akamaized.net/hls/live/2038650/CONTACT-Live-HLS/master.m3u8
 Radio Fantástica 98.9 FM,http://190.107.232.9:8082/livestream/stream.m3u8
-Radio Freccia TV,https://streamcdnb1-dd782ed59e2a4e86aabf6fc508674b59.msvdn.net/live/S3160845/0tuSetc8UFkF/playlist_video.m3u8
+Radio Freccia TV,https://dd782ed59e2a4e86aabf6fc508674b59.msvdn.net/live/S3160845/0tuSetc8UFkF/playlist_video.m3u8
 Radio JND,https://radiojnd.cdn.hostin.cc/radiojnd/playlist.m3u8
 Radio Javan TV,https://rjtvhls.wns.live/hls/stream.m3u8
 Radio SWH TV,https://00ff00.latnet.media/edge/swh_tv.smil/playlist.m3u8
 Radio Suyai TV,https://signal.suyaitv.cl/live/26/playlist.m3u8?password=9PcdCnFxUe&username=ZZDemoIPTVGH
 Radio TV Tendencias,https://s1.tvdatta.com:3950/multi_web/play.m3u8
+Radio Zeta TV,https://dd782ed59e2a4e86aabf6fc508674b59.msvdn.net/live/S9346184/XEx1LqlYbNic/playlist_video.m3u8
 RadioNL TV,https://stream.radionl.tv/radionltv/radionltv/playlist.m3u8
 Rashid AlMajed,https://dphwv2ufgnfsq.cloudfront.net/out/v1/59cd80dfe93a479eb8b4d79bc6f225ca/index.m3u8
 Rock TV,https://stream.nasatv.com.mk/rocktv/hls/rocktv_live.m3u8
@@ -478,7 +482,7 @@ ZWEI2 Music,https://cdne.folxplay.tv/folx-trz/streams/ch-2/master.m3u8
 Zona Music TV,https://acceso.radiosportstv.online:3022/stream/play.m3u8
 m2o TV,https://4c4b867c89244861ac216426883d1ad0.msvdn.net/live/S62628868/uhdWBlkC1AoO/playlist.m3u8
 Матур ТВ,https://public.streaming.matur-tv.ru/hls/h264_aac/stream.m3u8
-# 共 220 个频道，222 条线路 (平均1.0条/频道)
+# 共 224 个频道，226 条线路 (平均1.0条/频道)
 
 其他,#genre#
 10 Bold Adelaide,https://dce3793146fef017.mediapackage.us-west-2.amazonaws.com/out/v1/55cdf73af7894775ba6de8f57482b66a/CMAF_HLS/index.m3u8
@@ -1464,7 +1468,6 @@ L1 Max,http://38.183.182.166:8000/play/a12t/index.m3u8
 L@b TV,http://live.sloode.com:1935/labtv_live/labtv/playlist.m3u8
 LA CityView 35,https://reflect-losangeles.cablecast.tv/live-3/live/live.m3u8
 LA7 HD,https://viamotionhsi.netplus.ch/live/eds/la7/browser-dash/la7.mpd
-LA7d HD,https://uvotv-aniview.global.ssl.fastly.net/10010/live/hls/la7d/playlist.m3u8
 LBC,https://rotana.hibridcdn.net/rotananet/lbc_net-7Y83PP5adWixDF93/playlist.m3u8
 LBFD RTV,https://tnt-television.com/LBFD_RTV/index.m3u8
 LCI HD,https://viamotionhsi.netplus.ch/live/eds/lci/browser-dash/lci.mpd
@@ -1971,9 +1974,6 @@ RTHK TV 36,https://rthktv36-live.akamaized.net/hls/live/2112176/RTHKTV36/master.
 RTI 1,http://69.64.57.208:8080/rti1/playlist.m3u8
 RTI 2,http://69.64.57.208:8080/rti2/playlist.m3u8
 RTL,https://bpcdnmanprod.nexttv.ht.hr/bpk-tv/RTL/default/index.mpd
-RTL 102.5 Caliente,https://dd782ed59e2a4e86aabf6fc508674b59.msvdn.net/live/S8448465/zTYa1Z5Op9ue/playlist_video.m3u8
-RTL 102.5 Disco,https://dd782ed59e2a4e86aabf6fc508674b59.msvdn.net/live/S51100361/0Fb4R3k82b5Z/playlist_video.m3u8
-RTL 102.5 Traffic,https://dd782ed59e2a4e86aabf6fc508674b59.msvdn.net/live/S38122967/2lyQRIAAGgRR/playlist_video.m3u8
 RTL 2,https://bpcdnmanprod.nexttv.ht.hr/bpk-tv/RTL2/default/index.mpd
 RTL Croatia,https://d1cs5tlhj75jxe.cloudfront.net/rtl/playlist.m3u8
 RTL HD,https://strm.hdtvizlecanli.com/live/rtl.m3u8
@@ -2230,7 +2230,7 @@ Spannung & Emotionen,https://spannung-and-emotionen-rakuten.amagi.tv/playlist.m3
 Spark TV,https://candlelightmedia-sparklightlove-4-us.roku.wurl.tv/playlist.m3u8
 Spark TV Luz & Amor,https://candlelightmedia-sparklightlove-6-us.roku.wurl.tv/playlist.m3u8
 Speed Sport 1,https://linear-599.frequency.stream/dist/stirr/599/hls/master/playlist.m3u8
-Speranta TV,https://customer-x8zydurm357k8j9p.cloudflarestream.com/0dd00c080ff4cbe839a12c923610a55c/manifest/video.m3u8
+SperantaTV,https://jstre.am/live/jsl:2gNjpghXRLE.m3u8
 Sports First,https://d4ddgdmj1cvnm.cloudfront.net/scheduler/scheduleMaster/409.m3u8
 SportsGrid,https://sportsgrid-tribal.amagi.tv/playlist.m3u8
 SquashTV,https://amg12058-amg12058c5-rakuten-gb-7997.playouts.now.amagi.tv/playlist.m3u8
@@ -2631,7 +2631,6 @@ Univer TV,https://cdn.universmotri.ru/live/smil:mbr.smil/playlist.m3u8
 Universidad Autónoma Temuco,https://unlimited1-us.dps.live/uatv/uatv.smil/playlist.m3u8
 UniversidadMayordeSanAndres,https://live.enhdtv.com:8081/8190/index.m3u8
 Unsion TV,http://provedores.unsion.tv:8081/srt/1/playlist.m3u8
-Up TV,https://fl1.moveonjoy.com/Up_Tv/index.m3u8
 Uvagut TV,https://dee7mwgg9dzvl.cloudfront.net/hls/uvagut/playlist.m3u8
 UzReport TV,https://stream8.cinerama.uz/1015/tracks-v1a1/playlist.m3u8
 VB Media TV,https://capomo01-enitv.eninetworks.com/locales_vbmedia_publico/index.m3u8
@@ -2957,7 +2956,7 @@ teltOwkanal,https://h056.video-stream-hosting.de/easycast8-live/_definst_/mp4:li
 高台电视台,http://117.156.28.119/270000001111/1110000146/index.m3u8
 黑龙江,http://223.110.245.161/ott.js.chinamobile.com/PLTV/3/224/3221227492/index.m3u8
 黑龙江卫,http://183.207.248.71/cntv/live1/HD-2500k-1080P-heilongjiangstv/HD-2500k-1080P-heilongjiangstv
-# 共 2408 个频道，2476 条线路 (平均1.0条/频道)
+# 共 2403 个频道，2471 条线路 (平均1.0条/频道)
 
 # 自动生成 - 每日北京时间为2点更新
 # 仅保留1080p高清及以上清晰度线路
