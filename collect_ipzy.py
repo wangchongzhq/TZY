@@ -4,18 +4,17 @@ from datetime import datetime
 import time
 from collections import defaultdict
 
-
 # 数据源列表 - 增加更多专门提供央视线路的源
 SOURCES = [
-    {"name": "iptv-org-cn", "url": "https://iptv-org.github.io/iptv/countries/cn.m3u"},
-    {"name": "iptv-org-hk", "url": "https://iptv-org.github.io/iptv/countries/hk.m3u"},
-    {"name": "iptv-org-mo", "url": "https://iptv-org.github.io/iptv/countries/mo.m3u"},
-    {"name": "iptv-org-tw", "url": "https://iptv-org.github.io/iptv/countries/tw.m3u"},
-    {"name": "iptv-org-all", "url": "https://iptv-org.github.io/iptv/index.m3u"},
-    {"name": "fanmingming", "url": "https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/global.m3u"},
-    {"name": "free-iptv", "url": "https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u"},
-    {"name": "cctv-special", "url": "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u"},
-    {"name": "cctv-backup", "url": "https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/cctv.m3u"},
+    {"name": "iptv-org-cn", "url": "https://iptv-org.github.io/iptv/countries/cn.m3u"},
+    {"name": "iptv-org-hk", "url": "https://iptv-org.github.io/iptv/countries/hk.m3u"},
+    {"name": "iptv-org-mo", "url": "https://iptv-org.github.io/iptv/countries/mo.m3u"},
+    {"name": "iptv-org-tw", "url": "https://iptv-org.github.io/iptv/countries/tw.m3u"},
+    {"name": "iptv-org-all", "url": "https://iptv-org.github.io/iptv/index.m3u"},
+    {"name": "fanmingming", "url": "https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/global.m3u"},
+    {"name": "free-iptv", "url": "https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u"},
+    {"name": "cctv-special", "url": "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u"},
+    {"name": "cctv-backup", "url": "https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/cctv.m3u"},
 ]
 
 
