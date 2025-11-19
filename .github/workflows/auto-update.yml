@@ -13,7 +13,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-      
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -30,10 +32,29 @@ jobs:
     - name: Run processing script
       run: python tvzy_processor.py
       
+    - name: Check if file exists
+      run: |
+        echo "Checking generated files:"
+        ls -la
+        if [ -f "tzyauto.txt" ]; then
+          echo "✅ tzyauto.txt found successfully"
+          echo "File size: $(wc -l < tzyauto.txt) lines"
+        else
+          echo "❌ tzyauto.txt not found!"
+          # 创建空的tzyauto.txt文件作为fallback
+          echo "#EXTM3U" > tzyauto.txt
+          echo "# 自动更新脚本 - 暂无可用源" >> tzyauto.txt
+        fi
+        
     - name: Commit and push if changed
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add tzyauto.txt
-        git diff --staged --quiet || git commit -m "Auto-update TV sources - $(date)"
-        git push
+        # 检查是否有变化
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Auto-update TV sources - $(date +'%Y-%m-%d %H:%M:%S')"
+          git push
+        fi
