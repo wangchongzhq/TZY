@@ -20,10 +20,10 @@ SOURCES = [
 
 # 分类规则
 CATEGORY_RULES = {
-    "央视": [
+    "央视": [
         r'CCTV', r'中央电视台', r'央视'
     ],
-    "卫视": [
+    "卫视": [
         r'卫视', r'湖南卫视', r'浙江卫视', r'东方卫视', r'北京卫视', r'江苏卫视',
         r'安徽卫视', r'重庆卫视', r'东南卫视', r'甘肃卫视', r'广东卫视',
         r'广西卫视', r'贵州卫视', r'海南卫视', r'河北卫视', r'黑龙江卫视',
@@ -48,13 +48,11 @@ CATEGORY_RULES = {
     ]
 }
 
-
 # 高清关键词
 HD_KEYWORDS = [
     r'1080', r'1080p', r'1080P', r'高清', r'HD', r'High Definition', 
     r'FHD', r'Full HD', r'超清', r'4K', r'4k', r'UHD', r'2160'
 ]
-
 
 def download_m3u(url, retries=2):
     """下载M3U文件"""
