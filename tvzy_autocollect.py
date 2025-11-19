@@ -26,7 +26,7 @@ class TVSourceCollector:
         self.data_sources = [
             # 这里添加真实的直播源URL
             # 示例格式:
-            #"https://ghcy.eu.org/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u",
+            #"http://106.53.99.30/2025.txt",
 
            ]
         
