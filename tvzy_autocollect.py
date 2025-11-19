@@ -30,7 +30,8 @@ class TVSourceCollector:
             #"http://tv.html-5.me/i/9390107.txt",
             #"https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
             #"https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
-            
+            #"https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
+       
            ]
         
     def fetch_all_sources(self):
