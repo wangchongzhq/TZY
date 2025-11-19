@@ -8,7 +8,30 @@ on:
 
 jobs:
   update:
+    runs-on: ubuntu-latest# .github/workflows/daily-update.yml
+name: Daily TV Source Update
+on:
+  schedule:
+    - cron: '0 19 * * *'  # 每天UTC 19:00 (北京时间次日3:00)
+  workflow_dispatch:  # 允许手动触发
+jobs:
+  update:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Run update script
+        run: python tvzy_autocollect.py
+      - name: Commit and push if changed
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add tzyauto.txt
+          git diff --staged --quiet || git commit -m "Auto-update TV sources"
+          git push
     
     steps:
     - name: Checkout code
