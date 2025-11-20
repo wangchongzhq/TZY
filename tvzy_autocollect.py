@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 # tvzy_autocollect.py
-
-
 import requests
 import re
 import json
@@ -10,8 +8,6 @@ import time
 import os
 import random
 from urllib.parse import urlparse
-
-
 class TVSourceCollector:
     def __init__(self):
         self.sources = []
@@ -21,8 +17,6 @@ class TVSourceCollector:
             "4K": ['CCTV4K', 'CCTV16 4K', '北京卫视4K', '北京IPTV4K', '湖南卫视4K', '山东卫视4K','广东卫视4K', '四川卫视4K', 
                  '浙江卫视4K', '江苏卫视4K', '东方卫视4K', '深圳卫视4K', '河北卫视4K', '峨眉电影4K', '求索4K', '咪视界4K', '欢笑剧场4K',
                  '苏州4K', '至臻视界4K', '南国都市4K', '翡翠台4K', '百事通电影4K', '百事通少儿4K', '百事通纪实4K', '华数爱上4K'],
-
-
             "央视": ['CCTV1', 'CCTV2', 'CCTV3', 'CCTV4', 'CCTV4欧洲', 'CCTV4美洲', 'CCTV5', 'CCTV5+', 'CCTV6', 'CCTV7', 'CCTV8', 'CCTV9',
                  'CCTV10', 'CCTV11', 'CCTV12', 'CCTV13', 'CCTV14', 'CCTV15', 'CCTV16', 'CCTV17', '兵器科技', '风云音乐', '风云足球',
                  '风云剧场', '怀旧剧场', '第一剧场', '女性时尚', '世界地理', '央视台球', '高尔夫网球', '央视文化精品', '北京纪实科教',
@@ -32,19 +26,11 @@ class TVSourceCollector:
                  '湖南卫视', '辽宁卫视', '黑龙江卫视', '吉林卫视', '内蒙古卫视', '宁夏卫视', '山西卫视', '陕西卫视', '甘肃卫视',
                  '青海卫视', '新疆卫视', '西藏卫视', '三沙卫视', '厦门卫视', '兵团卫视', '延边卫视', '安多卫视', '康巴卫视', '农林卫视', '山东教育',
                  'CETV1', 'CETV2', 'CETV3', 'CETV4', '早期教育'],
-
-
             "北京专属": ['北京卫视', '北京财经', '北京纪实', '北京生活', '北京体育休闲', '北京国际', '北京文艺', '北京新闻', 
                  '北京淘电影', '北京淘剧场', '北京淘4K', '北京淘娱乐', '北京淘BABY', '北京萌宠TV'],
-
-
             "山东专属": ['山东卫视', '山东齐鲁', '山东综艺', '山东少儿', '山东生活',
                  '山东新闻', '山东国际', '山东体育', '山东文旅', '山东农科'],
-
-
             "港澳台": ['凤凰中文', '凤凰资讯', '凤凰香港', '凤凰电影'],
-
-
             "影视剧": ['CHC动作电影', 'CHC家庭影院', 'CHC影迷电影', '淘电影',
                  '淘精彩', '淘剧场', '星空卫视', '黑莓电影', '东北热剧',
                  '中国功夫', '动作电影', '超级电影'],
@@ -749,8 +735,6 @@ class TVSourceCollector:
                         f.write(f"{channel['standard_name']},{channel['url']}\n")
         
         print(f"文件生成完成! 共处理 {len(self.sources)} 个频道")
-
-
 def main():
     collector = TVSourceCollector()
     print("开始收集直播源...")
@@ -788,8 +772,5 @@ def main():
         print(f"{quality}: {count} 个频道")
     
     print(f"\n总计: {total_channels} 个频道")
-
-
 if __name__ == "__main__":
     main()
-
