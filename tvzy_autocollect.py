@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # tvzy_autocollect.py
 
-
 import requests
 import re
 import json
@@ -11,11 +10,10 @@ import os
 import random
 from urllib.parse import urlparse
 
-
 class TVSourceCollector:
-   def __init__(self):
-        self.sources = []
-      
+    def __init__(self):
+        self.sources = []
+        
         # 频道分组定义
         self.channel_categories = {
             "4K": ['CCTV4K', 'CCTV16 4K', '北京卫视4K', '北京IPTV4K', '湖南卫视4K', '山东卫视4K','广东卫视4K', '四川卫视4K', 
@@ -325,10 +323,15 @@ class TVSourceCollector:
             "音乐": ["音乐"],
             "体育": ["体育", "综合"]
         }
-        
-        # 真实数据源列表
-        self.data_sources = [
-            # GitHub上的直播源
+
+        # 真实数据源列表
+        self.data_sources = [
+            # GitHub上的直播源
+            "https://raw.githubusercontent.com/iptv-org/iptv/master/channels/cn.m3u",
+            "https://raw.githubusercontent.com/iptv-org/iptv/master/channels/hk.m3u",
+            "https://raw.githubusercontent.com/iptv-org/iptv/master/channels/tw.m3u",
+            "https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u",
+            "https://raw.githubusercontent.com/EvilCaster/iptv/master/cleaned_iptv.m3u",
             "http://106.53.99.30/2025.txt",
             "http://tv.html-5.me/i/9390107.txt",
             "https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
@@ -337,13 +340,14 @@ class TVSourceCollector:
             
             # 其他直播源
             "https://mirror.ghproxy.com/https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u",
-  
-
+            "https://fastly.jsdelivr.net/gh/iptv-org/iptv@master/channels/cn.m3u",
+            "https://ghproxy.com/https://raw.githubusercontent.com/iptv-org/iptv/master/channels/cn.m3u",
             
             # 备份源
-
-        ]
-        
+            "https://mirror.ghproxy.com/https://raw.githubusercontent.com/guptaharsh2024/iptv/main/iptv.m3u",
+            "https://raw.githubusercontent.com/frank007886/TVBox/main/live.txt",
+        ]
+        
     def normalize_channel_name(self, channel_name):
         """
         将频道名称标准化为规范名
@@ -786,3 +790,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+main()
