@@ -1,8 +1,8 @@
 # 中国境内电视直播线路 (仅限1080p高清以上)
-# 更新时间: 2025-11-19 18:25:04
+# 更新时间: 2025-11-20 18:25:12
 # 数据来源: 多个GitHub IPTV项目
 # 频道总数: 2856
-# 线路总数: 3607
+# 线路总数: 3606
 # 清晰度要求: 仅保留1080p高清及以上线路
 ############################################################
 
@@ -529,7 +529,6 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 新疆卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226088/1.m3u8
 星空卫视,https://cdn.iptv8k.top/dl/jrys.php?id=21&time=20240926215313&ip=111.229.253.40
 星空卫视,http://122.53.222.9:9981/stream/channelid/2084767267?profile=pass
-星空卫视,http://39.107.120.164:8080/live/diyp_xingkong.flv
 江苏卫视,http://183.207.248.71/cntv/live1/HD-2500k-1080P-jiangsustv/HD-2500k-1080P-jiangsustv
 江苏卫视,http://php.jdshipin.com/TVOD/hnyd.php?id=200000001898/460000089800010059
 江苏卫视,http://z.b.bkpcp.top/m.php?id=jsws
@@ -759,7 +758,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 黑龙江卫视,http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226965/1.m3u8?GuardEncType=2&accountinfo=%7E%7EV2.0%7E7UiKL56-L86ihmTWaZ6csw%7EtP4-l0lmSfjwLWEfK_el1vH_mv-s1zo4AQJwdedaVwG9xkuFTDg8J26cwOrNJzn20BErrHdLhuZ9EzLUCD3PMW-OMx4MGteHV2vLeW6BqoY%2CEND
 黑龙江卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221225722/1.m3u8
 黑龙江卫视,http://106.53.99.30/tv/hot.php?id=hljws
-# 共 45 个频道，504 条线路 (平均11.2条/频道)
+# 共 45 个频道，503 条线路 (平均11.2条/频道)
 
 港澳台,#genre#
 SET News,http://seb.sason.top/sc/sllive_fhd.m3u8
@@ -1245,6 +1244,7 @@ Adventure Sports TV,https://d3rl6ns7c3ilda.cloudfront.net/scheduler/scheduleMast
 Aeolos TV,https://cdn.istoikona.com/aeolostv/live/playlist.m3u8
 Afarin Baxcha,https://5dcabf026b188.streamlock.net/afarinTV/livestream/playlist.m3u8
 Africa 24,https://africa24.vedge.infomaniak.com/livecast/ik:africa24/manifest.m3u8
+Africa 24 English,https://edge20.vedge.infomaniak.com/livecast/ik:africa24english/manifest.m3u8
 Africa 24 Sport,https://africa24.vedge.infomaniak.com/livecast/ik:africa24sport/manifest.m3u8
 AfroLandTV,https://alt-al.otteravision.com/alt/al/al.m3u8
 Afroturk TV,https://edge.socialsmart.tv/naturaltv/bant1/playlist.m3u8
@@ -1553,6 +1553,7 @@ Canal 21 TV,https://iptv.ixfo.com.ar:30443/c21tv/hd/c21tv/playlist.m3u8
 Canal 25,https://live20.bozztv.com/akamaissh101/ssh101/canal25stgo/chunks.m3u8
 Canal 26,https://stream-gtlc.telecentro.net.ar/hls/canal26hls/main.m3u8
 Canal 26 Aguascalientes,https://60417ddeaf0d9.streamlock.net/telemetrika3/smil:telemetrika3.smil/playlist.m3u8
+Canal 26 TV IAP,https://vdo.tecnoservix.stream:3899/live/canal26tvlive.m3u8
 Canal 27,https://live.canal27.tv:3633/live/canal27live.m3u8
 Canal 3 La Pampa,https://stream.arcast.com.ar/c3lapampa/ngrp:c3lapampa_all/playlist.m3u8
 Canal 32,https://event.vedge.infomaniak.com/livecast/ik:canal32_4/manifest.m3u8
@@ -2672,7 +2673,7 @@ RTSH 24,http://178.33.11.6:8696/live/rtsh24/playlist.m3u8
 RTSH Sport,http://178.33.11.6:8696/live/rtshsport/playlist.m3u8
 RTU,https://video1.makrodigital.com/rtu/rtu/chunks.m3u8?nimblesessionid=
 RTV,http://iptv.rtv-ooe.at/stream.m3u8
-RTV Católica Canal 40,https://streaming.grupocsanetwork.com:19360/canal40/canal40.m3u8
+RTV Católica Canal 40,https://stream.giostreaming.app/canal40/canal40.m3u8
 RTV Drenthe,https://cdn.rtvdrenthe.nl/live/rtvdrenthe/tv/index.m3u8
 RTV GO!,http://59132e529e3d1.streamlock.net:1935/Groningen1/Groningen1/playlist.m3u8
 RTV Islam,https://protokolldns.xyz/rtvislamweb554/index.m3u8
@@ -2975,7 +2976,6 @@ TD Ameritrade Network,https://content.uplynk.com/channel/f9aafa1f132e40af9b9e723
 TEN,http://176.65.146.237:8401/play/a0al/index.m3u8
 TF1 HD,https://viamotionhsi.netplus.ch/live/eds/tf1hd/browser-dash/tf1hd.mpd
 TFX,https://viamotionhsi.netplus.ch/live/eds/nt1/browser-HLS8/nt1.m3u8
-TG4,https://dx4452e0qv6r9.cloudfront.net/tg4_vod_national.m3u8
 TJC,https://cdn-shop-lc-01.akamaized.net/Content/HLS_HLS/Live/channel(TJCOTT)/index.m3u8
 TJK TV,https://tjktv-live.tjk.org/tjktv.m3u8
 TJK TV 2,https://tjktv-live.tjk.org/tjktv2/tjktv2.m3u8
@@ -3148,10 +3148,9 @@ TVSN,https://tvsnhlslivetest.akamaized.net/hls/live/2034711/TVSN-MSL4/master.m3u
 TVSN Beauty,https://live-tvsn.simplestreamcdn.com/live12/tvsnbeauty/bitrate1.isml/.m3u8
 TVSN Jewellery,https://live-tvsn.simplestreamcdn.com/live13/tvsnjewellery/bitrate1.isml/.m3u8
 TVU Concepción,https://unlimited1-cl-isp.dps.live/tvu/tvu.smil/playlist.m3u8
-TVX,https://raw.githubusercontent.com/azgaresncf/strm2hls/main/streams/TVX.m3u8
 TVcom,https://tvlocales-live.freecaster.com/tvcom/95d2f656-ba85-4e13-affc-f1936be1a86d/95d2f656-ba85-4e13-affc-f1936be1a86d.isml/master.m3u8
 Taaza TV,https://stream.playbox.co.in:19360/taaza/taaza.m3u8
-Taber TV,https://5ca9af4645e15.streamlock.net/tabertv/smil:tabertv.smil/playlist.m3u8
+Taber TV,https://5fc584f3f19c9.streamlock.net/tabertv/videotabertv/playlist.m3u8
 Taiwan Plus TV,https://bcovlive-a.akamaihd.net/rce33d845cb9e42dfa302c7ac345f7858/ap-northeast-1/6282251407001/playlist.m3u8
 Tajikistan,https://live.teleradiocom.tj/1/3m.m3u8
 TalkTV,https://amg00738-newsuk-amg00738c1-lg-gb-3426.playouts.now.amagi.tv/playlist/amg00738-newscorpukandirelandlimited-talktv-lggb/playlist.m3u8
