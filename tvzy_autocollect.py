@@ -334,8 +334,7 @@ class TVSourceCollector:
       "https://raw.githubusercontent.com/iptv-org/iptv/master/channels/tw.m3u",
       "https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u",
       "https://raw.githubusercontent.com/EvilCaster/iptv/master/cleaned_iptv.m3u",
-      "http://106.53.99.30/2025.txt",
-      "http://tv.html-5.me/i/9390107.txt",
+
 
       # 其他直播源
       "https://mirror.ghproxy.com/https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u",
