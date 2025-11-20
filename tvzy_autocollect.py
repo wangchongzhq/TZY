@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 
 
 class TVSourceCollector:
-    def __init__(self):
+    def __init__(self):
         self.sources = []
         
         # 频道分组定义
