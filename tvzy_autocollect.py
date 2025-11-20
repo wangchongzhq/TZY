@@ -334,6 +334,11 @@ class TVSourceCollector:
       "https://raw.githubusercontent.com/iptv-org/iptv/master/channels/tw.m3u",
       "https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u",
       "https://raw.githubusercontent.com/EvilCaster/iptv/master/cleaned_iptv.m3u",
+      "http://106.53.99.30/2025.txt",
+      "http://tv.html-5.me/i/9390107.txt",
+      "https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
+      "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
+      "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
      
       # 其他直播源
       "https://mirror.ghproxy.com/https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u",
