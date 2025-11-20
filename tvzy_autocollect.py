@@ -329,11 +329,6 @@ class TVSourceCollector:
         # 真实数据源列表
         self.data_sources = [
             # GitHub上的直播源
-            "https://raw.githubusercontent.com/iptv-org/iptv/master/channels/cn.m3u",
-            "https://raw.githubusercontent.com/iptv-org/iptv/master/channels/hk.m3u",
-            "https://raw.githubusercontent.com/iptv-org/iptv/master/channels/tw.m3u",
-            "https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u",
-            "https://raw.githubusercontent.com/EvilCaster/iptv/master/cleaned_iptv.m3u",
             "http://106.53.99.30/2025.txt",
             "http://tv.html-5.me/i/9390107.txt",
             "https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
@@ -346,8 +341,7 @@ class TVSourceCollector:
             "https://ghproxy.com/https://raw.githubusercontent.com/iptv-org/iptv/master/channels/cn.m3u",
             
             # 备份源
-            "https://mirror.ghproxy.com/https://raw.githubusercontent.com/guptaharsh2024/iptv/main/iptv.m3u",
-            "https://raw.githubusercontent.com/frank007886/TVBox/main/live.txt",
+
         ]
         
     def normalize_channel_name(self, channel_name):
