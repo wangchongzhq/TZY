@@ -13,9 +13,9 @@ from urllib.parse import urlparse
 
 
 class TVSourceCollector:
-    def __init__(self):
-        self.sources = []
-        
+   def __init__(self):
+        self.sources = []
+      
         # 频道分组定义
         self.channel_categories = {
             "4K": ['CCTV4K', 'CCTV16 4K', '北京卫视4K', '北京IPTV4K', '湖南卫视4K', '山东卫视4K','广东卫视4K', '四川卫视4K', 
