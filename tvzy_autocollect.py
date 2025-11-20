@@ -337,8 +337,8 @@ class TVSourceCollector:
             
             # 其他直播源
             "https://mirror.ghproxy.com/https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u",
-            "https://fastly.jsdelivr.net/gh/iptv-org/iptv@master/channels/cn.m3u",
-            "https://ghproxy.com/https://raw.githubusercontent.com/iptv-org/iptv/master/channels/cn.m3u",
+  
+
             
             # 备份源
 
