@@ -1105,8 +1105,8 @@ def generate_output_file(grouped_channels, output_file=OUTPUT_FILE):
                 # 获取该分类的统计信息
                 stats = category_stats.get(category, {'channel_count': 0, 'url_count': 0})
                 
-                # 写入分类标题
-                category_line = f"#{category},#genre#\n"
+                # 写入分类标题，添加genre标签
+                category_line = f"# {category},#genre#\n"
                 batch_lines.append(category_line)
                 written_lines += 1
                 
