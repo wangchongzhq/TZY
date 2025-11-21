@@ -335,7 +335,7 @@ CATEGORY_ORDER = [
     "剧场频道", "体育频道", "音乐频道"
 ]
 
-OUTPUT_FILE = "tzydayauto.txt"  # 修改后的输出文件名
+OUTPUT_FILE = "tzydauto.txt"  # 修改为用户期望的输出文件名
 
 def download_source(url, timeout=30):
     """下载单个数据源，包含重试逻辑"""
