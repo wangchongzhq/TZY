@@ -31,20 +31,20 @@ logger = logging.getLogger(__name__)
 # GitHub数据源列表（至少10个）
 GITHUB_SOURCES = [
     # 有效的中国电视频道源
-    "https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China.m3u",
-    "https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u",
-    "https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u",
+    "https://ghcy.eu.org/https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China.m3u",
+    "https://ghcy.eu.org/https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u",
+    "https://ghcy.eu.org/https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u",
     # 其他稳定的IPTV源
-    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u",
-    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u",
-    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u",
+    "https://ghcy.eu.org/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u",
+    "https://ghcy.eu.org/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u",
+    "https://ghcy.eu.org/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u",
     # 优质高清源
-    "https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt",
-    "https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u",
-    "https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt",
-    "https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt",
-    "https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u",
-    "https://raw.githubusercontent.com/sbilly/awesome-english-ebooks/master/README.md"
+    "https://ghcy.eu.org/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt",
+    "https://ghcy.eu.org/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u",
+    "https://ghcy.eu.org/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt",
+    "https://ghcy.eu.org/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt",
+    "https://ghcy.eu.org/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u",
+    "https://ghcy.eu.org/https://raw.githubusercontent.com/sbilly/awesome-english-ebooks/master/README.md"
 ]
 
 # 频道分类
