@@ -31,18 +31,16 @@ logger = logging.getLogger(__name__)
 
 # GitHub数据源列表（至少10个）
 GITHUB_SOURCES = [
-    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/ipv6/iptv6.m3u",
-    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/ipv4/tv.m3u",
-    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/ipv4/iptv.m3u",
-    "https://raw.githubusercontent.com/lm317379829/PanCollections/master/TV/m3u/m3u.txt",
-    "https://raw.githubusercontent.com/ssb44/IPTV/master/IPTV.m3u",
-    "https://raw.githubusercontent.com/qwerttvv/IPTV-m3u/main/IPTV.m3u",
-    "https://raw.githubusercontent.com/quanjindeng/IPTV/main/IPTV.m3u",
-    "https://raw.githubusercontent.com/gaotianliuyun/gao/master/m3u",
-    "https://raw.githubusercontent.com/caotama/v2ray/master/VOD/iptv.m3u",
-    "https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China.m3u",
-    "https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u",
-    "https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u"
+    "https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
+    "https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt",
+    "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
+    "https://ghfast.top/https://raw.githubusercontent.com/yoursmile66/TVBox/main/XC.json
+    "https://ghfast.top/https://raw.githubusercontent.com/leevi0709/one/main/jsm.json",
+    "http://106.53.99.30/2025.txt",
+    "http://tv.html-5.me/i/9390107.txt",
+    "https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
+    "https://freetv.fun/test_channels_new.txt",
+    "https://ghcy.eu.org/https://raw.githubusercontent.com/Kimentanm/aptv/master/m3u/iptv.m3u"
 ]
 
 # 频道分类
