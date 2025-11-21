@@ -832,8 +832,8 @@ def generate_output_file(grouped_channels, output_file=OUTPUT_FILE):
                 total_channels += len(channels)
                 
                 try:
-                    # 写入分类标题
-                    f.write(f"\n# {category}\n")
+                    # 写入分类标题，添加genre标签
+                    f.write(f"\n# {category},#genre#\n")
                     
                     # 批量写入频道
                     for channel_name, url in channels:
