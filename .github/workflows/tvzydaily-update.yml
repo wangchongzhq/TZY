@@ -38,21 +38,33 @@ jobs:
       - name: Commit and push changes
         run: |
           # 设置git配置
-          git config --local user.name 'github-actions[bot]'
-          git config --local user.email 'github-actions[bot]@users.noreply.github.com'
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           
-          # 强制拉取远程分支内容并覆盖本地更改（只保留我们需要的更改）
-          git fetch origin main
-          git checkout -f origin/main -- .
+          # 确保我们在正确的分支上
+          git checkout main
+          
+          # 完全重置本地仓库，避免任何合并冲突
+          git fetch --all
+          git reset --hard origin/main
           
           # 运行脚本生成最新文件
           python tvzydaily.py
           
           # 添加并提交更改
           git add tzydayauto.txt
-          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update IPTV files"
           
-          # 使用GitHub Actions专用的推送方式
-          git push https://github-actions:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
+          # 检查是否有更改需要提交
+          if ! git diff --quiet && ! git diff --staged --quiet; then
+            git commit -m "Auto-update IPTV files"
+            
+            # 再次拉取以确保在提交后没有新的更改
+            git pull --rebase origin main || true
+            
+            # 使用标准的GitHub Actions推送方式
+            git push origin HEAD:main
+          else
+            echo "No changes to commit"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
