@@ -38,15 +38,15 @@ jobs:
           echo "正在运行tvzydaily.py脚本..."
           python tvzydaily.py
           # 检查输出文件是否存在
-          if [ -f "tzydayauto.txt" ]; then
+          if [ -f "tzydauto.txt" ]; then
             echo "输出文件存在，检查文件内容..."
             # 显示文件的前20行以检查分类标签格式
-            head -n 50 tzydayauto.txt
+            head -n 50 tzydauto.txt
             # 搜索包含,#genre#的行
             echo "\n检查,#genre#标签..."
-            grep -n ",#genre#" tzydayauto.txt || echo "未找到,#genre#标签"
+            grep -n ",#genre#" tzydauto.txt || echo "未找到,#genre#标签"
           else
-            echo "错误：输出文件tzydayauto.txt不存在"
+            echo "错误：输出文件tzydauto.txt不存在"
           fi
       
       - name: Commit and push changes
@@ -79,18 +79,18 @@ jobs:
           python tvzydaily.py
           
           # 检查输出文件是否存在
-          if [ ! -f "tzydayauto.txt" ]; then
-            echo "错误：输出文件tzydayauto.txt不存在"
+          if [ ! -f "tzydauto.txt" ]; then
+            echo "错误：输出文件tzydauto.txt不存在"
             exit 1
           fi
           
           # 验证,#genre#标签是否存在
           echo "验证文件内容..."
-          head -n 50 tzydayauto.txt
-          grep -n ",#genre#" tzydayauto.txt || echo "警告：未找到,#genre#标签"
+          head -n 50 tzydauto.txt
+          grep -n ",#genre#" tzydauto.txt || echo "警告：未找到,#genre#标签"
           
           # 添加并提交更改
-          git add tzydayauto.txt
+          git add tzydauto.txt
           
           # 检查是否有更改需要提交
           if git diff --quiet && git diff --staged --quiet; then
@@ -114,7 +114,7 @@ jobs:
             git fetch origin
             git reset --hard origin/main
             python tvzydaily.py
-            git add tzydayauto.txt
+            git add tzydauto.txt
             if ! git diff --quiet && ! git diff --staged --quiet; then
               git commit -m "Auto-update IPTV files after conflict resolution - $TIMESTAMP"
               git push --force-with-lease origin HEAD:main
