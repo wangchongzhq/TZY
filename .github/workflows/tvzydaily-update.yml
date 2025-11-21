@@ -18,6 +18,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # 获取完整历史以便rebase
+          token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -34,12 +37,22 @@ jobs:
       
       - name: Commit and push changes
         run: |
-          git config --global user.name 'GitHub Action'
-          git config --global user.email 'action@github.com'
-          # 先拉取远程更改以解决冲突
-          git pull --rebase origin main
+          # 设置git配置
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # 确保与远程分支同步
+          git fetch origin main
+          git branch --set-upstream-to=origin/main main
+          
+          # 使用--allow-unrelated-histories防止历史冲突问题
+          git pull --rebase --allow-unrelated-histories origin main || echo "Pull failed, continuing with current branch"
+          
+          # 添加并提交更改
           git add tzydayauto.txt
-          git diff --quiet && git diff --staged --quiet || git commit -m "Daily update of TV channels (tzydayauto.txt)"
-          git push
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update IPTV files"
+          
+          # 使用token进行推送
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
