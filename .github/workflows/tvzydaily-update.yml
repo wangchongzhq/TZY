@@ -40,6 +40,8 @@ jobs:
           # 设置git配置
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git config --global pull.rebase true
+          git config --global rebase.autoStash true
           
           # 确保我们在正确的分支上
           git checkout main
@@ -58,11 +60,12 @@ jobs:
           if ! git diff --quiet && ! git diff --staged --quiet; then
             git commit -m "Auto-update IPTV files"
             
-            # 再次拉取以确保在提交后没有新的更改
-            git pull --rebase origin main || true
+            # 再次拉取以确保在提交后没有新的更改，使用强制拉取
+            git fetch origin
+            git pull --rebase --autostash origin main || true
             
-            # 使用标准的GitHub Actions推送方式
-            git push origin HEAD:main
+            # 使用强制推送（注意：这会覆盖远程更改，仅在特定场景使用）
+            git push --force-with-lease origin HEAD:main
           else
             echo "No changes to commit"
           fi
