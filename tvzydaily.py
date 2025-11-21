@@ -30,18 +30,21 @@ logger = logging.getLogger(__name__)
 
 # GitHub数据源列表（至少10个）
 GITHUB_SOURCES = [
-    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/ipv6/iptv6.m3u",
-    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/ipv4/tv.m3u",
-    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/ipv4/iptv.m3u",
-    "https://raw.githubusercontent.com/lm317379829/PanCollections/master/TV/m3u/m3u.txt",
-    "https://raw.githubusercontent.com/ssb44/IPTV/master/IPTV.m3u",
-    "https://raw.githubusercontent.com/qwerttvv/IPTV-m3u/main/IPTV.m3u",
-    "https://raw.githubusercontent.com/quanjindeng/IPTV/main/IPTV.m3u",
-    "https://raw.githubusercontent.com/gaotianliuyun/gao/master/m3u",
-    "https://raw.githubusercontent.com/caotama/v2ray/master/VOD/iptv.m3u",
+    # 有效的中国电视频道源
     "https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China.m3u",
     "https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u",
-    "https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u"
+    "https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u",
+    # 其他稳定的IPTV源
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u",
+    # 优质高清源
+    "https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt",
+    "https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u",
+    "https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt",
+    "https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt",
+    "https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u",
+    "https://raw.githubusercontent.com/sbilly/awesome-english-ebooks/master/README.md"
 ]
 
 # 频道分类
