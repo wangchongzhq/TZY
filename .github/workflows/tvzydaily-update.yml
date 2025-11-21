@@ -33,7 +33,21 @@ jobs:
           pip install requests schedule
       
       - name: Run TVZY update script
-        run: python tvzydaily.py
+        run: |
+          # 运行脚本前添加调试信息
+          echo "正在运行tvzydaily.py脚本..."
+          python tvzydaily.py
+          # 检查输出文件是否存在
+          if [ -f "tzydayauto.txt" ]; then
+            echo "输出文件存在，检查文件内容..."
+            # 显示文件的前20行以检查分类标签格式
+            head -n 50 tzydayauto.txt
+            # 搜索包含,#genre#的行
+            echo "\n检查,#genre#标签..."
+            grep -n ",#genre#" tzydayauto.txt || echo "未找到,#genre#标签"
+          else
+            echo "错误：输出文件tzydayauto.txt不存在"
+          fi
       
       - name: Commit and push changes
         run: |
@@ -50,8 +64,21 @@ jobs:
           git fetch --all
           git reset --hard origin/main
           
-          # 运行脚本生成最新文件
+          # 运行脚本生成最新文件，添加调试信息
+          echo "在提交阶段运行tvzydaily.py脚本..."
           python tvzydaily.py
+          # 检查输出文件是否存在并验证,#genre#标签
+          if [ -f "tzydayauto.txt" ]; then
+            echo "输出文件存在，验证,#genre#标签..."
+            # 显示文件的前50行
+            head -n 50 tzydayauto.txt
+            # 搜索,#genre#标签
+            echo "\n搜索,#genre#标签..."
+            grep -n ",#genre#" tzydayauto.txt || echo "警告：未找到,#genre#标签"
+          else
+            echo "错误：输出文件tzydayauto.txt不存在"
+            exit 1
+          fi
           
           # 添加并提交更改
           git add tzydayauto.txt
