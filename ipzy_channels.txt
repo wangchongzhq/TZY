@@ -1,8 +1,8 @@
 # 中国境内电视直播线路 (仅限1080p高清以上)
-# 更新时间: 2025-11-20 18:25:12
+# 更新时间: 2025-11-21 18:23:32
 # 数据来源: 多个GitHub IPTV项目
-# 频道总数: 2856
-# 线路总数: 3606
+# 频道总数: 2863
+# 线路总数: 3612
 # 清晰度要求: 仅保留1080p高清及以上线路
 ############################################################
 
@@ -1019,7 +1019,6 @@ MCN6 Music Channel,https://d18fcxaqfnwjhj.cloudfront.net/CDN_Ingest/MCN6_MUSIC.s
 MMTV,https://sendlive.online/hls/mmtv.m3u8
 MNTV Music,https://mntv.livebox.co.in/musichls/live.m3u8
 MTV,https://viamotionhsi.netplus.ch/live/eds/mtvfrance/browser-HLS8/mtvfrance.m3u8
-MTV,https://hkali.youyouko.com/api/streams/live/cs323/1080p/mpegts
 MTV,https://hms.pfs.gdn/v1/broadcast/mtv/playlist.m3u8
 MTV Guyana,https://stream.mtvgy.com/mtvguyana/index.fmp4.m3u8
 MTV HD,http://144.217.70.181:9587/hin2/MTVINDIA/index.m3u8
@@ -1157,7 +1156,7 @@ ZWEI2 Music,https://cdne.folxplay.tv/folx-trz/streams/ch-2/master.m3u8
 Zona Music TV,https://acceso.radiosportstv.online:3022/stream/play.m3u8
 m2o TV,https://4c4b867c89244861ac216426883d1ad0.msvdn.net/live/S62628868/uhdWBlkC1AoO/playlist.m3u8
 Матур ТВ,https://public.streaming.matur-tv.ru/hls/h264_aac/stream.m3u8
-# 共 224 个频道，226 条线路 (平均1.0条/频道)
+# 共 224 个频道，225 条线路 (平均1.0条/频道)
 
 其他,#genre#
 10 Bold Adelaide,https://dce3793146fef017.mediapackage.us-west-2.amazonaws.com/out/v1/55cdf73af7894775ba6de8f57482b66a/CMAF_HLS/index.m3u8
@@ -1269,7 +1268,6 @@ Al Ghad TV,https://eazyvwqssi.erbvr.com/alghadtv/alghadtv.m3u8
 Al Horreya TV,http://media.smc-host.com:1935/alhorreya.tv/mp4:alhorreya3/playlist.m3u8
 Al Jadeed,http://185.9.2.18/chid_391/mono.m3u8
 Al Jazeera,https://live-hls-apps-aja-fa.getaj.net/AJA/index.m3u8
-Al Jazeera Balkans,https://live-hls-apps-ajb-v3-fa.getaj.net/AJB/index.m3u8
 Al Jazeera Documentary,http://213.57.91.138:8000/play/a06h
 Al Jazeera Documentary,https://live-hls-apps-ajd-fa.getaj.net/AJD/index.m3u8
 Al Jazeera English,https://live-hls-apps-aje-fa.getaj.net/AJE/index.m3u8
@@ -1390,7 +1388,6 @@ BBC News Asia Pacific,https://cdn4.skygo.mn/live/disk1/BBC_News/HLSv3-FTA/BBC_Ne
 BBC One Channel Islands,https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_one_channel_islands/iptv_mse_v0_hevc.mpd
 BBC One East,https://xyzdddd.mizhls.ru/lb/premium356/index.m3u8
 BBC One East Midlands,https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_one_east_midlands/iptv_mse_v0_hevc.mpd
-BBC One London HD,https://streamer.nexyl.uk/5c858268-a93b-45f8-9e82-41d66b526d6c.m3u8
 BBC One North East,https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_one_north_east/iptv_mse_v0_hevc.mpd
 BBC One North West,https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_one_north_west/iptv_mse_v0_hevc.mpd
 BBC One Northern Ireland HD,https://vs-cmaf-pushb-uk-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_one_northern_ireland_hd/pc_hd_abr_v2.mpd
@@ -1723,6 +1720,7 @@ Discover Pakistan,https://livecdn.live247stream.com/discoverpakistan/web/playlis
 Disney Channel,http://185.236.229.62:9981/play/a07d
 Disney Channel HD,http://66.102.120.18:8000/play/a013/index.m3u8
 Disney Channel Latin America,http://201.230.121.186:8000/play/a0fb/index.m3u8
+Disney Channel Latin America Panregional HD,http://201.217.246.177:8000/play/a02r/index.m3u8
 Disney International HD,http://116.90.120.149:8000/play/a0e9/index.m3u8
 Disney Jr.,https://saran-live.ercdn.net/disneyjunior/index.m3u8
 District of Columbia Network,https://video.oct.dc.gov/out/u/DCN.m3u8
@@ -1988,8 +1986,10 @@ Hope Channel Africa,https://jstre.am/live/jsl:i1onRBELcGV.m3u8
 Hope Channel Australia,https://videodelivery.net/9fb3596948ddf463fde0ec4b85625b24/manifest/video.m3u8
 Hope Channel German,https://customer-x8zydurm357k8j9p.cloudflarestream.com/5b46490d20cdd87fcac238b0027813e0/manifest/video.m3u8
 Hope Channel India,https://videodelivery.net/98334a974d26e45759c6baa8bceabbcf/manifest/video.m3u8
+Hope Channel Inter-America English,https://jstre.am/live/jsl:UP9KAdlVrm8.m3u8
 Hope Channel International,https://jstre.am/live/jsl:cZXINbwrFj6.m3u8
 Hope Channel North America,https://jstre.am/live/jsl:0sUSK6VA7GT.m3u8
+Hope Channel Philippines,https://jstre.am/live/jsl:7A1swL7Fhlh.m3u8
 HoremowTV,https://tvsw6-hls.secdn.net/tvsw6-chorigin/play/prod-2859eecc9b514f2bb955290066ef172d/playlist.m3u8
 Hotel Inspector,https://amg00654-itv-amg00654c4-rakuten-uk-5263.playouts.now.amagi.tv/playlist.m3u8
 Humor Mill,https://damkf751d85s1.cloudfront.net/v1/master/9d062541f2ff39b5c0f48b743c6411d25f62fc25/HumorMill-DistroTV/152.m3u8
@@ -2707,8 +2707,11 @@ Rai Scuola HD,https://viamotionhsi.netplus.ch/live/eds/raiscuola/browser-dash/ra
 Rai Sport HD,https://viamotionhsi.netplus.ch/live/eds/raisport1/browser-dash/raisport1.mpd
 Rai Storia HD,https://viamotionhsi.netplus.ch/live/eds/raistoria/browser-dash/raistoria.mpd
 Rai Yoyo,http://188.60.179.180:8000/play/xxRaiYoyo
+Raj Digital Plus,http://livestream.rajtv.tv/cluster1/Content/Channel/RajDigitalPlus/HLS/master.m3u8
+Raj Musix Tamil,http://livestream.rajtv.tv/cluster1/Content/Channel/RajMusix/HLS/master.m3u8
 Raj News,http://livestream.rajtv.tv/cluster1/Content/Channel/RajNews/HLS/master.m3u8
 Raj Pariwar,https://livestream.rajtvnet.in/hlslive/Admin/px08241089/live/Raj_Pariwar/master_1.m3u8
+Raj TV,http://livestream.rajtv.tv/cluster1/Content/Channel/RajTV/HLS/master.m3u8
 Rajeen TV,https://mn-nl.mncdn.com/palabroad/live/playlist.m3u8
 Rakuten TV Asian Cinema Italy,https://asian-cinema-rakuten-tv-it.fast.rakuten.tv/v1/master/0547f18649bd788bec7b67b746e47670f558b6b2/production-LiveChannel-6431/master.m3u8
 Rakuten TV Cine Español,https://3ed8837c27bf41dabe8e2627be2e57e6.mediatailor.eu-west-1.amazonaws.com/v1/master/0547f18649bd788bec7b67b746e47670f558b6b2/production-LiveChannel-6196/master.m3u8
@@ -2856,6 +2859,8 @@ Senses TV,http://31.14.41.69:8080/hls/sensesonline/index.m3u8
 Sevimli TV,https://stream8.cinerama.uz/1017/tracks-v1a1/playlist.m3u8
 Señal Positiva TV,https://eu1.servers10.com:8081/8108/index.m3u8
 Shalom,https://d2c4zqo2rb5uf1.cloudfront.net/master.m3u8
+Shalom Global,https://d28xtgmk9tfk6b.cloudfront.net/master.m3u8
+Shalom World Prayer,https://broadcaster-1.cclouds.in/srt-4/channel4_abr/playlist.m3u8
 Shams TV,https://stream.shams.tv/hls/stream.m3u8
 Sharjah 2,https://svs.itworkscdn.net/smc2live/smc2tv.smil/playlist.m3u8
 Sharjah Radio,https://svs.itworkscdn.net/smcradiolive/smcradiolive/playlist.m3u8
@@ -2908,6 +2913,7 @@ Spark TV,https://candlelightmedia-sparklightlove-4-us.roku.wurl.tv/playlist.m3u8
 Spark TV Luz & Amor,https://candlelightmedia-sparklightlove-6-us.roku.wurl.tv/playlist.m3u8
 Speed Sport 1,https://linear-599.frequency.stream/dist/stirr/599/hls/master/playlist.m3u8
 SperantaTV,https://jstre.am/live/jsl:2gNjpghXRLE.m3u8
+Sportitalia Solocalcio,https://distribution.sportitalialive.it/sportitalia/sisolocalcio_abr/playlist.m3u8
 Sports First,https://d4ddgdmj1cvnm.cloudfront.net/scheduler/scheduleMaster/409.m3u8
 SportsGrid,https://sportsgrid-tribal.amagi.tv/playlist.m3u8
 SquashTV,https://amg12058-amg12058c5-rakuten-gb-7997.playouts.now.amagi.tv/playlist.m3u8
@@ -2976,6 +2982,7 @@ TD Ameritrade Network,https://content.uplynk.com/channel/f9aafa1f132e40af9b9e723
 TEN,http://176.65.146.237:8401/play/a0al/index.m3u8
 TF1 HD,https://viamotionhsi.netplus.ch/live/eds/tf1hd/browser-dash/tf1hd.mpd
 TFX,https://viamotionhsi.netplus.ch/live/eds/nt1/browser-HLS8/nt1.m3u8
+TG4,https://fastly.live.brightcove.com/6384196213112/eu-west-1/1555966122001/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJob3N0IjoieDl2YzlnLmVncmVzcy55ODN1ZWIiLCJhY2NvdW50X2lkIjoiMTU1NTk2NjEyMjAwMSIsImVobiI6ImZhc3RseS5saXZlLmJyaWdodGNvdmUuY29tIiwiaXNzIjoiYmxpdmUtcGxheWJhY2stc291cmNlLWFwaSIsInN1YiI6InBhdGhtYXB0b2tlbiIsImF1ZCI6WyIxNTU1OTY2MTIyMDAxIl0sImp0aSI6IjYzODQxOTYyMTMxMTIifQ.Co2xR3kmJBoxTaFTpwU0b37lJ05vNt-y32-SwfM26EA/chunklist.m3u8
 TJC,https://cdn-shop-lc-01.akamaized.net/Content/HLS_HLS/Live/channel(TJCOTT)/index.m3u8
 TJK TV,https://tjktv-live.tjk.org/tjktv.m3u8
 TJK TV 2,https://tjktv-live.tjk.org/tjktv2/tjktv2.m3u8
@@ -3062,7 +3069,6 @@ TV Oberfranken,https://tvoberfranken.iptv-playoutcenter.de/tvoberfranken/tvoberf
 TV Okazje,https://lb2-e3-20.pluscdn.pl/ch/1523532/366/dash/2cf383bb/live.mpd
 TV One Crime & Justice,https://livetv-fa.tubi.video/tv-one/playlist.m3u8
 TV Peru,http://38.183.182.166:8000/play/a12u/index.m3u8
-TV Perú Internacional,https://cdnhd.iblups.com/hls/ee2450c81e554f4cae0e6292106993c2.m3u8
 TV Poprad,http://213.81.153.221:8080/poprad
 TV Prato,https://live.mariatvcdn.com/tvprato/2db0dd5674586686a867ec52c3aa8e06.sdp/index.m3u8
 TV Puls,http://185.236.229.62:9981/play/a034
@@ -3435,7 +3441,7 @@ ZDFneo HD,https://viamotionhsi.netplus.ch/live/eds/zdfneohd/browser-dash/zdfneoh
 Zaracay TV,https://video2.makrodigital.com/zaracay/zaracay/playlist.m3u8
 Zee Bangla,http://87.255.35.150:18238
 Zee Cafe,http://116.90.120.149:8000/play/a0e7/index.m3u8
-Zee Kannada,http://87.255.35.150:18945/
+Zee Kannada,http://87.255.35.150:18945
 Zee Keralam,http://87.255.35.150:18502
 Zee Marathi,http://87.255.35.150:18234
 Zee News,https://dknttpxmr0dwf.cloudfront.net/index_57.m3u8
@@ -3631,7 +3637,7 @@ teltOwkanal,https://h056.video-stream-hosting.de/easycast8-live/_definst_/mp4:li
 高台电视台,http://117.156.28.119/270000001111/1110000146/index.m3u8
 黑龙江,http://223.110.245.161/ott.js.chinamobile.com/PLTV/3/224/3221227492/index.m3u8
 黑龙江卫,http://183.207.248.71/cntv/live1/HD-2500k-1080P-heilongjiangstv/HD-2500k-1080P-heilongjiangstv
-# 共 2403 个频道，2471 条线路 (平均1.0条/频道)
+# 共 2410 个频道，2478 条线路 (平均1.0条/频道)
 
 # 自动生成 - 每日北京时间为2点更新
 # 仅保留1080p高清及以上清晰度线路
