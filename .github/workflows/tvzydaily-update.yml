@@ -117,7 +117,19 @@ jobs:
             git add tzydauto.txt
             if ! git diff --quiet && ! git diff --staged --quiet; then
               git commit -m "Auto-update IPTV files after conflict resolution - $TIMESTAMP"
-              git push --force-with-lease origin HEAD:main
+              # 添加额外的安全检查和重试逻辑
+              echo "再次尝试推送..."
+              git push --force-with-lease origin HEAD:main || {
+                echo "警告：推送再次失败，尝试最安全的方法..."
+                # 创建一个临时分支进行推送
+                TEMP_BRANCH="temp-update-$(date +%s)"
+                git checkout -b $TEMP_BRANCH
+                git push origin $TEMP_BRANCH || {
+                  echo "严重错误：推送临时分支也失败"
+                  exit 1
+                }
+                echo "临时分支已推送，请手动合并: $TEMP_BRANCH"
+              }
             fi
           }
         env:
