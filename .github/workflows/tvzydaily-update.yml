@@ -19,8 +19,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # 获取完整历史以便rebase
-          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0  # 获取完整历史
+          persist-credentials: false  # 禁用默认凭据存储
       
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -38,21 +38,21 @@ jobs:
       - name: Commit and push changes
         run: |
           # 设置git配置
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git config --local user.name 'github-actions[bot]'
+          git config --local user.email 'github-actions[bot]@users.noreply.github.com'
           
-          # 确保与远程分支同步
+          # 强制拉取远程分支内容并覆盖本地更改（只保留我们需要的更改）
           git fetch origin main
-          git branch --set-upstream-to=origin/main main
+          git checkout -f origin/main -- .
           
-          # 使用--allow-unrelated-histories防止历史冲突问题
-          git pull --rebase --allow-unrelated-histories origin main || echo "Pull failed, continuing with current branch"
+          # 运行脚本生成最新文件
+          python tvzydaily.py
           
           # 添加并提交更改
           git add tzydayauto.txt
           git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update IPTV files"
           
-          # 使用token进行推送
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
+          # 使用GitHub Actions专用的推送方式
+          git push https://github-actions:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
