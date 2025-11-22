@@ -12,13 +12,29 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v3
         with:
-          fetch-depth: 1
+          fetch-depth: 0  # 获取完整历史记录
+          ref: ${{ github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: 环境准备
         run: |
           echo "准备Python环境和依赖安装"
           echo "工作目录: $(pwd)"
           ls -la
+      
+      - name: 同步远程仓库更改
+        run: |
+          echo "🔄 同步远程仓库更改..."
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout ${{ github.ref_name }}
+          git pull origin ${{ github.ref_name }} --rebase || {
+            echo "⚠️  拉取失败，尝试使用--allow-unrelated-histories..."
+            git pull origin ${{ github.ref_name }} --rebase --allow-unrelated-histories || {
+              echo "❌ 无法拉取远程更改，将使用本地版本继续"
+            }
+          }
+          git status
       
       - name: 设置Python环境
         uses: actions/setup-python@v4
