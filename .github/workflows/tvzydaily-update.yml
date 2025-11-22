@@ -23,23 +23,17 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: main
-          fetch-depth: 0  # 获取完整历史，避免冲突
+          fetch-depth: 0  # 获取完整历史
           persist-credentials: true  # 启用git凭据
       
-      # 第二步：确保本地代码与远程同步（增强版）
-      - name: Sync with remote (enhanced)
+      # 第二步：设置git用户信息
+      - name: Setup git configuration
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          # 使用--rebase和--autostash选项来处理可能的冲突
-          git pull --rebase --autostash origin main || {
-            echo "❌ 普通pull失败，尝试强制fetch和reset..."
-            git fetch origin main
-            git reset --hard origin/main
-          }
-          # 验证当前状态
-          echo "✅ 当前分支状态："
-          git status
+          # 确保工作目录干净
+          git reset --hard
+          git clean -fdx
       
       # 第三步：设置Python环境
       - name: Set up Python
@@ -53,8 +47,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests schedule
       
-      # 第五步：生成文件并使用GitHub API上传（增强版）
-      - name: Generate and upload file using GitHub API (enhanced)
+      # 第五步：生成文件并使用GitHub API上传（完全无git push版本）
+      - name: Generate and upload file using GitHub API (push-free version)
         run: |
           set -e  # 遇到错误立即退出
           
@@ -81,8 +75,28 @@ jobs:
           wc -l tzydauto.txt
           head -n 5 tzydauto.txt
           
-          # 直接使用curl和GitHub API上传文件，完全避免使用git命令
-          echo "🔄 使用GitHub API直接上传文件..."
+          echo "🔄 使用GitHub API直接上传文件（完全无git push）..."
+          
+          # 函数：获取文件当前SHA以处理并发更新
+          get_current_sha() {
+            echo "🔍 获取当前文件SHA以支持并发更新..."
+            local response=$(curl -s \
+                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Accept: application/vnd.github+json" \
+                "https://api.github.com/repos/wangchongzhq/zhby/contents/tzydauto.txt")
+            
+            # 检查响应是否有效
+            if echo "$response" | grep -q '"sha":"'; then
+              local sha=$(echo "$response" | grep -o '"sha":"[^"]*"' | cut -d'"' -f4)
+              echo "✅ 获取到当前SHA: $sha"
+              echo "$sha"
+              return 0
+            else
+              echo "⚠️  未找到现有文件或无法获取SHA，将创建新文件"
+              echo ""
+              return 0
+            fi
+          }
           
           # 重试机制函数
           upload_with_retry() {
@@ -94,40 +108,55 @@ jobs:
               ((retry_count++))
               echo "⏱️  上传尝试 $retry_count/$max_retries..."
               
+              # 每次尝试都获取最新的SHA，以处理可能的并发更新
+              local current_sha=$(get_current_sha)
+              
               # 获取文件内容并编码为base64
               CONTENT=$(base64 -w 0 tzydauto.txt)
               
               # 创建日期时间戳
               TIMESTAMP=$(date +'%Y-%m-%d %H:%M:%S')
               
-              # 使用printf创建有效的JSON，避免shell转义问题
-              JSON_DATA=$(printf '{"message":"Auto-update IPTV files - %s","content":"%s","branch":"main"}' "$TIMESTAMP" "$CONTENT")
+              # 构建JSON数据
+              if [ -n "$current_sha" ]; then
+                echo "📝 更新现有文件，使用SHA: $current_sha"
+                JSON_DATA=$(printf '{"message":"Auto-update IPTV files - %s","content":"%s","sha":"%s","branch":"main"}' "$TIMESTAMP" "$CONTENT" "$current_sha")
+              else
+                echo "📝 创建新文件"
+                JSON_DATA=$(printf '{"message":"Auto-update IPTV files - %s","content":"%s","branch":"main"}' "$TIMESTAMP" "$CONTENT")
+              fi
               
               # 使用curl调用GitHub API，添加超时和重试参数
               RESPONSE=$(curl -s -X PUT \
-                  --max-time 30 \
+                  --max-time 45 \
                   --retry 2 \
-                  --retry-delay 5 \
+                  --retry-delay 8 \
                   -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
                   -H "Accept: application/vnd.github+json" \
                   -H "Content-Type: application/json" \
                   "https://api.github.com/repos/wangchongzhq/zhby/contents/tzydauto.txt" \
                   --data "$JSON_DATA")
               
-              # 检查响应（更健壮的检查）
+              # 详细记录响应
+              echo "📊 API响应状态检查..."
+              
+              # 更健壮的响应检查
               if echo "$RESPONSE" | grep -q -E '"content":|"sha":"'; then
                 echo "✅ ✅ ✅ 成功使用GitHub API更新文件！"
                 success=true
                 return 0
               else
-                echo "❌ 上传失败，响应摘要: $(echo "$RESPONSE" | grep -E '"message":|"documentation_url":')"
+                echo "❌ 上传失败，尝试 $retry_count/$max_retries"
+                echo "错误详情: $(echo "$RESPONSE" | grep -E '"message":|"documentation_url":|"errors":')"
                 if [ $retry_count -lt $max_retries ]; then
-                  echo "⏱️  $retry_count秒后重试..."
-                  sleep $retry_count
+                  echo "⏱️  $((retry_count * 10))秒后重试..."
+                  sleep $((retry_count * 10))
                 fi
               fi
             done
             
+            echo "❌ 所有上传尝试均失败"
+            echo "详细错误响应: $RESPONSE"
             return 1
           }
           
@@ -135,7 +164,7 @@ jobs:
           if upload_with_retry; then
             echo "🎉 文件上传成功完成！"
             
-            # 验证上传结果（可选的额外检查）
+            # 验证上传结果
             echo "🔍 验证上传结果..."
             VERIFY_RESPONSE=$(curl -s \
                 -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
@@ -148,7 +177,6 @@ jobs:
               echo "⚠️  上传验证失败，但主要上传步骤已完成"
             fi
           else
-            echo "❌ 所有上传尝试均失败"
-            echo "最后一次响应: $RESPONSE"
+            echo "❌ 上传任务最终失败"
             exit 1
           fi
