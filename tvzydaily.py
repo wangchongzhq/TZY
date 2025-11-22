@@ -19,7 +19,7 @@ from urllib.parse import urlparse
 
 # 配置日志
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format='%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s',
     handlers=[
         logging.FileHandler("tvzy.log"),
@@ -795,11 +795,18 @@ def validate_url(url, timeout=5):
 
 def generate_output_file(grouped_channels, output_file=OUTPUT_FILE):
     """生成输出文件，添加性能监控和错误处理"""
+    # 将调试信息写入文件
+    debug_file = "debug_output.txt"
+    with open(debug_file, 'a', encoding='utf-8') as df:
+        df.write(f"\n=== 开始生成输出文件: {output_file} ===\n")
+        df.write(f"当前工作目录: {os.getcwd()}\n")
+    
     start_time = time.time()
-    logger.info(f"开始生成输出文件: {output_file}")
     
     # 创建临时文件以避免部分写入
     temp_file = f"{output_file}.tmp"
+    with open(debug_file, 'a', encoding='utf-8') as df:
+        df.write(f"临时文件路径: {temp_file}\n")
     
     try:
         # 获取所有分类（包括不在预定义顺序中的分类）
@@ -847,45 +854,85 @@ def generate_output_file(grouped_channels, output_file=OUTPUT_FILE):
                     logger.error(f"写入分类 {category} 时出错: {str(e)}")
         
         # 验证临时文件
-        if os.path.exists(temp_file) and os.path.getsize(temp_file) > 0:
-            # 如果原文件存在，先备份
-            if os.path.exists(output_file):
-                backup_file = f"{output_file}.bak"
-                try:
-                    os.replace(output_file, backup_file)
-                    logger.info(f"已备份原文件到: {backup_file}")
-                except Exception as e:
-                    logger.warning(f"备份原文件时出错: {str(e)}")
+        with open(debug_file, 'a', encoding='utf-8') as df:
+            df.write(f"检查临时文件: {temp_file}\n")
+        
+        if os.path.exists(temp_file):
+            with open(debug_file, 'a', encoding='utf-8') as df:
+                df.write(f"临时文件存在，大小: {os.path.getsize(temp_file)} 字节\n")
             
-            # 将临时文件重命名为目标文件
-            os.replace(temp_file, output_file)
-            logger.info(f"成功将临时文件重命名为目标文件")
+            if os.path.getsize(temp_file) > 0:
+                # 如果原文件存在，先备份
+                if os.path.exists(output_file):
+                    backup_file = f"{output_file}.bak"
+                    try:
+                        os.replace(output_file, backup_file)
+                        with open(debug_file, 'a', encoding='utf-8') as df:
+                            df.write(f"已备份原文件到: {backup_file}\n")
+                    except Exception as e:
+                        with open(debug_file, 'a', encoding='utf-8') as df:
+                            df.write(f"备份原文件时出错: {str(e)}\n")
+                
+                # 将临时文件重命名为目标文件
+                with open(debug_file, 'a', encoding='utf-8') as df:
+                    df.write(f"正在将临时文件重命名为: {output_file}\n")
+                
+                os.replace(temp_file, output_file)
+                
+                with open(debug_file, 'a', encoding='utf-8') as df:
+                    df.write(f"成功将临时文件重命名为目标文件\n")
+            else:
+                with open(debug_file, 'a', encoding='utf-8') as df:
+                    df.write("错误: 生成的临时文件为空\n")
+                raise Exception("生成的临时文件为空")
         else:
-            raise Exception("生成的临时文件为空或不存在")
+            with open(debug_file, 'a', encoding='utf-8') as df:
+                df.write("错误: 临时文件不存在\n")
+            raise Exception("临时文件不存在")
         
         elapsed_time = time.time() - start_time
-        logger.info(f"输出文件生成完成:")
-        logger.info(f"- 输出文件: {output_file}")
-        logger.info(f"- 总分类数: {len(ordered_categories)}")
-        logger.info(f"- 计划写入频道数: {total_channels}")
-        logger.info(f"- 实际写入频道数: {written_count}")
-        logger.info(f"- 写入错误数: {error_count}")
-        logger.info(f"- 文件大小: {os.path.getsize(output_file) / 1024:.2f} KB")
-        logger.info(f"- 总耗时: {elapsed_time:.2f}秒")
+        with open(debug_file, 'a', encoding='utf-8') as df:
+            df.write(f"输出文件生成完成:\n")
+            df.write(f"- 输出文件: {output_file}\n")
+            df.write(f"- 文件是否存在: {os.path.exists(output_file)}\n")
+            if os.path.exists(output_file):
+                df.write(f"- 文件大小: {os.path.getsize(output_file) / 1024:.2f} KB\n")
+            df.write(f"- 总分类数: {len(ordered_categories)}\n")
+            df.write(f"- 计划写入频道数: {total_channels}\n")
+            df.write(f"- 实际写入频道数: {written_count}\n")
+            df.write(f"- 写入错误数: {error_count}\n")
+            df.write(f"- 总耗时: {elapsed_time:.2f}秒\n")
         
         return True
         
     except IOError as e:
-        logger.error(f"文件IO错误: {str(e)}")
+        with open(debug_file, 'a', encoding='utf-8') as df:
+            df.write(f"文件IO错误: {str(e)}\n")
         # 尝试清理临时文件
         if os.path.exists(temp_file):
             try:
                 os.remove(temp_file)
-            except:
-                pass
+                with open(debug_file, 'a', encoding='utf-8') as df:
+                    df.write(f"已清理临时文件: {temp_file}\n")
+            except Exception as cleanup_error:
+                with open(debug_file, 'a', encoding='utf-8') as df:
+                    df.write(f"清理临时文件时出错: {str(cleanup_error)}\n")
         return False
     except Exception as e:
-        logger.error(f"生成输出文件时出错: {str(e)}")
+        with open(debug_file, 'a', encoding='utf-8') as df:
+            df.write(f"生成输出文件时出错: {str(e)}\n")
+            import traceback
+            df.write(f"错误详情: {traceback.format_exc()}\n")
+        # 尝试清理临时文件
+        if os.path.exists(temp_file):
+            try:
+                os.remove(temp_file)
+                with open(debug_file, 'a', encoding='utf-8') as df:
+                    df.write(f"已清理临时文件: {temp_file}\n")
+            except Exception as cleanup_error:
+                with open(debug_file, 'a', encoding='utf-8') as df:
+                    df.write(f"清理临时文件时出错: {str(cleanup_error)}\n")
+        return False
         # 尝试清理临时文件
         if os.path.exists(temp_file):
             try:
@@ -912,17 +959,35 @@ def reorder_channels_by_category(grouped_channels):
 
 def main():
     """主函数，执行频道收集和整理流程"""
+    # 初始化调试文件
+    debug_file = "debug_output.txt"
+    with open(debug_file, 'w', encoding='utf-8') as df:
+        df.write("===== 调试日志开始 =====\n")
+        df.write(f"执行时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+    
+    with open(debug_file, 'a', encoding='utf-8') as df:
+        df.write("===== 开始执行电视直播线路收集整理任务 =====\n")
+    
     logger.info("===== 开始执行电视直播线路收集整理任务 =====")
     overall_start_time = time.time()
     
     # 阶段1：收集频道
     collect_start_time = time.time()
+    with open(debug_file, 'a', encoding='utf-8') as df:
+        df.write("阶段1: 开始收集所有频道...\n")
+    
     logger.info("阶段1: 开始收集所有频道...")
     channels = collect_all_channels()
     collect_time = time.time() - collect_start_time
+    
+    with open(debug_file, 'a', encoding='utf-8') as df:
+        df.write(f"阶段1完成: 收集到 {len(channels)} 个频道，耗时: {collect_time:.2f}秒\n")
+    
     logger.info(f"阶段1完成: 收集到 {len(channels)} 个频道，耗时: {collect_time:.2f}秒")
     
     if not channels:
+        with open(debug_file, 'a', encoding='utf-8') as df:
+            df.write("错误: 未能收集到任何频道，任务失败\n")
         logger.error("未能收集到任何频道，任务失败")
         return False
     
@@ -954,6 +1019,15 @@ def main():
     reorder_percent = (reorder_time / overall_time * 100) if overall_time > 0 else 0
     output_percent = (output_time / overall_time * 100) if overall_time > 0 else 0
     
+    with open(debug_file, 'a', encoding='utf-8') as df:
+        df.write(f"===== 任务{'成功' if success else '失败'}完成 =====\n")
+        df.write(f"总耗时: {overall_time:.2f}秒\n")
+        df.write(f"时间分布:\n")
+        df.write(f"- 收集阶段: {collect_time:.2f}秒 ({collect_percent:.1f}%)\n")
+        df.write(f"- 过滤阶段: {filter_time:.2f}秒 ({filter_percent:.1f}%)\n")
+        df.write(f"- 排序阶段: {reorder_time:.2f}秒 ({reorder_percent:.1f}%)\n")
+        df.write(f"- 输出阶段: {output_time:.2f}秒 ({output_percent:.1f}%)\n")
+    
     logger.info(f"===== 任务{'成功' if success else '失败'}完成 =====")
     logger.info(f"总耗时: {overall_time:.2f}秒")
     logger.info(f"时间分布:")
@@ -966,25 +1040,48 @@ def main():
 
 def execute_main_with_error_handling():
     """执行主函数并处理异常"""
+    debug_file = "debug_output.txt"
     try:
         return main()
     except MemoryError:
+        with open(debug_file, 'a', encoding='utf-8') as df:
+            df.write("严重错误: 内存不足错误，请减少并发数或优化处理逻辑\n")
         logger.critical("内存不足错误，请减少并发数或优化处理逻辑")
         return False
     except KeyboardInterrupt:
+        with open(debug_file, 'a', encoding='utf-8') as df:
+            df.write("用户中断执行\n")
         logger.info("用户中断执行")
         return False
     except Exception as e:
+        with open(debug_file, 'a', encoding='utf-8') as df:
+            df.write(f"严重错误: 执行过程中发生未预期的错误: {str(e)}\n")
+            import traceback
+            df.write(f"错误详情: {traceback.format_exc()}\n")
         logger.critical(f"执行过程中发生未预期的错误: {str(e)}")
         import traceback
         logger.error(traceback.format_exc())
         return False
 
 if __name__ == "__main__":
+    # 初始化调试文件
+    debug_file = "debug_output.txt"
+    with open(debug_file, 'w', encoding='utf-8') as df:
+        df.write("===== 脚本启动 =====\n")
+        df.write(f"启动时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+    
     logger.info("===== 电视直播线路自动收集整理脚本（日常更新版）启动 =====")
     logger.info(f"执行时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
     success = execute_main_with_error_handling()
+    
+    with open(debug_file, 'a', encoding='utf-8') as df:
+        if success:
+            df.write("脚本执行成功\n")
+        else:
+            df.write("脚本执行失败\n")
+        df.write(f"结束时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        df.write("===== 调试日志结束 =====\n")
     
     if success:
         logger.info("脚本执行成功")
