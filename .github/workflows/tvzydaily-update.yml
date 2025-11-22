@@ -22,20 +22,6 @@ jobs:
           echo "工作目录: $(pwd)"
           ls -la
       
-      - name: 初始化Git配置（最小化设置）
-        run: |
-          echo "🔄 初始化基本Git配置..."
-          
-          # 仅配置基本用户信息，不执行任何推送相关操作
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "action@github.com"
-          
-          # 显示基本仓库信息用于调试
-          echo "📝 仓库信息："
-          git remote -v
-          echo "当前分支："
-          git branch
-      
       - name: 设置Python环境
         uses: actions/setup-python@v4
         with:
@@ -61,440 +47,115 @@ jobs:
             exit 1
           fi
       
-      - name: 清理工作目录（确保脚本运行环境干净）
+      - name: 确保API更新脚本存在
         run: |
-          echo "🧹 清理工作目录，确保脚本运行环境干净..."
-          # 删除可能存在的旧输出文件，避免干扰
-          rm -f tzydauto.txt debug_output.txt tvzy.log
-          echo "✅ 工作目录清理完成"
+          if [ ! -f "github_api_updater.py" ]; then
+            echo "错误: github_api_updater.py 脚本不存在"
+            exit 1
+          else
+            echo "✅ API更新脚本存在"
+            chmod +x github_api_updater.py
+          fi
       
-      - name: 使用GitHub API进行文件更新（完全基于API的原子操作）
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO_OWNER: ${{ github.repository_owner }}
-          REPO_NAME: ${{ github.event.repository.name }}
-          BRANCH: main
-          GITHUB_API_VERSION: "2022-11-28"
-          USER_AGENT: "GitHub-Actions-Tvzy-Update-Script"
+      - name: 系统健康检查
         run: |
-          # 安全环境变量验证
-          if [ -z "$GITHUB_TOKEN" ]; then
-            echo "❌ 错误: GITHUB_TOKEN 环境变量未设置"
-            exit 1
-          fi
-          
-          if [ -z "$REPO_OWNER" ] || [ -z "$REPO_NAME" ]; then
-            echo "❌ 错误: 仓库信息环境变量未正确设置"
-            exit 1
-          fi
-          
-          # 定义函数：获取文件的当前SHA（带重试机制）
-          get_current_sha() {
-            local file_path=$1
-            local max_retries=3
-            local retry_count=0
-            local sha
-            local base_url="https://api.github.com"
-            local endpoint="/repos/$REPO_OWNER/$REPO_NAME/contents/$file_path?ref=$BRANCH"
-            
-            echo "📍 尝试获取文件 $file_path 的当前SHA..."
-            
-            while [ $retry_count -lt $max_retries ]; do
-              retry_count=$((retry_count + 1))
-              echo "🔄 SHA获取尝试 $retry_count/$max_retries..."
-              
-              # 使用更健壮的curl参数和全面的错误处理
-              local response=$(curl -s -w "\n%{http_code}" \
-                --max-time 15 \
-                --connect-timeout 5 \
-                --retry 1 \
-                -H "Authorization: token $GITHUB_TOKEN" \
-                -H "Accept: application/vnd.github+json" \
-                -H "X-GitHub-Api-Version: $GITHUB_API_VERSION" \
-                -H "User-Agent: $USER_AGENT" \
-                "$base_url$endpoint")
-              
-              # 提取HTTP状态码和响应体
-              local http_code=$(echo "$response" | tail -n 1)
-              local response_body=$(echo "$response" | head -n -1)
-              
-              echo "📊 SHA请求HTTP状态码: $http_code"
-              
-              # 处理不同的HTTP状态码
-              if [ "$http_code" -eq 200 ]; then
-                # 文件存在，提取SHA
-                if echo "$response_body" | grep -q '"sha":"'; then
-                  sha=$(echo "$response_body" | grep -o '"sha":"[^"]*"' | cut -d':' -f2 | tr -d '"')
-                  echo "✅ 成功获取文件SHA: $sha"
-                  echo "$sha"
-                  return 0
-                else
-                  echo "⚠️  响应中未找到有效SHA字段"
-                  echo "响应预览: $(echo "$response_body" | head -n 5)"
-                fi
-              elif [ "$http_code" -eq 404 ]; then
-                echo "ℹ️  文件 $file_path 不存在，将创建新文件"
-                echo ""
-                return 0  # 404是可接受的，返回空SHA以创建新文件
-              elif [ "$http_code" -eq 401 ]; then
-                echo "❌ 授权失败，请检查GITHUB_TOKEN权限"
-                echo "响应预览: $(echo "$response_body" | head -n 3)"
-                return 1
-              elif [ "$http_code" -eq 403 ]; then
-                echo "❌ API速率限制或权限不足（403）"
-                local reset_time=$(echo "$response_body" | grep -o '"reset":"[^"]*"' | cut -d':' -f2- | tr -d '"')
-                if [ -n "$reset_time" ]; then
-                  echo "📅 速率限制重置时间: $reset_time"
-                fi
-                # 立即重试
-              elif [ "$http_code" -ge 500 ] && [ "$http_code" -lt 600 ]; then
-                echo "⚠️  GitHub服务器错误 ($http_code)，将重试..."
-              else
-                echo "❌ SHA获取失败，HTTP状态码: $http_code"
-                echo "响应预览: $(echo "$response_body" | head -n 3)"
-              fi
-              
-              # 如果还有重试次数，等待后重试
-              if [ $retry_count -lt $max_retries ]; then
-                local wait_time=$((retry_count * 3))  # 线性退避
-                echo "⏱️  等待 ${wait_time}秒后重试..."
-                sleep $wait_time
-              fi
-            done
-            
-            echo "⚠️  所有SHA获取尝试均失败，将尝试作为新文件上传"
-            echo ""
-            return 0
-          }
-          
-          # 定义函数：使用指数退避策略上传文件
-          upload_with_retry() {
-            local file_path=$1
-            local max_retries=5
-            local retry_count=0
-            local base_delay=2
-            local base_url="https://api.github.com"
-            local endpoint="/repos/$REPO_OWNER/$REPO_NAME/contents/$file_path"
-            local timestamp=$(date +'%Y-%m-%d %H:%M:%S')
-            
-            echo "📤 开始上传文件 $file_path..."
-            
-            # 验证文件是否存在且非空
-            if [ ! -f "$file_path" ]; then
-              echo "❌ 错误: 文件 $file_path 不存在"
-              return 1
-            fi
-            
-            if [ ! -s "$file_path" ]; then
-              echo "❌ 错误: 文件 $file_path 为空"
-              return 1
-            fi
-            
-            # 检查文件权限
-            if [ ! -r "$file_path" ]; then
-              echo "❌ 错误: 文件 $file_path 无法读取"
-              return 1
-            fi
-            
-            # 文件大小检查
-            local file_size=$(wc -c < "$file_path")
-            echo "📊 文件大小: $file_size 字节"
-            
-            # 生成base64编码内容，使用更安全的方式处理
-            local content_base64
-            echo "🔒 编码文件内容为base64..."
-            content_base64=$(base64 -w 0 "$file_path" 2>/dev/null)
-            
-            # 验证base64内容
-            if [ -z "$content_base64" ]; then
-              echo "❌ 错误: 文件 $file_path 无法编码为base64"
-              return 1
-            fi
-            
-            # 验证base64编码的基本有效性
-            if ! echo "$content_base64" | grep -q '^[A-Za-z0-9+/=]\+$'; then
-              echo "⚠️  警告: base64编码可能包含特殊字符，进行额外处理..."
-              # 尝试再次编码，可能包含特殊字符的情况
-              content_base64=$(cat "$file_path" | base64 -w 0)
-            fi
-            
-            # 记录base64内容长度（不打印实际内容）
-            local base64_length=${#content_base64}
-            echo "📏 base64内容长度: $base64_length 字符"
-            
-            # 重试循环
-            while [ $retry_count -lt $max_retries ]; do
-              retry_count=$((retry_count + 1))
-              echo "🔄 上传尝试 $retry_count/$max_retries..."
-              
-              # 每次重试都获取最新的SHA，以处理可能的并发更新
-              local current_sha=$(get_current_sha "$file_path")
-              
-              # 构建提交消息
-              local commit_message="自动更新: $file_path ($timestamp)"
-              
-              # 构建JSON数据，使用更安全的格式
-              local json_data
-              if [ -n "$current_sha" ]; then
-                echo "📝 更新现有文件，使用SHA: $current_sha"
-                # 使用cat和here-document构建JSON，避免引号嵌套问题
-                json_data=$(cat <<'EOF'
-{"message":"'"$commit_message"'","content":"'"$content_base64"'","sha":"'"$current_sha"'","branch":"'"$BRANCH"'"}
-EOF
-)
-              else
-                echo "📝 创建新文件"
-                # 使用cat和here-document构建JSON，避免引号嵌套问题
-                json_data=$(cat <<'EOF'
-{"message":"'"$commit_message"'","content":"'"$content_base64"'","branch":"'"$BRANCH"'"}
-EOF
-)
-              fi
-              
-              # 验证JSON格式的基本有效性
-              if ! echo "$json_data" | grep -q '^{"message":"'; then
-                echo "❌ JSON数据格式错误，重新生成..."
-                continue
-              fi
-              
-              # 使用curl调用GitHub API，增强网络参数
-              echo "🔌 发送API请求到GitHub..."
-              local response=$(curl -s -w "\n%{http_code}" \
-                -X PUT \
-                --max-time 60 \
-                --retry 2 \
-                --retry-delay 3 \
-                --connect-timeout 10 \
-                --keepalive-time 60 \
-                -H "Authorization: token $GITHUB_TOKEN" \
-                -H "Accept: application/vnd.github+json" \
-                -H "Content-Type: application/json" \
-                -H "X-GitHub-Api-Version: $GITHUB_API_VERSION" \
-                -H "User-Agent: $USER_AGENT" \
-                "$base_url$endpoint" \
-                --data "$json_data")
-              
-              # 解析HTTP状态码和响应体
-              local http_code=$(echo "$response" | tail -n 1)
-              local response_body=$(echo "$response" | head -n -1)
-              
-              echo "📊 API响应状态码: $http_code"
-              
-              # 检查成功条件
-              if [ "$http_code" -eq 200 ] || [ "$http_code" -eq 201 ]; then
-                # 验证响应内容是否包含预期字段
-                if echo "$response_body" | grep -q -E '"sha":"|"commit":|"content":'; then
-                  echo "✅ ✅ ✅ 成功使用GitHub API更新文件！"
-                  
-                  # 获取提交URL（如果有）
-                  local commit_url=$(echo "$response_body" | grep -o '"html_url":"[^"]*"' | cut -d':' -f2- | tr -d '"')
-                  if [ -n "$commit_url" ]; then
-                    echo "🔗 提交URL: $commit_url"
-                  fi
-                  
-                  return 0
-                else
-                  echo "⚠️  响应中未找到预期字段，但HTTP状态码为成功"
-                  echo "响应预览: $(echo "$response_body" | head -n 3)"
-                  return 0  # 状态码成功时认为上传成功
-                fi
-              fi
-              
-              # 详细错误分析
-              local error_message=$(echo "$response_body" | grep -o '"message":"[^"]*"' | cut -d':' -f2 | tr -d '"' || echo "未知错误")
-              echo "❌ 上传失败，错误信息: $error_message"
-              
-              # 处理特定错误类型
-              if [ "$http_code" -eq 409 ] || echo "$error_message" | grep -q -E 'sha|conflict'; then
-                echo "🔄 检测到版本冲突或SHA无效，将重新获取最新SHA..."
-                current_sha=""  # 强制下次获取新SHA
-                continue  # 立即重试，不等待
-              elif [ "$http_code" -eq 401 ]; then
-                echo "❌ 授权失败，令牌可能无效或权限不足"
-                echo "响应预览: $(echo "$response_body" | head -n 3)"
-                return 1  # 不再重试授权错误
-              elif [ "$http_code" -eq 403 ]; then
-                echo "⚠️  API速率限制或权限不足（403）"
-                local reset_time=$(echo "$response_body" | grep -o '"reset":"[^"]*"' | cut -d':' -f2- | tr -d '"')
-                if [ -n "$reset_time" ]; then
-                  echo "📅 速率限制重置时间: $reset_time"
-                fi
-                # 增加等待时间
-              elif [ "$http_code" -ge 500 ] && [ "$http_code" -lt 600 ]; then
-                echo "⚠️  GitHub服务器错误 ($http_code)，将重试..."
-                # 服务器错误需要更激进的重试
-              elif [ "$http_code" -eq 404 ]; then
-                echo "⚠️  资源不存在（404），将尝试作为新文件创建"
-                current_sha=""  # 强制创建新文件
-                continue  # 立即重试
-              else
-                echo "❌ 未知错误，HTTP状态码: $http_code"
-              fi
-              
-              # 指数退避策略
-              if [ $retry_count -lt $max_retries ]; then
-                local delay=$((base_delay * (2 ** (retry_count - 1))))
-                # 增加随机抖动（±20%）以避免重试风暴
-                local jitter=$((RANDOM % (delay / 5) + 1))
-                if [ $((RANDOM % 2)) -eq 0 ]; then
-                  delay=$((delay + jitter))
-                else
-                  delay=$((delay - jitter))
-                fi
-                
-                # 确保延迟至少为1秒
-                if [ $delay -lt 1 ]; then delay=1; fi
-                
-                echo "⏱️  $delay秒后重试..."
-                sleep $delay
-              fi
-            done
-            
-            echo "❌ 所有上传尝试均失败"
-            echo "📋 最后响应预览: $(echo "$response_body" | head -n 5)"
-            return 1
-          }
-          
-          # 初始化网络错误计数器
-          network_error_count=0
-          
-          # 系统健康检查
           echo "🏥 系统健康检查..."
           echo "📊 当前时间: $(date)"
           echo "📡 网络连接测试..."
           ping -c 2 api.github.com >/dev/null 2>&1 && echo "✅ 网络连接正常" || echo "⚠️  网络连接测试失败，但将继续尝试"
-          
-          # 确保环境变量配置正确
-          echo "🔍 🛡️  验证GitHub API环境..."
-          echo "  - 仓库所有者: ${REPO_OWNER:-'未设置'}"
-          echo "  - 仓库名称: ${REPO_NAME:-'未设置'}"
-          echo "  - 分支: ${BRANCH:-'未设置'}"
-          echo "  - API版本: ${GITHUB_API_VERSION:-'未设置'}"
-          echo "  - 用户代理: ${USER_AGENT:-'未设置'}"
-          
-          # 环境变量完整性检查
-          if [ -z "$REPO_OWNER" ] || [ -z "$REPO_NAME" ] || [ -z "$BRANCH" ]; then
-            echo "⚠️  🚨 警告: 关键环境变量未完全设置，将尝试使用默认值"
-            [ -z "$BRANCH" ] && BRANCH="main" && echo "  - 已设置默认分支: $BRANCH"
-          fi
-          
-          # 工作目录状态检查
-          echo "📁 🧹 工作目录检查..."
-          ls -la
-          
-          # 使用API更新主文件（原子操作）
-          echo "🚀 🎯 开始使用GitHub API原子更新主文件..."
+      
+      - name: 使用GitHub API更新文件（无git push版本）
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name || 'zhby' }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          echo "🚀 开始使用GitHub API更新文件..."
           echo "📋 操作详情:"
           echo "  - 目标文件: tzydauto.txt"
-          echo "  - 更新模式: 基于SHA的原子操作"
+          echo "  - 更新模式: 基于SHA的API原子操作"
           echo "  - 重试策略: 智能指数退避"
+          echo "  - 仓库信息: ${REPO_OWNER}/${REPO_NAME}"
+          echo "  - 目标分支: ${BRANCH}"
           
-          # 上传主文件
-          upload_with_retry "tzydauto.txt"
-          main_update_status=$?
+          # 设置环境变量，避免在日志中显示token
+          export PYTHONUNBUFFERED=1
           
-          # 上传辅助日志文件
-          debug_logs_status=0
-          if [ -f "debug_output.txt" ]; then
-            echo "📋 尝试上传调试日志..."
-            upload_with_retry "debug_output.txt"
-            debug_logs_status=$?
+          # 运行API更新脚本
+          python github_api_updater.py \
+            --token "${GITHUB_TOKEN}" \
+            --owner "${REPO_OWNER}" \
+            --repo "${REPO_NAME}" \
+            --file "tzydauto.txt" \
+            --branch "${BRANCH}" \
+            --message "自动更新电视直播线路 - $(date +'%Y-%m-%d %H:%M:%S')"
+          
+          # 保存脚本执行状态
+          API_UPDATE_STATUS=$?
+          echo "✅ API更新脚本执行完成，状态码: ${API_UPDATE_STATUS}"
+          
+          # 检查更新状态
+          if [ ${API_UPDATE_STATUS} -eq 0 ]; then
+            echo "🎉 🎉 🎉 文件更新成功！"
+            echo "✅ 基于GitHub API的原子更新方案执行成功！"
+            echo "🎯 优势: 完全避免Git Push冲突，基于SHA的乐观并发控制确保数据一致性"
+          else
+            echo "❌ 文件更新失败！"
+            echo "🔍 请检查日志获取详细错误信息"
+            exit ${API_UPDATE_STATUS}
           fi
-          
-          if [ -f "tvzy.log" ]; then
-            echo "📊 尝试上传脚本日志..."
-            upload_with_retry "tvzy.log"
-            # 日志文件的状态不影响主流程
-          fi
-          
-          # 创建一个简单的成功标记文件
+      
+      - name: 创建更新状态标记文件
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name || 'zhby' }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
           echo "🔖 创建更新状态标记文件..."
           echo "Last successful update: $(date)" > update_status.txt
-          upload_with_retry "update_status.txt"
+          echo "Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> update_status.txt
+          echo "Commit SHA: ${{ github.sha }}" >> update_status.txt
           
-          # 确定最终状态（主文件成功才视为整体成功）
-          echo "📊 📋 操作结果汇总..."
-          
-          if [ $main_update_status -eq 0 ]; then
-            echo "🎉 🎉 🎉 🎉 主文件更新成功！工作流执行完成！"
-            
-            # 生成详细执行报告
-            echo "📋 📊 API更新操作完整报告:"
-            echo "✅ 🎯 主文件: tzydauto.txt (成功)"
-            
-            # 日志文件状态详细报告
-            if [ -f "debug_output.txt" ]; then 
-              if [ $debug_logs_status -eq 0 ]; then
-                echo "✅ 📝 日志文件: debug_output.txt (成功)"
-              elif [ $debug_logs_status -eq 1 ]; then
-                echo "⚠️ 📝 日志文件: debug_output.txt (已尝试但失败)"
-              elif [ $debug_logs_status -eq 2 ]; then
-                echo "❌ 📝 日志文件: debug_output.txt (致命错误)"
-              else
-                echo "ℹ️ 📝 日志文件: debug_output.txt (状态未知)"
-              fi
-            else
-              echo "ℹ️ 📝 日志文件: debug_output.txt (不存在)"
-            fi
-            
-            if [ -f "tvzy.log" ]; then 
-              echo "ℹ️ 📊 日志文件: tvzy.log (已尝试上传)"
-            else
-              echo "ℹ️ 📊 日志文件: tvzy.log (不存在)"
-            fi
-            
-            echo "🔖 ⏰ 状态文件: update_status.txt (已创建)"
-            echo "⏰ 📅 完成时间: $(date +'%Y-%m-%d %H:%M:%S')"
-            echo "🏆 ✅ 基于GitHub API的原子更新方案执行成功！"
-            echo "🎯 优势: 完全避免Git Push冲突，基于SHA的乐观并发控制确保数据一致性"
-            echo "✅ 工作流执行成功！"
-            exit 0
-          else
-            echo "❌ ❌ ❌ ❌ 错误: 主文件更新失败"
-            echo "📋 🛠️  详细错误诊断:"
-            
-            # 根据错误码提供更精确的诊断
-            case "$main_update_status" in
-              1)
-                echo "⚠️  常规失败: 可能是网络问题或API限制"
-                ;;
-              2)
-                echo "🚨 致命错误: 文件预处理失败，检查文件格式和权限"
-                ;;
-              *)
-                echo "❓ 未知错误: 状态码 $main_update_status"
-                ;;
-            esac
-            
-            echo "🔍 故障排除步骤:"
-            echo "1. 🔐 检查GitHub Token权限和有效性"
-            echo "2. 📁 验证tzydauto.txt文件是否存在、可读且格式正确"
-            echo "3. 📏 确认文件大小不超过GitHub 100MB限制"
-            echo "4. 🌐 检查GitHub API服务状态是否正常"
-            echo "5. 🚫 验证仓库分支保护规则配置"
-            echo "6. ⏱️  考虑API请求频率限制问题"
-            echo "7. 📊 查看完整工作流日志获取详细错误信息"
-            
-            exit 1
-          fi
+          # 使用API更新状态文件
+          python github_api_updater.py \
+            --token "${GITHUB_TOKEN}" \
+            --owner "${REPO_OWNER}" \
+            --repo "${REPO_NAME}" \
+            --file "update_status.txt" \
+            --branch "${BRANCH}" \
+            --message "更新状态标记文件 - $(date +'%Y-%m-%d %H:%M:%S')"
       
-      - name: 发送成功通知
+      - name: 上传调试日志
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: github-api-logs
+          path: |
+            github_api_update.log
+            tzydauto.txt
+          retention-days: 7
+      
+      - name: 成功通知
         if: success()
         run: |
-          echo "🎉 🎉 🎉 电视直播线路自动更新成功！"
-          echo "📁 已更新文件: tzydauto.txt"
+          echo "🎉 🎉 🎉 工作流执行成功！🎉 🎉 🎉"
+          echo "✅ 文件 tzydauto.txt 已成功更新到GitHub仓库"
           echo "🔄 使用GitHub API原子更新方案，完全避免Git Push冲突"
-          echo "✅ 基于SHA的乐观并发控制确保数据一致性"
-          echo "📊 运行时间: $(date)"
-          echo "🏆 工作流执行成功完成！"
+          echo "📊 基于SHA的乐观并发控制确保数据一致性"
+          echo "🎯 工作流运行URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
       
-      - name: 发送失败通知
+      - name: 失败通知
         if: failure()
         run: |
-          echo "❌ ❌ ❌ 电视直播线路自动更新失败！"
-          echo "📋 错误诊断信息:"
-          echo "- 检查GitHub API权限设置"
-          echo "- 验证文件格式和大小"
-          echo "- 查看详细工作流日志获取完整错误信息"
-          echo "- 考虑检查仓库分支保护规则"
+          echo "❌ ❌ ❌ 工作流执行失败！❌ ❌ ❌"
+          echo "🔍 故障排除步骤:"
+          echo "1. 检查GitHub API权限和token有效性"
+          echo "2. 验证仓库存在且分支正确"
+          echo "3. 检查日志中的具体错误信息"
+          echo "4. 尝试手动运行github_api_updater.py脚本进行调试"
+          echo "5. 确认网络连接和API速率限制"
+          echo "📊 工作流运行URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           exit 1
