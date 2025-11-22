@@ -18,27 +18,34 @@ jobs:
     permissions:
       contents: write  # 确保有写权限
     steps:
-      # 第一步：检出代码（使用最小检出，避免历史冲突）
+      # 第一步：检出代码（获取完整历史以避免冲突）
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           ref: main
-          fetch-depth: 1  # 只获取最新提交，减少冲突风险
-          persist-credentials: false  # 禁用git凭据，因为我们使用GitHub API
+          fetch-depth: 0  # 获取完整历史，避免冲突
+          persist-credentials: true  # 启用git凭据
       
-      # 第二步：设置Python环境
+      # 第二步：确保本地代码与远程同步
+      - name: Sync with remote
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git pull origin main
+      
+      # 第三步：设置Python环境
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
       
-      # 第三步：安装依赖
+      # 第四步：安装依赖
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests schedule
       
-      # 第四步：生成文件并直接使用GitHub API上传（完全避免git操作）
+      # 第五步：生成文件并使用GitHub API上传
       - name: Generate and upload file using GitHub API
         run: |
           echo "🔄 开始生成直播源文件..."
