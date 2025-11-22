@@ -38,31 +38,32 @@ jobs:
       - name: Commit and push changes
         run: |
           # 设置git配置
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
           
           # 确保我们在正确的分支上
           git checkout main
           
-          # 完全重置本地仓库，避免任何合并冲突
-          git fetch --all
-          git reset --hard origin/main
+          # 获取最新的远程更改
+          git fetch origin main
           
           # 运行脚本生成最新文件
           python tvzydaily.py
           
-          # 添加并提交更改
-          git add tzydayauto.txt
+          # 添加正确的文件名
+          git add tzydauto.txt
           
           # 检查是否有更改需要提交
           if ! git diff --quiet && ! git diff --staged --quiet; then
-            git commit -m "Auto-update IPTV files"
+            # 创建提交
+            git commit -m "Auto-update IPTV files - $(date +'%Y-%m-%d %H:%M:%S')"
             
-            # 再次拉取以确保在提交后没有新的更改
-            git pull --rebase origin main || true
-            
-            # 使用标准的GitHub Actions推送方式
-            git push origin HEAD:main
+            # 尝试使用--force-with-lease安全地推送，避免覆盖他人的更改
+            # 但首先尝试正常推送
+            git push origin main || {
+              echo "推送失败，尝试强制推送..."
+              git push --force-with-lease origin main
+            }
           else
             echo "No changes to commit"
           fi
