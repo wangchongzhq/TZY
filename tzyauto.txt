@@ -1,5 +1,5 @@
 # 自动生成的直播源文件
-# 更新时间: 2025-11-22 08:54:47
+# 更新时间: 2025-11-22 09:11:28
 # 分组格式: 频道名称,频道URL,#genre#
 
 
@@ -125,24 +125,6 @@ CCTV1,http://175.8.180.171:7878/udp/239.76.246.230:1234
 CCTV1,http://58.46.31.42:8188/udp/239.76.253.230:9000
 CCTV1,http://58.46.31.42:8188/udp/239.76.254.200:9000
 CCTV1,http://58.46.31.42:8188/udp/239.76.246.230:1234
-CCTV8,http://yemingjkl.x3322.net:35455/nptv/cctv8k.m3u8
-CCTV8,http://xiaoya.crccxw.top:35455/nptv/cctv8k.m3u8
-CCTV8,http://jackgao.top:35455/nptv/cctv8k.m3u8
-CCTV1,https://live.tvfix.org/live/cctv1hd/index.m3u8
-CCTV1,http://xtvantsc.xyz/Smart.php?id=cctv1
-CCTV3,http://xtvantsc.xyz/Smart.php?id=cctv3
-CCTV5,http://xtvantsc.xyz/Smart.php?id=cctv5plus
-CCTV8,http://xtvantsc.xyz/Smart.php?id=cctv8hd
-CCTV9,http://xtvantsc.xyz/Smart.php?id=cctv9hd
-CCTV1,http://xtvantsc.xyz/Smart.php?id=cctv10hd
-CCTV5,https://smart.dxjc.pp.ua/smart.php?id=cctv5plus&token=tmxk
-CCTV1,http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221225804/index.m3u8
-CCTV1,https://pixman.mytvsuper.com.mp/Smart.php?id=cctv1
-CCTV3,https://pixman.mytvsuper.com.mp/Smart.php?id=cctv3
-CCTV5,https://pixman.mytvsuper.com.mp/Smart.php?id=cctv5plus
-CCTV8,https://pixman.mytvsuper.com.mp/Smart.php?id=cctv8hd
-CCTV9,https://pixman.mytvsuper.com.mp/Smart.php?id=cctv9hd
-CCTV1,https://pixman.mytvsuper.com.mp/Smart.php?id=cctv10hd
 
 # 卫视频道,#genre#
 湖南卫视,http://175.15.58.252:4022/udp/239.76.252.115:9000
@@ -151,42 +133,6 @@ CCTV1,https://pixman.mytvsuper.com.mp/Smart.php?id=cctv10hd
 湖南卫视,http://175.8.180.171:7878/udp/239.76.245.115:1234
 湖南卫视,http://58.46.31.42:8188/udp/239.76.252.115:9000
 湖南卫视,http://58.46.31.42:8188/udp/239.76.245.115:1234
-东方卫视,http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221225797/index.m3u8
-浙江卫视,http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221225798/index.m3u8
-湖南卫视,http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221225799/index.m3u8
-江苏卫视,http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221225800/index.m3u8
-深圳卫视,http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221225801/index.m3u8
-广东卫视,http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221225803/index.m3u8
-黑龙江卫视,http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221225802/index.m3u8
-新疆卫视,http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221227136/index.m3u8
-西藏卫视,http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221227147/index.m3u8
-兵团卫视,http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221227155/index.m3u8
-北京卫视,http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221225796/index.m3u8
-
-# 港澳台频道,#genre#
-鳳凰衛視香港台HD,http://php.jdshipin.com:8880/smt.php?id=hkphoenix_twn
-鳳凰衛視香港台HD,http://mag.greatott.me:80/play/live.php?mac=00:1A:79:11:ED:45&stream=153402&extension=ts&play_token=Va2HtR9jUD
-鳳凰衛視香港台HD,http://tv.greatstar.me:80/play/live.php?mac=00:1A:79:E5:D4:63&stream=153402&extension=ts&play_token=vBulb9w1pg
-鳳凰衛視香港台HD,http://tv.trexiptv.com:80/play/live.php?mac=00:1A:79:32:C6:2F&stream=153402&extension=ts&play_token=v43osRykOm
-鳳凰衛視香港台HD,https://k44991.kylintv.tv/live/pxhkus_iphone.m3u8
-TVBS HD,https://smart.dxjc.pp.ua/smart.php?id=tvbs&token=tmxk
-TVBS HD,http://tw-ty-line-11-1-5.sudatech.store:20319/4gtv-4gtv073/index.m3u8?proxy=true
-TVBS HD,http://tw-ty-line-11-1-5.sudatech.store:20319/li-4gtv-4gtv073/index.m3u8?proxy=true
-TVBS HD,https://4gtv.dxjc.pp.ua/4gtv-4gtv073/index.m3u8
-TVBS HD,https://4gtv.dxjc.pp.ua/li-4gtv-4gtv073/index.m3u8
-TVBS HD,http://125.227.210.55:8188/VideoInput/play.ts
-TVBS HD,http://play.hdlive.tv:8188/VideoInput/play.ts
-TVBS歡樂HD,http://122.117.71.103:8654/http/61.222.53.250:8081/hls/65/807/ch17.m3u8
-TVBS新聞HD,http://122.117.71.103:8662/http/61.222.53.250:8081/hls/75/817/ch59.m3u8
-TVBS HD,http://122.117.71.103:8663/http/61.222.53.250:8081/hls/75/817/ch58.m3u8
-TVBS歡樂HD,http://211.23.114.106:8553/http/61.219.99.20:8081/hls/65/807/ch17.m3u8
-TVBS新聞HD,http://211.23.114.106:8510/http/61.219.99.20:8081/hls/75/817/ch59.m3u8
-TVBS HD,http://211.23.114.106:9344/http/61.219.99.20:8081/hls/75/817/ch58.m3u8
-TVBS歡樂HD,http://220.134.196.147:8522/http/61.219.99.20:8081/hls/65/807/ch17.m3u8
-TVBS新聞HD,http://220.134.196.147:8542/http/61.219.99.20:8081/hls/75/817/ch59.m3u8
-TVBS HD,http://220.134.196.147:8570/http/61.219.99.20:8081/hls/75/817/ch58.m3u8
-TVBS HD,http://198.16.100.186:8278/tvbs/playlist.m3u8?tid=MDED5111960351119603&ct=19226&tsum=49931e2d3885c468d56ffae2c2db9e6e
-TVBS HD,http://198.16.100.186:8278/tvbs/playlist.m3u8?tid=ME2E6545230665452306&ct=19234&tsum=ff0df01c2935843c8c4543428728ce28
 
 # 影视剧频道,#genre#
 湖南电影FHD,http://175.15.58.252:4022/udp/239.76.252.119:9000
@@ -198,18 +144,6 @@ TVBS HD,http://198.16.100.186:8278/tvbs/playlist.m3u8?tid=ME2E6545230665452306&c
 CHC影迷电影,http://118.78.196.56:55555/rtp/226.0.2.93:8004
 斗鱼电影HD1,http://zzy789.xyz/douyu1.php?id=4246519
 斗鱼电影HD4,http://zzy789.xyz/douyu1.php?id=85894
-Movies Now HD,http://xtvantsc.xyz/Smart.php?id=moviesnow_raj
-Star Movies HD,http://xtvantsc.xyz/Smart.php?id=starmovies_raj
-Celestial Movies HD,http://xtvantsc.xyz/Smart.php?id=Celestial
-Movies Now HD,https://smart.dxjc.pp.ua/smart.php?id=moviesnow_raj&token=tmxk
-Star Movies HD,https://smart.dxjc.pp.ua/smart.php?id=starmovies_raj&token=tmxk
-Movies Now HD,https://pixman.mytvsuper.com.mp/Smart.php?id=moviesnow_raj
-Star Movies HD,https://pixman.mytvsuper.com.mp/Smart.php?id=starmovies_raj
-Celestial Movies HD,https://pixman.mytvsuper.com.mp/Smart.php?id=Celestial
-Horror Movies HD,http://fs1.persik.by/489112/index.m3u8
-魅力足球,http://zteres.sn.chinamobile.com:6060/000000001000/5000000011000031207/1.m3u8?channel-id=bestzb&Contentid=5000000011000031207&livemode=1&stbId=3
-魅力足球,http://zteres.sn.chinamobile.com:6060/000000001000/2000000002000000068/index.m3u8?channel-id=hnbblive&Contentid=2000000002000000068&livemode=1&stbId=3
-魅力足球,http://zteres.sn.chinamobile.com:6060/000000001000/5000000011000031207/index.m3u8?channel-id=bestzb&Contentid=5000000011000031207&livemode=1&stbId=3
 
 # 音乐频道,#genre#
 金鹰卡通,http://175.15.58.252:4022/udp/239.76.252.120:9000
@@ -218,10 +152,6 @@ Horror Movies HD,http://fs1.persik.by/489112/index.m3u8
 金鹰卡通,http://175.8.180.171:7878/udp/239.76.245.120:1234
 金鹰卡通,http://58.46.31.42:8188/udp/239.76.252.120:9000
 金鹰卡通,http://58.46.31.42:8188/udp/239.76.245.120:1234
-MTV Live HD 音樂頻道,https://mao.ffmking888.dpdns.org/?id=TVRWIExpdmUgSEQg6Zaz5qiC6aC76YGT&auth=30234cedf871581989d3c91a3daec1e9f50e024aafcfa2247e7d44d91bb8d02fbc3f571b2d67f9d82642cc1d0f133d89
-EU Music HD,http://cdnua03.hls.tv/524/hls/38723e07ee57679b516a78958abde705/570/stream.m3u8
-UA MUSIC HD,http://95.67.12.82:9087
-EU Music HD,https://cdnua03.hls.tv/69/hls/b24a169eeac8f76b6ff3d1d4854242a7/570/stream.m3u8
 
 # 体育频道,#genre#
 欢笑剧场,http://106.116.243.172:9999/rtp/239.254.201.164:6355
@@ -245,7 +175,6 @@ EU Music HD,https://cdnua03.hls.tv/69/hls/b24a169eeac8f76b6ff3d1d4854242a7/570/s
 欢笑剧场,http://221.10.226.195:5000/rtp/239.0.0.201:5140
 欢笑剧场,http://116.2.170.167:4010/rtp/232.0.0.98:1234
 欢笑剧场,http://61.176.25.179:40001/rtp/232.0.0.98:1234
-欢笑剧场,https://shyd.695847.xyz/cms001/ch00000090990000001490/index.m3u8?IASHttpSessionId=RR4967720251014100028031761&ispcode=12
 欢笑剧场,http://220.169.109.72:802/udp/239.76.254.66:9000
 欢笑剧场,http://42.92.195.108:10000/udp/239.255.29.7:8231
 金鹰纪实,http://175.15.58.252:4022/udp/239.76.252.122:9000
@@ -260,11 +189,3 @@ EU Music HD,https://cdnua03.hls.tv/69/hls/b24a169eeac8f76b6ff3d1d4854242a7/570/s
 快乐垂钓,http://58.46.31.42:8188/udp/239.76.252.127:9000
 金鹰纪实,http://58.46.31.42:8188/udp/239.76.245.122:1234
 快乐垂钓,http://58.46.31.42:8188/udp/239.76.245.127:1234
-RTM Sports HD,http://xtvantsc.xyz/Smart.php?id=Rtmsport
-RTM Sports HD,https://smart.dxjc.pp.ua/smart.php?id=Rtmsport&token=tmxk
-RTM Sports HD,https://pixman.mytvsuper.com.mp/Smart.php?id=Rtmsport
-TRACE SPORTS INTER HD,http://95.67.12.82:9067
-Setanta Sports Ukraine HD orig,https://bal.varcdn.top/setantasport/index.m3u8
-Setanta Sports plus HD UA,http://85.223.221.130:8000/play/a06k
-NBA One HD,http://49.0.64.96:8007/NBA
-法治天地,http://zteres.sn.chinamobile.com:6060/000000001000/9001547084732463424/1.m3u8?channel-id=bestzb&Contentid=9001547084732463424&livemode=1&stbId=3
