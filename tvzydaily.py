@@ -335,7 +335,7 @@ CATEGORY_ORDER = [
     "剧场频道", "体育频道", "音乐频道"
 ]
 
-OUTPUT_FILE = "tzydayauto.txt"  # 修改后的输出文件名
+OUTPUT_FILE = "tzydauto.txt"  # 输出文件名
 
 def download_source(url, timeout=30):
     """下载单个数据源，包含重试逻辑"""
@@ -832,8 +832,8 @@ def generate_output_file(grouped_channels, output_file=OUTPUT_FILE):
                 total_channels += len(channels)
                 
                 try:
-                    # 写入分类标题
-                    f.write(f"\n# {category}\n")
+                    # 写入分类标题，使用,#genre#格式
+                    f.write(f"\n# {category},#genre#\n")
                     
                     # 批量写入频道
                     for channel_name, url in channels:
