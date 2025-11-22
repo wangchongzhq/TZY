@@ -33,38 +33,104 @@ jobs:
           pip install requests schedule
       
       - name: Run TVZY update script
-        run: python tvzydaily.py
+        run: |
+          # 运行脚本前添加调试信息
+          echo "正在运行tvzydaily.py脚本..."
+          python tvzydaily.py
+          # 检查输出文件是否存在
+          if [ -f "tzydauto.txt" ]; then
+            echo "输出文件存在，检查文件内容..."
+            # 显示文件的前20行以检查分类标签格式
+            head -n 50 tzydauto.txt
+            # 搜索包含,#genre#的行
+            echo "\n检查,#genre#标签..."
+            grep -n ",#genre#" tzydauto.txt || echo "未找到,#genre#标签"
+          else
+            echo "错误：输出文件tzydauto.txt不存在"
+          fi
       
       - name: Commit and push changes
         run: |
           # 设置git配置
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git config --local user.name 'github-actions[bot]'
+          git config --local user.email 'github-actions[bot]@users.noreply.github.com'
+          git config --local pull.rebase true
+          git config --local rebase.autoStash true
           
           # 确保我们在正确的分支上
           git checkout main
           
-          # 完全重置本地仓库，避免任何合并冲突
-          git fetch --all
-          git reset --hard origin/main
+          # 首先尝试与远程同步，获取最新的更改
+          echo "正在获取远程最新更改..."
+          git fetch origin
+          
+          # 使用安全的方式处理远程更改
+          # 如果本地分支落后，先尝试rebase
+          echo "尝试同步远程更改..."
+          git pull --rebase --autostash origin main || {
+            echo "警告：Rebase失败，尝试使用merge方式..."
+            # 如果rebase失败，尝试merge
+            git reset --hard HEAD
+            git pull origin main
+          }
           
           # 运行脚本生成最新文件
+          echo "运行tvzydaily.py脚本生成更新..."
           python tvzydaily.py
           
+          # 检查输出文件是否存在
+          if [ ! -f "tzydauto.txt" ]; then
+            echo "错误：输出文件tzydauto.txt不存在"
+            exit 1
+          fi
+          
+          # 验证,#genre#标签是否存在
+          echo "验证文件内容..."
+          head -n 50 tzydauto.txt
+          grep -n ",#genre#" tzydauto.txt || echo "警告：未找到,#genre#标签"
+          
           # 添加并提交更改
-          git add tzydayauto.txt
+          git add tzydauto.txt
           
           # 检查是否有更改需要提交
-          if ! git diff --quiet && ! git diff --staged --quiet; then
-            git commit -m "Auto-update IPTV files"
-            
-            # 再次拉取以确保在提交后没有新的更改
-            git pull --rebase origin main || true
-            
-            # 使用标准的GitHub Actions推送方式
-            git push origin HEAD:main
-          else
-            echo "No changes to commit"
+          if git diff --quiet && git diff --staged --quiet; then
+            echo "没有更改需要提交"
+            exit 0
           fi
+          
+          # 创建带有时间戳的提交信息
+          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          git commit -m "Auto-update IPTV files - $TIMESTAMP"
+          
+          # 再次获取最新更改，确保我们没有落后
+          echo "再次获取远程最新更改..."
+          git fetch origin
+          
+          # 使用强制推送但带有安全检查
+          echo "尝试安全推送更改..."
+          git push --force-with-lease origin HEAD:main || {
+            echo "警告：推送失败，尝试更激进的同步策略..."
+            # 如果推送失败，尝试更彻底的方法
+            git fetch origin
+            git reset --hard origin/main
+            python tvzydaily.py
+            git add tzydauto.txt
+            if ! git diff --quiet && ! git diff --staged --quiet; then
+              git commit -m "Auto-update IPTV files after conflict resolution - $TIMESTAMP"
+              # 添加额外的安全检查和重试逻辑
+              echo "再次尝试推送..."
+              git push --force-with-lease origin HEAD:main || {
+                echo "警告：推送再次失败，尝试最安全的方法..."
+                # 创建一个临时分支进行推送
+                TEMP_BRANCH="temp-update-$(date +%s)"
+                git checkout -b $TEMP_BRANCH
+                git push origin $TEMP_BRANCH || {
+                  echo "严重错误：推送临时分支也失败"
+                  exit 1
+                }
+                echo "临时分支已推送，请手动合并: $TEMP_BRANCH"
+              }
+            fi
+          }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
