@@ -1,0 +1,161 @@
+name: 电视直播线路自动更新工作流（基于GitHub API）
+
+on:
+  schedule:
+    - cron: '0 8 * * *'  # 每天早上8点运行
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  update-tv-channels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1  # 只获取最新提交，减少带宽使用
+          ref: ${{ github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 环境准备
+        run: |
+          echo "准备Python环境和依赖安装"
+          echo "工作目录: $(pwd)"
+          ls -la
+      
+      - name: 设置Python环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+      
+      - name: 安装Python依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+          echo "已安装依赖: requests"
+      
+      - name: 运行电视直播线路收集脚本
+        run: |
+          echo "开始执行tvzydaily.py脚本..."
+          python tvzydaily.py
+          echo "脚本执行完成，检查输出文件"
+          if [ -f "tzydauto.txt" ]; then
+            echo "输出文件生成成功: $(wc -l tzydauto.txt) 行"
+            head -10 tzydauto.txt
+          else
+            echo "错误: 输出文件未生成"
+            exit 1
+          fi
+      
+      - name: 确保API更新脚本存在
+        run: |
+          if [ ! -f "github_api_updater.py" ]; then
+            echo "错误: github_api_updater.py 脚本不存在"
+            exit 1
+          else
+            echo "✅ API更新脚本存在"
+            chmod +x github_api_updater.py
+          fi
+      
+      - name: 系统健康检查
+        run: |
+          echo "🏥 系统健康检查..."
+          echo "📊 当前时间: $(date)"
+          echo "📡 网络连接测试..."
+          ping -c 2 api.github.com >/dev/null 2>&1 && echo "✅ 网络连接正常" || echo "⚠️  网络连接测试失败，但将继续尝试"
+      
+      - name: 使用GitHub API更新文件（无git push版本）
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name || 'zhby' }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          echo "🚀 开始使用GitHub API更新文件..."
+          echo "📋 操作详情:"
+          echo "  - 目标文件: tzydauto.txt"
+          echo "  - 更新模式: 基于SHA的API原子操作"
+          echo "  - 重试策略: 智能指数退避"
+          echo "  - 仓库信息: ${REPO_OWNER}/${REPO_NAME}"
+          echo "  - 目标分支: ${BRANCH}"
+          
+          # 设置环境变量，避免在日志中显示token
+          export PYTHONUNBUFFERED=1
+          
+          # 运行API更新脚本
+          python github_api_updater.py \
+            --token "${GITHUB_TOKEN}" \
+            --owner "${REPO_OWNER}" \
+            --repo "${REPO_NAME}" \
+            --file "tzydauto.txt" \
+            --branch "${BRANCH}" \
+            --message "自动更新电视直播线路 - $(date +'%Y-%m-%d %H:%M:%S')"
+          
+          # 保存脚本执行状态
+          API_UPDATE_STATUS=$?
+          echo "✅ API更新脚本执行完成，状态码: ${API_UPDATE_STATUS}"
+          
+          # 检查更新状态
+          if [ ${API_UPDATE_STATUS} -eq 0 ]; then
+            echo "🎉 🎉 🎉 文件更新成功！"
+            echo "✅ 基于GitHub API的原子更新方案执行成功！"
+            echo "🎯 优势: 完全避免Git Push冲突，基于SHA的乐观并发控制确保数据一致性"
+          else
+            echo "❌ 文件更新失败！"
+            echo "🔍 请检查日志获取详细错误信息"
+            exit ${API_UPDATE_STATUS}
+          fi
+      
+      - name: 创建更新状态标记文件
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name || 'zhby' }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          echo "🔖 创建更新状态标记文件..."
+          echo "Last successful update: $(date)" > update_status.txt
+          echo "Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> update_status.txt
+          echo "Commit SHA: ${{ github.sha }}" >> update_status.txt
+          
+          # 使用API更新状态文件
+          python github_api_updater.py \
+            --token "${GITHUB_TOKEN}" \
+            --owner "${REPO_OWNER}" \
+            --repo "${REPO_NAME}" \
+            --file "update_status.txt" \
+            --branch "${BRANCH}" \
+            --message "更新状态标记文件 - $(date +'%Y-%m-%d %H:%M:%S')"
+      
+      - name: 上传调试日志
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-api-logs
+          path: |
+            github_api_update.log
+            tzydauto.txt
+          retention-days: 7
+      
+      - name: 成功通知
+        if: success()
+        run: |
+          echo "🎉 🎉 🎉 工作流执行成功！🎉 🎉 🎉"
+          echo "✅ 文件 tzydauto.txt 已成功更新到GitHub仓库"
+          echo "🔄 使用GitHub API原子更新方案，完全避免Git Push冲突"
+          echo "📊 基于SHA的乐观并发控制确保数据一致性"
+          echo "🎯 工作流运行URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      
+      - name: 失败通知
+        if: failure()
+        run: |
+          echo "❌ ❌ ❌ 工作流执行失败！❌ ❌ ❌"
+          echo "🔍 故障排除步骤:"
+          echo "1. 检查GitHub API权限和token有效性"
+          echo "2. 验证仓库存在且分支正确"
+          echo "3. 检查日志中的具体错误信息"
+          echo "4. 尝试手动运行github_api_updater.py脚本进行调试"
+          echo "5. 确认网络连接和API速率限制"
+          echo "📊 工作流运行URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          exit 1
