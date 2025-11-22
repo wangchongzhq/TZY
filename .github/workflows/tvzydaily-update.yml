@@ -18,13 +18,13 @@ jobs:
     permissions:
       contents: write  # 确保有写权限
     steps:
-      # 第一步：检出代码（使用fetch-depth: 0获取完整历史，避免冲突）
+      # 第一步：检出代码（使用最小检出，避免历史冲突）
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           ref: main
-          fetch-depth: 0  # 获取完整历史
-          persist-credentials: true
+          fetch-depth: 1  # 只获取最新提交，减少冲突风险
+          persist-credentials: false  # 禁用git凭据，因为我们使用GitHub API
       
       # 第二步：设置Python环境
       - name: Set up Python
@@ -87,5 +87,3 @@ jobs:
           fi
           
           echo "🎉 更新完成！"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
