@@ -18,11 +18,13 @@ jobs:
     permissions:
       contents: write  # 确保有写权限
     steps:
-      # 第一步：检出代码（仅用于获取脚本，不使用git推送）
+      # 第一步：检出代码（使用fetch-depth: 0获取完整历史，避免冲突）
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           ref: main
+          fetch-depth: 0  # 获取完整历史
+          persist-credentials: true
       
       # 第二步：设置Python环境
       - name: Set up Python
@@ -35,8 +37,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install requests schedule
-          # 安装jq工具用于安全处理JSON数据
-          sudo apt-get update && sudo apt-get install -y jq
       
       # 第四步：生成文件并直接使用GitHub API上传（完全避免git操作）
       - name: Generate and upload file using GitHub API
@@ -56,51 +56,33 @@ jobs:
           wc -l tzydauto.txt
           head -n 5 tzydauto.txt
           
-          # 直接使用curl和GitHub API上传文件，不使用任何git命令
+          # 直接使用curl和GitHub API上传文件，完全避免使用git命令
           echo "🔄 使用GitHub API直接上传文件..."
           
-          # 编码文件内容为base64
+          # 使用更简单、更安全的方式上传文件
+          # 获取文件内容并编码为base64
           CONTENT=$(base64 -w 0 tzydauto.txt)
           
           # 创建日期时间戳
           TIMESTAMP=$(date +'%Y-%m-%d %H:%M:%S')
           
-          # 构建JSON数据，使用更安全的方式处理特殊字符
-          # 先将base64内容写入临时文件，然后读取以避免shell转义问题
-          echo "$CONTENT" > content_base64.txt
+          # 使用printf创建有效的JSON，避免shell转义问题
+          JSON_DATA=$(printf '{"message":"Auto-update IPTV files - %s","content":"%s","branch":"main"}' "$TIMESTAMP" "$CONTENT")
           
-          # 使用jq构建有效的JSON，避免shell字符串转义问题
-          JSON_DATA=$(jq -n --arg message "Auto-update IPTV files - $TIMESTAMP" \
-                       --arg content "$(cat content_base64.txt)" \
-                       --arg branch "main" \
-                       '{message: $message, content: $content, branch: $branch}')
-          
-          # 使用curl调用GitHub API
-          RESPONSE=$(curl -X PUT \
+          # 使用curl调用GitHub API - 简化版本
+          RESPONSE=$(curl -s -X PUT \
               -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
               -H "Accept: application/vnd.github+json" \
               -H "Content-Type: application/json" \
-              https://api.github.com/repos/wangchongzhq/zhby/contents/tzydauto.txt \
-              --data-binary "$JSON_DATA")
+              "https://api.github.com/repos/wangchongzhq/zhby/contents/tzydauto.txt" \
+              --data "$JSON_DATA")
           
           # 检查响应
-          if [[ $? -eq 0 ]]; then
-            # 检查是否包含错误信息
-            if echo "$RESPONSE" | grep -q '"message":"Not Found"'; then
-              echo "❌ 错误: 仓库路径或文件路径不正确"
-              echo "响应内容: $RESPONSE"
-              exit 1
-            elif echo "$RESPONSE" | grep -q '"message":"Bad credentials"'; then
-              echo "❌ 错误: GitHub Token 无效或权限不足"
-              echo "响应内容: $RESPONSE"
-              exit 1
-            else
-              echo "✅ ✅ ✅ 成功使用GitHub API更新文件！"
-              echo "响应内容: $RESPONSE"
-            fi
+          if echo "$RESPONSE" | grep -q '"content":'; then
+            echo "✅ ✅ ✅ 成功使用GitHub API更新文件！"
           else
-            echo "❌ GitHub API请求失败"
-            echo "响应内容: $RESPONSE"
+            echo "❌ GitHub API更新失败"
+            echo "响应: $RESPONSE"
             exit 1
           fi
           
