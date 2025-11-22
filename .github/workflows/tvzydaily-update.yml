@@ -214,17 +214,18 @@ jobs:
               local json_data
               if [ -n "$current_sha" ]; then
                 echo "📝 更新现有文件，使用SHA: $current_sha"
-                # 使用here文档避免引号转义问题
+                # 使用cat和here-document构建JSON，避免引号嵌套问题
                 json_data=$(cat <<EOF
 {"message":"$commit_message","content":"$content_base64","sha":"$current_sha","branch":"$BRANCH"}
 EOF
-                )
+)
               else
                 echo "📝 创建新文件"
+                # 使用cat和here-document构建JSON，避免引号嵌套问题
                 json_data=$(cat <<EOF
 {"message":"$commit_message","content":"$content_base64","branch":"$BRANCH"}
 EOF
-                )
+)
               fi
               
               # 验证JSON格式的基本有效性
