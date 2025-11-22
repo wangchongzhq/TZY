@@ -35,6 +35,7 @@ GITHUB_SOURCES = [
     "https://ghcy.eu.org/https://raw.githubusercontent.com/ffmking/tv1/main/888.txt",
     "https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
     "https://freetv.fun/test_channels_new.txt",
+    "https://codeberg.org/zxj/mao/raw/branch/main/live.txt",
     # 其他稳定的IPTV源
     "https://ghcy.eu.org/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u",
     "https://ghcy.eu.org/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u",
