@@ -31,9 +31,6 @@ logger = logging.getLogger(__name__)
 # GitHub数据源列表（至少10个）
 GITHUB_SOURCES = [
     # 有效的中国电视频道源
-    "https://ghcy.eu.org/https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China.m3u",
-    "https://ghcy.eu.org/https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u",
-    "https://ghcy.eu.org/https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u",
     "http://106.53.99.30/2025.txt",
     "http://tv.html-5.me/i/9390107.txt",
     "https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
