@@ -34,10 +34,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests schedule
       
-      - name: Run TVZY update script
-        run: python tvzydaily.py
-      
-      - name: Commit and push changes
+      - name: Generate and commit changes
         run: |
           # 设置git配置
           git config user.name 'github-actions[bot]'
@@ -53,24 +50,62 @@ jobs:
           # 运行脚本生成最新文件
           python tvzydaily.py
           
-          # 添加所有可能的文件变更
+          # 验证文件是否生成
+          if [ -f "tzydauto.txt" ]; then
+            echo "✅ tzydauto.txt 文件已成功生成"
+            wc -l tzydauto.txt
+          else
+            echo "❌ 错误: tzydauto.txt 文件未生成"
+            exit 1
+          fi
+          
+          # 添加文件变更
           git add tzydauto.txt
+          
+          # 详细显示git状态
+          git status
           
           # 检查是否有更改需要提交
           if ! git diff --quiet && ! git diff --staged --quiet; then
+            echo "✅ 检测到文件变更，准备提交..."
+            
             # 创建提交
             git commit -m "Auto-update IPTV files - $(date +'%Y-%m-%d %H:%M:%S')"
+            echo "✅ 提交创建成功"
             
-            # 使用GITHUB_TOKEN进行推送，这是最可靠的方式
-            # 设置推送URL包含token
+            # 显示提交信息
+            git log -1
+            
+            # 确保正确配置推送URL
             git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/wangchongzhq/zhby.git
             
-            # 强制推送但使用--force-with-lease确保安全
-            git push --force-with-lease origin main
+            # 显示远程仓库信息
+            git remote -v
             
-            echo "成功推送更新到远程仓库"
+            # 使用更直接的强制推送方式
+            echo "正在推送更新到远程仓库..."
+            git push origin main --force-with-lease || {
+              echo "⚠️  推送失败，尝试直接推送..."
+              git push origin main
+            }
+            
+            if [ $? -eq 0 ]; then
+              echo "✅ 成功推送更新到远程仓库！"
+            else
+              echo "❌ 推送失败，尝试最终备用方案..."
+              # 最终备用方案
+              git config --global user.name 'github-actions[bot]'
+              git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+              git push --force origin main
+              if [ $? -eq 0 ]; then
+                echo "✅ 使用备用方案成功推送！"
+              else
+                echo "❌ 所有推送尝试都失败了"
+                exit 1
+              fi
+            fi
           else
-            echo "没有检测到需要提交的更改"
+            echo "ℹ️  没有检测到需要提交的更改"
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
