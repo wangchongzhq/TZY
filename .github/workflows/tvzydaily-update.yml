@@ -45,20 +45,20 @@ jobs:
           python tvzydaily.py
           
           # 验证文件生成
-          if [ ! -f "tzydauto.txt" ]; then
-            echo "❌ 错误: tzydauto.txt 文件未生成"
+          if [ ! -f "tzydayauto.txt" ]; then
+            echo "❌ 错误: tzydayauto.txt 文件未生成"
             exit 1
           fi
           
           echo "✅ 文件生成成功，内容统计："
-          wc -l tzydauto.txt
-          head -n 5 tzydauto.txt
+          wc -l tzydayauto.txt
+          head -n 5 tzydayauto.txt
           
           # 直接使用curl和GitHub API上传文件，不使用任何git命令
           echo "🔄 使用GitHub API直接上传文件..."
           
           # 编码文件内容为base64
-          CONTENT=$(base64 -w 0 tzydauto.txt)
+          CONTENT=$(base64 -w 0 tzydayauto.txt)
           
           # 创建日期时间戳
           TIMESTAMP=$(date +'%Y-%m-%d %H:%M:%S')
@@ -78,7 +78,7 @@ EOF
               -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
               -H "Accept: application/vnd.github+json" \
               -H "Content-Type: application/json" \
-              https://api.github.com/repos/wangchongzhq/zhby/contents/tzydauto.txt \
+              https://api.github.com/repos/wangchongzhq/zhby/contents/tzydayauto.txt \
               --data-binary "$JSON_DATA")
           
           # 检查响应
