@@ -19,8 +19,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
+          ref: main
           fetch-depth: 0  # 获取完整历史
-          persist-credentials: false  # 禁用默认凭据存储
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
       
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -41,20 +43,17 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           
-          # 确保我们在正确的分支上
+          # 确保我们在main分支上
           git checkout main
           
-          # 先获取最新的远程更改并合并，确保本地分支与远程同步
-          git fetch origin main
-          git merge origin/main --no-edit || {
-            echo "合并失败，尝试拉取强制覆盖..."
-            git reset --hard origin/main
-          }
+          # 强制同步远程分支，完全覆盖本地更改
+          git fetch --all
+          git reset --hard origin/main
           
           # 运行脚本生成最新文件
           python tvzydaily.py
           
-          # 添加正确的文件名
+          # 添加所有可能的文件变更
           git add tzydauto.txt
           
           # 检查是否有更改需要提交
@@ -62,21 +61,16 @@ jobs:
             # 创建提交
             git commit -m "Auto-update IPTV files - $(date +'%Y-%m-%d %H:%M:%S')"
             
-            # 再次获取最新更改，确保在推送前没有新的远程提交
-            git fetch origin main
+            # 使用GITHUB_TOKEN进行推送，这是最可靠的方式
+            # 设置推送URL包含token
+            git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/wangchongzhq/zhby.git
             
-            # 尝试重新基础合并，确保我们的提交在远程提交之后
-            git rebase origin/main || {
-              echo "重基础失败，回退到原始提交并尝试强制推送..."
-              git rebase --abort
-              # 使用--force-with-lease安全地强制推送，避免覆盖未预期的更改
-              git push --force-with-lease origin main
-            }
+            # 强制推送但使用--force-with-lease确保安全
+            git push --force-with-lease origin main
             
-            # 如果重基础成功，则正常推送
-            git push origin main
+            echo "成功推送更新到远程仓库"
           else
-            echo "No changes to commit"
+            echo "没有检测到需要提交的更改"
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
