@@ -22,28 +22,56 @@ jobs:
           echo "工作目录: $(pwd)"
           ls -la
       
-      - name: 同步远程仓库更改
+      - name: 初始化Git配置和同步远程仓库更改
         run: |
-          echo "🔄 同步远程仓库更改..."
+          echo "🔄 初始化Git配置和同步远程仓库更改..."
+          
           # 配置Git用户信息（使用local作用域以避免影响全局）
           git config --local user.name "github-actions[bot]"
           git config --local user.email "action@github.com"
           
+          # 配置Git处理行尾字符
+          git config --local core.autocrlf input
+          
+          # 显示当前仓库URL和分支信息
+          echo "📝 仓库信息："
+          git remote -v
+          echo "当前分支："
+          git branch
+          
           # 确保在正确的分支上
           git checkout ${{ github.ref_name }}
           
-          # 强制拉取并重置，确保本地与远程完全一致
+          # 强制获取最新远程更改
           echo "📥 强制获取最新远程更改..."
-          git fetch --all
+          git fetch --prune --all
           
-          # 使用fetch + reset策略代替pull，避免合并冲突
-          echo "🔄 重置本地分支以匹配远程..."
-          git reset --hard origin/${{ github.ref_name }}
+          # 验证远程分支存在性
+          if git show-ref --quiet --verify refs/remotes/origin/${{ github.ref_name }}; then
+            echo "✅ 确认远程分支origin/${{ github.ref_name }}存在"
+            
+            # 使用fetch + reset策略代替pull，避免合并冲突
+            echo "🔄 重置本地分支以匹配远程..."
+            git reset --hard origin/${{ github.ref_name }}
+          else
+            echo "⚠️  远程分支不存在，将创建新的本地分支"
+          fi
           
           # 验证当前状态
           echo "📊 当前Git状态："
           git status
-          git log -n 3 --oneline
+          git log -n 5 --oneline
+          
+          # 显示远程分支信息
+          echo "📋 远程分支："
+          git branch -r
+          
+          # 确保工作目录干净
+          echo "🧹 检查工作目录："
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "⚠️  工作目录存在未提交的更改"
+          else
+            echo "✅ 工作目录干净"          fi
       
       - name: 设置Python环境
         uses: actions/setup-python@v4
@@ -69,6 +97,24 @@ jobs:
             echo "错误: 输出文件未生成"
             exit 1
           fi
+      
+      - name: 重新同步远程仓库状态（执行脚本前再次同步）
+        run: |
+          echo "🔄 执行脚本前再次同步远程仓库状态..."
+          
+          # 再次获取最新的远程更改
+          git fetch --prune --all
+          
+          # 验证远程分支并重置
+          if git show-ref --quiet --verify refs/remotes/origin/${{ github.ref_name }}; then
+            echo "🔄 再次重置本地分支以匹配最新远程状态..."
+            git reset --hard origin/${{ github.ref_name }}
+          fi
+          
+          # 最后检查一次工作目录状态
+          echo "📊 最终Git状态："
+          git status
+          git log -n 3 --oneline
       
       - name: 使用GitHub API上传更新的文件（无git push）
         env:
