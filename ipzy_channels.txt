@@ -1,8 +1,8 @@
 # 中国境内电视直播线路 (仅限1080p高清以上)
-# 更新时间: 2025-11-21 18:23:32
+# 更新时间: 2025-11-22 18:21:29
 # 数据来源: 多个GitHub IPTV项目
-# 频道总数: 2863
-# 线路总数: 3612
+# 频道总数: 2843
+# 线路总数: 3592
 # 清晰度要求: 仅保留1080p高清及以上线路
 ############################################################
 
@@ -776,7 +776,6 @@ AXN Vietnam,https://tv.ddns.vn/tv/axnhd/index.m3u8
 Action 24,http://actionlive.siliconweb.com/actionabr/actiontv/playlist.m3u8
 Action Hollywood Movies,https://amg01076-lightningintern-actionhollywood-samsungau-rs69y.amagi.tv/playlist/amg01076-lightningintern-actionhollywood-samsungau/playlist.m3u8
 Aflam,https://shls-live-enc.edgenextcdn.net/out/v1/0044dd4b001a466c941ad77b04a574a2/index.m3u8
-Asianet Movies HD,https://live.dinesh29.com.np/stream/jiotvplus/asianetmovieshd/master.m3u8
 B4U Bhojpuri,https://cdnb4u.wiseplayout.com/B4U_Bhojpuri/master.m3u8
 B4U Kadak,https://cdnb4u.wiseplayout.com/B4U_Kadak/master.m3u8
 B4U Movies India,https://cdnb4u.wiseplayout.com/B4U_Movies/master.m3u8
@@ -878,15 +877,11 @@ Roya Drama,https://playlist.fasttvcdn.com/pl/a2le4pbpa6rpzv147haf4w/drama/playli
 ServusTV,https://stv-live.akamaized.net/hls/live/2031011/lingeoSTVATwebPri/master.m3u8
 ServusTV HD,https://viamotionhsi.netplus.ch/live/eds/servustvhd/browser-HLS8/servustvhd.m3u8
 Sky Cinema Family HD,https://d17lsiabqrlwa2.cloudfront.net/pl_138/207480-6535776-1/playlist.m3u8
-Sony Wah,https://nxtlive.net/sliv/stream.php?e=.m3u8&id=0898545986
 Squirrel,http://176.65.146.237:8401/play/a09h/index.m3u8
 Star Channel Latin America South,http://181.188.216.5:18000/play/a0pm/index.m3u8
-Star Gold 2 HD,http://116.90.120.149:8000/play/a0ea/index.m3u8
-Star Gold HD,http://116.90.120.149:8000/play/a0c2/index.m3u8
 Star Gold Select HD,http://87.255.35.150:18429
 Star Movies HD,http://87.255.35.150:18301
 Star Movies Select HD,http://87.255.35.150:18548
-Surya Movies,https://playyonogames.in/live.php?format=.m3u8&id=1754
 TF1 Series Films,https://viamotionhsi.netplus.ch/live/eds/hd1/browser-HLS8/hd1.m3u8
 Veo7,http://176.65.146.237:8401/play/a09k/index.m3u8
 Victor Valley Movies,https://2-fss-2.streamhoster.com/pl_138/201950-5317556-1/playlist.m3u8
@@ -900,7 +895,7 @@ Zee Cinemalu,http://87.255.35.150:18578
 新昌休闲影视,https://l.cztvcloud.com/channels/lantian/SXxinchang2/720p.m3u8
 精品电影,http://183.207.248.71/cntv/live1/jdianying/jdianying
 高清电影,http://39.134.19.76/dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221226463/index.m3u8
-# 共 126 个频道，132 条线路 (平均1.0条/频道)
+# 共 121 个频道，127 条线路 (平均1.0条/频道)
 
 4K,#genre#
 24KZ,https://tvcdn01.oktv.kz/tv/24kz/index.m3u8
@@ -1721,7 +1716,6 @@ Disney Channel,http://185.236.229.62:9981/play/a07d
 Disney Channel HD,http://66.102.120.18:8000/play/a013/index.m3u8
 Disney Channel Latin America,http://201.230.121.186:8000/play/a0fb/index.m3u8
 Disney Channel Latin America Panregional HD,http://201.217.246.177:8000/play/a02r/index.m3u8
-Disney International HD,http://116.90.120.149:8000/play/a0e9/index.m3u8
 Disney Jr.,https://saran-live.ercdn.net/disneyjunior/index.m3u8
 District of Columbia Network,https://video.oct.dc.gov/out/u/DCN.m3u8
 Distrito TV,https://nlb2-live.emitstream.com/hls/3mn7wpcv7hbmxmdzaxap/master.m3u8
@@ -2025,7 +2019,6 @@ Imás TV,https://secure3.todostreaming.es/live/imastv-livestream.m3u8
 InLire TV,https://5f22d76e220e1.streamlock.net/inlire/inlire/playlist.m3u8
 InTravel,https://amg00861-amg00861c10-rakuten-uk-3152.playouts.now.amagi.tv/playlist.m3u8
 InWonder,https://amg00861-terninternation-inwonder-samsungau-1k63k.amagi.tv/playlist/amg00861-terninternation-inwonder-samsungau/playlist.m3u8
-India TV,https://poclive-indiatvnews.akamaized.net/hlslive/Admin/px0219297/live/digital/master.m3u8
 Indosiar,http://203.77.246.58:4500/udp/239.1.1.110:5000
 Info TV Romania,https://euw32.playlist.ttvnw.net/v1/playlist/CtMEHCWSOLVBIjzQRcYCDzxENBPC6QqL19TpF5ZzroQT-yNzbMsnZXDlRrM1BO_2b6B7tSj4UoyGleh1IEErCJvZXm2eKnttsjBlm1UWcu9ScTtqCCA0AQTpiAl701WUV4dCdtucbddiDtMpNARcl1umUiox9zdJ7saZS-007zh-cbMCfmc8wVX53DJqfivrOcg6ftsD8p4-z0lF7zimP_IOuZeLag9CNrrY7vRkQfYIKZcFsQza5myUR5Rat5Mo7BIdvsuOnFbULzL83qRdTOXOBEzKx73HrEXXRatJtHFxITl_m-4LzU44DCGHnrr1DwsSA5exWtvNvvcbdTx0MsmP-mBfLl__P3EVC4monCpTfMJAFwxnFf9AReWkPrvK4NTasVMnoXQ2Whzm4BmM9JwcyJPdWADFXvizZzYu-9beVSvbZxFJ1iIKI-2F-oThl8QfH9s6T6EVEu3-Q27YrZhjwdJoqyHjvL-4vn0RC6REzM4XSkfEmJEu91-9Zw9nVhvWTFxoh2exnuCWGdXhMKjfhpTGH4WquIZBQvscG_0bh7BxYkUu1GGDo5OIP17dNEx6j410QancOzFxe5ORNJ5q0zCQdZ1QAvO3qO00mXjNwhG6S7A30bUzqcH5hhzOxsFQZFgOgoLtDJH5YLggf4McxMRgIIWbRyTkcYonUjjP_CeEgg8jV3hIRE1FZWV6gOlhQoAxPr3rK91hKaM40y_6UYCdgUGsI6s1-wQvI6vGpKrwzTkxdNqFQHddjqKb2r6GBsEqEtGZPSP1T9ZhRH6iPz2u2BoM-X76Wi1YVfDbFLhBIAEqCWV1LXdlc3QtMjD3DA.m3u8
 InfoWars Network,https://freespeech.akamaized.net/hls/live/2016712/live1/playlist.m3u8
@@ -2430,8 +2423,6 @@ Newsy,https://547f72e6652371c3.mediapackage.us-east-1.amazonaws.com/out/v1/e3e6e
 Nex TV Canal 21,https://vcp4.myplaytv.com:1936/nextv/nextv/playlist.m3u8
 Next TV,http://gohoski.fvds.ru:3000/mediabay/601/playlist.m3u8
 Nick Germany,https://0d26a00dfbb1.airspace-cdn.cbsivideo.com/nick1999/master/nick1999.m3u8
-Nick HD+,https://nonprod-sports-cohort.jiocinema.com/bpk-tv/JC_NickHD/JCHLS/index.m3u8
-Nick Jr India,https://prod-sports-north-gm.jiocinema.com/bpk-tv/Nick_Junior_voot_MOB/Fallback/index.m3u8
 Nick/Comedy Central +1 HD,https://viamotionhsi.netplus.ch/live/eds/comedycentralnick/browser-HLS8/comedycentralnick.m3u8
 Nickelodeon Sonic Hindi,https://prod-sports-north-gm.jiocinema.com/bpk-tv/Sonic_Nickelodeon_voot_MOB/Fallback/index.m3u8
 Niederbayern TV Deggendorf & Straubing,https://stream03.welocal.stream/stream/fhd-nbydeggendorf_99148/ngrp:stream_all/index.m3u8
@@ -2650,13 +2641,9 @@ RTHK TV 35,https://rthktv35-live.akamaized.net/hls/live/2101643/RTHKTV35/master.
 RTHK TV 36,https://rthktv36-live.akamaized.net/hls/live/2112176/RTHKTV36/master.m3u8
 RTI 1,http://69.64.57.208:8080/rti1/playlist.m3u8
 RTI 2,http://69.64.57.208:8080/rti2/playlist.m3u8
-RTL,https://bpcdnmanprod.nexttv.ht.hr/bpk-tv/RTL/default/index.mpd
-RTL 2,https://bpcdnmanprod.nexttv.ht.hr/bpk-tv/RTL2/default/index.mpd
-RTL Croatia,https://d1cs5tlhj75jxe.cloudfront.net/rtl/playlist.m3u8
 RTL HD,https://strm.hdtvizlecanli.com/live/rtl.m3u8
 RTL Harom,http://194.76.186.33:8000/play/a02a/index.m3u8
 RTL Ketto,http://194.76.186.33:8000/play/a01z/index.m3u8
-RTL Kockica,https://d1rzyyum8t0q1e.cloudfront.net/rtl-kockica/playlist.m3u8
 RTL Radio Web TV,https://rtlradio-streaming.rtl.lu/rtlradiowebtv/smil:rtlradiowebtv/playlist.m3u8
 RTL Télé Lëtzebuerg,https://live-edge.rtl.lu/channel1/smil:channel1/playlist.m3u8
 RTL Zwee,https://live-edge.rtl.lu/channel2/smil:channel2/playlist.m3u8
@@ -2860,6 +2847,9 @@ Sevimli TV,https://stream8.cinerama.uz/1017/tracks-v1a1/playlist.m3u8
 Señal Positiva TV,https://eu1.servers10.com:8081/8108/index.m3u8
 Shalom,https://d2c4zqo2rb5uf1.cloudfront.net/master.m3u8
 Shalom Global,https://d28xtgmk9tfk6b.cloudfront.net/master.m3u8
+Shalom World,https://broadcaster-1.cclouds.in/srt-2/channel2_abr/playlist.m3u8
+Shalom World Australia,https://broadcaster-1.cclouds.in/srt-3/channel3_abr/playlist.m3u8
+Shalom World Europe,https://broadcaster-1.cclouds.in/srt/channel1_abr/playlist.m3u8
 Shalom World Prayer,https://broadcaster-1.cclouds.in/srt-4/channel4_abr/playlist.m3u8
 Shams TV,https://stream.shams.tv/hls/stream.m3u8
 Sharjah 2,https://svs.itworkscdn.net/smc2live/smc2tv.smil/playlist.m3u8
@@ -2896,12 +2886,9 @@ Sonnenklar TV,http://euvia.cdn.ses-ps.com/HLS-Live/index.m3u8
 Sonus FM TV,http://www.sonus.fm:1935/public/stream_source/playlist.m3u8
 Sony Canal Competencias,https://spt-competencias-2-us.roku.wurl.tv/playlist.m3u8
 Sony Channel,http://38.183.182.166:8000/play/a0vg/index.m3u8
-Sony Entertainment Television,https://nxtlive.net/sliv/stream.php?e=.m3u8&id=0897686
 Sony Kal,https://spt-sonykal-1-us.lg.wurl.tv/playlist.m3u8
 Sony Marathi,https://nxtlive.net/sliv/stream.php?e=.m3u8&id=985980256
-Sony Pal,https://nxtlive.net/sliv/stream.php?e=.m3u8&id=985663255656
 Sony Pix,http://87.255.35.150:18495
-Sony SAB,https://nxtlive.net/sliv/stream.php?e=.m3u8&id=0897678986
 Sony Sports Ten 1,http://87.255.35.150:18926
 Sony Sports Ten 2,http://87.255.35.150:18927
 Sony Sports Ten 3,http://87.255.35.150:18848
@@ -2921,18 +2908,13 @@ Star Bharat HD,http://87.255.35.150:18555
 Star Jalsha HD,http://87.255.35.150:18237
 Star Maa HD,http://87.255.35.150:18846
 Star Pravah HD,http://87.255.35.150:18447
-Star Sports 1 HD,http://116.90.120.149:8000/play/a0ba/index.m3u8
-Star Sports 1 Hindi HD,http://116.90.120.149:8000/play/a0bv/index.m3u8
 Star Sports 1 Tamil HD,http://87.255.35.150:18844
 Star Sports 1 Telugu HD,http://87.255.35.150:18881
 Star Sports 2 HD,http://87.255.35.150:18828
-Star Sports 2 Hindi,http://116.90.120.149:8000/play/a0cs/index.m3u8
-Star Sports Select 1 HD,http://116.90.120.149:8000/play/a0cl/index.m3u8
-Star Sports Select 2 HD,http://116.90.120.149:8000/play/a0cm/index.m3u8
 Star Suvarna HD,http://87.255.35.150:18545
 Star TV,https://cdn4.skygo.mn/live/disk1/Star/DASH-FTA/Star.mpd
 Star Vijay HD,http://87.255.35.150:18955
-StarPlus HD,http://116.90.120.149:8000/play/a0b9/index.m3u8
+StarPlus HD,https://tvsen7.aynaott.com/sphdbd/index.m3u8
 Stara TV Bandung,https://bandung.staratv.id/hls/0/stream.m3u8
 Stara TV Malang,https://malang.staratv.id/hls/0/stream.m3u8
 Starke Frauen,https://mainstreamstarkefrauen-rakuten.amagi.tv/playlist.m3u8
@@ -2944,7 +2926,6 @@ Streekstad Alkmaar Centraal,https://videostreams.streekstadcentraal.nl/hls/stree
 Studio Rheden,https://stream.studiorhedenlive.nl/hlstv/stream.m3u8
 Su Mundo TV,https://175036.global.ssl.fastly.net/6217e980d5bee0e090792fdf/live_75f5635097ba11ecb9f1255c8fe65a34/index.m3u8
 Sudarshan News,https://ott.livelegitpro.in/sudarshannews/sudarshannews/tracks-v1/index.fmp4.m3u8
-Sun Bangla,https://playyonogames.in/live.php?format=.m3u8&id=1669
 Sun Marathi,https://live.dinesh29.com.np/stream/jiotvplus/sunmarathi/master.m3u8
 Sun TV,https://livestream10.sunnxt.com/DolbyVision/SunTV_HDR/SunTV_HDR_Endpoints/SunTV-HDR10-IN-index.m3u8
 Suno News HD,https://cdn.bmstudiopk.com/sunotv/live/playlist.m3u8
@@ -3440,7 +3421,6 @@ ZDFinfo HD,https://viamotionhsi.netplus.ch/live/eds/zdfinfohd/browser-dash/zdfin
 ZDFneo HD,https://viamotionhsi.netplus.ch/live/eds/zdfneohd/browser-dash/zdfneohd.mpd
 Zaracay TV,https://video2.makrodigital.com/zaracay/zaracay/playlist.m3u8
 Zee Bangla,http://87.255.35.150:18238
-Zee Cafe,http://116.90.120.149:8000/play/a0e7/index.m3u8
 Zee Kannada,http://87.255.35.150:18945
 Zee Keralam,http://87.255.35.150:18502
 Zee Marathi,http://87.255.35.150:18234
@@ -3637,7 +3617,7 @@ teltOwkanal,https://h056.video-stream-hosting.de/easycast8-live/_definst_/mp4:li
 高台电视台,http://117.156.28.119/270000001111/1110000146/index.m3u8
 黑龙江,http://223.110.245.161/ott.js.chinamobile.com/PLTV/3/224/3221227492/index.m3u8
 黑龙江卫,http://183.207.248.71/cntv/live1/HD-2500k-1080P-heilongjiangstv/HD-2500k-1080P-heilongjiangstv
-# 共 2410 个频道，2478 条线路 (平均1.0条/频道)
+# 共 2395 个频道，2463 条线路 (平均1.0条/频道)
 
 # 自动生成 - 每日北京时间为2点更新
 # 仅保留1080p高清及以上清晰度线路
