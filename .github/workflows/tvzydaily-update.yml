@@ -15,97 +15,86 @@ on:
 jobs:
   update-tv-channels:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 确保有写权限
     steps:
-      - name: Checkout repository
+      # 第一步：使用特定的token参数重新检出代码
+      - name: Checkout repository with write access
         uses: actions/checkout@v3
         with:
-          ref: main
-          fetch-depth: 0  # 获取完整历史
           token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main
+          fetch-depth: 0
           persist-credentials: true
       
+      # 第二步：设置Python环境
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-          
+      
+      # 第三步：安装依赖
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests schedule
       
-      - name: Generate and commit changes
+      # 第四步：生成文件并推送（使用简化但更可靠的方法）
+      - name: Generate and upload file
         run: |
-          # 设置git配置
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          echo "🔄 开始生成直播源文件..."
           
-          # 确保我们在main分支上
-          git checkout main
-          
-          # 强制同步远程分支，完全覆盖本地更改
-          git fetch --all
-          git reset --hard origin/main
-          
-          # 运行脚本生成最新文件
+          # 运行脚本生成文件
           python tvzydaily.py
           
-          # 验证文件是否生成
-          if [ -f "tzydauto.txt" ]; then
-            echo "✅ tzydauto.txt 文件已成功生成"
-            wc -l tzydauto.txt
-          else
+          # 验证文件生成
+          if [ ! -f "tzydauto.txt" ]; then
             echo "❌ 错误: tzydauto.txt 文件未生成"
             exit 1
           fi
           
-          # 添加文件变更
-          git add tzydauto.txt
+          echo "✅ 文件生成成功，内容统计："
+          wc -l tzydauto.txt
           
-          # 详细显示git状态
-          git status
+          # 使用GitHub CLI作为更可靠的推送方式
+          echo "🔄 安装GitHub CLI..."
+          sudo apt-get update
+          sudo apt-get install -y gh
           
-          # 检查是否有更改需要提交
-          if ! git diff --quiet && ! git diff --staged --quiet; then
-            echo "✅ 检测到文件变更，准备提交..."
+          # 配置GitHub CLI
+          echo "🔄 配置GitHub CLI..."
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          gh auth status
+          
+          # 使用GitHub CLI更新文件 - 这是最可靠的方式，无需处理git合并
+          echo "🔄 使用GitHub CLI更新文件..."
+          if gh api -X PUT /repos/wangchongzhq/zhby/contents/tzydauto.txt \
+             -F message="Auto-update IPTV files - $(date +'%Y-%m-%d %H:%M:%S')" \
+             -F content="$(base64 tzydauto.txt)" \
+             -F branch=main; then
+            echo "✅ ✅ ✅ 成功使用GitHub API更新文件！"
+          else
+            echo "❌ GitHub API更新失败，尝试备用方法..."
             
-            # 创建提交
-            git commit -m "Auto-update IPTV files - $(date +'%Y-%m-%d %H:%M:%S')"
-            echo "✅ 提交创建成功"
-            
-            # 显示提交信息
-            git log -1
-            
-            # 确保正确配置推送URL
-            git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/wangchongzhq/zhby.git
-            
-            # 显示远程仓库信息
-            git remote -v
-            
-            # 使用更直接的强制推送方式
-            echo "正在推送更新到远程仓库..."
-            git push origin main --force-with-lease || {
-              echo "⚠️  推送失败，尝试直接推送..."
-              git push origin main
-            }
+            # 备用方法：使用低级别API
+            CONTENT=$(base64 -w 0 tzydauto.txt)
+            curl -X PUT \
+                 -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                 -H "Accept: application/vnd.github+json" \
+                 https://api.github.com/repos/wangchongzhq/zhby/contents/tzydauto.txt \
+                 -d '{"message":"Auto-update IPTV files - $(date +'%Y-%m-%d %H:%M:%S')","content":"'"$CONTENT"'","branch":"main"}'
             
             if [ $? -eq 0 ]; then
-              echo "✅ 成功推送更新到远程仓库！"
+              echo "✅ 备用方法成功！"
             else
-              echo "❌ 推送失败，尝试最终备用方案..."
-              # 最终备用方案
-              git config --global user.name 'github-actions[bot]'
-              git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-              git push --force origin main
-              if [ $? -eq 0 ]; then
-                echo "✅ 使用备用方案成功推送！"
-              else
-                echo "❌ 所有推送尝试都失败了"
-                exit 1
-              fi
+              echo "❌ 所有方法都失败了"
+              exit 1
             fi
-          else
-            echo "ℹ️  没有检测到需要提交的更改"
           fi
+          
+          echo "🎉 更新完成！"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
