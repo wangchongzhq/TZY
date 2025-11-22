@@ -21,8 +21,6 @@ jobs:
         with:
           fetch-depth: 0  # 获取完整历史
           persist-credentials: false  # 禁用默认凭据存储
-          ref: main  # 明确指定分支
-          repository: ${{ github.repository }}  # 明确指定仓库
       
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -35,195 +33,38 @@ jobs:
           pip install requests schedule
       
       - name: Run TVZY update script
-        id: run_script
-        run: |
-          # 运行脚本前添加调试信息
-          echo "正在运行tvzydaily.py脚本..."
-          python tvzydaily.py || {
-            echo "错误：tvzydaily.py脚本执行失败"
-            exit 1
-          }
-          
-          # 检查输出文件是否存在
-          if [ -f "tzydauto.txt" ]; then
-            echo "输出文件存在，检查文件内容..."
-            # 显示文件的前50行以检查分类标签格式
-            head -n 50 tzydauto.txt
-            # 搜索包含,#genre#的行
-            echo "\n检查,#genre#标签..."
-            grep -n ",#genre#" tzydauto.txt || echo "警告：未找到,#genre#标签"
-            echo "file_exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "错误：输出文件tzydauto.txt不存在"
-            echo "file_exists=false" >> $GITHUB_OUTPUT
-            exit 1
-          fi
+        run: python tvzydaily.py
       
-      - name: Configure Git and resolve conflicts
-        # 只有在脚本成功运行并且文件存在时才执行此步骤
-        if: steps.run_script.outputs.file_exists == 'true'
+      - name: Commit and push changes
         run: |
-          # 开启详细日志记录
-          set -x
-          
-          # 添加详细的环境信息
-          echo "=== Git环境信息 ==="
-          git --version
-          git remote -v
-          git branch -a
-          git status
-          echo "===================="
-          
-          # 配置git行为和凭据 - 更全面的配置
+          # 设置git配置
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git config --global pull.rebase false  # 使用merge而不是rebase
-          git config --global merge.ff false  # 允许非快进合并
-          git config --global merge.conflictstyle diff3  # 提供更好的冲突视图
-          git config --global core.autocrlf false  # 避免行尾字符问题
-          git config --global core.safecrlf warn  # 行尾字符警告
-          git config --global http.postBuffer 524288000  # 增加HTTP缓冲区大小
-          git config --global https.postBuffer 524288000  # 增加HTTPS缓冲区大小
           
-          # 明确设置远程URL包含token，确保权限正确
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          # 确保我们在正确的分支上
+          git checkout main
           
-          # 确保在正确的分支上
-          echo "Step 1: 检查并切换到main分支..."
-          git checkout main || {
-            echo "错误：无法切换到main分支，尝试创建..."
-            git checkout -b main
-          }
-          
-          # 多次尝试获取最新代码，确保完全同步
-          echo "Step 2: 多次同步尝试以确保本地与远程一致..."
-          for attempt in {1..5}; do  # 增加尝试次数
-            echo "  同步尝试 $attempt/5"
-            git fetch --all --prune --verbose || {
-              echo "    同步失败，等待5秒后重试..."
-              sleep 5
-              continue
-            }
-            echo "    同步成功！"
-            break
-          done
-          
-          # 检查远程分支状态
-          echo "当前分支状态:"
-          git status
-          
-          # 重置本地分支到远程状态，确保完全干净的工作目录
-          echo "Step 3: 重置本地分支到远程状态..."
+          # 完全重置本地仓库，避免任何合并冲突
+          git fetch --all
           git reset --hard origin/main
           
-          # 检查重置后的状态
-          git status
-          
-          # 再次运行脚本生成最新文件
-          echo "Step 4: 运行tvzydaily.py脚本生成最新更新..."
+          # 运行脚本生成最新文件
           python tvzydaily.py
           
-          # 检查输出文件
-          if [ ! -f "tzydauto.txt" ]; then
-            echo "错误：输出文件tzydauto.txt不存在"
-            exit 1
-          fi
-          
-          # 验证文件内容
-          echo "Step 5: 验证文件内容..."
-          head -n 50 tzydauto.txt
-          grep -n ",#genre#" tzydauto.txt || echo "警告：未找到,#genre#标签"
-          
-          # 添加更改
-          echo "Step 6: 添加并提交更改..."
-          git add tzydauto.txt
+          # 添加并提交更改
+          git add tzydayauto.txt
           
           # 检查是否有更改需要提交
-          if git diff --quiet && git diff --staged --quiet; then
-            echo "没有更改需要提交，结束流程"
-            exit 0
+          if ! git diff --quiet && ! git diff --staged --quiet; then
+            git commit -m "Auto-update IPTV files"
+            
+            # 再次拉取以确保在提交后没有新的更改
+            git pull --rebase origin main || true
+            
+            # 使用标准的GitHub Actions推送方式
+            git push origin HEAD:main
+          else
+            echo "No changes to commit"
           fi
-          
-          # 创建提交
-          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
-          git commit -m "Auto-update IPTV files - $TIMESTAMP"
-          
-          # 推送前的最终同步和冲突处理
-          echo "Step 7: 推送前进行最终同步和冲突处理..."
-          
-          # 首先拉取最新代码，使用--allow-unrelated-histories防止历史冲突
-          git pull --rebase=false --no-edit --allow-unrelated-histories origin main || {
-            echo "拉取失败，检查是否有冲突..."
-            
-            # 如果存在冲突，使用我们的版本覆盖（因为我们正在更新数据文件）
-            if git status | grep -q "both modified"; then
-              echo "检测到冲突，使用我们的版本覆盖..."
-              git checkout --ours tzydauto.txt
-              git add tzydauto.txt
-              git commit -m "Resolve merge conflict by keeping our version - $TIMESTAMP" || {
-                # 如果提交失败，可能没有新的更改需要提交
-                echo "没有需要提交的冲突解决更改"
-              }
-            else
-              # 其他类型的拉取失败，尝试更强制的方式
-              echo "非冲突类拉取失败，使用更强制的同步策略..."
-              git fetch --all --verbose
-              
-              # 使用更激进的合并策略
-              git merge --strategy=recursive --strategy-option=theirs --no-edit origin/main || {
-                echo "合并失败，执行硬重置并重新生成..."
-                git reset --hard origin/main
-                python tvzydaily.py
-                git add tzydauto.txt
-                if ! git diff --quiet && ! git diff --staged --quiet; then
-                  git commit -m "Auto-update IPTV files after merge failure - $TIMESTAMP"
-                fi
-              }
-            fi
-          }
-          
-          # 多次尝试推送，增加延迟时间
-          echo "Step 8: 多次尝试推送更改..."
-          for attempt in {1..5}; do  # 增加尝试次数
-            echo "  推送尝试 $attempt/5"
-            
-            # 使用更详细的推送命令
-            git push --verbose origin main || {
-              echo "    推送失败，等待10秒后重试..."
-              sleep 10  # 增加等待时间，避免API限流
-              continue
-            }
-            
-            echo "推送成功！"
-            exit 0
-          done
-          
-          # 如果所有尝试都失败，使用强制推送作为最后手段
-          echo "所有正常推送尝试失败，使用--force-with-lease作为最后手段..."
-          git push --force-with-lease --verbose origin main || {
-            echo "严重错误：即使使用force-with-lease也无法推送"
-            
-            # 创建临时分支作为备选方案
-            TEMP_BRANCH="temp-update-$(date +%s)"
-            git checkout -b $TEMP_BRANCH
-            
-            if git push --verbose origin $TEMP_BRANCH; then
-              echo "成功创建临时分支: $TEMP_BRANCH，请手动合并"
-              
-              # 记录临时分支信息到日志文件
-              echo "临时分支信息: $TEMP_BRANCH" > temp_branch_info.txt
-              git add temp_branch_info.txt
-              git commit -m "Add temp branch info - $TEMP_BRANCH"
-              git push --force-with-lease origin $TEMP_BRANCH || true
-              
-              exit 0
-            fi
-            
-            echo "最终失败：无法创建临时分支"
-            exit 1
-          }
-          
-          echo "Git操作成功完成"
-          set +x  # 关闭详细日志记录
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
