@@ -1,4 +1,4 @@
-name: 电视直播线路自动更新工作流（无git push版本）
+name: 电视直播线路自动更新工作流（基于GitHub API）
 
 on:
   schedule:
@@ -12,7 +12,7 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # 获取完整历史记录
+          fetch-depth: 1  # 只获取最新提交，减少带宽使用
           ref: ${{ github.ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
       
@@ -22,56 +22,19 @@ jobs:
           echo "工作目录: $(pwd)"
           ls -la
       
-      - name: 初始化Git配置和同步远程仓库更改
+      - name: 初始化Git配置（最小化设置）
         run: |
-          echo "🔄 初始化Git配置和同步远程仓库更改..."
+          echo "🔄 初始化基本Git配置..."
           
-          # 配置Git用户信息（使用local作用域以避免影响全局）
+          # 仅配置基本用户信息，不执行任何推送相关操作
           git config --local user.name "github-actions[bot]"
           git config --local user.email "action@github.com"
           
-          # 配置Git处理行尾字符
-          git config --local core.autocrlf input
-          
-          # 显示当前仓库URL和分支信息
+          # 显示基本仓库信息用于调试
           echo "📝 仓库信息："
           git remote -v
           echo "当前分支："
           git branch
-          
-          # 确保在正确的分支上
-          git checkout ${{ github.ref_name }}
-          
-          # 强制获取最新远程更改
-          echo "📥 强制获取最新远程更改..."
-          git fetch --prune --all
-          
-          # 验证远程分支存在性
-          if git show-ref --quiet --verify refs/remotes/origin/${{ github.ref_name }}; then
-            echo "✅ 确认远程分支origin/${{ github.ref_name }}存在"
-            
-            # 使用fetch + reset策略代替pull，避免合并冲突
-            echo "🔄 重置本地分支以匹配远程..."
-            git reset --hard origin/${{ github.ref_name }}
-          else
-            echo "⚠️  远程分支不存在，将创建新的本地分支"
-          fi
-          
-          # 验证当前状态
-          echo "📊 当前Git状态："
-          git status
-          git log -n 5 --oneline
-          
-          # 显示远程分支信息
-          echo "📋 远程分支："
-          git branch -r
-          
-          # 确保工作目录干净
-          echo "🧹 检查工作目录："
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "⚠️  工作目录存在未提交的更改"
-          else
-            echo "✅ 工作目录干净"          fi
       
       - name: 设置Python环境
         uses: actions/setup-python@v4
@@ -98,25 +61,14 @@ jobs:
             exit 1
           fi
       
-      - name: 重新同步远程仓库状态（执行脚本前再次同步）
+      - name: 清理工作目录（确保脚本运行环境干净）
         run: |
-          echo "🔄 执行脚本前再次同步远程仓库状态..."
-          
-          # 再次获取最新的远程更改
-          git fetch --prune --all
-          
-          # 验证远程分支并重置
-          if git show-ref --quiet --verify refs/remotes/origin/${{ github.ref_name }}; then
-            echo "🔄 再次重置本地分支以匹配最新远程状态..."
-            git reset --hard origin/${{ github.ref_name }}
-          fi
-          
-          # 最后检查一次工作目录状态
-          echo "📊 最终Git状态："
-          git status
-          git log -n 3 --oneline
+          echo "🧹 清理工作目录，确保脚本运行环境干净..."
+          # 删除可能存在的旧输出文件，避免干扰
+          rm -f tzydauto.txt debug_output.txt tvzy.log
+          echo "✅ 工作目录清理完成"
       
-      - name: 使用GitHub API上传更新的文件（无git push）
+      - name: 使用GitHub API进行文件更新（完全基于API的原子操作）
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO_OWNER: ${{ github.repository_owner }}
@@ -403,49 +355,146 @@ EOF
             return 1
           }
           
-          # 上传主要输出文件
-          echo "🚀 开始使用GitHub API上传文件..."
+          # 初始化网络错误计数器
+          network_error_count=0
+          
+          # 系统健康检查
+          echo "🏥 系统健康检查..."
+          echo "📊 当前时间: $(date)"
+          echo "📡 网络连接测试..."
+          ping -c 2 api.github.com >/dev/null 2>&1 && echo "✅ 网络连接正常" || echo "⚠️  网络连接测试失败，但将继续尝试"
+          
+          # 确保环境变量配置正确
+          echo "🔍 🛡️  验证GitHub API环境..."
+          echo "  - 仓库所有者: ${REPO_OWNER:-'未设置'}"
+          echo "  - 仓库名称: ${REPO_NAME:-'未设置'}"
+          echo "  - 分支: ${BRANCH:-'未设置'}"
+          echo "  - API版本: ${GITHUB_API_VERSION:-'未设置'}"
+          echo "  - 用户代理: ${USER_AGENT:-'未设置'}"
+          
+          # 环境变量完整性检查
+          if [ -z "$REPO_OWNER" ] || [ -z "$REPO_NAME" ] || [ -z "$BRANCH" ]; then
+            echo "⚠️  🚨 警告: 关键环境变量未完全设置，将尝试使用默认值"
+            [ -z "$BRANCH" ] && BRANCH="main" && echo "  - 已设置默认分支: $BRANCH"
+          fi
+          
+          # 工作目录状态检查
+          echo "📁 🧹 工作目录检查..."
+          ls -la
+          
+          # 使用API更新主文件（原子操作）
+          echo "🚀 🎯 开始使用GitHub API原子更新主文件..."
+          echo "📋 操作详情:"
+          echo "  - 目标文件: tzydauto.txt"
+          echo "  - 更新模式: 基于SHA的原子操作"
+          echo "  - 重试策略: 智能指数退避"
+          
+          # 上传主文件
           upload_with_retry "tzydauto.txt"
-          upload_status=$?
+          main_update_status=$?
           
-          # 上传调试日志（如果存在）
+          # 上传辅助日志文件
+          debug_logs_status=0
           if [ -f "debug_output.txt" ]; then
-            echo "📋 上传调试日志文件..."
+            echo "📋 尝试上传调试日志..."
             upload_with_retry "debug_output.txt"
+            debug_logs_status=$?
           fi
           
-          # 上传脚本日志（如果存在）
           if [ -f "tvzy.log" ]; then
-            echo "📊 上传脚本日志文件..."
+            echo "📊 尝试上传脚本日志..."
             upload_with_retry "tvzy.log"
+            # 日志文件的状态不影响主流程
           fi
           
-          # 返回上传状态
-          if [ $upload_status -eq 0 ]; then
-            echo "🎉 所有文件上传成功！"
-            # 生成详细报告
-            echo "📋 上传报告:"
-            echo "- 主文件: tzydauto.txt (成功)"
-            if [ -f "debug_output.txt" ]; then echo "- 日志文件: debug_output.txt (尝试上传)"; fi
-            if [ -f "tvzy.log" ]; then echo "- 日志文件: tvzy.log (尝试上传)"; fi
-            echo "⏰ 完成时间: $(date +'%Y-%m-%d %H:%M:%S')"
+          # 创建一个简单的成功标记文件
+          echo "🔖 创建更新状态标记文件..."
+          echo "Last successful update: $(date)" > update_status.txt
+          upload_with_retry "update_status.txt"
+          
+          # 确定最终状态（主文件成功才视为整体成功）
+          echo "📊 📋 操作结果汇总..."
+          
+          if [ $main_update_status -eq 0 ]; then
+            echo "🎉 🎉 🎉 🎉 主文件更新成功！工作流执行完成！"
+            
+            # 生成详细执行报告
+            echo "📋 📊 API更新操作完整报告:"
+            echo "✅ 🎯 主文件: tzydauto.txt (成功)"
+            
+            # 日志文件状态详细报告
+            if [ -f "debug_output.txt" ]; then 
+              if [ $debug_logs_status -eq 0 ]; then
+                echo "✅ 📝 日志文件: debug_output.txt (成功)"
+              elif [ $debug_logs_status -eq 1 ]; then
+                echo "⚠️ 📝 日志文件: debug_output.txt (已尝试但失败)"
+              elif [ $debug_logs_status -eq 2 ]; then
+                echo "❌ 📝 日志文件: debug_output.txt (致命错误)"
+              else
+                echo "ℹ️ 📝 日志文件: debug_output.txt (状态未知)"
+              fi
+            else
+              echo "ℹ️ 📝 日志文件: debug_output.txt (不存在)"
+            fi
+            
+            if [ -f "tvzy.log" ]; then 
+              echo "ℹ️ 📊 日志文件: tvzy.log (已尝试上传)"
+            else
+              echo "ℹ️ 📊 日志文件: tvzy.log (不存在)"
+            fi
+            
+            echo "🔖 ⏰ 状态文件: update_status.txt (已创建)"
+            echo "⏰ 📅 完成时间: $(date +'%Y-%m-%d %H:%M:%S')"
+            echo "🏆 ✅ 基于GitHub API的原子更新方案执行成功！"
+            echo "🎯 优势: 完全避免Git Push冲突，基于SHA的乐观并发控制确保数据一致性"
+            echo "✅ 工作流执行成功！"
             exit 0
           else
-            echo "❌ 错误: 文件上传失败"
-            echo "📋 请检查GitHub API配置和文件权限"
+            echo "❌ ❌ ❌ ❌ 错误: 主文件更新失败"
+            echo "📋 🛠️  详细错误诊断:"
+            
+            # 根据错误码提供更精确的诊断
+            case "$main_update_status" in
+              1)
+                echo "⚠️  常规失败: 可能是网络问题或API限制"
+                ;;
+              2)
+                echo "🚨 致命错误: 文件预处理失败，检查文件格式和权限"
+                ;;
+              *)
+                echo "❓ 未知错误: 状态码 $main_update_status"
+                ;;
+            esac
+            
+            echo "🔍 故障排除步骤:"
+            echo "1. 🔐 检查GitHub Token权限和有效性"
+            echo "2. 📁 验证tzydauto.txt文件是否存在、可读且格式正确"
+            echo "3. 📏 确认文件大小不超过GitHub 100MB限制"
+            echo "4. 🌐 检查GitHub API服务状态是否正常"
+            echo "5. 🚫 验证仓库分支保护规则配置"
+            echo "6. ⏱️  考虑API请求频率限制问题"
+            echo "7. 📊 查看完整工作流日志获取详细错误信息"
+            
             exit 1
           fi
       
       - name: 发送成功通知
         if: success()
         run: |
-          echo "🎉 电视直播线路自动更新成功！"
+          echo "🎉 🎉 🎉 电视直播线路自动更新成功！"
           echo "📁 已更新文件: tzydauto.txt"
+          echo "🔄 使用GitHub API原子更新方案，完全避免Git Push冲突"
+          echo "✅ 基于SHA的乐观并发控制确保数据一致性"
           echo "📊 运行时间: $(date)"
+          echo "🏆 工作流执行成功完成！"
       
       - name: 发送失败通知
         if: failure()
         run: |
-          echo "❌ 电视直播线路自动更新失败！"
-          echo "📋 请检查工作流日志获取详细错误信息"
+          echo "❌ ❌ ❌ 电视直播线路自动更新失败！"
+          echo "📋 错误诊断信息:"
+          echo "- 检查GitHub API权限设置"
+          echo "- 验证文件格式和大小"
+          echo "- 查看详细工作流日志获取完整错误信息"
+          echo "- 考虑检查仓库分支保护规则"
           exit 1
