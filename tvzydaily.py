@@ -42,12 +42,8 @@ GITHUB_SOURCES = [
     "https://ghcy.eu.org/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u",
     
     # IP相关数据源和其他IPTV源
-    "https://ghcy.eu.org/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt",
-    "hhttps://ghcy.eu.org/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u",
-    "https://ghcy.eu.org/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt",
-    "https://ghcy.eu.org/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt",
-    "https://ghcy.eu.org/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u",
-    "https://ghcy.eu.org/https://raw.githubusercontent.com/Alvin9999/pac2/master/aa.txt"
+    "https://ghcy.eu.org/https://raw.githubusercontent.com/Kimentanm/aptv/master/m3u/iptv.m3u",
+
 ]
 
 # 频道分类
