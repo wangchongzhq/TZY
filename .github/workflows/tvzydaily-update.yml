@@ -44,8 +44,12 @@ jobs:
           # 确保我们在正确的分支上
           git checkout main
           
-          # 获取最新的远程更改
+          # 先获取最新的远程更改并合并，确保本地分支与远程同步
           git fetch origin main
+          git merge origin/main --no-edit || {
+            echo "合并失败，尝试拉取强制覆盖..."
+            git reset --hard origin/main
+          }
           
           # 运行脚本生成最新文件
           python tvzydaily.py
@@ -58,12 +62,19 @@ jobs:
             # 创建提交
             git commit -m "Auto-update IPTV files - $(date +'%Y-%m-%d %H:%M:%S')"
             
-            # 尝试使用--force-with-lease安全地推送，避免覆盖他人的更改
-            # 但首先尝试正常推送
-            git push origin main || {
-              echo "推送失败，尝试强制推送..."
+            # 再次获取最新更改，确保在推送前没有新的远程提交
+            git fetch origin main
+            
+            # 尝试重新基础合并，确保我们的提交在远程提交之后
+            git rebase origin/main || {
+              echo "重基础失败，回退到原始提交并尝试强制推送..."
+              git rebase --abort
+              # 使用--force-with-lease安全地强制推送，避免覆盖未预期的更改
               git push --force-with-lease origin main
             }
+            
+            # 如果重基础成功，则正常推送
+            git push origin main
           else
             echo "No changes to commit"
           fi
