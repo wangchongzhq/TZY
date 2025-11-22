@@ -18,14 +18,11 @@ jobs:
     permissions:
       contents: write  # 确保有写权限
     steps:
-      # 第一步：使用特定的token参数重新检出代码
-      - name: Checkout repository with write access
+      # 第一步：检出代码（仅用于获取脚本，不使用git推送）
+      - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           ref: main
-          fetch-depth: 0
-          persist-credentials: true
       
       # 第二步：设置Python环境
       - name: Set up Python
@@ -39,8 +36,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests schedule
       
-      # 第四步：生成文件并推送（使用简化但更可靠的方法）
-      - name: Generate and upload file
+      # 第四步：生成文件并直接使用GitHub API上传（完全避免git操作）
+      - name: Generate and upload file using GitHub API
         run: |
           echo "🔄 开始生成直播源文件..."
           
@@ -55,44 +52,56 @@ jobs:
           
           echo "✅ 文件生成成功，内容统计："
           wc -l tzydauto.txt
+          head -n 5 tzydauto.txt
           
-          # 使用GitHub CLI作为更可靠的推送方式
-          echo "🔄 安装GitHub CLI..."
-          sudo apt-get update
-          sudo apt-get install -y gh
+          # 直接使用curl和GitHub API上传文件，不使用任何git命令
+          echo "🔄 使用GitHub API直接上传文件..."
           
-          # 配置GitHub CLI
-          echo "🔄 配置GitHub CLI..."
-          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-          gh auth status
+          # 编码文件内容为base64
+          CONTENT=$(base64 -w 0 tzydauto.txt)
           
-          # 使用GitHub CLI更新文件 - 这是最可靠的方式，无需处理git合并
-          echo "🔄 使用GitHub CLI更新文件..."
-          if gh api -X PUT /repos/wangchongzhq/zhby/contents/tzydauto.txt \
-             -F message="Auto-update IPTV files - $(date +'%Y-%m-%d %H:%M:%S')" \
-             -F content="$(base64 tzydauto.txt)" \
-             -F branch=main; then
-            echo "✅ ✅ ✅ 成功使用GitHub API更新文件！"
-          else
-            echo "❌ GitHub API更新失败，尝试备用方法..."
-            
-            # 备用方法：使用低级别API
-            CONTENT=$(base64 -w 0 tzydauto.txt)
-            curl -X PUT \
-                 -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                 -H "Accept: application/vnd.github+json" \
-                 https://api.github.com/repos/wangchongzhq/zhby/contents/tzydauto.txt \
-                 -d '{"message":"Auto-update IPTV files - $(date +'%Y-%m-%d %H:%M:%S')","content":"'"$CONTENT"'","branch":"main"}'
-            
-            if [ $? -eq 0 ]; then
-              echo "✅ 备用方法成功！"
-            else
-              echo "❌ 所有方法都失败了"
+          # 创建日期时间戳
+          TIMESTAMP=$(date +'%Y-%m-%d %H:%M:%S')
+          
+          # 构建JSON数据，正确处理引号转义
+          JSON_DATA=$(cat <<EOF
+{
+  "message": "Auto-update IPTV files - $TIMESTAMP",
+  "content": "$CONTENT",
+  "branch": "main"
+}
+EOF
+)
+          
+          # 使用curl调用GitHub API
+          RESPONSE=$(curl -X PUT \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github+json" \
+              -H "Content-Type: application/json" \
+              https://api.github.com/repos/wangchongzhq/zhby/contents/tzydauto.txt \
+              --data-binary "$JSON_DATA")
+          
+          # 检查响应
+          if [[ $? -eq 0 ]]; then
+            # 检查是否包含错误信息
+            if echo "$RESPONSE" | grep -q '"message":"Not Found"'; then
+              echo "❌ 错误: 仓库路径或文件路径不正确"
+              echo "响应内容: $RESPONSE"
               exit 1
+            elif echo "$RESPONSE" | grep -q '"message":"Bad credentials"'; then
+              echo "❌ 错误: GitHub Token 无效或权限不足"
+              echo "响应内容: $RESPONSE"
+              exit 1
+            else
+              echo "✅ ✅ ✅ 成功使用GitHub API更新文件！"
+              echo "响应内容: $RESPONSE"
             fi
+          else
+            echo "❌ GitHub API请求失败"
+            echo "响应内容: $RESPONSE"
+            exit 1
           fi
           
           echo "🎉 更新完成！"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
