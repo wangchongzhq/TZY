@@ -15,7 +15,10 @@ jobs:
       # 检出代码
       - name: 检出代码
         uses: actions/checkout@v3
-        
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      
       # 设置Python环境
       - name: 设置Python环境
         uses: actions/setup-python@v4
@@ -53,26 +56,32 @@ jobs:
         if: steps.check_file.outputs.file_exists == 'true'
         run: |
           # 配置git身份
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Actions Bot"
           
-          # 确保拉取远程最新更改，避免冲突
-          git pull --rebase origin main || {
-            echo "拉取失败，尝试强制拉取..."
-            git fetch --all
-            git reset --hard origin/main
-          }
+          # 确保获取所有远程更改
+          git fetch --all
           
-          # 添加更改的文件
+          # 强制重置到远程主分支，确保本地和远程一致
+          git reset --hard origin/main
+          
+          # 重新执行脚本确保生成最新文件
+          python tvzy.py
+          
+          # 添加文件
           git add tzydauto.txt
           
           # 检查是否有更改
-          if git diff --quiet && git diff --staged --quiet; then
-            echo "没有发现更改，跳过提交"
-          else
-            git commit -m "自动更新电视直播线路 $(date +'%Y-%m-%d')"
-            git push origin main
+          if git diff --staged --quiet; then
+            echo "没有检测到更改，跳过提交"
+            exit 0
           fi
+          
+          # 提交更改
+          git commit -m "自动更新电视直播线路 $(date +'%Y-%m-%d %H:%M:%S')"
+          
+          # 强制推送，确保能够覆盖远程更改
+          git push --force origin main
       
       # 保存输出文件作为构建产物
       - name: 保存输出文件
