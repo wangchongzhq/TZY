@@ -443,12 +443,14 @@ def main():
         logger.info(f"  - Retry strategy: {args.max_retries} retries, {args.base_delay}s base delay")
         
         # 创建更新器实例
-        updater = GitHubAPIUpdater(
-            token=args.token,
-            repo_owner=args.owner,
-            repo_name=args.repo,
-            branch=args.branch
-        )
+            updater = GitHubAPIUpdater(
+                token=args.token,
+                repo_owner=args.owner,
+                repo_name=args.repo,
+                branch=args.branch,
+                mutual_exclusion=not args.no_mutex,
+                workflow_name=args.workflow_name or os.environ.get('GITHUB_WORKFLOW')
+            )
         
         # 执行文件更新
         logger.info(f"🔄 Starting file upload process...")
