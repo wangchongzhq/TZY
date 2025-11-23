@@ -3,7 +3,7 @@ name: TVZY Daily Update
 on:
   # 每天定时运行
   schedule:
-    - cron: '0 0 * * *'  # 每天UTC 0点运行
+    - cron: '0 1 * * *'  # 每天1:00 UTC运行（北京时间9:00）
   # 允许手动触发
   workflow_dispatch:
     inputs:
@@ -27,20 +27,80 @@ jobs:
         with:
           python-version: '3.10'
           
-      - name: Install dependencies
+      - name: Install dependencies with verbose logging
         run: |
+          python --version
+          python -m pip --version
           python -m pip install --upgrade pip
           pip install requests schedule
-      
-      - name: Run TVZY update script
-        run: python tvzydaily.py
-      
-      - name: Commit and push changes
+          pip list
+          
+      - name: Debug environment
         run: |
-          # 设置git配置
+          echo "Current directory: $(pwd)"
+          echo "Directory contents:"
+          ls -la
+          echo "Python path: $(which python)"
+          echo "Python env:"
+          python -c "import sys; print(sys.path)"
+      
+      - name: Create test output directory if needed
+        run: mkdir -p output
+        
+      - name: Run TVZY update script with debug
+        id: run_script
+        run: |
+          echo "Starting TVZY update script..."
+          python -u tvzydaily.py 2>&1 | tee script_output.log
+          EXIT_CODE=${PIPESTATUS[0]}
+          echo "Script exit code: $EXIT_CODE"
+          echo "script_exit_code=$EXIT_CODE" >> $GITHUB_ENV
+          
+      - name: Check script output and logs
+        run: |
+          echo "=== Script output log ==="
+          cat script_output.log || echo "No script output log found"
+          
+          echo "=== Python errors ==="
+          grep -i "error\|exception\|fail" script_output.log || echo "No obvious errors found"
+          
+          echo "=== Current directory after script ==="
+          ls -la
+          
+      - name: Check if output file exists
+        id: check_output
+        run: |
+          if [ -f "tzydayauto.txt" ]; then
+            echo "Output file created successfully!"
+            echo "File details:"
+            ls -la tzydayauto.txt
+            echo "File size: $(wc -c < tzydayauto.txt) bytes"
+            echo "First 30 lines of output file:"
+            head -n 30 tzydayauto.txt
+            echo "output_exists=true" >> $GITHUB_ENV
+          else
+            echo "ERROR: Output file tzydayauto.txt not created!"
+            echo "Directory contents after script run:"
+            find . -type f -name "*.txt" | sort
+            echo "output_exists=false" >> $GITHUB_ENV
+          fi
+          
+      - name: Create update status file
+        run: |
+          echo "Update status: $(date +'%Y-%m-%d %H:%M:%S')"
+          echo "Output file created: ${{ env.output_exists }}"
+          echo "Script exit code: ${{ env.script_exit_code }}"
+          echo "Update status: $(date +'%Y-%m-%d %H:%M:%S')" > update_status.txt
+          echo "Output file created: ${{ env.output_exists }}" >> update_status.txt
+          echo "Script exit code: ${{ env.script_exit_code }}" >> update_status.txt
+          
+      - name: Configure Git
+        run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           
+      - name: Add and commit changes
+        run: |
           # 确保我们在正确的分支上
           git checkout main
           
@@ -48,15 +108,17 @@ jobs:
           git fetch --all
           git reset --hard origin/main
           
-          # 运行脚本生成最新文件
-          python tvzydaily.py
+          # 运行脚本生成最新文件 (如果尚未运行)
+          if [ ! -f "tzydayauto.txt" ]; then
+            python tvzydaily.py
+          fi
           
-          # 添加并提交更改
-          git add tzydayauto.txt
+          # 添加所有相关文件
+          git add tzydayauto.txt update_status.txt script_output.log
           
           # 检查是否有更改需要提交
           if ! git diff --quiet && ! git diff --staged --quiet; then
-            git commit -m "Auto-update IPTV files"
+            git commit -m "Automated update of TVZY channels $(date +'%Y-%m-%d')"
             
             # 再次拉取以确保在提交后没有新的更改
             git pull --rebase origin main || true
@@ -68,3 +130,13 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Upload logs as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: script-logs
+          path: |
+            script_output.log
+            update_status.txt
+            tzydayauto.txt
+          retention-days: 7
