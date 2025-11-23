@@ -20,7 +20,40 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0  # 获取完整历史
-          persist-credentials: false  # 禁用默认凭据存储
+          persist-credentials: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: 🔒 工作流互斥锁检查
+        id: mutex_check
+        run: |
+          echo "Starting workflow mutual exclusion check..."
+          python workflow_mutex.py \
+            --owner "${{ github.repository_owner }}" \
+            --repo "${{ github.event.repository.name || github.repository }}" \
+            --workflow "TVZY Daily Update" \
+            --token "${{ secrets.GITHUB_TOKEN }}" \
+            --wait \
+            --max-wait 300 \
+            --fallback
+            
+          # 捕获脚本退出码
+          MUTEX_RESULT=$?
+          echo "Mutex check result: $MUTEX_RESULT"
+          
+          # 检查是否使用了备选策略
+          if [ -f "used_api_fallback.txt" ]; then
+            echo "API fallback was used, switching to API update mode"
+            echo "using_api_fallback=true" >> $GITHUB_ENV
+          else
+            echo "using_api_fallback=false" >> $GITHUB_ENV
+          fi
+          
+          # 如果互斥锁检查失败且没有备选策略，终止工作流
+          if [ $MUTEX_RESULT -ne 0 ] && [ ! -f "used_api_fallback.txt" ]; then
+            echo "❌ Failed to acquire mutex and no fallback available"
+            exit 1
+          fi
+          echo "✅ Mutual exclusion check completed"
       
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -113,18 +146,24 @@ jobs:
           git config --list > git_config.log
           echo "Git config saved to git_config.log"
           
-      - name: Add comprehensive Git status debugging
+      - name: Add enhanced Git status debugging and conflict prevention
         run: |
           echo "=== GIT REPOSITORY DETAILED STATUS CHECK ==="
+          # 增强的诊断日志
+          mkdir -p git_debug_logs
+          
           echo "Current branch information:"
           git branch -a
           
           echo "\nRemote information:"
           git remote -v
           
-          echo "\nFetching all remotes..."
-          git fetch --all --prune --verbose
+          # 执行多次fetch以确保完全同步
+          echo "\nFetching all remotes with force option..."
+          git fetch --all --prune --force --tags --verbose
+          git fetch origin main --force --verbose || echo "Secondary fetch failed but continuing"
           
+          # 更详细的引用状态检查
           echo "\nRemote refs status:"
           git ls-remote --heads origin
           
@@ -132,17 +171,29 @@ jobs:
           git log --oneline HEAD..origin/main || echo "No commits ahead of origin/main"
           git log --oneline origin/main..HEAD || echo "No commits behind origin/main"
           
+          # 检测潜在的fetch first冲突
+          echo "\nChecking for potential 'fetch first' conflicts..."
+          if git log --oneline origin/main..HEAD; then
+            echo "⚠️  WARNING: Local branch is ahead of remote - potential divergence detected!"
+            echo "⚠️  This may lead to 'fetch first' errors during push."
+            echo "⚠️  Preparing conflict resolution strategy..."
+            # 记录详细的分歧信息
+            git log --oneline -p origin/main..HEAD > git_debug_logs/divergence_details.log
+            echo "Divergence details saved to git_debug_logs/divergence_details.log"
+          fi
+          
           echo "\nReference logs:"
           git reflog --head=5
           
           echo "\nGit object info:"
           git count-objects -v
           
-          # 保存详细状态到日志文件
-          mkdir -p git_debug_logs
+          # 保存更全面的调试信息
           git status --verbose > git_debug_logs/status.log
           git log --oneline -n 10 > git_debug_logs/recent_commits.log
           git ls-remote > git_debug_logs/remote_refs.log
+          git show-ref > git_debug_logs/show_ref.log
+          git branch -vv > git_debug_logs/branch_details.log
           
           echo "\nDetailed Git status saved to git_debug_logs/"
           echo "==============================================="
@@ -150,6 +201,34 @@ jobs:
       - name: Add and commit changes with debug tracing
         run: |
           echo "Starting enhanced Git operations with debug tracing..."
+          
+          # 检查是否使用API备选模式
+          if [ "${{ env.using_api_fallback }}" = "true" ]; then
+            echo "⚠️  Using API fallback mode due to workflow conflicts"
+            echo "Performing file updates via GitHub API instead of Git"
+            
+            # 使用GitHub API直接更新文件
+            python github_api_updater.py \
+              --token "${{ secrets.GITHUB_TOKEN }}" \
+              --owner "${{ github.repository_owner }}" \
+              --repo "${{ github.event.repository.name || github.repository }}" \
+              --file "tzydayauto.txt" \
+              --message "API-based update after workflow conflict detection"
+            
+            # 检查API更新是否成功
+            if [ $? -eq 0 ]; then
+              echo "✅ File updated successfully via GitHub API"
+              echo "push_status=success_with_github_api" >> $GITHUB_ENV
+            else
+              echo "❌ GitHub API update failed"
+              echo "push_status=failure_api_update" >> $GITHUB_ENV
+            fi
+            
+            # 由于使用API更新，跳过后续Git操作
+            exit 0
+          fi
+          echo "🔄 Continuing with standard Git operations"
+          
           # 确保我们在正确的分支上
           echo "Checking out main branch..."
           git checkout main || {
@@ -326,6 +405,14 @@ EOF
               ;;
             "failure")
               echo "[ERROR] Update failed due to Git push conflicts or other errors" >> update_status.txt
+              ;;
+            "failure_api_update")
+              echo "[ERROR] All update methods failed" >> update_status.txt
+              echo "[CRITICAL] Manual intervention required" >> update_status.txt
+              ;;
+            "success_with_github_api")
+              echo "[SUCCESS] Update completed using GitHub API" >> update_status.txt
+              echo "[INFO] This was executed using the mutual exclusion fallback strategy" >> update_status.txt
               ;;
             "nothing_to_push")
               echo "[INFO] No changes detected, nothing to push" >> update_status.txt
