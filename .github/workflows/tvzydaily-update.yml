@@ -94,20 +94,76 @@ jobs:
           echo "Output file created: ${{ env.output_exists }}" >> update_status.txt
           echo "Script exit code: ${{ env.script_exit_code }}" >> update_status.txt
           
-      - name: Configure Git
+      - name: Configure Git with enhanced settings
         run: |
+          echo "Configuring Git with enhanced settings..."
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          # 添加调试配置
+          git config --global core.quotepath false
+          git config --global push.default current
+          git config --global advice.detachedHead false
+          git config --global log.date iso-strict
           
-      - name: Add and commit changes
+          # 显示配置信息
+          echo "Git configuration:"
+          git config --list
+          
+          # 保存Git配置到日志文件
+          git config --list > git_config.log
+          echo "Git config saved to git_config.log"
+          
+      - name: Add comprehensive Git status debugging
         run: |
-          echo "Starting Git operations..."
-          # 确保我们在正确的分支上
-          git checkout main
+          echo "=== GIT REPOSITORY DETAILED STATUS CHECK ==="
+          echo "Current branch information:"
+          git branch -a
           
-          # 1. 先获取最新代码
-          echo "Fetching latest changes..."
-          git fetch --all
+          echo "\nRemote information:"
+          git remote -v
+          
+          echo "\nFetching all remotes..."
+          git fetch --all --prune --verbose
+          
+          echo "\nRemote refs status:"
+          git ls-remote --heads origin
+          
+          echo "\nLocal vs Remote comparison:"
+          git log --oneline HEAD..origin/main || echo "No commits ahead of origin/main"
+          git log --oneline origin/main..HEAD || echo "No commits behind origin/main"
+          
+          echo "\nReference logs:"
+          git reflog --head=5
+          
+          echo "\nGit object info:"
+          git count-objects -v
+          
+          # 保存详细状态到日志文件
+          mkdir -p git_debug_logs
+          git status --verbose > git_debug_logs/status.log
+          git log --oneline -n 10 > git_debug_logs/recent_commits.log
+          git ls-remote > git_debug_logs/remote_refs.log
+          
+          echo "\nDetailed Git status saved to git_debug_logs/"
+          echo "==============================================="
+          
+      - name: Add and commit changes with debug tracing
+        run: |
+          echo "Starting enhanced Git operations with debug tracing..."
+          # 确保我们在正确的分支上
+          echo "Checking out main branch..."
+          git checkout main || {
+            echo "Failed to checkout main, trying to create from origin/main..."
+            git checkout -b main origin/main
+          }
+          
+          # 记录分支状态
+          echo "Current branch status:"
+          git status
+          
+          # 1. 强制获取最新代码，确保引用完全同步
+          echo "Forcing fetch of latest changes..."
+          git fetch --all --prune --force --verbose
           
           # 2. 运行脚本生成最新文件 (如果尚未运行)
           echo "Generating output file if not exists..."
@@ -117,104 +173,287 @@ jobs:
           
           # 3. 添加所有相关文件
           echo "Adding files to git..."
-          git add tzydayauto.txt update_status.txt script_output.log
+          git add tzydayauto.txt update_status.txt script_output.log git_debug_logs/* git_config.log
           
           # 4. 检查是否有更改需要提交
           if ! git diff --quiet && ! git diff --staged --quiet; then
             # 4.1 提交更改
             echo "Committing changes..."
-            git commit -m "Automated update of TVZY channels $(date +'%Y-%m-%d')"
+            git commit -m "Automated update of TVZY channels $(date +'%Y-%m-%d %H:%M:%S')" -v
             
-            # 4.2 在推送前先执行rebase，确保与远程代码同步
+            # 4.2 保存当前本地提交以便在冲突时恢复
+            LOCAL_COMMIT=$(git rev-parse HEAD)
+            echo "Local commit saved: $LOCAL_COMMIT"
+            
+            # 4.3 在推送前先执行rebase，确保与远程代码同步
             echo "Performing git pull --rebase before push..."
-            if git pull --rebase origin main; then
+            if git pull --rebase origin main --verbose; then
               echo "Rebase successful, preparing to push..."
-              # 4.3 推送更改
-              if git push origin HEAD:main; then
+              # 4.4 推送更改
+              if git push origin HEAD:main --verbose; then
                 echo "Push successful!"
                 echo "push_status=success" >> $GITHUB_ENV
               else
                 echo "Push failed, trying force push with lease..."
-                # 4.4 如果普通推送失败，尝试使用force-with-lease（比普通force更安全）
-                if git push --force-with-lease origin HEAD:main; then
+                # 记录引用状态用于调试
+                echo "Reference status before force-with-lease:"
+                git show-ref main
+                git show-ref origin/main
+                
+                # 4.5 如果普通推送失败，尝试使用force-with-lease（比普通force更安全）
+                if git push --force-with-lease origin HEAD:main --verbose; then
                   echo "Force push with lease successful!"
                   echo "push_status=success_with_force_lease" >> $GITHUB_ENV
                 else
-                  echo "CRITICAL: All push attempts failed!"
-                  echo "push_status=failure" >> $GITHUB_ENV
-                  exit 1
+                  echo "CRITICAL: Force push with lease failed!"
+                  echo "Handling 'cannot lock ref' error scenario..."
+                  
+                  # 详细记录错误状态
+                  echo "=== DETAILED ERROR DIAGNOSTICS ===" > git_debug_logs/error_diagnostics.log
+                  git show-ref >> git_debug_logs/error_diagnostics.log
+                  git branch -vv >> git_debug_logs/error_diagnostics.log
+                  git ls-remote --heads origin >> git_debug_logs/error_diagnostics.log
+                  echo "================================" >> git_debug_logs/error_diagnostics.log
+                  
+                  # 4.6 处理'cannot lock ref'错误，这是更严重的引用冲突
+                  git fetch origin main --force --verbose
+                  # 完全重置本地引用以匹配远程
+                  git branch -D main 2>/dev/null || echo "Main branch not found, recreating..."
+                  git checkout -b main origin/main --verbose
+                  
+                  # 应用我们的更改
+                  echo "Attempting to apply our changes..."
+                  git cherry-pick $LOCAL_COMMIT || {
+                    echo "Cherry-pick failed, recreating changes..."
+                    # 如果cherry-pick失败，重新生成文件
+                    python tvzydaily.py
+                    git add tzydayauto.txt update_status.txt script_output.log git_debug_logs/* git_config.log
+                    git commit -m "Automated update after ref reset $(date +'%Y-%m-%d %H:%M:%S')"
+                  }
+                  
+                  # 再次尝试推送
+                  if git push origin HEAD:main --verbose; then
+                    echo "Push successful after reference reset!"
+                    echo "push_status=success_after_ref_reset" >> $GITHUB_ENV
+                  else
+                    echo "ULTIMATE FAILURE: All push attempts failed after reference reset!"
+                    echo "push_status=failure_after_multiple_attempts" >> $GITHUB_ENV
+                    
+                    # 保存最终错误状态
+                    echo "=== FINAL ERROR STATE ===" > git_debug_logs/final_error.log
+                    git status >> git_debug_logs/final_error.log
+                    git show-ref >> git_debug_logs/final_error.log
+                    echo "================================" >> git_debug_logs/final_error.log
+                    exit 1
+                  fi
                 fi
               fi
             else
               echo "Rebase failed, attempting to resolve conflicts..."
-              # 4.5 处理rebase冲突 - 保留我们的更改
+              # 4.7 处理rebase冲突 - 强制重置策略
               git rebase --abort || true
-              git fetch origin main
-              # 使用我们的更改覆盖冲突文件
-              echo "Resetting to origin/main and applying our changes..."
-              git reset --hard origin/main
+              git fetch origin main --force --verbose
+              # 使用更激进的重置策略
+              echo "Hard resetting to origin/main and reapplying our changes..."
+              git reset --hard origin/main --verbose
               # 重新生成文件
               python tvzydaily.py
-              git add tzydayauto.txt update_status.txt script_output.log
-              git commit -m "Automated update after conflict resolution $(date +'%Y-%m-%d')"
+              git add tzydayauto.txt update_status.txt script_output.log git_debug_logs/* git_config.log
+              git commit -m "Automated update after conflict resolution $(date +'%Y-%m-%d %H:%M:%S')" -v
               # 再次尝试推送
-              if git push origin HEAD:main; then
+              if git push origin HEAD:main --verbose; then
                 echo "Push successful after conflict resolution!"
                 echo "push_status=success_after_conflict_resolution" >> $GITHUB_ENV
               else
-                echo "Final push attempt failed!"
-                echo "push_status=failure" >> $GITHUB_ENV
-                exit 1
+                echo "Push failed after conflict resolution, trying force push with lease..."
+                if git push --force-with-lease origin HEAD:main --verbose; then
+                  echo "Force push with lease successful after conflict resolution!"
+                  echo "push_status=success_with_force_lease_after_conflict" >> $GITHUB_ENV
+                else
+                  echo "Final push attempt failed after all resolution attempts!"
+                  echo "push_status=failure"
+                  # 保存最终错误状态
+                  echo "=== CONFLICT RESOLUTION ERROR STATE ===" > git_debug_logs/conflict_error.log
+                  git status >> git_debug_logs/conflict_error.log
+                  echo "================================" >> git_debug_logs/conflict_error.log
+                  exit 1
+                fi
               fi
             fi
           else
-              echo "No changes to commit"
-              echo "push_status=nothing_to_push" >> $GITHUB_ENV
-            fi
+            echo "No changes to commit"
+            echo "push_status=nothing_to_push" >> $GITHUB_ENV
+          fi
           
-          echo "Git operations completed successfully!"
+          # 保存操作后的状态
+          git status > git_debug_logs/post_operation_status.log
+          echo "Enhanced Git operations completed successfully with debug info saved!"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: Update status file with git results
+      - name: Update status file with comprehensive git results
         run: |
-          echo "[INFO] Updating status file with git operation results..."
-          echo "Git push status: ${{ env.push_status || 'unknown' }}" >> update_status.txt
+          echo "[INFO] Updating status file with comprehensive git operation results..."
+          # 创建新的状态文件而不是追加，以避免信息重复
+          cat > update_status.txt << EOF
+Update status: $(date +'%Y-%m-%d %H:%M:%S')
+Output file created: ${{ env.output_exists }}
+Script exit code: ${{ env.script_exit_code }}
+Git push status: ${{ env.push_status || 'unknown' }}
+GitHub Run ID: ${{ github.run_id }}
+GitHub Run Number: ${{ github.run_number }}
+GitHub Actor: ${{ github.actor }}
+Repository: ${{ github.repository }}
+EOF
+          
+          # 根据不同的推送状态添加不同的信息
+          case "${{ env.push_status }}" in
+            "success")
+              echo "[SUCCESS] Update completed successfully with standard push" >> update_status.txt
+              ;;
+            "success_with_force_lease")
+              echo "[WARNING] Update completed with force-with-lease push" >> update_status.txt
+              ;;
+            "success_after_conflict_resolution")
+              echo "[INFO] Update completed after resolving conflicts" >> update_status.txt
+              ;;
+            "success_after_ref_reset")
+              echo "[WARNING] Update completed after reference reset due to 'cannot lock ref' error" >> update_status.txt
+              ;;
+            "failure_after_multiple_attempts")
+              echo "[CRITICAL] All push attempts failed after multiple resolution strategies" >> update_status.txt
+              echo "[ERROR] Manual intervention required to resolve repository inconsistencies" >> update_status.txt
+              ;;
+            "failure")
+              echo "[ERROR] Update failed due to Git push conflicts or other errors" >> update_status.txt
+              ;;
+            "nothing_to_push")
+              echo "[INFO] No changes detected, nothing to push" >> update_status.txt
+              ;;
+            *)
+              echo "[WARNING] Unknown push status" >> update_status.txt
+              ;;
+          esac
+          
           echo "Update completed at: $(date +'%Y-%m-%d %H:%M:%S')" >> update_status.txt
           
-          # 如果有错误，记录更详细的信息
-          if [ "${{ env.push_status }}" == "failure" ]; then
-            echo "[ERROR] Update failed due to Git push conflicts" >> update_status.txt
+          # 检查是否有错误日志目录并添加信息
+          if [ -d "git_debug_logs" ]; then
+            echo "\nDebug information available in git_debug_logs/ directory" >> update_status.txt
+            echo "Debug logs: $(ls -la git_debug_logs/)" >> update_status.txt
           fi
           
           # 更新状态文件
           git add update_status.txt
-          git commit --amend --no-edit || echo "No changes to amend"
-          git push --force-with-lease origin HEAD:main || echo "Failed to update status file"
+          if git diff --staged --quiet; then
+            echo "No changes to status file to commit"
+          else
+            echo "Committing updated status file..."
+            git commit --amend --no-edit && echo "Status file committed successfully"
+            # 尝试推送状态更新，但不中断流程
+            git push --force-with-lease origin HEAD:main || {
+              echo "Failed to update status file in remote, but continuing workflow"
+              # 如果推送失败，至少保存到本地
+              cp update_status.txt status_backup.txt
+              echo "Status file backed up to status_backup.txt"
+            }
+          fi
           
-      - name: Upload comprehensive logs as artifact
+          # 显示最终状态
+          echo "\n=== FINAL STATUS ==="
+          cat update_status.txt
+          echo "====================="
+          
+      - name: Upload comprehensive debugging artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: script-logs-${{ github.run_id }}
+          name: workflow-debug-logs-${{ github.run_id }}
           path: |
             script_output.log
             update_status.txt
+            status_backup.txt
             tzydayauto.txt
+            git_config.log
+            git_debug_logs/
           retention-days: 14
+          if-no-files-found: warn
           
-      - name: Send notification on success
+      - name: Send detailed success notification
         if: success()
         run: |
           echo "✅ TVZY Daily Update completed successfully!"
+          echo "📊 Execution Summary:"
           echo "- Push status: ${{ env.push_status }}"
           echo "- Run ID: ${{ github.run_id }}"
-          echo "- Logs available as workflow artifacts"
+          echo "- Repository: ${{ github.repository }}"
+          echo "- Branch: ${{ github.ref }}"
+          echo "- Commit: ${{ github.sha }}"
+          echo "- Logs available as workflow artifacts (retention: 14 days)"
           
-      - name: Send notification on failure
+          # 根据不同的成功状态显示不同的提示
+          case "${{ env.push_status }}" in
+            "success")
+              echo "✅ Standard push completed successfully"
+              ;;
+            "success_with_force_lease")
+              echo "⚠️  Force-with-lease push was required"
+              echo "   This indicates potential branch divergence that was safely resolved"
+              ;;
+            "success_after_conflict_resolution")
+              echo "🔄 Conflict resolution was successful"
+              echo "   Local changes were merged with remote updates"
+              ;;
+            "success_after_ref_reset")
+              echo "🔄 Repository reference was reset to resolve 'cannot lock ref' error"
+              echo "   This is an expected recovery mechanism for reference inconsistencies"
+              ;;
+          esac
+          
+          echo "📚 Troubleshooting Resources:"
+          echo "- View complete logs in the 'Artifacts' section"
+          echo "- Check update_status.txt for detailed operation results"
+          
+      - name: Send detailed failure notification
         if: failure()
         run: |
           echo "❌ TVZY Daily Update failed!"
+          echo "📊 Error Summary:"
           echo "- Push status: ${{ env.push_status || 'unknown' }}"
           echo "- Run ID: ${{ github.run_id }}"
-          echo "- Please check workflow logs for details"
-          echo "- Consider manually running 'git pull --rebase' and resolving conflicts"
+          echo "- Repository: ${{ github.repository }}"
+          echo "- Branch: ${{ github.ref }}"
+          
+          # 根据不同的失败状态提供针对性的解决建议
+          case "${{ env.push_status }}" in
+            "failure_after_multiple_attempts")
+              echo "🔴 CRITICAL: Multiple resolution attempts failed"
+              echo "   Recommendation: Repository might have serious reference inconsistencies"
+              echo "   Resolution Steps:"
+              echo "   1. Clone a fresh copy of the repository"
+              echo "   2. Run the update script locally"
+              echo "   3. Push changes manually with proper authentication"
+              echo "   4. Check for any concurrent workflows running on the same branch"
+              ;;
+            "failure")
+              echo "🔴 General Git push failure occurred"
+              echo "   Recommendation: Check for concurrent updates or permission issues"
+              echo "   Resolution Steps:"
+              echo "   1. Check if multiple workflows are running simultaneously"
+              echo "   2. Verify GITHUB_TOKEN has sufficient permissions"
+              echo "   3. Ensure branch protection rules allow force-with-lease pushes if needed"
+              ;;
+            *)
+              echo "🔴 Unknown failure reason"
+              echo "   Recommendation: Examine detailed logs for root cause"
+              ;;
+          esac
+          
+          echo "📚 Detailed Debugging Information:"
+          echo "- All debug logs are available as workflow artifacts"
+          echo "- Check git_debug_logs/ directory for detailed Git operations history"
+          echo "- Review error_diagnostics.log for specific Git reference errors"
+          
+          echo "🔄 Next Steps:"
+          echo "- If this persists, consider scheduling workflow runs at staggered times"
+          echo "- For 'cannot lock ref' errors, check if branch protection rules are too restrictive"
+          echo "- Consider implementing a mutex mechanism if running concurrent updates"
