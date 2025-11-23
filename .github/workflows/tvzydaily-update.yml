@@ -101,42 +101,120 @@ jobs:
           
       - name: Add and commit changes
         run: |
+          echo "Starting Git operations..."
           # 确保我们在正确的分支上
           git checkout main
           
-          # 完全重置本地仓库，避免任何合并冲突
+          # 1. 先获取最新代码
+          echo "Fetching latest changes..."
           git fetch --all
-          git reset --hard origin/main
           
-          # 运行脚本生成最新文件 (如果尚未运行)
+          # 2. 运行脚本生成最新文件 (如果尚未运行)
+          echo "Generating output file if not exists..."
           if [ ! -f "tzydayauto.txt" ]; then
             python tvzydaily.py
           fi
           
-          # 添加所有相关文件
+          # 3. 添加所有相关文件
+          echo "Adding files to git..."
           git add tzydayauto.txt update_status.txt script_output.log
           
-          # 检查是否有更改需要提交
+          # 4. 检查是否有更改需要提交
           if ! git diff --quiet && ! git diff --staged --quiet; then
+            # 4.1 提交更改
+            echo "Committing changes..."
             git commit -m "Automated update of TVZY channels $(date +'%Y-%m-%d')"
             
-            # 再次拉取以确保在提交后没有新的更改
-            git pull --rebase origin main || true
-            
-            # 使用标准的GitHub Actions推送方式
-            git push origin HEAD:main
+            # 4.2 在推送前先执行rebase，确保与远程代码同步
+            echo "Performing git pull --rebase before push..."
+            if git pull --rebase origin main; then
+              echo "Rebase successful, preparing to push..."
+              # 4.3 推送更改
+              if git push origin HEAD:main; then
+                echo "Push successful!"
+                echo "push_status=success" >> $GITHUB_ENV
+              else
+                echo "Push failed, trying force push with lease..."
+                # 4.4 如果普通推送失败，尝试使用force-with-lease（比普通force更安全）
+                if git push --force-with-lease origin HEAD:main; then
+                  echo "Force push with lease successful!"
+                  echo "push_status=success_with_force_lease" >> $GITHUB_ENV
+                else
+                  echo "CRITICAL: All push attempts failed!"
+                  echo "push_status=failure" >> $GITHUB_ENV
+                  exit 1
+                fi
+              fi
+            else
+              echo "Rebase failed, attempting to resolve conflicts..."
+              # 4.5 处理rebase冲突 - 保留我们的更改
+              git rebase --abort || true
+              git fetch origin main
+              # 使用我们的更改覆盖冲突文件
+              echo "Resetting to origin/main and applying our changes..."
+              git reset --hard origin/main
+              # 重新生成文件
+              python tvzydaily.py
+              git add tzydayauto.txt update_status.txt script_output.log
+              git commit -m "Automated update after conflict resolution $(date +'%Y-%m-%d')"
+              # 再次尝试推送
+              if git push origin HEAD:main; then
+                echo "Push successful after conflict resolution!"
+                echo "push_status=success_after_conflict_resolution" >> $GITHUB_ENV
+              else
+                echo "Final push attempt failed!"
+                echo "push_status=failure" >> $GITHUB_ENV
+                exit 1
+              fi
+            fi
           else
-            echo "No changes to commit"
-          fi
+              echo "No changes to commit"
+              echo "push_status=nothing_to_push" >> $GITHUB_ENV
+            fi
+          
+          echo "Git operations completed successfully!"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: Upload logs as artifact
+      - name: Update status file with git results
+        run: |
+          echo "[INFO] Updating status file with git operation results..."
+          echo "Git push status: ${{ env.push_status || 'unknown' }}" >> update_status.txt
+          echo "Update completed at: $(date +'%Y-%m-%d %H:%M:%S')" >> update_status.txt
+          
+          # 如果有错误，记录更详细的信息
+          if [ "${{ env.push_status }}" == "failure" ]; then
+            echo "[ERROR] Update failed due to Git push conflicts" >> update_status.txt
+          fi
+          
+          # 更新状态文件
+          git add update_status.txt
+          git commit --amend --no-edit || echo "No changes to amend"
+          git push --force-with-lease origin HEAD:main || echo "Failed to update status file"
+          
+      - name: Upload comprehensive logs as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: script-logs
+          name: script-logs-${{ github.run_id }}
           path: |
             script_output.log
             update_status.txt
             tzydayauto.txt
-          retention-days: 7
+          retention-days: 14
+          
+      - name: Send notification on success
+        if: success()
+        run: |
+          echo "✅ TVZY Daily Update completed successfully!"
+          echo "- Push status: ${{ env.push_status }}"
+          echo "- Run ID: ${{ github.run_id }}"
+          echo "- Logs available as workflow artifacts"
+          
+      - name: Send notification on failure
+        if: failure()
+        run: |
+          echo "❌ TVZY Daily Update failed!"
+          echo "- Push status: ${{ env.push_status || 'unknown' }}"
+          echo "- Run ID: ${{ github.run_id }}"
+          echo "- Please check workflow logs for details"
+          echo "- Consider manually running 'git pull --rebase' and resolving conflicts"
