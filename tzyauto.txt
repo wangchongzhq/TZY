@@ -1,5 +1,5 @@
 # 自动生成的直播源文件
-# 更新时间: 2025-11-22 19:10:33
+# 更新时间: 2025-11-23 19:10:55
 # 分组格式: 频道名称,频道URL,#genre#
 
 
@@ -196,7 +196,6 @@ TVBS HD,http://198.16.100.186:8278/tvbs/playlist.m3u8?tid=ME2E6545230665452306&c
 湖南电影FHD,http://58.46.31.42:8188/udp/239.76.252.119:9000
 湖南电影FHD,http://58.46.31.42:8188/udp/239.76.245.119:1234
 CHC影迷电影,http://118.78.196.56:55555/rtp/226.0.2.93:8004
-斗鱼电影HD1,http://zzy789.xyz/douyu1.php?id=4246519
 斗鱼电影HD4,http://zzy789.xyz/douyu1.php?id=85894
 Movies Now HD,http://xtvantsc.xyz/Smart.php?id=moviesnow_raj
 Star Movies HD,http://xtvantsc.xyz/Smart.php?id=starmovies_raj
