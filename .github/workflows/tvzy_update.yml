@@ -1,0 +1,89 @@
+name: 电视直播线路自动更新
+
+on:
+  # 定时触发 - 每天北京时间早上3点（UTC时间为前一天的19点）
+  schedule:
+    - cron: '0 19 * * *'
+  # 手动触发
+  workflow_dispatch:
+    inputs:
+      update_reason:
+        description: '更新原因（可选）'
+        required: false
+        default: '手动触发更新'
+
+jobs:
+  update-tv-lines:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码仓库
+        uses: actions/checkout@v3
+      
+      - name: 设置Python环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+      
+      - name: 运行更新脚本
+        run: |
+          chmod +x ./tvzy.py
+          python ./tvzy.py
+      
+      - name: 检查是否生成了输出文件
+        id: check_file
+        run: |
+          if [ -f ./tzydauto.txt ]; then
+            echo "file_exists=true" >> $GITHUB_OUTPUT
+            echo "文件大小: $(ls -lh ./tzydauto.txt)"
+          else
+            echo "file_exists=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: 提交和推送更新
+        if: steps.check_file.outputs.file_exists == 'true'
+        run: |
+          git config --global user.name 'GitHub Actions Bot'
+          git config --global user.email 'github-actions@github.com'
+          git add ./tzydauto.txt
+          git add ./tvzy.log || true  # 日志文件可选
+          
+          # 检查是否有更改
+          if git diff --staged --quiet; then
+            echo "没有发现更改，跳过提交"
+          else
+            # 获取当前日期（北京时间）
+            TODAY=$(TZ='Asia/Shanghai' date +'%Y-%m-%d')
+            # 使用手动触发的原因或默认消息
+            REASON="${{ github.event.inputs.update_reason || '自动更新 '${TODAY}' 电视直播线路' }}"
+            git commit -m "${REASON}"
+            git push
+            echo "更新已提交并推送"
+          fi
+      
+      - name: 输出成功消息
+        if: steps.check_file.outputs.file_exists == 'true'
+        run: |
+          echo "🎉 电视直播线路更新完成！"
+          echo "📁 生成的文件: tzydauto.txt"
+          echo "📊 文件统计信息已记录到日志"
+      
+      - name: 输出失败消息
+        if: steps.check_file.outputs.file_exists == 'false'
+        run: |
+          echo "❌ 更新失败：未生成输出文件"
+          exit 1
+      
+      - name: 上传输出文件作为构建产物
+        if: steps.check_file.outputs.file_exists == 'true'
+        uses: actions/upload-artifact@v3
+        with:
+          name: tv-live-channels
+          path: ./tzydauto.txt
+          retention-days: 7  # 保存7天
+          if-no-files-found: error
