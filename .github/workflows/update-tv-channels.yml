@@ -77,7 +77,7 @@ jobs:
       # 保存输出文件作为构建产物
       - name: 保存输出文件
         if: steps.check_file.outputs.file_exists == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tv-channels-list
           path: tzydauto.txt
