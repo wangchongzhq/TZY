@@ -1,0 +1,94 @@
+name: 更新电视直播线路
+
+on:
+  # 手动触发
+  workflow_dispatch:
+  
+  # 定时触发 - 每天北京时间早上3点（UTC时间前一天19点）
+  schedule:
+    - cron: '0 19 * * *'
+
+jobs:
+  update-channels:
+    runs-on: ubuntu-latest
+    steps:
+      # 检出代码
+      - name: 检出代码
+        uses: actions/checkout@v3
+        
+      # 设置Python环境
+      - name: 设置Python环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+      
+      # 安装依赖
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+      
+      # 确保脚本可执行
+      - name: 设置脚本权限
+        run: chmod +x tvzy.py
+      
+      # 执行脚本收集电视直播线路
+      - name: 收集电视直播线路
+        run: python tvzy.py
+      
+      # 检查输出文件是否存在
+      - name: 检查输出文件
+        id: check_file
+        run: |
+          if [ -f "tzydauto.txt" ]; then
+            echo "file_exists=true" >> $GITHUB_OUTPUT
+            echo "文件大小: $(du -h tzydauto.txt | cut -f1)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "file_exists=false" >> $GITHUB_OUTPUT
+          fi
+      
+      # 提交和推送更新后的文件
+      - name: 提交和推送更改
+        if: steps.check_file.outputs.file_exists == 'true'
+        run: |
+          # 配置git身份
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # 确保拉取远程最新更改，避免冲突
+          git pull --rebase origin main || {
+            echo "拉取失败，尝试强制拉取..."
+            git fetch --all
+            git reset --hard origin/main
+          }
+          
+          # 添加更改的文件
+          git add tzydauto.txt
+          
+          # 检查是否有更改
+          if git diff --quiet && git diff --staged --quiet; then
+            echo "没有发现更改，跳过提交"
+          else
+            git commit -m "自动更新电视直播线路 $(date +'%Y-%m-%d')"
+            git push origin main
+          fi
+      
+      # 保存输出文件作为构建产物
+      - name: 保存输出文件
+        if: steps.check_file.outputs.file_exists == 'true'
+        uses: actions/upload-artifact@v3
+        with:
+          name: tv-channels-list
+          path: tzydauto.txt
+          retention-days: 7
+      
+      # 生成构建摘要
+      - name: 生成构建摘要
+        if: steps.check_file.outputs.file_exists == 'true'
+        run: |
+          echo "## 电视直播线路更新摘要" >> $GITHUB_STEP_SUMMARY
+          echo "- 执行时间: $(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_STEP_SUMMARY
+          echo "- 输出文件: tzydauto.txt" >> $GITHUB_STEP_SUMMARY
+          echo "- 文件大小: $(du -h tzydauto.txt | cut -f1)" >> $GITHUB_STEP_SUMMARY
+          echo "- 频道数量: $(grep -v '^#' tzydauto.txt | wc -l)" >> $GITHUB_STEP_SUMMARY
