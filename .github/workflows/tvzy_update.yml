@@ -107,11 +107,11 @@ jobs:
           echo "❌ 更新失败：未生成输出文件"
           exit 1
       
-      - name: 上传输出文件作为构建产物
+      - name: 保存输出文件作为构建产物
         if: steps.check_file.outputs.file_exists == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: tv-live-channels
+          name: tv-channels-list
           path: ./tzydauto.txt
           retention-days: 7  # 保存7天
           if-no-files-found: error
