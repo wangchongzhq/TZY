@@ -48,23 +48,51 @@ jobs:
       - name: 提交和推送更新
         if: steps.check_file.outputs.file_exists == 'true'
         run: |
-          git config --global user.name 'GitHub Actions Bot'
-          git config --global user.email 'github-actions@github.com'
+          # 配置git身份
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "GitHub Actions Bot"
+          
+          # 确保工作目录是最新的
+          git fetch origin main
+          
+          # 使用强制更新策略
+          git checkout main
+          git pull --force origin main
+          
+          # 重新执行脚本确保生成最新文件
+          python ./tvzy.py || {
+            echo "脚本执行失败，使用现有文件继续"
+          }
+          
+          # 添加文件
           git add ./tzydauto.txt
           git add ./tvzy.log || true  # 日志文件可选
           
           # 检查是否有更改
           if git diff --staged --quiet; then
-            echo "没有发现更改，跳过提交"
-          else
-            # 获取当前日期（北京时间）
-            TODAY=$(TZ='Asia/Shanghai' date +'%Y-%m-%d')
-            # 使用手动触发的原因或默认消息
-            REASON="${{ github.event.inputs.update_reason || '自动更新 '${TODAY}' 电视直播线路' }}"
-            git commit -m "${REASON}"
-            git push
-            echo "更新已提交并推送"
+            echo "没有检测到更改，跳过提交"
+            exit 0
           fi
+          
+          # 获取当前日期（北京时间）
+          TODAY=$(TZ='Asia/Shanghai' date +'%Y-%m-%d')
+          # 使用手动触发的原因或默认消息
+          REASON="${{ github.event.inputs.update_reason || '自动更新 '${TODAY}' 电视直播线路' }}"
+          
+          # 提交更改
+          git commit -m "${REASON}"
+          
+          # 推送更改，使用--force-with-lease避免覆盖他人的工作
+          git push --force-with-lease origin main || {
+            echo "推送失败，尝试直接强制推送..."
+            git push --force origin main || {
+              echo "推送仍失败，记录失败信息"
+              echo "::error::无法推送到远程仓库，请检查权限和分支状态"
+              exit 1
+            }
+          }
+          
+          echo "更新已提交并推送"
       
       - name: 输出成功消息
         if: steps.check_file.outputs.file_exists == 'true'
