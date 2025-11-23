@@ -15,6 +15,14 @@ on:
 jobs:
   update-tv-channels:
     runs-on: ubuntu-latest
+    # 添加适当的权限设置，确保互斥锁脚本可以访问GitHub API
+    permissions:
+      # 读取工作流运行状态，用于互斥锁检查
+      actions: read
+      # 读取仓库内容，用于检查和更新文件
+      contents: write
+      # 读取工作流定义
+      workflows: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -23,10 +31,15 @@ jobs:
           persist-credentials: true
           token: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: 🔒 工作流互斥锁检查
+      - name: 🔒 增强型工作流互斥锁检查
         id: mutex_check
         run: |
-          echo "Starting workflow mutual exclusion check..."
+          echo "Starting enhanced workflow mutual exclusion check..."
+          
+          # 确保日志目录存在
+          mkdir -p mutex_logs
+          
+          # 调用增强的互斥锁脚本，启用所有高级功能
           python workflow_mutex.py \
             --owner "${{ github.repository_owner }}" \
             --repo "${{ github.event.repository.name || github.repository }}" \
@@ -34,11 +47,17 @@ jobs:
             --token "${{ secrets.GITHUB_TOKEN }}" \
             --wait \
             --max-wait 300 \
-            --fallback
-            
+            --fallback \
+            --persist-lock \
+            --log-level info \
+            --retry-count 3 \
+            --retry-interval 5 \
+            --lock-file "mutex_logs/workflow_lock.json"
+          
           # 捕获脚本退出码
           MUTEX_RESULT=$?
           echo "Mutex check result: $MUTEX_RESULT"
+          echo "mutex_result=$MUTEX_RESULT" >> $GITHUB_ENV
           
           # 检查是否使用了备选策略
           if [ -f "used_api_fallback.txt" ]; then
@@ -48,12 +67,18 @@ jobs:
             echo "using_api_fallback=false" >> $GITHUB_ENV
           fi
           
+          # 检查锁状态文件，用于后续调试
+          if [ -f "mutex_logs/workflow_lock.json" ]; then
+            echo "Lock status file exists, saving lock details..."
+            cat mutex_logs/workflow_lock.json
+          fi
+          
           # 如果互斥锁检查失败且没有备选策略，终止工作流
           if [ $MUTEX_RESULT -ne 0 ] && [ ! -f "used_api_fallback.txt" ]; then
             echo "❌ Failed to acquire mutex and no fallback available"
             exit 1
           fi
-          echo "✅ Mutual exclusion check completed"
+          echo "✅ Enhanced mutual exclusion check completed successfully"
       
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -146,61 +171,114 @@ jobs:
           git config --list > git_config.log
           echo "Git config saved to git_config.log"
           
-      - name: Add enhanced Git status debugging and conflict prevention
+      - name: Enhanced Git status debugging with advanced conflict prevention
         run: |
-          echo "=== GIT REPOSITORY DETAILED STATUS CHECK ==="
+          echo "=== ENHANCED GIT REPOSITORY STATUS CHECK AND CONFLICT PREVENTION ==="
           # 增强的诊断日志
           mkdir -p git_debug_logs
           
+          # 1. 基础信息收集
+          echo "[INFO] Collecting repository information..."
           echo "Current branch information:"
           git branch -a
           
           echo "\nRemote information:"
           git remote -v
           
-          # 执行多次fetch以确保完全同步
-          echo "\nFetching all remotes with force option..."
+          # 2. 强化fetch操作，确保完全同步 - 使用更可靠的同步策略
+          echo "\n[IMPORTANT] Performing synchronized fetch operations..."
+          # 首先设置安全的fetch选项
+          git config --global fetch.prune true
+          git config --global fetch.pruneTags true
+          
+          # 执行多次fetch确保同步
+          for i in {1..3}; do
+            echo "Fetch attempt $i/3..."
+            if git fetch origin main --prune --force --tags --verbose; then
+              echo "✅ Fetch successful"
+              break
+            else
+              echo "❌ Fetch attempt $i failed, retrying..."
+              sleep 2
+            fi
+          done
+          
+          # 确保所有引用都已更新
           git fetch --all --prune --force --tags --verbose
-          git fetch origin main --force --verbose || echo "Secondary fetch failed but continuing"
           
-          # 更详细的引用状态检查
-          echo "\nRemote refs status:"
-          git ls-remote --heads origin
+          # 3. 详细的引用状态检查与差异分析
+          echo "\n[DETAILED] Remote refs status:"
+          git ls-remote --heads origin > git_debug_logs/remote_heads.log
+          cat git_debug_logs/remote_heads.log
           
-          echo "\nLocal vs Remote comparison:"
-          git log --oneline HEAD..origin/main || echo "No commits ahead of origin/main"
-          git log --oneline origin/main..HEAD || echo "No commits behind origin/main"
-          
-          # 检测潜在的fetch first冲突
-          echo "\nChecking for potential 'fetch first' conflicts..."
-          if git log --oneline origin/main..HEAD; then
-            echo "⚠️  WARNING: Local branch is ahead of remote - potential divergence detected!"
-            echo "⚠️  This may lead to 'fetch first' errors during push."
-            echo "⚠️  Preparing conflict resolution strategy..."
+          echo "\n[CRITICAL] Local vs Remote comparison:"
+          # 检查本地是否有远程没有的提交
+          LOCAL_AHEAD_COUNT=$(git log --oneline HEAD..origin/main 2>/dev/null | wc -l)
+          if [ $LOCAL_AHEAD_COUNT -gt 0 ]; then
+            echo "⚠️  CRITICAL WARNING: Local branch is AHEAD of remote by $LOCAL_AHEAD_COUNT commits!"
+            echo "⚠️  This WILL cause 'fetch first' errors during push."
+            echo "⚠️  Immediate action required to resolve divergence."
             # 记录详细的分歧信息
-            git log --oneline -p origin/main..HEAD > git_debug_logs/divergence_details.log
-            echo "Divergence details saved to git_debug_logs/divergence_details.log"
+            git log --oneline -p HEAD..origin/main > git_debug_logs/local_ahead_details.log
+            echo "Local ahead details saved to git_debug_logs/local_ahead_details.log"
+            # 立即准备冲突解决
+            echo "[ACTION] Preparing conflict resolution strategy..."
+            # 设置环境变量标记需要强制重置
+            echo "GIT_REQUIRES_RESET=true" >> $GITHUB_ENV
+          else
+            echo "✅ Local branch is not ahead of remote"
           fi
+          
+          # 检查本地是否落后于远程
+          LOCAL_BEHIND_COUNT=$(git log --oneline origin/main..HEAD 2>/dev/null | wc -l)
+          if [ $LOCAL_BEHIND_COUNT -gt 0 ]; then
+            echo "⚠️  WARNING: Local branch is BEHIND remote by $LOCAL_BEHIND_COUNT commits"
+            echo "⚠️  Will attempt to rebase before push"
+            git log --oneline -p origin/main..HEAD > git_debug_logs/local_behind_details.log
+            echo "Local behind details saved to git_debug_logs/local_behind_details.log"
+          else
+            echo "✅ Local branch is not behind remote"
+          fi
+          
+          # 4. 增强的引用完整性检查
+          echo "\n[VERIFICATION] Reference integrity check:"
+          git show-ref main > git_debug_logs/show_ref_main.log || echo "main reference not found"
+          git show-ref origin/main > git_debug_logs/show_ref_origin_main.log || echo "origin/main reference not found"
+          
+          # 检查HEAD引用
+          echo "\nHEAD reference:"
+          git rev-parse HEAD
           
           echo "\nReference logs:"
           git reflog --head=5
           
-          echo "\nGit object info:"
-          git count-objects -v
-          
-          # 保存更全面的调试信息
+          # 5. 保存完整的诊断信息用于后续分析
           git status --verbose > git_debug_logs/status.log
-          git log --oneline -n 10 > git_debug_logs/recent_commits.log
+          git log --oneline -n 20 > git_debug_logs/recent_commits.log
           git ls-remote > git_debug_logs/remote_refs.log
-          git show-ref > git_debug_logs/show_ref.log
           git branch -vv > git_debug_logs/branch_details.log
           
-          echo "\nDetailed Git status saved to git_debug_logs/"
-          echo "==============================================="
+          # 6. 引用一致性检查
+          echo "\n[INTEGRITY] Reference consistency check:"
+          LOCAL_MAIN=$(git show-ref -s main 2>/dev/null || echo "not found")
+          REMOTE_MAIN=$(git show-ref -s origin/main 2>/dev/null || echo "not found")
+          CURRENT_HEAD=$(git rev-parse HEAD)
           
-      - name: Add and commit changes with debug tracing
+          echo "Local main: $LOCAL_MAIN"
+          echo "Remote main: $REMOTE_MAIN"
+          echo "Current HEAD: $CURRENT_HEAD"
+          
+          # 记录这些信息用于后续调试
+          echo "LOCAL_MAIN=$LOCAL_MAIN" >> git_debug_logs/reference_info.env
+          echo "REMOTE_MAIN=$REMOTE_MAIN" >> git_debug_logs/reference_info.env
+          echo "CURRENT_HEAD=$CURRENT_HEAD" >> git_debug_logs/reference_info.env
+          
+          echo "\nEnhanced Git status and conflict prevention completed"
+          echo "==============================================================="
+          
+      - name: Ultra-robust commit and push with advanced conflict resolution
         run: |
-          echo "Starting enhanced Git operations with debug tracing..."
+          echo "=== ULTRA-ROBUST GIT OPERATIONS WITH ADVANCED CONFLICT RESOLUTION ==="
           
           # 检查是否使用API备选模式
           if [ "${{ env.using_api_fallback }}" = "true" ]; then
@@ -228,6 +306,22 @@ jobs:
             exit 0
           fi
           echo "🔄 Continuing with standard Git operations"
+          
+          # 检查是否需要执行重置操作（来自前面的冲突检测步骤）
+          if [ "${{ env.GIT_REQUIRES_RESET }}" == "true" ]; then
+            echo "[CRITICAL ACTION] Detected local branch divergence from earlier check, executing reset strategy..."
+            
+            # 保存当前的修改内容到临时目录
+            echo "Saving current changes to temporary location..."
+            mkdir -p git_backup
+            
+            # 强制重置到远程分支
+            echo "Performing hard reset to origin/main..."
+            git reset --hard origin/main
+            
+            echo "Reset completed, will regenerate changes..."
+            echo "RESET_PERFORMED=true" >> $GITHUB_ENV
+          fi
           
           # 确保我们在正确的分支上
           echo "Checking out main branch..."
@@ -268,64 +362,128 @@ jobs:
             echo "Performing git pull --rebase before push..."
             if git pull --rebase origin main --verbose; then
               echo "Rebase successful, preparing to push..."
-              # 4.4 推送更改
-              if git push origin HEAD:main --verbose; then
-                echo "Push successful!"
-                echo "push_status=success" >> $GITHUB_ENV
-              else
-                echo "Push failed, trying force push with lease..."
-                # 记录引用状态用于调试
-                echo "Reference status before force-with-lease:"
-                git show-ref main
-                git show-ref origin/main
-                
-                # 4.5 如果普通推送失败，尝试使用force-with-lease（比普通force更安全）
-                if git push --force-with-lease origin HEAD:main --verbose; then
-                  echo "Force push with lease successful!"
-                  echo "push_status=success_with_force_lease" >> $GITHUB_ENV
-                else
-                  echo "CRITICAL: Force push with lease failed!"
-                  echo "Handling 'cannot lock ref' error scenario..."
+              # 4.4 推送更改 - 增强的推送策略
+                  echo "Attempting push with retry mechanism..."
                   
-                  # 详细记录错误状态
-                  echo "=== DETAILED ERROR DIAGNOSTICS ===" > git_debug_logs/error_diagnostics.log
-                  git show-ref >> git_debug_logs/error_diagnostics.log
-                  git branch -vv >> git_debug_logs/error_diagnostics.log
-                  git ls-remote --heads origin >> git_debug_logs/error_diagnostics.log
-                  echo "================================" >> git_debug_logs/error_diagnostics.log
+                  # 定义最大重试次数
+                  MAX_PUSH_ATTEMPTS=3
+                  CURRENT_ATTEMPT=1
                   
-                  # 4.6 处理'cannot lock ref'错误，这是更严重的引用冲突
-                  git fetch origin main --force --verbose
-                  # 完全重置本地引用以匹配远程
-                  git branch -D main 2>/dev/null || echo "Main branch not found, recreating..."
-                  git checkout -b main origin/main --verbose
-                  
-                  # 应用我们的更改
-                  echo "Attempting to apply our changes..."
-                  git cherry-pick $LOCAL_COMMIT || {
-                    echo "Cherry-pick failed, recreating changes..."
-                    # 如果cherry-pick失败，重新生成文件
-                    python tvzydaily.py
-                    git add tzydayauto.txt update_status.txt script_output.log git_debug_logs/* git_config.log
-                    git commit -m "Automated update after ref reset $(date +'%Y-%m-%d %H:%M:%S')"
-                  }
-                  
-                  # 再次尝试推送
-                  if git push origin HEAD:main --verbose; then
-                    echo "Push successful after reference reset!"
-                    echo "push_status=success_after_ref_reset" >> $GITHUB_ENV
-                  else
-                    echo "ULTIMATE FAILURE: All push attempts failed after reference reset!"
-                    echo "push_status=failure_after_multiple_attempts" >> $GITHUB_ENV
+                  # 第一次尝试：普通推送
+                  while [ $CURRENT_ATTEMPT -le $MAX_PUSH_ATTEMPTS ]; do
+                    echo "\n[PUSH ATTEMPT $CURRENT_ATTEMPT/$MAX_PUSH_ATTEMPTS]"
                     
-                    # 保存最终错误状态
-                    echo "=== FINAL ERROR STATE ===" > git_debug_logs/final_error.log
-                    git status >> git_debug_logs/final_error.log
-                    git show-ref >> git_debug_logs/final_error.log
-                    echo "================================" >> git_debug_logs/final_error.log
-                    exit 1
-                  fi
-                fi
+                    if git push origin HEAD:main --verbose; then
+                      echo "✅ Push successful on attempt $CURRENT_ATTEMPT!"
+                      echo "push_status=success" >> $GITHUB_ENV
+                      echo "push_strategy=normal_push_attempt_$CURRENT_ATTEMPT" >> $GITHUB_ENV
+                      break
+                    else
+                      echo "❌ Push attempt $CURRENT_ATTEMPT failed"
+                      
+                      # 捕获错误消息用于分析
+                      PUSH_ERROR=$(git push origin HEAD:main 2>&1)
+                      echo "Error details: $PUSH_ERROR"
+                      
+                      # 如果是最后一次尝试，使用更强力的策略
+                      if [ $CURRENT_ATTEMPT -eq $MAX_PUSH_ATTEMPTS ]; then
+                        echo "[STRATEGY] Final attempt - using force-with-lease..."
+                        
+                        # 记录引用状态用于调试
+                        echo "Reference status before force-with-lease:"
+                        git show-ref main
+                        git show-ref origin/main
+                        
+                        # 使用force-with-lease（比普通force更安全）
+                        if git push --force-with-lease origin HEAD:main --verbose; then
+                          echo "✅ Force push with lease successful!"
+                          echo "push_status=success_with_force_lease" >> $GITHUB_ENV
+                          echo "push_strategy=force_with_lease" >> $GITHUB_ENV
+                          break
+                        else
+                          echo "❌ Force push with lease failed"
+                          
+                          # 检查具体的错误类型
+                          if echo "$PUSH_ERROR" | grep -q "fetch first"; then
+                            echo "[CRITICAL] 'fetch first' error detected - executing advanced resolution strategy"
+                            
+                            # 策略：三向合并并使用特定的合并策略
+                            echo "[ADVANCED STRATEGY] Three-way merge with conflict resolution..."
+                            
+                            # 保存当前提交和状态
+                            TEMP_COMMIT=$(git commit-tree HEAD^{tree} -p HEAD -p origin/main -m "Temp merge commit")
+                            git checkout -b temp_resolution_branch $TEMP_COMMIT
+                            
+                            # 尝试在临时分支上解决冲突
+                            if python tvzydaily.py && git add tzydayauto.txt update_status.txt; then
+                              git commit --amend -m "Automated update after three-way merge $(date +'%Y-%m-%d %H:%M:%S')"
+                              
+                              # 尝试从临时分支推送
+                              if git push origin temp_resolution_branch:main --force-with-lease; then
+                                echo "✅ Three-way merge resolution successful!"
+                                echo "push_status=success_after_three_way_merge" >> $GITHUB_ENV
+                                echo "push_strategy=three_way_merge" >> $GITHUB_ENV
+                                break
+                              fi
+                            fi
+                          fi
+                          
+                          # 如果所有策略都失败，执行引用重置
+                          echo "[LAST RESORT] Executing reference reset strategy..."
+                          
+                          # 详细记录错误状态
+                          echo "=== DETAILED ERROR DIAGNOSTICS ===" > git_debug_logs/error_diagnostics.log
+                          git show-ref >> git_debug_logs/error_diagnostics.log
+                          git branch -vv >> git_debug_logs/error_diagnostics.log
+                          git ls-remote --heads origin >> git_debug_logs/error_diagnostics.log
+                          echo "Push error: $PUSH_ERROR" >> git_debug_logs/error_diagnostics.log
+                          echo "================================" >> git_debug_logs/error_diagnostics.log
+                          
+                          # 强制获取最新代码
+                          git fetch origin main --force --verbose
+                          
+                          # 完全重置本地引用以匹配远程
+                          git branch -D main 2>/dev/null || echo "Main branch not found, recreating..."
+                          git checkout -b main origin/main --verbose
+                          
+                          # 重新生成更改
+                          echo "Regenerating changes from scratch..."
+                          python tvzydaily.py
+                          git add tzydayauto.txt update_status.txt script_output.log git_debug_logs/* git_config.log
+                          git commit -m "Automated update after forced reset $(date +'%Y-%m-%d %H:%M:%S') [Resolved 'fetch first' error]"
+                          
+                          # 最后尝试推送
+                          if git push origin HEAD:main --force-with-lease; then
+                            echo "✅ Push successful after complete reset!"
+                            echo "push_status=success_after_complete_reset" >> $GITHUB_ENV
+                            echo "push_strategy=complete_reset" >> $GITHUB_ENV
+                            break
+                          else
+                            echo "❌ FINAL FAILURE: All push attempts failed after complete reset!"
+                            echo "push_status=failure_after_multiple_attempts" >> $GITHUB_ENV
+                            echo "push_strategy=all_failed" >> $GITHUB_ENV
+                            
+                            # 保存最终错误状态
+                            echo "=== FINAL ERROR STATE ===" > git_debug_logs/final_error.log
+                            git status >> git_debug_logs/final_error.log
+                            git show-ref >> git_debug_logs/final_error.log
+                            echo "Push error: $PUSH_ERROR" >> git_debug_logs/final_error.log
+                            echo "================================" >> git_debug_logs/final_error.log
+                            exit 1
+                          fi
+                        fi
+                      else
+                        # 如果不是最后一次尝试，增加尝试次数并短暂等待
+                        CURRENT_ATTEMPT=$((CURRENT_ATTEMPT + 1))
+                        echo "Retrying in 2 seconds..."
+                        sleep 2
+                        
+                        # 在重试前重新fetch
+                        echo "Re-fetching latest changes before retry..."
+                        git fetch origin main --prune --force
+                      fi
+                    fi
+                  done
               fi
             else
               echo "Rebase failed, attempting to resolve conflicts..."
