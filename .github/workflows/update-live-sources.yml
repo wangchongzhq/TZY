@@ -1,0 +1,94 @@
+name: Update Live Sources
+
+on:
+  schedule:
+    # 每天 UTC 时间 00:00 自动运行（北京时间 08:00）
+    - cron: '0 0 * * *'
+  workflow_dispatch:  # 允许手动触发
+    inputs:
+      max_pages:
+        description: '最大爬取页数'
+        required: false
+        default: '5'
+        type: choice
+        options:
+        - '3'
+        - '5'
+        - '10'
+
+env:
+  PYTHON_VERSION: '3.9'
+
+jobs:
+  update-sources:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+        
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install dependencies from existing requirements.txt
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Run update script
+      env:
+        MAX_PAGES: ${{ inputs.max_pages || '5' }}
+      run: |
+        echo "开始执行直播源更新..."
+        python update_live_sources.py
+        echo "脚本执行完成"
+        
+    - name: Check for changes in CGQ.TXT
+      id: check_changes
+      run: |
+        if git diff --name-only HEAD^ HEAD | grep -q "CGQ.TXT"; then
+          echo "changes_detected=true" >> $GITHUB_OUTPUT
+          echo "检测到 CGQ.TXT 文件变更"
+        else
+          echo "changes_detected=false" >> $GITHUB_OUTPUT
+          echo "未检测到 CGQ.TXT 文件变更"
+        fi
+        
+    - name: Commit and push if changes detected
+      if: steps.check_changes.outputs.changes_detected == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add CGQ.TXT update.log
+        git commit -m "🤖 自动更新直播源 - $(date +'%Y-%m-%d %H:%M:%S')
+        
+        - 更新 CGQ.TXT 文件
+        - 查看更新日志请检查 update.log"
+        git push
+        
+    - name: Upload CGQ.TXT as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: live-sources
+        path: |
+          CGQ.TXT
+          update.log
+        retention-days: 7
+        
+    - name: Create success notification
+      if: success()
+      run: |
+        echo "✅ 直播源更新成功完成！"
+        echo "📁 文件 CGQ.TXT 已更新"
+        echo "📊 查看更新日志请下载 artifact"
+        
+    - name: Create failure notification
+      if: failure()
+      run: |
+        echo "❌ 直播源更新失败"
+        echo "请检查 update.log 文件查看详细错误信息"
