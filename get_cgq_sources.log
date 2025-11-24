@@ -19,6 +19,7 @@
 2025-11-24 07:40:03,753 - INFO - 开始获取超高清直播源...
 2025-11-24 07:40:03,754 - INFO - 成功写入 CGQ.TXT，共 16 行数据
 2025-11-24 07:40:03,754 - INFO - 直播源获取完成！耗时: 0.00 秒
+<<<<<<< Updated upstream
 2025-11-24 08:04:15,861 - INFO - 开始获取超高清直播源...
 2025-11-24 08:04:15,861 - INFO - 正在获取直播源: https://tonkiang.us/list.m3u
 2025-11-24 08:04:15,862 - INFO - 正在获取直播源: https://tonkiang.us/all.m3u
@@ -59,3 +60,45 @@
 2025-11-24 08:04:19,080 - INFO - 总共获取了 172 个唯一频道
 2025-11-24 08:04:19,082 - INFO - 成功写入 CGQ.TXT，共 190 行数据
 2025-11-24 08:04:19,082 - INFO - 直播源获取完成！耗时: 1.05 秒
+=======
+2025-11-24 08:04:21,532 - INFO - 开始获取超高清直播源...
+2025-11-24 08:04:21,533 - INFO - 正在获取直播源: https://tonkiang.us/list.m3u
+2025-11-24 08:04:21,534 - INFO - 正在获取直播源: https://tonkiang.us/all.m3u
+2025-11-24 08:04:21,534 - INFO - 正在获取直播源: https://tonkiang.us/hd.m3u
+2025-11-24 08:04:21,534 - INFO - 正在获取直播源: https://tonkiang.us/?type=m3u
+2025-11-24 08:04:21,535 - INFO - 正在获取直播源: https://tonkiang.us/?get=all
+2025-11-24 08:04:21,535 - INFO - 正在获取直播源: http://tonkiang.us/list.m3u
+2025-11-24 08:04:21,536 - INFO - 正在获取直播源: https://iptv-org.github.io/iptv/countries/cn.m3u
+2025-11-24 08:04:21,537 - INFO - 正在获取直播源: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u
+2025-11-24 08:04:21,538 - INFO - 正在获取直播源: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u
+2025-11-24 08:04:21,630 - ERROR - 获取直播源失败 https://tonkiang.us/hd.m3u: HTTP Error 404: Not Found
+2025-11-24 08:04:21,633 - ERROR - 获取直播源失败 https://tonkiang.us/all.m3u: HTTP Error 404: Not Found
+2025-11-24 08:04:21,638 - ERROR - 获取直播源失败 https://tonkiang.us/list.m3u: HTTP Error 404: Not Found
+2025-11-24 08:04:21,642 - ERROR - 获取直播源失败 http://tonkiang.us/list.m3u: HTTP Error 404: Not Found
+2025-11-24 08:04:21,645 - INFO - 从 https://iptv-org.github.io/iptv/countries/cn.m3u 成功提取 172 个频道
+2025-11-24 08:04:21,650 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u: HTTP Error 404: Not Found
+2025-11-24 08:04:21,658 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u: HTTP Error 404: Not Found
+2025-11-24 08:04:22,557 - INFO - 总共获取了 172 个唯一频道
+2025-11-24 08:04:22,559 - INFO - 成功写入 CGQ.TXT，共 190 行数据
+2025-11-24 08:04:22,560 - INFO - 直播源获取完成！耗时: 1.03 秒
+>>>>>>> Stashed changes
+2025-11-24 08:04:23,168 - INFO - 开始获取超高清直播源...
+2025-11-24 08:04:23,168 - INFO - 正在获取直播源: https://tonkiang.us/list.m3u
+2025-11-24 08:04:23,169 - INFO - 正在获取直播源: https://tonkiang.us/all.m3u
+2025-11-24 08:04:23,169 - INFO - 正在获取直播源: https://tonkiang.us/hd.m3u
+2025-11-24 08:04:23,170 - INFO - 正在获取直播源: https://tonkiang.us/?type=m3u
+2025-11-24 08:04:23,170 - INFO - 正在获取直播源: https://tonkiang.us/?get=all
+2025-11-24 08:04:23,170 - INFO - 正在获取直播源: http://tonkiang.us/list.m3u
+2025-11-24 08:04:23,171 - INFO - 正在获取直播源: https://iptv-org.github.io/iptv/countries/cn.m3u
+2025-11-24 08:04:23,172 - INFO - 正在获取直播源: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u
+2025-11-24 08:04:23,172 - INFO - 正在获取直播源: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u
+2025-11-24 08:04:23,190 - INFO - 从 https://iptv-org.github.io/iptv/countries/cn.m3u 成功提取 172 个频道
+2025-11-24 08:04:23,234 - ERROR - 获取直播源失败 http://tonkiang.us/list.m3u: HTTP Error 404: Not Found
+2025-11-24 08:04:23,237 - ERROR - 获取直播源失败 https://tonkiang.us/hd.m3u: HTTP Error 404: Not Found
+2025-11-24 08:04:23,249 - ERROR - 获取直播源失败 https://tonkiang.us/all.m3u: HTTP Error 404: Not Found
+2025-11-24 08:04:23,260 - ERROR - 获取直播源失败 https://tonkiang.us/list.m3u: HTTP Error 404: Not Found
+2025-11-24 08:04:23,269 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u: HTTP Error 404: Not Found
+2025-11-24 08:04:23,279 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u: HTTP Error 404: Not Found
+2025-11-24 08:04:24,155 - INFO - 总共获取了 172 个唯一频道
+2025-11-24 08:04:24,158 - INFO - 成功写入 CGQ.TXT，共 190 行数据
+2025-11-24 08:04:24,158 - INFO - 直播源获取完成！耗时: 0.99 秒
