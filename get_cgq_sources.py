@@ -58,8 +58,8 @@ LIVE_SOURCES = [
     "https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u",
 ]
 
-# 超高清直播源的关键词匹配
-UHD_KEYWORDS = ['4K', 'UHD', '2160p', 'ultra', '超高清']
+# 超高清直播源的关键词匹配（严格版）
+UHD_KEYWORDS = ['4K', '4k', '超高清', '2160', '2160p', '8K', '8k']
 HD_KEYWORDS = ['HD', '1080p', '高清']
 
 # 频道分类
@@ -69,7 +69,8 @@ CHANNEL_CATEGORIES = {
     "电影": ['电影', 'CHC', 'Movie', 'Film'],
     "体育": ['体育', '足球', '篮球', 'NBA', 'CCTV5', 'sports'],
     "儿童": ['少儿', '卡通', '动画', 'Cartoon', 'Kids'],
-    "4K频道": ['4K', 'UHD', '2160p'],
+    "4K央视频道": ['CCTV', '4K'],  # 央视4K频道特殊分类
+    "4K超高清频道": ['4K超高清', '4K专区'],  # 更精确的4K频道分类
     "高清频道": ['HD', '1080p'],
 }
 
@@ -98,11 +99,28 @@ def get_live_source_content(url):
         return None
 
 def is_uhd_channel(line, channel_name):
-    """判断是否为超高清频道"""
-    # 检查频道名称中是否包含超高清关键词
-    for keyword in UHD_KEYWORDS:
-        if keyword.lower() in line.lower() or keyword in channel_name:
-            return True
+    """判断是否为超高清频道
+    严格定义：只有分辨率2160以上或名称包含"4K"、"超高清"的线路才被标记为超高清
+    """
+    line_lower = line.lower()
+    name_lower = channel_name.lower()
+    
+    # 检查是否包含4K关键词（区分大小写保留原始4K）
+    if '4K' in line or '4k' in line_lower or '4K' in channel_name or '4k' in name_lower:
+        return True
+    
+    # 检查是否包含超高清关键词
+    if '超高清' in line or '超高清' in channel_name:
+        return True
+    
+    # 检查分辨率信息
+    if '2160' in line_lower or '2160p' in line_lower:
+        return True
+    
+    # 检查8K（更高分辨率）
+    if '8K' in line or '8k' in line_lower or '8K' in channel_name or '8k' in name_lower:
+        return True
+    
     return False
 
 def extract_channels(content):
