@@ -89,12 +89,49 @@ CHANNEL_CATEGORIES = {
 }
 
 def is_valid_url(url):
-    """验证URL是否有效"""
+    """验证URL是否有效，添加更严格的检查"""
+    if not url or not isinstance(url, str):
+        return False
+    
+    # 检查是否包含多个URL协议头
+    protocols = re.findall(r'https?://|udp://|rtmp://|rtsp://', url)
+    if len(protocols) > 1:
+        logger.warning(f"URL包含多个协议头: {url}")
+        return False
+    
+    # 检查是否包含无效字符或格式问题
+    if ',' in url and not url.startswith('http'):
+        logger.warning(f"URL包含逗号且不以http开头: {url}")
+        return False
+    
     try:
         result = urlparse(url)
-        return all([result.scheme, result.netloc])
-    except:
+        # 确保scheme和netloc都存在，并且netloc不为空
+        return all([result.scheme, result.netloc and result.netloc.strip()])
+    except Exception as e:
+        logger.warning(f"URL解析错误: {url}, 错误: {str(e)}")
         return False
+
+def clean_url(url):
+    """清理URL，移除可能的错误格式"""
+    if not url:
+        return url
+    
+    # 移除URL中的多余内容，例如如果包含多个URL协议
+    protocols = re.findall(r'https?://|udp://|rtmp://|rtsp://', url)
+    if len(protocols) > 1:
+        # 保留第一个协议和其后面的内容
+        first_protocol_index = url.find(protocols[0])
+        return url[first_protocol_index:]
+    
+    # 处理类似"http://95.67.12.82:9086,Hhttp://"这样的错误格式
+    if re.search(r'(https?://[^,]+),Hhttps?://', url):
+        match = re.search(r'(https?://[^,]+)', url)
+        if match:
+            return match.group(1)
+    
+    # 移除可能的空白字符
+    return url.strip()
 
 def get_live_source_content(url):
     """获取单个直播源URL的内容"""
@@ -221,6 +258,9 @@ def extract_channels(content):
                 channel_name = extinf_line.split(',')[-1].strip()
                 url = line
                 
+                # 清理URL，防止格式错误
+                url = clean_url(url)
+                
                 # 检查是否为低分辨率线路，如果是则跳过
                 if is_low_resolution(extinf_line, channel_name) or is_low_resolution(url, channel_name):
                     logger.debug(f"跳过低分辨率线路: {channel_name}")
@@ -228,7 +268,14 @@ def extract_channels(content):
                     continue
                 
                 is_uhd = is_uhd_channel(extinf_line, channel_name) or is_uhd_channel(url, channel_name)
-                channels.append((channel_name, url, is_uhd))
+                
+                # 再次验证清理后的URL是否有效
+                if is_valid_url(url):
+                    channels.append((channel_name, url, is_uhd))
+                    logger.debug(f"成功提取频道: {channel_name}, URL: {url[:50]}...")
+                else:
+                    logger.warning(f"提取到无效URL: {channel_name}, URL: {url}")
+                    
                 extinf_line = None
     else:
         # 处理简单的名称,URL格式
@@ -236,6 +283,10 @@ def extract_channels(content):
             if i + 1 < len(lines):
                 channel_name = lines[i].strip()
                 url = lines[i + 1].strip()
+                
+                # 清理URL，防止格式错误
+                url = clean_url(url)
+                
                 if channel_name and is_valid_url(url):
                     # 检查是否为低分辨率线路，如果是则跳过
                     if is_low_resolution(channel_name, channel_name):
@@ -244,6 +295,9 @@ def extract_channels(content):
                     
                     is_uhd = is_uhd_channel(channel_name, channel_name)
                     channels.append((channel_name, url, is_uhd))
+                    logger.debug(f"成功提取简单格式频道: {channel_name}")
+                else:
+                    logger.warning(f"跳过无效简单格式频道: {channel_name}, URL: {url}")
     
     return channels
 
