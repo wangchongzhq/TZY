@@ -47,8 +47,8 @@ jobs:
           pip install requests
       
       # 确保脚本可执行
-      - name: 设置脚本权限
-        run: chmod +x get_live_sources.py
+      - name: 赋予脚本执行权限
+        run: chmod +x get_cgq_sources.py
       
       # 执行脚本获取直播源
       - name: 执行脚本获取直播源
