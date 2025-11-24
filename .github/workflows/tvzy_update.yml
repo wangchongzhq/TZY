@@ -18,6 +18,10 @@ jobs:
     steps:
       - name: 检出代码仓库
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: 设置Python环境
         uses: actions/setup-python@v4
@@ -52,12 +56,13 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "GitHub Actions Bot"
           
-          # 确保工作目录是最新的
+          # 强制确保本地分支与远程同步
+          echo "强制同步本地与远程仓库..."
           git fetch origin main
+          git checkout main || git checkout -b main
+          git reset --hard origin/main
           
-          # 使用强制更新策略
-          git checkout main
-          git pull --force origin main
+          echo "本地仓库已重置为远程最新状态"
           
           # 重新执行脚本确保生成最新文件
           python ./tvzy.py || {
