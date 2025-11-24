@@ -73,18 +73,39 @@ jobs:
         if: steps.check_file.outputs.file_exists == 'true'
         run: |
           # 配置git身份和行为
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "GitHub Actions Bot"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           git config --global pull.rebase false  # 使用merge而不是rebase
           git config --global core.autocrlf false  # 防止行尾字符转换问题
           
           echo "=== 开始Git操作 ==="
           echo "当前分支: $(git branch --show-current)"
-          echo "远程状态检查..."
           
-          # 更安全的同步策略：创建临时分支
-          TEMP_BRANCH="temp-update-$(date +%s)"
-          git checkout -b "$TEMP_BRANCH"
+          # 获取远程最新更改
+          echo "获取远程最新更改..."
+          git fetch origin main
+          
+          # 检查是否有冲突（远程有本地没有的提交）
+          LOCAL_COMMITS=$(git rev-list --count HEAD ^origin/main)
+          REMOTE_COMMITS=$(git rev-list --count origin/main ^HEAD)
+          
+          echo "本地有 $LOCAL_COMMITS 个远程没有的提交"
+          echo "远程有 $REMOTE_COMMITS 个本地没有的提交"
+          
+          # 如果远程有本地没有的提交，尝试合并
+          if [ $REMOTE_COMMITS -gt 0 ]; then
+            echo "检测到远程有新的提交，尝试合并..."
+            # 使用--allow-unrelated-histories处理可能的历史不匹配问题
+            git merge --allow-unrelated-histories --strategy-option=theirs origin/main || {
+              echo "合并失败，使用强制更新策略..."
+              # 保存我们的更改
+              git stash
+              # 重置到远程最新状态
+              git reset --hard origin/main
+              # 应用我们的更改
+              git stash pop || echo "无更改需要应用"
+            }
+          fi
           
           # 重新执行脚本确保生成最新文件
           echo "重新执行脚本生成最新直播源..."
@@ -108,26 +129,18 @@ jobs:
           
           # 提交更改
           echo "提交更改..."
-          git commit -m "自动更新超高清直播源 $(date +'%Y-%m-%d %H:%M:%S')"
-          
-          # 切换回main分支
-          git checkout main
-          
-          # 获取远程最新更改
-          echo "获取远程最新更改..."
-          git fetch origin main --prune
-          
-          # 强制将临时分支的更改合并到main
-          echo "将更改合并到main分支..."
-          git reset --hard "$TEMP_BRANCH"
-          
-          # 删除临时分支
-          git branch -D "$TEMP_BRANCH"
+          git commit -m "Auto-update IPTV files - $(date '+%Y-%m-%d %H:%M:%S')"
           
           # 推送到远程仓库
-          echo "推送到远程仓库..."
-          # 使用强制推送确保更新成功
-          git push --force origin main
+          echo "尝试正常推送到远程仓库..."
+          git push origin main || {
+            echo "正常推送失败，使用强制推送..."
+            # 使用强制推送，但保留merge commit历史
+            git push --force-with-lease origin main || {
+              echo "强制推送也失败，使用最激进的强制推送..."
+              git push --force origin main
+            }
+          }
           
           if [ $? -eq 0 ]; then
             echo "成功推送到远程仓库"
