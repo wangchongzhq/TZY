@@ -1,6 +1,9 @@
 # 超高清直播源列表
-# 更新时间: 2025-11-24 08:49:27
-# 共包含 172 个频道
+# 更新时间: 2025-11-24 09:05:38
+# 共包含 175 个频道
+
+4K央视频道,#genre#
+TRAVELXP 4K,http://95.67.12.82:9086,Hhttp://iptv.prosto.tv:7000/ch6/video.m3u8
 
 高清频道,#genre#
 TV BRICS Chinese (1080p),https://chibrics.mediacdn.ru/cdn/brics/chinese/playlist.m3u8
@@ -162,7 +165,9 @@ Yanbian Cinese Comprehensive Channel,https://live.ybtvyun.com/video/s10016-6d4fe
 Yicai TV,http://49.113.179.174:4022/udp/238.125.0.165:5140
 Zhejiang Satellite TV,https://play-qukan.cztv.com/live/1758879019692345.m3u8
 Zhejiang TV International,https://ali-m-l.cztv.com/channels/lantian/channel10/1080p.m3u8
+fox life,http://193.111.244.35:7474/foxlife/manifest.m3u8,101https://limited38.todostreaming.es/live/101tv-AntequeraHD.m3u8
 中国气象 (576p) [Not 24/7],http://hls.weathertv.cn/tslslive/qCFIfHB/hls/live_sd.m3u8
+中央新影-女性時尚,http://111.20.33.70/PLTV/88888893/224/3221226237/index.m3u8,http://zteres.sn.chinamobile.com:6060/yinhe/2/ch00000090990000001314/index.m3u8?virtualDomain=yinhe.live_hls.zte.com
 发现之旅 (576p),http://125.210.152.18:9090/live/FXZL_750.m3u8
 和政电视台,http://117.156.28.119/270000001111/1110000149/index.m3u8
 四川妇女儿童 (720p) [Not 24/7],http://scgctvshow.sctv.com/hdlive/sctv7/index.m3u8
