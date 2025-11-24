@@ -75,14 +75,14 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "GitHub Actions Bot"
           
-          # 确保获取所有远程更改
-          git fetch --all
+          # 获取远程最新更改
+          git fetch origin main
           
-          # 强制重置到远程主分支，确保本地和远程一致
-          git reset --hard origin/main
+          # 尝试合并远程更改，如果有冲突则使用本地版本
+          git merge origin/main --no-edit || git checkout --ours .
           
           # 重新执行脚本确保生成最新文件
-          python get_live_sources.py
+          python get_cgq_sources.py
           
           # 检查文件是否存在
           if [ ! -f "CGQ.TXT" ]; then
@@ -91,7 +91,7 @@ jobs:
           fi
           
           # 添加文件
-          git add CGQ.TXT get_live_sources.log
+          git add CGQ.TXT get_cgq_sources.log
           
           # 检查是否有更改
           if git diff --staged --quiet; then
@@ -115,7 +115,7 @@ jobs:
           name: cgq-live-sources
           path: |
             CGQ.TXT
-            get_live_sources.log
+            get_cgq_sources.log
           retention-days: 7  # 保存7天
       
       # 生成构建摘要
@@ -127,4 +127,4 @@ jobs:
           echo "- 输出文件: CGQ.TXT" >> $GITHUB_STEP_SUMMARY
           echo "- 文件大小: $(du -h CGQ.TXT | cut -f1)" >> $GITHUB_STEP_SUMMARY
           echo "- 频道数量: $(grep -v '^#' CGQ.TXT | grep ',' | wc -l)" >> $GITHUB_STEP_SUMMARY
-          echo "- 更新日志: 可在构建产物中查看get_live_sources.log文件" >> $GITHUB_STEP_SUMMARY
+          echo "- 更新日志: 可在构建产物中查看get_cgq_sources.log文件" >> $GITHUB_STEP_SUMMARY
