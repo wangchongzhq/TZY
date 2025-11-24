@@ -25,7 +25,6 @@ logging.basicConfig(
     level=log_level,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('get_cgq_sources.log', encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
