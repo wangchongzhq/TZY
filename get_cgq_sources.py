@@ -172,6 +172,42 @@ def is_uhd_channel(line, channel_name):
     
     return False
 
+def log_debug(message):
+    """将调试信息写入到debug.log文件"""
+    try:
+        with open('debug.log', 'a', encoding='utf-8') as f:
+            f.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - {message}\n")
+    except Exception as e:
+        pass  # 忽略写入错误
+
+def is_low_resolution(line, channel_name):
+    """判断是否为低分辨率线路
+    识别并过滤576p等低分辨率线路
+    """
+    line_lower = line.lower()
+    name_lower = channel_name.lower()
+    
+    # 写入调试信息到文件
+    log_debug(f"检查线路: {channel_name}, {line[:50]}...")
+    
+    # 明确标记的低分辨率
+    if '576p' in line_lower or '576p' in name_lower:
+        log_debug(f"检测到576p低分辨率线路: {channel_name}")
+        return True
+    
+    # 其他低分辨率标记
+    if '标清' in line or '标清' in channel_name:
+        log_debug(f"检测到标清低分辨率线路: {channel_name}")
+        return True
+    
+    # 明确的低质量标记
+    if 'sd' in line_lower or '480p' in line_lower:
+        log_debug(f"检测到SD/480p低分辨率线路: {channel_name}")
+        return True
+    
+    log_debug(f"线路保留: {channel_name}")
+    return False
+
 def extract_channels(content):
     """从内容中提取频道信息"""
     if not content:
@@ -191,6 +227,13 @@ def extract_channels(content):
                 # 提取频道名称
                 channel_name = extinf_line.split(',')[-1].strip()
                 url = line
+                
+                # 检查是否为低分辨率线路，如果是则跳过
+                if is_low_resolution(extinf_line, channel_name) or is_low_resolution(url, channel_name):
+                    logger.debug(f"跳过低分辨率线路: {channel_name}")
+                    extinf_line = None
+                    continue
+                
                 is_uhd = is_uhd_channel(extinf_line, channel_name) or is_uhd_channel(url, channel_name)
                 channels.append((channel_name, url, is_uhd))
                 extinf_line = None
@@ -201,6 +244,11 @@ def extract_channels(content):
                 channel_name = lines[i].strip()
                 url = lines[i + 1].strip()
                 if channel_name and is_valid_url(url):
+                    # 检查是否为低分辨率线路，如果是则跳过
+                    if is_low_resolution(channel_name, channel_name):
+                        logger.debug(f"跳过低分辨率线路: {channel_name}")
+                        continue
+                    
                     is_uhd = is_uhd_channel(channel_name, channel_name)
                     channels.append((channel_name, url, is_uhd))
     
@@ -411,8 +459,20 @@ def write_channels_to_file(categorized_channels):
 
 def main():
     """主函数"""
+    # 清空之前的调试日志
+    try:
+        with open('debug.log', 'w', encoding='utf-8') as f:
+            f.write(f"=== 开始执行直播源更新脚本 === {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+    except Exception as e:
+        pass
+    
+    log_debug(f"Python版本: {sys.version}")
+    log_debug(f"当前目录: {os.getcwd()}")
+    log_debug(f"调试模式: {'开启' if DEBUG else '关闭'}")
+    
     # 确保日志文件目录存在
     log_dir = os.path.dirname(os.path.abspath(__file__))
+    log_debug(f"日志目录: {log_dir}")
     logger.info(f"日志目录: {log_dir}")
     
     # 将输出同时写入文件，以便在环境限制下查看结果
