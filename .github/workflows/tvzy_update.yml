@@ -77,7 +77,11 @@ jobs:
           # 获取当前日期（北京时间）
           TODAY=$(TZ='Asia/Shanghai' date +'%Y-%m-%d')
           # 使用手动触发的原因或默认消息
-          REASON="${{ github.event.inputs.update_reason || '自动更新 '${TODAY}' 电视直播线路' }}"
+          if [ -n "${{ github.event.inputs.update_reason }}" ]; then
+            REASON="${{ github.event.inputs.update_reason }}"
+          else
+            REASON="自动更新 ${TODAY} 电视直播线路"
+          fi
           
           # 提交更改
           git commit -m "${REASON}"
