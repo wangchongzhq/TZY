@@ -1,0 +1,130 @@
+name: 更新超高清直播源
+
+on:
+  # 手动触发
+  workflow_dispatch:
+    inputs:
+      force-update:
+        description: '强制更新直播源'
+        required: false
+        default: 'false'
+        type: boolean
+  
+  # 定时触发 - 每天北京时间早上3点（UTC时间前一天19点）
+  schedule:
+    - cron: '0 19 * * *'
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+permissions:
+  contents: write  # 允许工作流写入仓库内容
+  actions: read    # 允许读取工作流信息
+
+jobs:
+  update-live-sources:
+    runs-on: ubuntu-latest
+      
+    steps:
+      # 检出代码
+      - name: 检出代码
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # 获取完整历史
+          persist-credentials: true  # 保存凭证用于推送
+      
+      # 设置Python环境
+      - name: 设置Python环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'  # 缓存pip依赖
+      
+      # 安装依赖
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+      
+      # 确保脚本可执行
+      - name: 设置脚本权限
+        run: chmod +x get_live_sources.py
+      
+      # 执行脚本获取直播源
+      - name: 获取超高清直播源
+        run: python get_live_sources.py
+      
+      # 检查输出文件是否生成
+      - name: 检查输出文件
+        id: check_file
+        run: |
+          if [ -f "CGQ.TXT" ]; then
+            echo "file_exists=true" >> $GITHUB_OUTPUT
+            echo "文件大小: $(du -h CGQ.TXT | cut -f1)" >> $GITHUB_STEP_SUMMARY
+            echo "频道数量: $(grep -v '^#' CGQ.TXT | grep ',' | wc -l)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "file_exists=false" >> $GITHUB_OUTPUT
+            echo "::error::输出文件CGQ.TXT未生成！" >> $GITHUB_STEP_SUMMARY
+          fi
+      
+      # 提交和推送更改
+      - name: 提交和推送更改
+        if: steps.check_file.outputs.file_exists == 'true'
+        run: |
+          # 配置git身份
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Actions Bot"
+          
+          # 确保获取所有远程更改
+          git fetch --all
+          
+          # 强制重置到远程主分支，确保本地和远程一致
+          git reset --hard origin/main
+          
+          # 重新执行脚本确保生成最新文件
+          python get_live_sources.py
+          
+          # 检查文件是否存在
+          if [ ! -f "CGQ.TXT" ]; then
+            echo "错误：CGQ.TXT文件未生成"
+            exit 1
+          fi
+          
+          # 添加文件
+          git add CGQ.TXT get_live_sources.log
+          
+          # 检查是否有更改
+          if git diff --staged --quiet; then
+            echo "没有检测到更改，跳过提交"
+            exit 0
+          fi
+          
+          # 提交更改
+          git commit -m "自动更新超高清直播源 $(date +'%Y-%m-%d %H:%M:%S')"
+          
+          # 强制推送，确保能够覆盖远程更改
+          git push --force origin main
+          
+          echo "成功强制推送到远程仓库"
+      
+      # 保存输出文件作为构建产物
+      - name: 保存输出文件
+        if: steps.check_file.outputs.file_exists == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cgq-live-sources
+          path: |
+            CGQ.TXT
+            get_live_sources.log
+          retention-days: 7  # 保存7天
+      
+      # 生成构建摘要
+      - name: 生成构建摘要
+        if: steps.check_file.outputs.file_exists == 'true'
+        run: |
+          echo "## 超高清直播源更新摘要" >> $GITHUB_STEP_SUMMARY
+          echo "- 执行时间: $(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_STEP_SUMMARY
+          echo "- 输出文件: CGQ.TXT" >> $GITHUB_STEP_SUMMARY
+          echo "- 文件大小: $(du -h CGQ.TXT | cut -f1)" >> $GITHUB_STEP_SUMMARY
+          echo "- 频道数量: $(grep -v '^#' CGQ.TXT | grep ',' | wc -l)" >> $GITHUB_STEP_SUMMARY
+          echo "- 更新日志: 可在构建产物中查看get_live_sources.log文件" >> $GITHUB_STEP_SUMMARY
