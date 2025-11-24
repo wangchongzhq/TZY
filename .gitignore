@@ -1,0 +1,38 @@
+# Python虚拟环境
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# 测试文件和日志
+minimal_test.py
+test_env.py
+test_python_output.log
+test_tvzy.py
+run_test.bat
+simple_test.py
+
+# 自动生成的日志文件
+get_cgq_sources.log
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# 编辑器目录和文件
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 环境变量文件
+.env
+.env.local
+.env.production.local
+.env.development.local
