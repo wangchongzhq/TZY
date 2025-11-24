@@ -32,6 +32,7 @@ jobs:
         with:
           fetch-depth: 0  # 获取完整历史
           persist-credentials: true  # 保存凭证用于推送
+          ref: main  # 明确指定分支
       
       # 设置Python环境
       - name: 设置Python环境
@@ -71,26 +72,44 @@ jobs:
       - name: 提交和推送更改
         if: steps.check_file.outputs.file_exists == 'true'
         run: |
-          # 配置git身份
+          # 配置git身份和行为
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "GitHub Actions Bot"
+          git config --global pull.rebase false  # 使用merge而不是rebase
           
-          # 获取远程最新更改
-          git fetch origin main
+          echo "=== 开始Git操作 ==="
+          echo "当前分支: $(git branch --show-current)"
+          echo "远程状态检查..."
           
-          # 尝试合并远程更改，如果有冲突则使用本地版本
-          git merge origin/main --no-edit || git checkout --ours .
+          # 确保完全同步远程仓库
+          git fetch origin main --prune
+          
+          # 检查本地是否有未同步的更改
+          LOCAL_COMMIT=$(git rev-parse HEAD)
+          REMOTE_COMMIT=$(git rev-parse origin/main)
+          
+          if [ "$LOCAL_COMMIT" != "$REMOTE_COMMIT" ]; then
+            echo "检测到远程有新的提交，执行合并操作..."
+            # 确保工作目录干净
+            git reset --hard HEAD
+            # 使用ours策略合并，保留我们的更改
+            git merge -s ours origin/main --no-edit || echo "合并可能产生冲突，但会使用我们的版本"
+          else
+            echo "本地和远程代码已同步"
+          fi
           
           # 重新执行脚本确保生成最新文件
+          echo "重新执行脚本生成最新直播源..."
           python get_cgq_sources.py
           
           # 检查文件是否存在
           if [ ! -f "CGQ.TXT" ]; then
-            echo "错误：CGQ.TXT文件未生成"
+            echo "::error::错误：CGQ.TXT文件未生成"
             exit 1
           fi
           
           # 添加文件
+          echo "添加更改的文件..."
           git add CGQ.TXT get_cgq_sources.log
           
           # 检查是否有更改
@@ -100,12 +119,20 @@ jobs:
           fi
           
           # 提交更改
+          echo "提交更改..."
           git commit -m "自动更新超高清直播源 $(date +'%Y-%m-%d %H:%M:%S')"
           
-          # 强制推送，确保能够覆盖远程更改
-          git push --force origin main
-          
-          echo "成功强制推送到远程仓库"
+          # 使用更安全的推送策略
+          echo "推送到远程仓库..."
+          # 首先尝试正常推送
+          if git push origin main; then
+            echo "成功推送到远程仓库"
+          else
+            echo "推送失败，尝试强制推送..."
+            # 如果失败则使用强制推送
+            git push --force origin main
+            echo "成功强制推送到远程仓库"
+          fi
       
       # 保存输出文件作为构建产物
       - name: 保存输出文件
