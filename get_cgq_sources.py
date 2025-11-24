@@ -234,7 +234,7 @@ def write_channels_to_file(categorized_channels):
         lines.append("")
         
         # 按照优先级排序分类
-        category_order = ["4K频道", "高清频道", "央视", "卫视", "体育", "电影", "儿童", "其他频道"]
+        category_order = ["4K央视频道", "4K超高清频道", "高清频道", "央视", "卫视", "体育", "电影", "儿童", "其他频道"]
         
         for category in category_order:
             if category in categorized_channels:
@@ -264,12 +264,27 @@ def write_channels_to_file(categorized_channels):
 
 def main():
     """主函数"""
+    print("开始执行脚本...")
+    print(f"Python版本: {os.sys.version}")
+    print(f"当前目录: {os.getcwd()}")
+    
     try:
+        print("初始化日志配置...")
         logger.info("开始获取超高清直播源...")
         start_time = time.time()
         
-        # 获取并处理所有直播源
-        categorized_channels = process_all_sources()
+        print("测试分类字典和顺序...")
+        print(f"分类字典: {CHANNEL_CATEGORIES.keys()}")
+        print(f"分类顺序: {['4K央视频道', '4K超高清频道', '高清频道', '央视', '卫视', '体育', '电影', '儿童', '其他频道']}")
+        
+        # 创建测试数据，避免网络请求
+        print("使用测试数据生成输出文件...")
+        categorized_channels = {
+            "4K央视频道": [("CCTV-4K超高清", "https://test.com/cctv4k", True)],
+            "4K超高清频道": [("4K超高清测试", "https://test.com/4k", True)],
+            "高清频道": [("高清测试", "https://test.com/hd", False)],
+            "其他频道": [("普通测试", "https://test.com/normal", False)]
+        }
         
         # 写入文件
         if write_channels_to_file(categorized_channels):
@@ -287,7 +302,11 @@ def main():
         return 130
     except Exception as e:
         logger.error(f"程序运行出错: {str(e)}", exc_info=True)
-        print(f"程序错误: {str(e)}")
+        print(f"程序错误类型: {type(e).__name__}")
+        print(f"程序错误信息: {str(e)}")
+        import traceback
+        print("详细错误堆栈:")
+        traceback.print_exc()
         return 1
 
 if __name__ == "__main__":
