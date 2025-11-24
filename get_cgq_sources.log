@@ -182,3 +182,43 @@
 2025-11-24 08:49:15,947 - INFO - 总共获取了 172 个唯一频道
 2025-11-24 08:49:15,949 - INFO - 成功写入 CGQ.TXT，共 190 行数据
 2025-11-24 08:49:15,949 - INFO - 直播源获取完成！耗时: 1.10 秒
+2025-11-24 08:49:24,715 - INFO - 开始获取超高清直播源...
+2025-11-24 08:49:24,715 - INFO - 正在获取直播源: https://tonkiang.us/list.m3u
+2025-11-24 08:49:24,716 - INFO - 正在获取直播源: https://tonkiang.us/all.m3u
+2025-11-24 08:49:24,716 - INFO - 正在获取直播源: https://tonkiang.us/hd.m3u
+2025-11-24 08:49:24,717 - INFO - 正在获取直播源: https://tonkiang.us/?type=m3u
+2025-11-24 08:49:24,717 - INFO - 正在获取直播源: https://tonkiang.us/?get=all
+2025-11-24 08:49:24,717 - INFO - 正在获取直播源: http://tonkiang.us/list.m3u
+2025-11-24 08:49:24,719 - INFO - 正在获取直播源: https://iptv-org.github.io/iptv/countries/cn.m3u
+2025-11-24 08:49:24,719 - INFO - 正在获取直播源: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u
+2025-11-24 08:49:24,720 - INFO - 正在获取直播源: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u
+2025-11-24 08:49:24,786 - ERROR - 获取直播源失败 https://tonkiang.us/hd.m3u: HTTP Error 404: Not Found
+2025-11-24 08:49:24,805 - ERROR - 获取直播源失败 http://tonkiang.us/list.m3u: HTTP Error 404: Not Found
+2025-11-24 08:49:24,810 - ERROR - 获取直播源失败 https://tonkiang.us/list.m3u: HTTP Error 404: Not Found
+2025-11-24 08:49:24,810 - ERROR - 获取直播源失败 https://tonkiang.us/all.m3u: HTTP Error 404: Not Found
+2025-11-24 08:49:24,817 - INFO - 从 https://iptv-org.github.io/iptv/countries/cn.m3u 成功提取 172 个频道
+2025-11-24 08:49:24,818 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u: HTTP Error 404: Not Found
+2025-11-24 08:49:24,858 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u: HTTP Error 404: Not Found
+2025-11-24 08:49:25,762 - INFO - 总共获取了 172 个唯一频道
+2025-11-24 08:49:25,764 - INFO - 成功写入 CGQ.TXT，共 190 行数据
+2025-11-24 08:49:25,764 - INFO - 直播源获取完成！耗时: 1.05 秒
+2025-11-24 08:49:26,191 - INFO - 开始获取超高清直播源...
+2025-11-24 08:49:26,192 - INFO - 正在获取直播源: https://tonkiang.us/list.m3u
+2025-11-24 08:49:26,193 - INFO - 正在获取直播源: https://tonkiang.us/all.m3u
+2025-11-24 08:49:26,193 - INFO - 正在获取直播源: https://tonkiang.us/hd.m3u
+2025-11-24 08:49:26,194 - INFO - 正在获取直播源: https://tonkiang.us/?type=m3u
+2025-11-24 08:49:26,194 - INFO - 正在获取直播源: https://tonkiang.us/?get=all
+2025-11-24 08:49:26,194 - INFO - 正在获取直播源: http://tonkiang.us/list.m3u
+2025-11-24 08:49:26,196 - INFO - 正在获取直播源: https://iptv-org.github.io/iptv/countries/cn.m3u
+2025-11-24 08:49:26,197 - INFO - 正在获取直播源: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u
+2025-11-24 08:49:26,199 - INFO - 正在获取直播源: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u
+2025-11-24 08:49:26,209 - INFO - 从 https://iptv-org.github.io/iptv/countries/cn.m3u 成功提取 172 个频道
+2025-11-24 08:49:26,209 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u: HTTP Error 404: Not Found
+2025-11-24 08:49:26,250 - ERROR - 获取直播源失败 https://tonkiang.us/hd.m3u: HTTP Error 404: Not Found
+2025-11-24 08:49:26,258 - ERROR - 获取直播源失败 https://tonkiang.us/list.m3u: HTTP Error 404: Not Found
+2025-11-24 08:49:26,261 - ERROR - 获取直播源失败 https://tonkiang.us/all.m3u: HTTP Error 404: Not Found
+2025-11-24 08:49:26,280 - ERROR - 获取直播源失败 http://tonkiang.us/list.m3u: HTTP Error 404: Not Found
+2025-11-24 08:49:26,303 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u: HTTP Error 404: Not Found
+2025-11-24 08:49:27,201 - INFO - 总共获取了 172 个唯一频道
+2025-11-24 08:49:27,204 - INFO - 成功写入 CGQ.TXT，共 190 行数据
+2025-11-24 08:49:27,204 - INFO - 直播源获取完成！耗时: 1.01 秒
