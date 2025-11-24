@@ -72,6 +72,11 @@ LIVE_SOURCES = [
     "https://raw.githubusercontent.com/xyy0508/iptv/main/888.txt",
     "https://raw.githubusercontent.com/zhonghu32/live/main/live.txt",
     "https://raw.githubusercontent.com/cuijian01/dianshi/main/live.txt",
+    # 用户提供的新直播源
+    "https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
+    "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
+    "https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
+    "https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt",
 ]
 
 # 超高清直播源的关键词匹配（严格版）
