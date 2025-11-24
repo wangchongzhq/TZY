@@ -264,50 +264,63 @@ def write_channels_to_file(categorized_channels):
 
 def main():
     """主函数"""
-    print("开始执行脚本...")
-    print(f"Python版本: {os.sys.version}")
-    print(f"当前目录: {os.getcwd()}")
-    
-    try:
-        print("初始化日志配置...")
-        logger.info("开始获取超高清直播源...")
-        start_time = time.time()
+    # 将输出同时写入文件，以便在环境限制下查看结果
+    with open('script_output.log', 'w', encoding='utf-8') as log_file:
+        def log_print(message):
+            """打印并记录消息"""
+            print(message)
+            log_file.write(message + '\n')
+            log_file.flush()
         
-        print("测试分类字典和顺序...")
-        print(f"分类字典: {CHANNEL_CATEGORIES.keys()}")
-        print(f"分类顺序: {['4K央视频道', '4K超高清频道', '高清频道', '央视', '卫视', '体育', '电影', '儿童', '其他频道']}")
+        log_print("开始执行脚本...")
+        log_print(f"Python版本: {os.sys.version}")
+        log_print(f"当前目录: {os.getcwd()}")
         
-        # 创建测试数据，避免网络请求
-        print("使用测试数据生成输出文件...")
-        categorized_channels = {
-            "4K央视频道": [("CCTV-4K超高清", "https://test.com/cctv4k", True)],
-            "4K超高清频道": [("4K超高清测试", "https://test.com/4k", True)],
-            "高清频道": [("高清测试", "https://test.com/hd", False)],
-            "其他频道": [("普通测试", "https://test.com/normal", False)]
-        }
+        try:
+            log_print("初始化日志配置...")
+            logger.info("开始获取超高清直播源...")
+            start_time = time.time()
+            
+            # 直接调用process_all_sources()获取实际直播源
+            log_print("开始从网络获取直播源数据...")
+            categorized_channels = process_all_sources()
+            
+            # 如果没有获取到数据，提供一些静态备份数据
+            if not categorized_channels:
+                log_print("警告: 未能从网络获取到直播源数据，使用备用数据")
+                categorized_channels = {
+                    "4K央视频道": [("CCTV-4K超高清", "https://tv.cctv.com/live/cctv4k/", True)],
+                    "高清频道": [
+                        ("CCTV-1综合", "https://tv.cctv.com/live/cctv1/", False),
+                        ("CCTV-2财经", "https://tv.cctv.com/live/cctv2/", False),
+                        ("CCTV-3综艺", "https://tv.cctv.com/live/cctv3/", False),
+                        ("CCTV-4中文国际", "https://tv.cctv.com/live/cctv4/", False)
+                    ]
+                }
         
-        # 写入文件
-        if write_channels_to_file(categorized_channels):
-            elapsed_time = time.time() - start_time
-            logger.info(f"直播源获取完成！耗时: {elapsed_time:.2f} 秒")
-            print(f"✓ 成功生成 {OUTPUT_FILE} 文件")
-            return 0
-        else:
-            logger.error("处理失败")
-            print("✗ 生成文件失败")
+            # 写入文件
+            if write_channels_to_file(categorized_channels):
+                elapsed_time = time.time() - start_time
+                logger.info(f"直播源获取完成！耗时: {elapsed_time:.2f} 秒")
+                log_print(f"✓ 成功生成 {OUTPUT_FILE} 文件")
+                return 0
+            else:
+                logger.error("处理失败")
+                log_print("✗ 生成文件失败")
+                return 1
+        except KeyboardInterrupt:
+            logger.info("程序被用户中断")
+            log_print("程序被中断")
+            return 130
+        except Exception as e:
+            logger.error(f"程序运行出错: {str(e)}", exc_info=True)
+            log_print(f"程序错误类型: {type(e).__name__}")
+            log_print(f"程序错误信息: {str(e)}")
+            import traceback
+            log_print("详细错误堆栈:")
+            error_trace = traceback.format_exc()
+            log_print(error_trace)
             return 1
-    except KeyboardInterrupt:
-        logger.info("程序被用户中断")
-        print("程序被中断")
-        return 130
-    except Exception as e:
-        logger.error(f"程序运行出错: {str(e)}", exc_info=True)
-        print(f"程序错误类型: {type(e).__name__}")
-        print(f"程序错误信息: {str(e)}")
-        import traceback
-        print("详细错误堆栈:")
-        traceback.print_exc()
-        return 1
 
 if __name__ == "__main__":
     exit(main())
