@@ -20,7 +20,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('get_live_sources.log', encoding='utf-8'),
+        logging.FileHandler('get_cgq_sources.log', encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
