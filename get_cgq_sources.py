@@ -362,21 +362,31 @@ def process_all_sources():
         for i, (name, url, is_uhd) in enumerate(all_channels[:10]):
             logger.info(f"  {i+1}. {'[4K]' if is_uhd else '[HD]'} {name}: {url[:50]}{'...' if len(url)>50 else ''}")
     
-    # 去重 - 使用更宽松的策略
+    # 修改去重策略：保留所有超高清线路，同时避免完全相同的频道+URL组合
     logger.info("开始去重处理...")
     unique_channels = {}
+    uhd_channels_count = 0
     
     for name, url, is_uhd in all_channels:
         # 使用名称和URL的组合作为去重键，确保不同URL的同一频道都能保留
         key = f"{name}|{url}"
         if key not in unique_channels:
             unique_channels[key] = (name, url, is_uhd)
-            logger.debug(f"添加唯一频道: {name} ({url[:30]}...)")
+            if is_uhd:
+                uhd_channels_count += 1
+                logger.debug(f"添加超高清频道: {name} ({url[:30]}...)")
+            else:
+                logger.debug(f"添加高清频道: {name} ({url[:30]}...)")
         else:
             logger.debug(f"跳过重复频道: {name} ({url[:30]}...)")
     
     all_channels = list(unique_channels.values())
-    logger.info(f"去重后剩余 {len(all_channels)} 个唯一频道")
+    logger.info(f"去重后剩余 {len(all_channels)} 个唯一频道，其中超高清频道 {uhd_channels_count} 个")
+    
+    # 确保只输出超高清线路 - 根据用户要求，只保留is_uhd为True的线路
+    uhd_only_channels = [(name, url, is_uhd) for name, url, is_uhd in all_channels if is_uhd]
+    logger.info(f"筛选后只保留 {len(uhd_only_channels)} 个超高清线路")
+    all_channels = uhd_only_channels  # 替换为只包含超高清线路的列表
     
     # 显示各来源的贡献统计
     logger.info("各直播源频道贡献统计:")
@@ -414,11 +424,19 @@ def write_channels_to_file(categorized_channels):
     """将频道信息写入文件"""
     try:
         lines = []
+        total_channels = 0
+        uhd_channels_count = 0
         
-        # 添加文件头信息
-        lines.append(f"# 超高清直播源列表")
+        # 添加文件头信息 - 强调包含所有超高清线路
+        lines.append(f"# 超高清直播源列表 (包含所有超高清线路)")
         lines.append(f"# 更新时间: {time.strftime('%Y-%m-%d %H:%M:%S')}")
-        lines.append(f"# 共包含 {sum(len(channels) for channels in categorized_channels.values())} 个频道")
+        
+        # 计算总频道数和超高清频道数
+        for category, channels in categorized_channels.items():
+            total_channels += len(channels)
+            uhd_channels_count += sum(1 for _, _, is_uhd in channels if is_uhd)
+        
+        lines.append(f"# 共包含 {total_channels} 个频道，其中超高清频道 {uhd_channels_count} 个")
         lines.append("")
         
         # 按照优先级排序分类
@@ -426,16 +444,29 @@ def write_channels_to_file(categorized_channels):
         
         for category in category_order:
             if category in categorized_channels:
-                # 添加分类标记
-                lines.append(f"{category},#genre#")
+                category_uhd_count = sum(1 for _, _, is_uhd in categorized_channels[category] if is_uhd)
+                # 添加分类标记，显示该分类中超高清频道数量
+                lines.append(f"{category} (超高清: {category_uhd_count}),#genre#")
                 
-                # 按频道名称排序，UHD频道优先
-                channels = sorted(categorized_channels[category], key=lambda x: (not x[2], x[0]))
+                # 按频道名称排序，UHD频道优先，确保同一频道的多个超高清线路都能保留
+                channels = sorted(categorized_channels[category], key=lambda x: (not x[2], x[0], x[1]))
+                
+                # 记录每个频道已输出的线路数，用于日志
+                channel_counts = {}
                 
                 for name, url, is_uhd in channels:
                     # 只输出有效的URL
                     if is_valid_url(url):
                         lines.append(f"{name},{url}")
+                        # 更新频道计数
+                        if name not in channel_counts:
+                            channel_counts[name] = 0
+                        channel_counts[name] += 1
+                
+                # 记录该分类中多线路频道信息
+                multi_line_channels = [name for name, count in channel_counts.items() if count > 1]
+                if multi_line_channels:
+                    logger.info(f"{category} 分类中有 {len(multi_line_channels)} 个频道包含多个线路")
                 
                 # 分类之间添加空行
                 lines.append("")
@@ -444,7 +475,7 @@ def write_channels_to_file(categorized_channels):
         with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
             f.write('\n'.join(lines))
         
-        logger.info(f"成功写入 {OUTPUT_FILE}，共 {len(lines)} 行数据")
+        logger.info(f"成功写入 {OUTPUT_FILE}，共 {len(lines)} 行数据，包含所有超高清线路")
         return True
     except Exception as e:
         logger.error(f"写入文件失败: {str(e)}")
