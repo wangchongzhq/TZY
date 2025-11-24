@@ -309,3 +309,33 @@
 2025-11-24 09:05:45,903 - INFO - 总共获取了 175 个唯一频道
 2025-11-24 09:05:45,906 - INFO - 成功写入 CGQ.TXT，共 195 行数据
 2025-11-24 09:05:45,906 - INFO - 直播源获取完成！耗时: 1.78 秒
+2025-11-24 09:32:40,541 - INFO - 开始获取超高清直播源...
+2025-11-24 09:32:40,542 - INFO - 正在获取直播源: https://iptv-org.github.io/iptv/countries/cn.m3u
+2025-11-24 09:32:40,543 - INFO - 正在获取直播源: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u
+2025-11-24 09:32:40,543 - INFO - 正在获取直播源: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u
+2025-11-24 09:32:40,544 - INFO - 正在获取直播源: https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt
+2025-11-24 09:32:40,544 - INFO - 正在获取直播源: https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt
+2025-11-24 09:32:40,544 - INFO - 正在获取直播源: https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt
+2025-11-24 09:32:40,546 - INFO - 正在获取直播源: https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt
+2025-11-24 09:32:40,579 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u: HTTP Error 404: Not Found
+2025-11-24 09:32:40,580 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u: HTTP Error 404: Not Found
+2025-11-24 09:32:40,611 - INFO - 从 https://iptv-org.github.io/iptv/countries/cn.m3u 成功提取 172 个频道
+2025-11-24 09:32:42,391 - INFO - 从 https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt 成功提取 3 个频道
+2025-11-24 09:32:43,033 - INFO - 总共获取了 175 个唯一频道
+2025-11-24 09:32:43,035 - INFO - 成功写入 CGQ.TXT，共 195 行数据
+2025-11-24 09:32:43,035 - INFO - 直播源获取完成！耗时: 2.49 秒
+2025-11-24 09:32:43,305 - INFO - 开始获取超高清直播源...
+2025-11-24 09:32:43,306 - INFO - 正在获取直播源: https://iptv-org.github.io/iptv/countries/cn.m3u
+2025-11-24 09:32:43,307 - INFO - 正在获取直播源: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u
+2025-11-24 09:32:43,307 - INFO - 正在获取直播源: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u
+2025-11-24 09:32:43,308 - INFO - 正在获取直播源: https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt
+2025-11-24 09:32:43,308 - INFO - 正在获取直播源: https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt
+2025-11-24 09:32:43,309 - INFO - 正在获取直播源: https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt
+2025-11-24 09:32:43,311 - INFO - 正在获取直播源: https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt
+2025-11-24 09:32:43,334 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u: HTTP Error 404: Not Found
+2025-11-24 09:32:43,334 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u: HTTP Error 404: Not Found
+2025-11-24 09:32:43,340 - INFO - 从 https://iptv-org.github.io/iptv/countries/cn.m3u 成功提取 172 个频道
+2025-11-24 09:32:44,752 - INFO - 从 https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt 成功提取 3 个频道
+2025-11-24 09:32:45,149 - INFO - 总共获取了 175 个唯一频道
+2025-11-24 09:32:45,151 - INFO - 成功写入 CGQ.TXT，共 195 行数据
+2025-11-24 09:32:45,151 - INFO - 直播源获取完成！耗时: 1.85 秒
