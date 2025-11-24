@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 直播源获取脚本
-从tonkiang.us等网站获取超高清直播源并输出到CGQ.TXT
+从多个可靠来源获取超高清直播源并输出到CGQ.TXT
 """
 
 import os
@@ -43,20 +43,11 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 # 直播源URL列表
 LIVE_SOURCES = [
-    # 主站点
-    "https://tonkiang.us/list.m3u",
-    "https://tonkiang.us/all.m3u",
-    "https://tonkiang.us/hd.m3u",
-    # 可能的其他路径
-    "https://tonkiang.us/?type=m3u",
-    "https://tonkiang.us/?get=all",
-    # 备用站点
-    "http://tonkiang.us/list.m3u",
-    # 其他可靠的直播源
+    # 可靠的直播源
     "https://iptv-org.github.io/iptv/countries/cn.m3u",
     "https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u",
     "https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u",
-    # 新增直播源
+    # 其他直播源
     "https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
     "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
     "https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
