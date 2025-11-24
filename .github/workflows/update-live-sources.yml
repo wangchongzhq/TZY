@@ -28,14 +28,14 @@ jobs:
       uses: actions/checkout@v4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        fetch-depth: 0
+        fetch-depth: 0  # 获取完整历史记录
         
     - name: Set up Python ${{ env.PYTHON_VERSION }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ env.PYTHON_VERSION }}
         
-    - name: Install dependencies from existing requirements.txt
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
@@ -48,47 +48,45 @@ jobs:
         python update_live_sources.py
         echo "脚本执行完成"
         
-    - name: Check for changes in CGQ.TXT
+    - name: Check for changes
       id: check_changes
       run: |
-        if git diff --name-only HEAD^ HEAD | grep -q "CGQ.TXT"; then
-          echo "changes_detected=true" >> $GITHUB_OUTPUT
-          echo "检测到 CGQ.TXT 文件变更"
+        # 检查CGQ.TXT是否有变化
+        if git diff --name-only | grep -q "CGQ.TXT"; then
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+          echo "📄 检测到 CGQ.TXT 文件变更"
         else
-          echo "changes_detected=false" >> $GITHUB_OUTPUT
-          echo "未检测到 CGQ.TXT 文件变更"
+          echo "has_changes=false" >> $GITHUB_OUTPUT
+          echo "📄 未检测到 CGQ.TXT 文件变更"
         fi
         
-    - name: Commit and push if changes detected
-      if: steps.check_changes.outputs.changes_detected == 'true'
+    - name: Configure Git
+      if: steps.check_changes.outputs.has_changes == 'true'
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add CGQ.TXT update.log
-        git commit -m "🤖 自动更新直播源 - $(date +'%Y-%m-%d %H:%M:%S')
+        git config --local user.name "github-actions[bot]"
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
         
-        - 更新 CGQ.TXT 文件
-        - 查看更新日志请检查 update.log"
-        git push
+    - name: Pull latest changes
+      if: steps.check_changes.outputs.has_changes == 'true'
+      run: |
+        git pull origin main --rebase
         
-    - name: Upload CGQ.TXT as artifact
+    - name: Commit and push changes
+      if: steps.check_changes.outputs.has_changes == 'true'
+      run: |
+        git add CGQ.TXT
+        git commit -m "🤖 自动更新直播源 - $(date +'%Y-%m-%d %H:%M:%S')"
+        git push origin main
+        
+    - name: No changes detected
+      if: steps.check_changes.outputs.has_changes == 'false'
+      run: |
+        echo "📄 没有检测到文件变更，跳过提交"
+        
+    - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: live-sources
+        name: live-sources-${{ github.run_id }}
         path: |
           CGQ.TXT
-          update.log
         retention-days: 7
-        
-    - name: Create success notification
-      if: success()
-      run: |
-        echo "✅ 直播源更新成功完成！"
-        echo "📁 文件 CGQ.TXT 已更新"
-        echo "📊 查看更新日志请下载 artifact"
-        
-    - name: Create failure notification
-      if: failure()
-      run: |
-        echo "❌ 直播源更新失败"
-        echo "请检查 update.log 文件查看详细错误信息"
