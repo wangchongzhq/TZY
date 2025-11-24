@@ -902,6 +902,7 @@ http://218.104.239.114:9901/tsfile/live/0004_1.m3u8
 http://121.37.185.74:18180/TV00000000000000000005@HHZT
 http://114.95.208.163:8888/udp/239.45.0.2:5140
 http://[2409:8087:1:20:20::29]/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226335/1.m3u8?servicetype=1&accountinfo=%7E%7EV2.0%7EBFJ5gRpm8ntK8JEFPZOhLQ%7EPepnxHHB2d6Hk2dZWM77MyFlBN5q1KnYLvimM9pqT7EfCf-e5nKehMQzrOBwWduf%7EExtInfo9bj61dxzlMXrsixrqcFYPg%3A20240420192542%2C%2C%2C20240420192542%2C%2C10001000275495%2C-1%2C0%2C1%2C-1%2C%2C2%2C2201300%2C%2C%2C2%2C%2C%2CEND&GuardEncType=2
+http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226335/1.m3u8
 http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226124/1.m3u8
 http://[2409:8087:8:21::16]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226335/1.m3u8?
 http://[2409:8087:8:21::16]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226470/1.m3u8?
@@ -3166,6 +3167,7 @@ http://106.116.126.201:4022/rtp/239.254.201.120:8144
 http://114.95.208.163:8888/udp/239.45.3.251:5140
 http://114.95.208.163:8888/udp/239.45.3.52:5140
 http://[2409:8087:1a01:df::4025]:80/TVOD/88888888/224/3221225708/main.m3u8
+http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226318/1.m3u8
 http://[2409:8087:8:21::16]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226318/1.m3u8?
 http://[2409:8087:8:21::16]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226459/1.m3u8?
 http://[2409:8087:5e08:25::4]:6610/000000001000/1000000005000056836/index.m3u8?channel-id=ystenlive&Contentid=1000000005000056836&livemode=1&stbId=3
@@ -4653,7 +4655,6 @@ http://111.162.205.166:8686/rtp/225.1.1.126:5002
 http://117.12.150.38:4022/rtp/225.1.1.126:5002
 http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226242/1.m3u8
 http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226366/1.m3u8
-http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226491/1.m3u8
 http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221225720/1.m3u8
 http://[2409:8087:8:21::16]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226242/1.m3u8?
 http://[2409:8087:8:21::16]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226366/1.m3u8?
@@ -4663,6 +4664,7 @@ http://[2409:8087:8:21::16]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221
 http://[2409:8087:8:21::16]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221227009/1.m3u8?
 http://[2409:8087:1:20:20::2a]/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226242/1.m3u8?GuardEncType=2&accountinfo=%7E%7EV2.0%7EJT6eqtJpcKnNhyUS90EOgw%7E_eNUbgU9sJGUcVVduOMKhafLvQUgE_zlz_7pvDimJNN1SxXwCt0S69Lq27ZMJpfR%2CEND
 http://[2409:8087:1e01:20::3]/PLTV/11/224/3221225720/1.m3u8
+http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226491/1.m3u8
 http://[2409:8087:5e08:25::4]:6610/000000001000/1000000001000001828/index.m3u8?channel-id=ystenlive&Contentid=1000000001000001828&livemode=1&stbId=3
 http://[2409:8087:5e08:25::4]:6610/000000001000/1000000001000004684/index.m3u8?channel-id=ystenlive&Contentid=1000000001000004684&livemode=1&stbId=3
 http://[2409:8087:5e08:25::4]:6610/000000001000/4796340999304424198/index.m3u8?channel-id=ystenlive&Contentid=4796340999304424198&livemode=1&stbId=3
@@ -8200,22 +8202,22 @@ http://111.162.205.166:8686/rtp/225.1.2.28:5002
 http://117.12.150.38:4022/rtp/225.1.2.28:5002
 http://[2409:8087:1a01:df::4030]:80/TVOD/88888888/224/3221225974/main.m3u8
 http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226497/1.m3u8
-http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226521/1.m3u8
 http://[2409:8087:1e02:20::1a]/PLTV/11/224/3221226173/1.m3u8
 http://[2409:8087:8:21::16]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226497/1.m3u8?
 http://[2409:8087:8:21::16]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221227012/1.m3u8?
 http://[2409:8087:1e01:20::3]/PLTV/11/224/3221226173/1.m3u8
+http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226521/1.m3u8
 http://[2409:8087:5e08:25::4]:6610/000000001000/1000000002000003169/index.m3u8?channel-id=ystenlive&Contentid=1000000002000003169&livemode=1&stbId=3
 http://[2409:8087:5e08:25::4]:6610/000000001000/5000000004000025843/index.m3u8?channel-id=bestzb&Contentid=5000000004000025843&livemode=1&stbId=3
 http://[2409:8087:1e01:20::3]/PLTV/11/224/3221226173/index.m3u8
 #EXTINF:-1 tvg-name="云南卫视" tvg-logo="https://kakaxi-1.github.io/IPTV/LOGO/云南卫视.png" group-title="卫视频道",云南卫视
 http://101.73.66.2:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226928/1.m3u8
 http://1.180.207.70:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226928/1.m3u8
+http://111.221.137.155:44330/tsfile/live/0116_1.m3u8?key=txiptv
 http://222.169.85.8:9901/tsfile/live/0119_1.m3u8
 http://221.2.148.205:8154/tsfile/live/0119_1.m3u8?key=txiptv&playlive=1&authid=0
 http://222.169.85.8:9901/tsfile/live/0119_1.m3u8?key=txiptv&playlive=1&authid=0
 http://112.27.235.94:8000/hls/40/index.m3u8
-http://111.221.137.155:44330/tsfile/live/0116_1.m3u8?key=txiptv
 http://223.167.245.215:8001/rtp/239.45.0.4:5140
 http://61.140.126.120:10000/udp/239.253.43.37:5146
 http://113.119.26.200:58888/udp/239.253.43.37:5146
@@ -8420,7 +8422,6 @@ http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221
 http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226928/1.m3u8
 http://[2409:8087:1e03:21::2]:6060/cms001/ch00000090990000001223/index.m3u8
 http://[2409:8087:4402:20:1:1216:401:14]/iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221226660/index.m3u8
-http://[2409:8087:3428:20:500::100f]:6610/PLTV/88888888/224/3221227181/index.m3u8?servicetype=1&IASHttpSessionId=RR423820220409134714119178
 http://[2409:8087:1e02:20::1a]/PLTV/11/224/3221226151/1.m3u8
 http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226109/1.m3u8
 http://[2409:8087:8:21::16]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221227028/1.m3u8?
@@ -12939,10 +12940,10 @@ http://144.255.32.180:8288/udp/239.21.1.141:5002
 http://144.255.44.48:7788/udp/239.21.1.141:5002
 http://144.255.81.58:8664/udp/239.21.1.141:5002
 #EXTINF:-1 tvg-name="山东文旅" tvg-logo="https://kakaxi-1.github.io/IPTV/LOGO/山东文旅.png" group-title="山东专属频道",山东文旅
-http://221.2.148.205:8154/tsfile/live/1004_1.m3u8?key=txiptv&playlive=1&authid=0
 http://58.57.40.22:9901/tsfile/live/1023_1.m3u8
 http://123.129.180.66:9902/tsfile/live/1010_1.m3u8?key=txiptv&playlive=1&authid=0
 http://60.209.125.254:352/tsfile/live/1004_1.m3u8?ace
+http://221.2.148.205:8154/tsfile/live/1004_1.m3u8?key=txiptv&playlive=1&authid=0
 http://139.129.231.228:50060/rtp/239.21.1.176:5002
 http://113.120.168.33:4022/udp/239.21.1.176:5002
 http://123.168.95.21:4000/udp/239.21.1.176:5002
