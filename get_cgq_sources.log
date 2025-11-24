@@ -7318,3 +7318,1059 @@ urllib.error.HTTPError: HTTP Error 404: Not Found
 2025-11-24 11:34:00,025 - INFO -   [HD] Bingtuan Satellite TV
 2025-11-24 11:34:00,027 - INFO - 成功写入 CGQ.TXT，共 193 行数据
 2025-11-24 11:34:00,027 - INFO - 直播源获取完成！耗时: 4.46 秒
+2025-11-24 12:28:18,136 - INFO - 日志目录: /home/runner/work/zhby/zhby
+2025-11-24 12:28:18,136 - INFO - 开始获取超高清直播源...
+2025-11-24 12:28:18,136 - INFO - 开始处理 19 个直播源URL
+2025-11-24 12:28:18,136 - INFO - 直播源列表: https://iptv-org.github.io/ipt..., https://raw.githubusercontent...., https://raw.githubusercontent...., https://ghcy.eu.org/https://ra..., https://ghfast.top/raw.githubu..., https://ghcy.eu.org/https://ra..., https://ghfast.top/https://raw..., https://raw.githubusercontent...., https://raw.githubusercontent...., https://raw.githubusercontent...., https://raw.githubusercontent...., https://raw.githubusercontent...., https://raw.githubusercontent...., https://raw.githubusercontent...., https://raw.githubusercontent...., https://ghcy.eu.org/https://ra..., https://ghfast.top/raw.githubu..., https://ghcy.eu.org/https://ra..., https://ghfast.top/https://raw...
+2025-11-24 12:28:18,137 - INFO - 有效URL数量: 19
+2025-11-24 12:28:18,137 - INFO - 使用单线程处理以确保稳定性和可调试性
+2025-11-24 12:28:18,137 - INFO - 正在处理: https://iptv-org.github.io/iptv/countries/cn.m3u
+2025-11-24 12:28:18,137 - INFO - 正在获取直播源: https://iptv-org.github.io/iptv/countries/cn.m3u
+2025-11-24 12:28:18,247 - INFO - 成功获取直播源内容，大小: 33454 字节
+2025-11-24 12:28:18,247 - DEBUG - 直播源前5行内容样本:
+2025-11-24 12:28:18,247 - DEBUG -   #EXTM3U
+2025-11-24 12:28:18,247 - DEBUG -   #EXTINF:-1 tvg-id="ABNChina.us@SD" tvg-logo="https://i.imgur.com/zagVLQH.png" group-title="Religious...
+2025-11-24 12:28:18,248 - DEBUG -   https://mediaserver.abnvideos.com/streams/abnchina.m3u8
+2025-11-24 12:28:18,248 - DEBUG -   #EXTINF:-1 tvg-id="AngelTV.in@Chinese" tvg-logo="https://i.imgur.com/qKLEGU7.png" group-title="Relig...
+2025-11-24 12:28:18,248 - DEBUG -   https://janya-digimix.akamaized.net/vglive-sk-999451/chinese/ngrp:angelchinese_all/playlist.m3u8
+2025-11-24 12:28:18,248 - DEBUG - 跳过低分辨率线路: ABN China (720p)
+2025-11-24 12:28:18,248 - DEBUG - 跳过低分辨率线路: Animation Show Channel
+2025-11-24 12:28:18,248 - DEBUG - 跳过低分辨率线路: Anshun Comprehensive News Channel
+2025-11-24 12:28:18,248 - DEBUG - 跳过低分辨率线路: Bingtuan Satellite TV
+2025-11-24 12:28:18,248 - DEBUG - 跳过低分辨率线路: Bread TV面包台 (720p)
+2025-11-24 12:28:18,249 - DEBUG - 跳过低分辨率线路: BRTV Kaku Childrens Channel
+2025-11-24 12:28:18,249 - DEBUG - 跳过低分辨率线路: BRTV Science & Education Channel
+2025-11-24 12:28:18,249 - DEBUG - 跳过低分辨率线路: BRTV 北京卫视 [Not 24/7]
+2025-11-24 12:28:18,249 - DEBUG - 跳过低分辨率线路: CCTV+ 1 (600p) [Not 24/7]
+2025-11-24 12:28:18,249 - DEBUG - 跳过低分辨率线路: CCTV+ 2 (600p) [Not 24/7]
+2025-11-24 12:28:18,249 - DEBUG - 跳过低分辨率线路: CCTV-1 (2160p)
+2025-11-24 12:28:18,249 - DEBUG - 跳过低分辨率线路: CCTV-2 (2160p)
+2025-11-24 12:28:18,249 - DEBUG - 跳过低分辨率线路: CCTV-3 (2160p)
+2025-11-24 12:28:18,250 - DEBUG - 跳过低分辨率线路: CCTV-5 (2160p)
+2025-11-24 12:28:18,250 - DEBUG - 跳过低分辨率线路: CCTV-5+ (2160p)
+2025-11-24 12:28:18,250 - DEBUG - 跳过低分辨率线路: CCTV-6 (2160p)
+2025-11-24 12:28:18,250 - DEBUG - 跳过低分辨率线路: CCTV-7 (2160p)
+2025-11-24 12:28:18,250 - DEBUG - 跳过低分辨率线路: CCTV-8 (2160p)
+2025-11-24 12:28:18,250 - DEBUG - 跳过低分辨率线路: CCTV-9 (2160p)
+2025-11-24 12:28:18,250 - DEBUG - 跳过低分辨率线路: CCTV-10 (2160p)
+2025-11-24 12:28:18,250 - DEBUG - 跳过低分辨率线路: CCTV-11 (576p)
+2025-11-24 12:28:18,251 - DEBUG - 跳过低分辨率线路: CCTV-12 (2160p)
+2025-11-24 12:28:18,251 - DEBUG - 跳过低分辨率线路: CCTV-13新闻 (2160p)
+2025-11-24 12:28:18,251 - DEBUG - 跳过低分辨率线路: CCTV-14 (2160p)
+2025-11-24 12:28:18,251 - DEBUG - 跳过低分辨率线路: CCTV-15 (576p)
+2025-11-24 12:28:18,251 - DEBUG - 跳过低分辨率线路: CCTV-16 (2160p)
+2025-11-24 12:28:18,251 - DEBUG - 跳过低分辨率线路: CCTV-17 (2160p)
+2025-11-24 12:28:18,251 - DEBUG - 跳过低分辨率线路: CETV1 (576p)
+2025-11-24 12:28:18,251 - DEBUG - 跳过低分辨率线路: CETV2 (576p)
+2025-11-24 12:28:18,252 - DEBUG - 跳过低分辨率线路: CETV-4
+2025-11-24 12:28:18,252 - DEBUG - 跳过低分辨率线路: Channel Law
+2025-11-24 12:28:18,252 - DEBUG - 跳过低分辨率线路: Channel Max
+2025-11-24 12:28:18,252 - DEBUG - 跳过低分辨率线路: Channel Tea
+2025-11-24 12:28:18,252 - DEBUG - 跳过低分辨率线路: CHC Action
+2025-11-24 12:28:18,252 - DEBUG - 跳过低分辨率线路: CHC Home Theater
+2025-11-24 12:28:18,252 - DEBUG - 跳过低分辨率线路: Chifeng Comprehensive News Chanel
+2025-11-24 12:28:18,252 - DEBUG - 跳过低分辨率线路: City Theater Channel
+2025-11-24 12:28:18,252 - DEBUG - 跳过低分辨率线路: Documentary Humanities Channel
+2025-11-24 12:28:18,253 - DEBUG - 跳过低分辨率线路: DOX Surround
+2025-11-24 12:28:18,253 - DEBUG - 跳过低分辨率线路: DOX Yaqu
+2025-11-24 12:28:18,253 - DEBUG - 跳过低分辨率线路: DOX Yijia
+2025-11-24 12:28:18,253 - DEBUG - 跳过低分辨率线路: Dragon TV International (360p)
+2025-11-24 12:28:18,253 - DEBUG - 跳过低分辨率线路: Ecology & Environment TV
+2025-11-24 12:28:18,253 - DEBUG - 跳过低分辨率线路: Game Channel
+2025-11-24 12:28:18,253 - DEBUG - 跳过低分辨率线路: Golden Eagle Cartoon
+2025-11-24 12:28:18,253 - DEBUG - 跳过低分辨率线路: Guangzhou TV
+2025-11-24 12:28:18,253 - DEBUG - 跳过低分辨率线路: Harbin Comprehensive News Channel
+2025-11-24 12:28:18,254 - DEBUG - 跳过低分辨率线路: Harbin Movie Channel
+2025-11-24 12:28:18,254 - DEBUG - 跳过低分辨率线路: Home Plus
+2025-11-24 12:28:18,254 - DEBUG - 跳过低分辨率线路: Hunan Entertainment Channel
+2025-11-24 12:28:18,254 - DEBUG - 跳过低分辨率线路: Hunan Ping Yu
+2025-11-24 12:28:18,254 - DEBUG - 跳过低分辨率线路: JiaJia Cartoon
+2025-11-24 12:28:18,254 - DEBUG - 跳过低分辨率线路: Jiangxi Children's Channel
+2025-11-24 12:28:18,254 - DEBUG - 跳过低分辨率线路: Jiangxi City Channel
+2025-11-24 12:28:18,254 - DEBUG - 跳过低分辨率线路: Jiangxi Economy & Life Channel
+2025-11-24 12:28:18,255 - DEBUG - 跳过低分辨率线路: Jiangxi Movie Channel
+2025-11-24 12:28:18,255 - DEBUG - 跳过低分辨率线路: Jiangxi Public & Agriculture Channel
+2025-11-24 12:28:18,255 - DEBUG - 跳过低分辨率线路: Jilin City Channel
+2025-11-24 12:28:18,255 - DEBUG - 跳过低分辨率线路: Jilin Lifestyle Channel
+2025-11-24 12:28:18,255 - DEBUG - 跳过低分辨率线路: Jilin Movie Channel
+2025-11-24 12:28:18,255 - DEBUG - 跳过低分辨率线路: Jilin Rural Channel
+2025-11-24 12:28:18,255 - DEBUG - 跳过低分辨率线路: Laughter Theater
+2025-11-24 12:28:18,255 - DEBUG - 跳过低分辨率线路: Liangshan TV [Not 24/7]
+2025-11-24 12:28:18,255 - DEBUG - 跳过低分辨率线路: Nanchang News & Generalist Channel
+2025-11-24 12:28:18,256 - DEBUG - 跳过低分辨率线路: Nei Monggol TV
+2025-11-24 12:28:18,256 - DEBUG - 跳过低分辨率线路: Nei Monggol TV 2 Mongolian Culture Channel
+2025-11-24 12:28:18,256 - DEBUG - 跳过低分辨率线路: Nei Monggol TV Agriculture & Animal Channel
+2025-11-24 12:28:18,256 - DEBUG - 跳过低分辨率线路: Nei Monggol TV Children Channel
+2025-11-24 12:28:18,256 - DEBUG - 跳过低分辨率线路: Nei Monggol TV Culture Entertainment Channel
+2025-11-24 12:28:18,256 - DEBUG - 跳过低分辨率线路: Nei Monggol TV Economic & Life Channel
+2025-11-24 12:28:18,256 - DEBUG - 跳过低分辨率线路: Nei Monggol TV News Channel
+2025-11-24 12:28:18,256 - DEBUG - 跳过低分辨率线路: Panzihihua Culture Tourism & Life Channel
+2025-11-24 12:28:18,256 - DEBUG - 跳过低分辨率线路: Panzihihua News Channel
+2025-11-24 12:28:18,257 - DEBUG - 跳过低分辨率线路: QTV-1
+2025-11-24 12:28:18,257 - DEBUG - 跳过低分辨率线路: QTV-2
+2025-11-24 12:28:18,257 - DEBUG - 跳过低分辨率线路: QTV-3
+2025-11-24 12:28:18,257 - DEBUG - 跳过低分辨率线路: QTV-4
+2025-11-24 12:28:18,257 - DEBUG - 跳过低分辨率线路: QTV-5
+2025-11-24 12:28:18,257 - DEBUG - 跳过低分辨率线路: QTV-6
+2025-11-24 12:28:18,257 - DEBUG - 跳过低分辨率线路: Shaanxi Agroforestry Satellite TV
+2025-11-24 12:28:18,257 - DEBUG - 跳过低分辨率线路: Shandong Education TV
+2025-11-24 12:28:18,257 - DEBUG - 跳过低分辨率线路: Shanghai Education Television Station
+2025-11-24 12:28:18,258 - DEBUG - 跳过低分辨率线路: Shenzhen Satellite TV (2160p)
+2025-11-24 12:28:18,258 - DEBUG - 跳过低分辨率线路: Sihai Fishing Channel
+2025-11-24 12:28:18,258 - DEBUG - 跳过低分辨率线路: Siping TV
+2025-11-24 12:28:18,258 - DEBUG - 跳过低分辨率线路: SMG Football Channel
+2025-11-24 12:28:18,258 - DEBUG - 跳过低分辨率线路: ST Rembo TV
+2025-11-24 12:28:18,258 - DEBUG - 跳过低分辨率线路: STV City
+2025-11-24 12:28:18,258 - DEBUG - 跳过低分辨率线路: STV News and General
+2025-11-24 12:28:18,258 - DEBUG - 跳过低分辨率线路: Tonghua TV
+2025-11-24 12:28:18,258 - DEBUG - 跳过低分辨率线路: Toonmax TV
+2025-11-24 12:28:18,258 - DEBUG - 跳过低分辨率线路: TV BRICS Chinese (1080p)
+2025-11-24 12:28:18,259 - DEBUG - 跳过低分辨率线路: Ugo Shop TV
+2025-11-24 12:28:18,259 - DEBUG - 跳过低分辨率线路: VOA美国之音
+2025-11-24 12:28:18,259 - DEBUG - 跳过低分辨率线路: Weihai Comprehensive News Channel
+2025-11-24 12:28:18,259 - DEBUG - 跳过低分辨率线路: Weihai Ocean Channel
+2025-11-24 12:28:18,259 - DEBUG - 跳过低分辨率线路: Weihai Public Channel
+2025-11-24 12:28:18,259 - DEBUG - 跳过低分辨率线路: World Economy Channel
+2025-11-24 12:28:18,259 - DEBUG - 跳过低分辨率线路: Xinjiang TV 2
+2025-11-24 12:28:18,259 - DEBUG - 跳过低分辨率线路: Xinjiang TV 3
+2025-11-24 12:28:18,259 - DEBUG - 跳过低分辨率线路: Xinjiang TV 5
+2025-11-24 12:28:18,259 - DEBUG - 跳过低分辨率线路: Xinjiang TV 8
+2025-11-24 12:28:18,260 - DEBUG - 跳过低分辨率线路: Xinjiang TV 9
+2025-11-24 12:28:18,260 - DEBUG - 跳过低分辨率线路: Xinjiang TV 12
+2025-11-24 12:28:18,260 - DEBUG - 跳过低分辨率线路: Xizang TV Tibetan
+2025-11-24 12:28:18,260 - DEBUG - 跳过低分辨率线路: Yanbian Cinese Comprehensive Channel
+2025-11-24 12:28:18,260 - DEBUG - 跳过低分辨率线路: Yicai TV
+2025-11-24 12:28:18,260 - DEBUG - 跳过低分辨率线路: Zhejiang Satellite TV
+2025-11-24 12:28:18,260 - DEBUG - 跳过低分辨率线路: Zhejiang TV International
+2025-11-24 12:28:18,260 - DEBUG - 跳过低分辨率线路: 东方卫视 (2160p)
+2025-11-24 12:28:18,260 - DEBUG - 跳过低分辨率线路: 中国气象 (576p) [Not 24/7]
+2025-11-24 12:28:18,260 - DEBUG - 跳过低分辨率线路: 云南卫视 (1080p)
+2025-11-24 12:28:18,261 - DEBUG - 跳过低分辨率线路: 优漫卡通 (576p)
+2025-11-24 12:28:18,261 - DEBUG - 跳过低分辨率线路: 发现之旅 (576p)
+2025-11-24 12:28:18,261 - DEBUG - 跳过低分辨率线路: 吉林卫视 (2160p)
+2025-11-24 12:28:18,261 - DEBUG - 跳过低分辨率线路: 和政电视台
+2025-11-24 12:28:18,261 - DEBUG - 跳过低分辨率线路: 四川卫视 (576p)
+2025-11-24 12:28:18,261 - DEBUG - 跳过低分辨率线路: 四川妇女儿童 (720p) [Not 24/7]
+2025-11-24 12:28:18,261 - DEBUG - 跳过低分辨率线路: 天津卫视 (1080p)
+2025-11-24 12:28:18,261 - DEBUG - 跳过低分辨率线路: 女性时尚 (576p)
+2025-11-24 12:28:18,261 - DEBUG - 跳过低分辨率线路: 宁夏卫视 (576p) [Not 24/7]
+2025-11-24 12:28:18,262 - DEBUG - 跳过低分辨率线路: 安徽卫视 (2160p)
+2025-11-24 12:28:18,262 - DEBUG - 跳过低分辨率线路: 山东体育 (1080p) [Geo-blocked]
+2025-11-24 12:28:18,262 - DEBUG - 跳过低分辨率线路: 山东农科 (406p) [Geo-blocked]
+2025-11-24 12:28:18,262 - DEBUG - 跳过低分辨率线路: 山东卫视 (720p)
+2025-11-24 12:28:18,262 - DEBUG - 跳过低分辨率线路: 山东卫视 (1080p)
+2025-11-24 12:28:18,262 - DEBUG - 跳过低分辨率线路: 山东少儿 (406p) [Geo-blocked]
+2025-11-24 12:28:18,262 - DEBUG - 跳过低分辨率线路: 山东生活 (1080p) [Geo-blocked]
+2025-11-24 12:28:18,262 - DEBUG - 跳过低分辨率线路: 山东综艺 (406p) [Geo-blocked]
+2025-11-24 12:28:18,262 - DEBUG - 跳过低分辨率线路: 山东齐鲁 (1080p) [Geo-blocked]
+2025-11-24 12:28:18,263 - DEBUG - 跳过低分辨率线路: 山西卫视 (2160p)
+2025-11-24 12:28:18,263 - DEBUG - 跳过低分辨率线路: 广东卫视 (2160p)
+2025-11-24 12:28:18,263 - DEBUG - 跳过低分辨率线路: 广西卫视 (576p)
+2025-11-24 12:28:18,263 - DEBUG - 跳过低分辨率线路: 康巴卫视 (720p) [Not 24/7]
+2025-11-24 12:28:18,263 - DEBUG - 跳过低分辨率线路: 徐州經濟生活 (1080p)
+2025-11-24 12:28:18,263 - DEBUG - 跳过低分辨率线路: 房山电视台 (576p)
+2025-11-24 12:28:18,263 - DEBUG - 跳过低分辨率线路: 敦煌电视台 (1080p)
+2025-11-24 12:28:18,263 - DEBUG - 跳过低分辨率线路: 江苏体育 (576p)
+2025-11-24 12:28:18,263 - DEBUG - 跳过低分辨率线路: 江苏公共 (576p)
+2025-11-24 12:28:18,264 - DEBUG - 跳过低分辨率线路: 江苏卫视 (1080p) [Not 24/7]
+2025-11-24 12:28:18,264 - DEBUG - 跳过低分辨率线路: 江苏城市 (576p)
+2025-11-24 12:28:18,264 - DEBUG - 跳过低分辨率线路: 江苏影视 (576p) [Not 24/7]
+2025-11-24 12:28:18,264 - DEBUG - 跳过低分辨率线路: 江苏教育 (576p) [Not 24/7]
+2025-11-24 12:28:18,264 - DEBUG - 跳过低分辨率线路: 江苏综艺 (576p) [Not 24/7]
+2025-11-24 12:28:18,264 - DEBUG - 跳过低分辨率线路: 江西卫视 (1080p)
+2025-11-24 12:28:18,264 - DEBUG - 跳过低分辨率线路: 河北卫视 (2160p)
+2025-11-24 12:28:18,264 - DEBUG - 跳过低分辨率线路: 河南卫视 (2160p)
+2025-11-24 12:28:18,264 - DEBUG - 跳过低分辨率线路: 浙江少儿 (1080p)
+2025-11-24 12:28:18,264 - DEBUG - 跳过低分辨率线路: 海南卫视 (576p)
+2025-11-24 12:28:18,265 - DEBUG - 跳过低分辨率线路: 湖北卫视 (1080p)
+2025-11-24 12:28:18,265 - DEBUG - 跳过低分辨率线路: 湖南都市 (576p)
+2025-11-24 12:28:18,265 - DEBUG - 跳过低分辨率线路: 滁州市广播电视台 公共频道 (400p)
+2025-11-24 12:28:18,265 - DEBUG - 跳过低分辨率线路: 滁州市广播电视台 新闻综合频道 (1080p)
+2025-11-24 12:28:18,265 - DEBUG - 跳过低分辨率线路: 滁州市广播电视台 科教频道 (400p)
+2025-11-24 12:28:18,265 - DEBUG - 跳过低分辨率线路: 甘肃卫视 (576p)
+2025-11-24 12:28:18,265 - DEBUG - 跳过低分辨率线路: 白城新闻综合 [Geo-blocked]
+2025-11-24 12:28:18,265 - DEBUG - 跳过低分辨率线路: 萍鄉新聞綜合 (576p) [Not 24/7]
+2025-11-24 12:28:18,265 - DEBUG - 跳过低分辨率线路: 西安丝路 (404p) [Not 24/7]
+2025-11-24 12:28:18,266 - DEBUG - 跳过低分辨率线路: 西安商务资讯 (180p) [Not 24/7]
+2025-11-24 12:28:18,266 - DEBUG - 跳过低分辨率线路: 贵州卫视 (576p)
+2025-11-24 12:28:18,266 - DEBUG - 跳过低分辨率线路: 辽宁卫视 (1080p)
+2025-11-24 12:28:18,266 - DEBUG - 跳过低分辨率线路: 酒泉新闻综合 (576p)
+2025-11-24 12:28:18,266 - DEBUG - 跳过低分辨率线路: 重庆卫视 (1080p)
+2025-11-24 12:28:18,266 - DEBUG - 跳过低分辨率线路: 长沙女性 [Geo-blocked]
+2025-11-24 12:28:18,266 - DEBUG - 跳过低分辨率线路: 长沙政法 [Geo-blocked]
+2025-11-24 12:28:18,266 - DEBUG - 跳过低分辨率线路: 长沙新闻 [Geo-blocked]
+2025-11-24 12:28:18,266 - DEBUG - 跳过低分辨率线路: 青海卫视 (1080p)
+2025-11-24 12:28:18,267 - DEBUG - 跳过低分辨率线路: 风尚购物 (1080p)
+2025-11-24 12:28:18,267 - DEBUG - 跳过低分辨率线路: 高台电视台 (1080p)
+2025-11-24 12:28:18,267 - DEBUG - 跳过低分辨率线路: 鹤壁新闻综合 (480p) [Not 24/7]
+2025-11-24 12:28:18,267 - DEBUG - 跳过低分辨率线路: 黑龙江 (1080p)
+2025-11-24 12:28:18,267 - INFO - 从 https://iptv-org.github.io/iptv/countries/cn.m3u 成功提取 1 个频道
+2025-11-24 12:28:18,267 - INFO -   示例频道: [HD] Angel TV Chinese (720p)
+2025-11-24 12:28:18,267 - INFO - 正在处理: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u
+2025-11-24 12:28:18,267 - INFO - 正在获取直播源: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u
+2025-11-24 12:28:18,393 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u: HTTP Error 404: Not Found
+2025-11-24 12:28:18,427 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:18,427 - WARNING - 无法获取 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u 的内容
+2025-11-24 12:28:18,427 - INFO - 正在处理: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u
+2025-11-24 12:28:18,427 - INFO - 正在获取直播源: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u
+2025-11-24 12:28:18,534 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u: HTTP Error 404: Not Found
+2025-11-24 12:28:18,534 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:18,534 - WARNING - 无法获取 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u 的内容
+2025-11-24 12:28:18,534 - INFO - 正在处理: https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt
+2025-11-24 12:28:18,534 - INFO - 正在获取直播源: https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt
+2025-11-24 12:28:18,965 - INFO - 成功获取直播源内容，大小: 60629 字节
+2025-11-24 12:28:18,966 - DEBUG - 直播源前5行内容样本:
+2025-11-24 12:28:18,966 - DEBUG -   🇨🇳河南地方,#genre#
+2025-11-24 12:28:18,966 - DEBUG -   河南卫视,http://tvcdn.stream3.hndt.com/tv/65c4a6d5017e1000b2b6ea2500000000_transios/playlist.m3u8?wsSecr...
+2025-11-24 12:28:18,966 - DEBUG -   新闻频道,http://tvcdn.stream3.hndt.com/tv/65bb6966017e100059b75a8500000000_transios/playlist.m3u8?wsSecr...
+2025-11-24 12:28:18,966 - DEBUG -   都市频道,http://tvcdn.stream3.hndt.com/tv/65c3fbc5017e1000fde13faa00000000_transios/playlist.m3u8?wsSecr...
+2025-11-24 12:28:18,966 - DEBUG -   民生频道,http://tvcdn.stream3.hndt.com/tv/65bef28a017e10009c49d5f900000000_transios/playlist.m3u8?wsSecr...
+2025-11-24 12:28:18,968 - WARNING - 从 https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt 未提取到任何频道
+2025-11-24 12:28:18,968 - INFO - 正在处理: https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt
+2025-11-24 12:28:18,968 - INFO - 正在获取直播源: https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt
+2025-11-24 12:28:20,226 - INFO - 成功获取直播源内容，大小: 973955 字节
+2025-11-24 12:28:20,230 - DEBUG - 直播源前5行内容样本:
+2025-11-24 12:28:20,231 - DEBUG -   ﻿🐷綜合直播,#genre#
+2025-11-24 12:28:20,231 - DEBUG -   CCTV-1綜合頻道,http://39.134.24.24/PLTV/88888888/224/3221225684/index.m3u8
+2025-11-24 12:28:20,231 - DEBUG -   CCTV-1綜合頻道,http://39.134.24.24/PLTV/88888888/224/3221225652/index.m3u8
+2025-11-24 12:28:20,231 - DEBUG -   CCTV-1綜合頻道,http://zteres.sn.chinamobile.com:6060/yinhe/2/ch00000090990000001018/index.m3u8?virtualDo...
+2025-11-24 12:28:20,231 - DEBUG -   CCTV-1綜合頻道,http://zteres.sn.chinamobile.com:6060/yinhe/2/ch00000090990000001068/index.m3u8?virtualDo...
+2025-11-24 12:28:20,258 - INFO - 从 https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt 成功提取 3 个频道
+2025-11-24 12:28:20,258 - INFO -   示例频道: [HD] 中央新影-女性時尚,http://111.20.33.70/PLTV/88888893/224/3221226237/index.m3u8
+2025-11-24 12:28:20,258 - INFO -   示例频道: [HD] fox life,http://193.111.244.35:7474/foxlife/manifest.m3u8
+2025-11-24 12:28:20,259 - INFO -   示例频道: [4K] TRAVELXP 4K,http://95.67.12.82:9086
+2025-11-24 12:28:20,259 - INFO - 正在处理: https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt
+2025-11-24 12:28:20,259 - INFO - 正在获取直播源: https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt
+2025-11-24 12:28:20,477 - INFO - 成功获取直播源内容，大小: 2320984 字节
+2025-11-24 12:28:20,485 - DEBUG - 直播源前5行内容样本:
+2025-11-24 12:28:20,485 - DEBUG -   更新时间,#genre#
+2025-11-24 12:28:20,485 - DEBUG -   20251124 04:21,https://d.kstore.dev/download/8880/%E5%85%AC%E5%91%8A.mp4
+2025-11-24 12:28:20,485 - DEBUG -   关于本源(塔利班维护),https://d.kstore.dev/download/8880/%E6%B1%9F%E6%B9%BE%E9%B8%A3%E7%BF%A0103%E5%B9%B3%E8%A...
+2025-11-24 12:28:20,544 - WARNING - 从 https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt 未提取到任何频道
+2025-11-24 12:28:20,544 - INFO - 正在处理: https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt
+2025-11-24 12:28:20,544 - INFO - 正在获取直播源: https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt
+2025-11-24 12:28:21,315 - INFO - 成功获取直播源内容，大小: 1740084 字节
+2025-11-24 12:28:21,321 - DEBUG - 直播源前5行内容样本:
+2025-11-24 12:28:21,321 - DEBUG -   更新时间,#genre#
+2025-11-24 12:28:21,321 - DEBUG -   20251124 09:28:03,https://gitee.com/kabigo/tv/raw/master/assets/about1080p.mp4
+2025-11-24 12:28:21,321 - DEBUG -   关于本源(iptv365.org),https://gitlab.com/p2v5/wangtv/-/raw/main/about1080p.mp4
+2025-11-24 12:28:21,321 - DEBUG -   (百)每日一首,https://www.iesdouyin.com/aweme/v1/playwm/?video_id=v0200f580000bqulipikgg1hr4eidvvg&ratio=7...
+2025-11-24 12:28:21,321 - DEBUG -   (宝)MovieMusic欣赏,https://lotus.stingray.com/manifest/cmusic-cme004-montreal/samsungtvplus/dee3e3af-27...
+2025-11-24 12:28:21,366 - WARNING - 从 https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt 未提取到任何频道
+2025-11-24 12:28:21,367 - INFO - 正在处理: https://raw.githubusercontent.com/Supprise0901/tvlist/main/live.txt
+2025-11-24 12:28:21,367 - INFO - 正在获取直播源: https://raw.githubusercontent.com/Supprise0901/tvlist/main/live.txt
+2025-11-24 12:28:21,478 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/Supprise0901/tvlist/main/live.txt: HTTP Error 404: Not Found
+2025-11-24 12:28:21,478 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:21,479 - WARNING - 无法获取 https://raw.githubusercontent.com/Supprise0901/tvlist/main/live.txt 的内容
+2025-11-24 12:28:21,479 - INFO - 正在处理: https://raw.githubusercontent.com/ffmking/TVlist/main/live.txt
+2025-11-24 12:28:21,479 - INFO - 正在获取直播源: https://raw.githubusercontent.com/ffmking/TVlist/main/live.txt
+2025-11-24 12:28:21,594 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/ffmking/TVlist/main/live.txt: HTTP Error 404: Not Found
+2025-11-24 12:28:21,595 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:21,595 - WARNING - 无法获取 https://raw.githubusercontent.com/ffmking/TVlist/main/live.txt 的内容
+2025-11-24 12:28:21,595 - INFO - 正在处理: https://raw.githubusercontent.com/qingtingjjjjjjj/tvlist1/main/live.txt
+2025-11-24 12:28:21,595 - INFO - 正在获取直播源: https://raw.githubusercontent.com/qingtingjjjjjjj/tvlist1/main/live.txt
+2025-11-24 12:28:21,699 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/qingtingjjjjjjj/tvlist1/main/live.txt: HTTP Error 404: Not Found
+2025-11-24 12:28:21,699 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:21,700 - WARNING - 无法获取 https://raw.githubusercontent.com/qingtingjjjjjjj/tvlist1/main/live.txt 的内容
+2025-11-24 12:28:21,700 - INFO - 正在处理: https://raw.githubusercontent.com/zhonghu32/live/main/888.txt
+2025-11-24 12:28:21,700 - INFO - 正在获取直播源: https://raw.githubusercontent.com/zhonghu32/live/main/888.txt
+2025-11-24 12:28:21,832 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/zhonghu32/live/main/888.txt: HTTP Error 404: Not Found
+2025-11-24 12:28:21,833 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:21,833 - WARNING - 无法获取 https://raw.githubusercontent.com/zhonghu32/live/main/888.txt 的内容
+2025-11-24 12:28:21,833 - INFO - 正在处理: https://raw.githubusercontent.com/cuijian01/dianshi/main/888.txt
+2025-11-24 12:28:21,833 - INFO - 正在获取直播源: https://raw.githubusercontent.com/cuijian01/dianshi/main/888.txt
+2025-11-24 12:28:21,942 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/cuijian01/dianshi/main/888.txt: HTTP Error 404: Not Found
+2025-11-24 12:28:21,943 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:21,943 - WARNING - 无法获取 https://raw.githubusercontent.com/cuijian01/dianshi/main/888.txt 的内容
+2025-11-24 12:28:21,943 - INFO - 正在处理: https://raw.githubusercontent.com/xyy0508/iptv/main/888.txt
+2025-11-24 12:28:21,943 - INFO - 正在获取直播源: https://raw.githubusercontent.com/xyy0508/iptv/main/888.txt
+2025-11-24 12:28:22,063 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/xyy0508/iptv/main/888.txt: HTTP Error 404: Not Found
+2025-11-24 12:28:22,063 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:22,063 - WARNING - 无法获取 https://raw.githubusercontent.com/xyy0508/iptv/main/888.txt 的内容
+2025-11-24 12:28:22,063 - INFO - 正在处理: https://raw.githubusercontent.com/zhonghu32/live/main/live.txt
+2025-11-24 12:28:22,063 - INFO - 正在获取直播源: https://raw.githubusercontent.com/zhonghu32/live/main/live.txt
+2025-11-24 12:28:22,165 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/zhonghu32/live/main/live.txt: HTTP Error 404: Not Found
+2025-11-24 12:28:22,165 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:22,166 - WARNING - 无法获取 https://raw.githubusercontent.com/zhonghu32/live/main/live.txt 的内容
+2025-11-24 12:28:22,166 - INFO - 正在处理: https://raw.githubusercontent.com/cuijian01/dianshi/main/live.txt
+2025-11-24 12:28:22,166 - INFO - 正在获取直播源: https://raw.githubusercontent.com/cuijian01/dianshi/main/live.txt
+2025-11-24 12:28:22,269 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/cuijian01/dianshi/main/live.txt: HTTP Error 404: Not Found
+2025-11-24 12:28:22,269 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:22,269 - WARNING - 无法获取 https://raw.githubusercontent.com/cuijian01/dianshi/main/live.txt 的内容
+2025-11-24 12:28:22,269 - INFO - 正在处理: https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt
+2025-11-24 12:28:22,269 - INFO - 正在获取直播源: https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt
+2025-11-24 12:28:22,309 - INFO - 成功获取直播源内容，大小: 60629 字节
+2025-11-24 12:28:22,310 - DEBUG - 直播源前5行内容样本:
+2025-11-24 12:28:22,310 - DEBUG -   🇨🇳河南地方,#genre#
+2025-11-24 12:28:22,310 - DEBUG -   河南卫视,http://tvcdn.stream3.hndt.com/tv/65c4a6d5017e1000b2b6ea2500000000_transios/playlist.m3u8?wsSecr...
+2025-11-24 12:28:22,310 - DEBUG -   新闻频道,http://tvcdn.stream3.hndt.com/tv/65bb6966017e100059b75a8500000000_transios/playlist.m3u8?wsSecr...
+2025-11-24 12:28:22,310 - DEBUG -   都市频道,http://tvcdn.stream3.hndt.com/tv/65c3fbc5017e1000fde13faa00000000_transios/playlist.m3u8?wsSecr...
+2025-11-24 12:28:22,310 - DEBUG -   民生频道,http://tvcdn.stream3.hndt.com/tv/65bef28a017e10009c49d5f900000000_transios/playlist.m3u8?wsSecr...
+2025-11-24 12:28:22,312 - WARNING - 从 https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt 未提取到任何频道
+2025-11-24 12:28:22,312 - INFO - 正在处理: https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt
+2025-11-24 12:28:22,312 - INFO - 正在获取直播源: https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt
+2025-11-24 12:28:22,572 - INFO - 成功获取直播源内容，大小: 973955 字节
+2025-11-24 12:28:22,576 - DEBUG - 直播源前5行内容样本:
+2025-11-24 12:28:22,576 - DEBUG -   ﻿🐷綜合直播,#genre#
+2025-11-24 12:28:22,576 - DEBUG -   CCTV-1綜合頻道,http://39.134.24.24/PLTV/88888888/224/3221225684/index.m3u8
+2025-11-24 12:28:22,576 - DEBUG -   CCTV-1綜合頻道,http://39.134.24.24/PLTV/88888888/224/3221225652/index.m3u8
+2025-11-24 12:28:22,576 - DEBUG -   CCTV-1綜合頻道,http://zteres.sn.chinamobile.com:6060/yinhe/2/ch00000090990000001018/index.m3u8?virtualDo...
+2025-11-24 12:28:22,576 - DEBUG -   CCTV-1綜合頻道,http://zteres.sn.chinamobile.com:6060/yinhe/2/ch00000090990000001068/index.m3u8?virtualDo...
+2025-11-24 12:28:22,602 - INFO - 从 https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt 成功提取 3 个频道
+2025-11-24 12:28:22,602 - INFO -   示例频道: [HD] 中央新影-女性時尚,http://111.20.33.70/PLTV/88888893/224/3221226237/index.m3u8
+2025-11-24 12:28:22,602 - INFO -   示例频道: [HD] fox life,http://193.111.244.35:7474/foxlife/manifest.m3u8
+2025-11-24 12:28:22,602 - INFO -   示例频道: [4K] TRAVELXP 4K,http://95.67.12.82:9086
+2025-11-24 12:28:22,603 - INFO - 正在处理: https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt
+2025-11-24 12:28:22,603 - INFO - 正在获取直播源: https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt
+2025-11-24 12:28:22,651 - INFO - 成功获取直播源内容，大小: 2320984 字节
+2025-11-24 12:28:22,658 - DEBUG - 直播源前5行内容样本:
+2025-11-24 12:28:22,658 - DEBUG -   更新时间,#genre#
+2025-11-24 12:28:22,658 - DEBUG -   20251124 04:21,https://d.kstore.dev/download/8880/%E5%85%AC%E5%91%8A.mp4
+2025-11-24 12:28:22,658 - DEBUG -   关于本源(塔利班维护),https://d.kstore.dev/download/8880/%E6%B1%9F%E6%B9%BE%E9%B8%A3%E7%BF%A0103%E5%B9%B3%E8%A...
+2025-11-24 12:28:22,717 - WARNING - 从 https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt 未提取到任何频道
+2025-11-24 12:28:22,717 - INFO - 正在处理: https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt
+2025-11-24 12:28:22,717 - INFO - 正在获取直播源: https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt
+2025-11-24 12:28:22,993 - INFO - 成功获取直播源内容，大小: 1740084 字节
+2025-11-24 12:28:22,998 - DEBUG - 直播源前5行内容样本:
+2025-11-24 12:28:22,998 - DEBUG -   更新时间,#genre#
+2025-11-24 12:28:22,998 - DEBUG -   20251124 09:28:03,https://gitee.com/kabigo/tv/raw/master/assets/about1080p.mp4
+2025-11-24 12:28:22,998 - DEBUG -   关于本源(iptv365.org),https://gitlab.com/p2v5/wangtv/-/raw/main/about1080p.mp4
+2025-11-24 12:28:22,998 - DEBUG -   (百)每日一首,https://www.iesdouyin.com/aweme/v1/playwm/?video_id=v0200f580000bqulipikgg1hr4eidvvg&ratio=7...
+2025-11-24 12:28:22,998 - DEBUG -   (宝)MovieMusic欣赏,https://lotus.stingray.com/manifest/cmusic-cme004-montreal/samsungtvplus/dee3e3af-27...
+2025-11-24 12:28:23,044 - WARNING - 从 https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt 未提取到任何频道
+2025-11-24 12:28:23,044 - INFO - 从直播源获取到 7 个原始频道
+2025-11-24 12:28:23,044 - INFO - 原始频道示例 (前10个):
+2025-11-24 12:28:23,044 - INFO -   1. [HD] Angel TV Chinese (720p): https://janya-digimix.akamaized.net/vglive-sk-9994...
+2025-11-24 12:28:23,044 - INFO -   2. [HD] 中央新影-女性時尚,http://111.20.33.70/PLTV/88888893/224/3221226237/index.m3u8: http://zteres.sn.chinamobile.com:6060/yinhe/2/ch00...
+2025-11-24 12:28:23,044 - INFO -   3. [HD] fox life,http://193.111.244.35:7474/foxlife/manifest.m3u8: 101https://limited38.todostreaming.es/live/101tv-A...
+2025-11-24 12:28:23,044 - INFO -   4. [4K] TRAVELXP 4K,http://95.67.12.82:9086: Hhttp://iptv.prosto.tv:7000/ch6/video.m3u8
+2025-11-24 12:28:23,044 - INFO -   5. [HD] 中央新影-女性時尚,http://111.20.33.70/PLTV/88888893/224/3221226237/index.m3u8: http://zteres.sn.chinamobile.com:6060/yinhe/2/ch00...
+2025-11-24 12:28:23,044 - INFO -   6. [HD] fox life,http://193.111.244.35:7474/foxlife/manifest.m3u8: 101https://limited38.todostreaming.es/live/101tv-A...
+2025-11-24 12:28:23,044 - INFO -   7. [4K] TRAVELXP 4K,http://95.67.12.82:9086: Hhttp://iptv.prosto.tv:7000/ch6/video.m3u8
+2025-11-24 12:28:23,044 - INFO - 开始去重处理...
+2025-11-24 12:28:23,045 - DEBUG - 添加唯一频道: Angel TV Chinese (720p) (https://janya-digimix.akamaize...)
+2025-11-24 12:28:23,045 - DEBUG - 添加唯一频道: 中央新影-女性時尚,http://111.20.33.70/PLTV/88888893/224/3221226237/index.m3u8 (http://zteres.sn.chinamobile.c...)
+2025-11-24 12:28:23,045 - DEBUG - 添加唯一频道: fox life,http://193.111.244.35:7474/foxlife/manifest.m3u8 (101https://limited38.todostrea...)
+2025-11-24 12:28:23,045 - DEBUG - 添加唯一频道: TRAVELXP 4K,http://95.67.12.82:9086 (Hhttp://iptv.prosto.tv:7000/ch...)
+2025-11-24 12:28:23,045 - DEBUG - 跳过重复频道: 中央新影-女性時尚,http://111.20.33.70/PLTV/88888893/224/3221226237/index.m3u8 (http://zteres.sn.chinamobile.c...)
+2025-11-24 12:28:23,045 - DEBUG - 跳过重复频道: fox life,http://193.111.244.35:7474/foxlife/manifest.m3u8 (101https://limited38.todostrea...)
+2025-11-24 12:28:23,045 - DEBUG - 跳过重复频道: TRAVELXP 4K,http://95.67.12.82:9086 (Hhttp://iptv.prosto.tv:7000/ch...)
+2025-11-24 12:28:23,045 - INFO - 去重后剩余 4 个唯一频道
+2025-11-24 12:28:23,045 - INFO - 各直播源频道贡献统计:
+2025-11-24 12:28:23,045 - INFO -   https://iptv-org.github.io/iptv/countries/cn.m3u: 1 个频道
+2025-11-24 12:28:23,045 - INFO -   https://raw.githubusercontent.com/MeooPlayer/China: 0 个频道
+2025-11-24 12:28:23,045 - INFO -   https://raw.githubusercontent.com/MeooPlayer/China: 0 个频道
+2025-11-24 12:28:23,045 - INFO -   https://ghcy.eu.org/https://raw.githubusercontent.: 0 个频道
+2025-11-24 12:28:23,045 - INFO -   https://ghfast.top/raw.githubusercontent.com/ffmki: 3 个频道
+2025-11-24 12:28:23,045 - INFO -   https://ghcy.eu.org/https://raw.githubusercontent.: 0 个频道
+2025-11-24 12:28:23,045 - INFO -   https://ghfast.top/https://raw.githubusercontent.c: 0 个频道
+2025-11-24 12:28:23,045 - INFO -   https://raw.githubusercontent.com/Supprise0901/tvl: 0 个频道
+2025-11-24 12:28:23,046 - INFO -   https://raw.githubusercontent.com/ffmking/TVlist/m: 0 个频道
+2025-11-24 12:28:23,046 - INFO -   https://raw.githubusercontent.com/qingtingjjjjjjj/: 0 个频道
+2025-11-24 12:28:23,046 - INFO -   https://raw.githubusercontent.com/zhonghu32/live/m: 0 个频道
+2025-11-24 12:28:23,046 - INFO -   https://raw.githubusercontent.com/cuijian01/diansh: 0 个频道
+2025-11-24 12:28:23,046 - INFO -   https://raw.githubusercontent.com/xyy0508/iptv/mai: 0 个频道
+2025-11-24 12:28:23,046 - INFO -   https://raw.githubusercontent.com/zhonghu32/live/m: 0 个频道
+2025-11-24 12:28:23,046 - INFO -   https://raw.githubusercontent.com/cuijian01/diansh: 0 个频道
+2025-11-24 12:28:23,046 - INFO - 开始分类处理...
+2025-11-24 12:28:23,046 - DEBUG - 频道 'Angel TV Chinese (720p)' 被分类为 '其他频道'
+2025-11-24 12:28:23,046 - DEBUG - 频道 '中央新影-女性時尚,http://111.20.33.70/PLTV/88888893/224/3221226237/index.m3u8' 被分类为 '其他频道'
+2025-11-24 12:28:23,046 - DEBUG - 频道 'fox life,http://193.111.244.35:7474/foxlife/manifest.m3u8' 被分类为 '其他频道'
+2025-11-24 12:28:23,046 - DEBUG - 频道 'TRAVELXP 4K,http://95.67.12.82:9086' 被分类为 '4K央视频道'（匹配关键词: 4K
+2025-11-24 12:28:23,046 - INFO - 分类结果: 4K央视频道(1), 其他频道(3)
+2025-11-24 12:28:23,046 - INFO - 4K央视频道 频道示例 (前5个):
+2025-11-24 12:28:23,046 - INFO -   [4K] TRAVELXP 4K,http://95.67.12.82:9086
+2025-11-24 12:28:23,046 - INFO - 其他频道 频道示例 (前5个):
+2025-11-24 12:28:23,046 - INFO -   [HD] Angel TV Chinese (720p)
+2025-11-24 12:28:23,047 - INFO -   [HD] 中央新影-女性時尚,http://111.20.33.70/PLTV/88888893/224/3221226237/index.m3u8
+2025-11-24 12:28:23,047 - INFO -   [HD] fox life,http://193.111.244.35:7474/foxlife/manifest.m3u8
+2025-11-24 12:28:23,047 - INFO - 成功写入 CGQ.TXT，共 12 行数据
+2025-11-24 12:28:23,047 - INFO - 直播源获取完成！耗时: 4.91 秒
+2025-11-24 12:28:23,515 - INFO - 日志目录: /home/runner/work/zhby/zhby
+2025-11-24 12:28:23,515 - INFO - 开始获取超高清直播源...
+2025-11-24 12:28:23,515 - INFO - 开始处理 19 个直播源URL
+2025-11-24 12:28:23,516 - INFO - 直播源列表: https://iptv-org.github.io/ipt..., https://raw.githubusercontent...., https://raw.githubusercontent...., https://ghcy.eu.org/https://ra..., https://ghfast.top/raw.githubu..., https://ghcy.eu.org/https://ra..., https://ghfast.top/https://raw..., https://raw.githubusercontent...., https://raw.githubusercontent...., https://raw.githubusercontent...., https://raw.githubusercontent...., https://raw.githubusercontent...., https://raw.githubusercontent...., https://raw.githubusercontent...., https://raw.githubusercontent...., https://ghcy.eu.org/https://ra..., https://ghfast.top/raw.githubu..., https://ghcy.eu.org/https://ra..., https://ghfast.top/https://raw...
+2025-11-24 12:28:23,516 - INFO - 有效URL数量: 19
+2025-11-24 12:28:23,516 - INFO - 使用单线程处理以确保稳定性和可调试性
+2025-11-24 12:28:23,516 - INFO - 正在处理: https://iptv-org.github.io/iptv/countries/cn.m3u
+2025-11-24 12:28:23,516 - INFO - 正在获取直播源: https://iptv-org.github.io/iptv/countries/cn.m3u
+2025-11-24 12:28:23,529 - INFO - 成功获取直播源内容，大小: 33454 字节
+2025-11-24 12:28:23,529 - DEBUG - 直播源前5行内容样本:
+2025-11-24 12:28:23,529 - DEBUG -   #EXTM3U
+2025-11-24 12:28:23,530 - DEBUG -   #EXTINF:-1 tvg-id="ABNChina.us@SD" tvg-logo="https://i.imgur.com/zagVLQH.png" group-title="Religious...
+2025-11-24 12:28:23,530 - DEBUG -   https://mediaserver.abnvideos.com/streams/abnchina.m3u8
+2025-11-24 12:28:23,530 - DEBUG -   #EXTINF:-1 tvg-id="AngelTV.in@Chinese" tvg-logo="https://i.imgur.com/qKLEGU7.png" group-title="Relig...
+2025-11-24 12:28:23,530 - DEBUG -   https://janya-digimix.akamaized.net/vglive-sk-999451/chinese/ngrp:angelchinese_all/playlist.m3u8
+2025-11-24 12:28:23,530 - DEBUG - 跳过低分辨率线路: ABN China (720p)
+2025-11-24 12:28:23,530 - DEBUG - 跳过低分辨率线路: Animation Show Channel
+2025-11-24 12:28:23,530 - DEBUG - 跳过低分辨率线路: Anshun Comprehensive News Channel
+2025-11-24 12:28:23,531 - DEBUG - 跳过低分辨率线路: Bingtuan Satellite TV
+2025-11-24 12:28:23,531 - DEBUG - 跳过低分辨率线路: Bread TV面包台 (720p)
+2025-11-24 12:28:23,531 - DEBUG - 跳过低分辨率线路: BRTV Kaku Childrens Channel
+2025-11-24 12:28:23,531 - DEBUG - 跳过低分辨率线路: BRTV Science & Education Channel
+2025-11-24 12:28:23,531 - DEBUG - 跳过低分辨率线路: BRTV 北京卫视 [Not 24/7]
+2025-11-24 12:28:23,531 - DEBUG - 跳过低分辨率线路: CCTV+ 1 (600p) [Not 24/7]
+2025-11-24 12:28:23,531 - DEBUG - 跳过低分辨率线路: CCTV+ 2 (600p) [Not 24/7]
+2025-11-24 12:28:23,531 - DEBUG - 跳过低分辨率线路: CCTV-1 (2160p)
+2025-11-24 12:28:23,532 - DEBUG - 跳过低分辨率线路: CCTV-2 (2160p)
+2025-11-24 12:28:23,532 - DEBUG - 跳过低分辨率线路: CCTV-3 (2160p)
+2025-11-24 12:28:23,532 - DEBUG - 跳过低分辨率线路: CCTV-5 (2160p)
+2025-11-24 12:28:23,532 - DEBUG - 跳过低分辨率线路: CCTV-5+ (2160p)
+2025-11-24 12:28:23,532 - DEBUG - 跳过低分辨率线路: CCTV-6 (2160p)
+2025-11-24 12:28:23,532 - DEBUG - 跳过低分辨率线路: CCTV-7 (2160p)
+2025-11-24 12:28:23,532 - DEBUG - 跳过低分辨率线路: CCTV-8 (2160p)
+2025-11-24 12:28:23,533 - DEBUG - 跳过低分辨率线路: CCTV-9 (2160p)
+2025-11-24 12:28:23,533 - DEBUG - 跳过低分辨率线路: CCTV-10 (2160p)
+2025-11-24 12:28:23,533 - DEBUG - 跳过低分辨率线路: CCTV-11 (576p)
+2025-11-24 12:28:23,533 - DEBUG - 跳过低分辨率线路: CCTV-12 (2160p)
+2025-11-24 12:28:23,533 - DEBUG - 跳过低分辨率线路: CCTV-13新闻 (2160p)
+2025-11-24 12:28:23,533 - DEBUG - 跳过低分辨率线路: CCTV-14 (2160p)
+2025-11-24 12:28:23,533 - DEBUG - 跳过低分辨率线路: CCTV-15 (576p)
+2025-11-24 12:28:23,533 - DEBUG - 跳过低分辨率线路: CCTV-16 (2160p)
+2025-11-24 12:28:23,534 - DEBUG - 跳过低分辨率线路: CCTV-17 (2160p)
+2025-11-24 12:28:23,534 - DEBUG - 跳过低分辨率线路: CETV1 (576p)
+2025-11-24 12:28:23,534 - DEBUG - 跳过低分辨率线路: CETV2 (576p)
+2025-11-24 12:28:23,534 - DEBUG - 跳过低分辨率线路: CETV-4
+2025-11-24 12:28:23,534 - DEBUG - 跳过低分辨率线路: Channel Law
+2025-11-24 12:28:23,534 - DEBUG - 跳过低分辨率线路: Channel Max
+2025-11-24 12:28:23,534 - DEBUG - 跳过低分辨率线路: Channel Tea
+2025-11-24 12:28:23,534 - DEBUG - 跳过低分辨率线路: CHC Action
+2025-11-24 12:28:23,535 - DEBUG - 跳过低分辨率线路: CHC Home Theater
+2025-11-24 12:28:23,535 - DEBUG - 跳过低分辨率线路: Chifeng Comprehensive News Chanel
+2025-11-24 12:28:23,535 - DEBUG - 跳过低分辨率线路: City Theater Channel
+2025-11-24 12:28:23,535 - DEBUG - 跳过低分辨率线路: Documentary Humanities Channel
+2025-11-24 12:28:23,535 - DEBUG - 跳过低分辨率线路: DOX Surround
+2025-11-24 12:28:23,535 - DEBUG - 跳过低分辨率线路: DOX Yaqu
+2025-11-24 12:28:23,535 - DEBUG - 跳过低分辨率线路: DOX Yijia
+2025-11-24 12:28:23,535 - DEBUG - 跳过低分辨率线路: Dragon TV International (360p)
+2025-11-24 12:28:23,536 - DEBUG - 跳过低分辨率线路: Ecology & Environment TV
+2025-11-24 12:28:23,536 - DEBUG - 跳过低分辨率线路: Game Channel
+2025-11-24 12:28:23,536 - DEBUG - 跳过低分辨率线路: Golden Eagle Cartoon
+2025-11-24 12:28:23,536 - DEBUG - 跳过低分辨率线路: Guangzhou TV
+2025-11-24 12:28:23,536 - DEBUG - 跳过低分辨率线路: Harbin Comprehensive News Channel
+2025-11-24 12:28:23,536 - DEBUG - 跳过低分辨率线路: Harbin Movie Channel
+2025-11-24 12:28:23,536 - DEBUG - 跳过低分辨率线路: Home Plus
+2025-11-24 12:28:23,536 - DEBUG - 跳过低分辨率线路: Hunan Entertainment Channel
+2025-11-24 12:28:23,537 - DEBUG - 跳过低分辨率线路: Hunan Ping Yu
+2025-11-24 12:28:23,537 - DEBUG - 跳过低分辨率线路: JiaJia Cartoon
+2025-11-24 12:28:23,537 - DEBUG - 跳过低分辨率线路: Jiangxi Children's Channel
+2025-11-24 12:28:23,537 - DEBUG - 跳过低分辨率线路: Jiangxi City Channel
+2025-11-24 12:28:23,537 - DEBUG - 跳过低分辨率线路: Jiangxi Economy & Life Channel
+2025-11-24 12:28:23,537 - DEBUG - 跳过低分辨率线路: Jiangxi Movie Channel
+2025-11-24 12:28:23,537 - DEBUG - 跳过低分辨率线路: Jiangxi Public & Agriculture Channel
+2025-11-24 12:28:23,537 - DEBUG - 跳过低分辨率线路: Jilin City Channel
+2025-11-24 12:28:23,538 - DEBUG - 跳过低分辨率线路: Jilin Lifestyle Channel
+2025-11-24 12:28:23,538 - DEBUG - 跳过低分辨率线路: Jilin Movie Channel
+2025-11-24 12:28:23,538 - DEBUG - 跳过低分辨率线路: Jilin Rural Channel
+2025-11-24 12:28:23,538 - DEBUG - 跳过低分辨率线路: Laughter Theater
+2025-11-24 12:28:23,538 - DEBUG - 跳过低分辨率线路: Liangshan TV [Not 24/7]
+2025-11-24 12:28:23,538 - DEBUG - 跳过低分辨率线路: Nanchang News & Generalist Channel
+2025-11-24 12:28:23,538 - DEBUG - 跳过低分辨率线路: Nei Monggol TV
+2025-11-24 12:28:23,538 - DEBUG - 跳过低分辨率线路: Nei Monggol TV 2 Mongolian Culture Channel
+2025-11-24 12:28:23,539 - DEBUG - 跳过低分辨率线路: Nei Monggol TV Agriculture & Animal Channel
+2025-11-24 12:28:23,539 - DEBUG - 跳过低分辨率线路: Nei Monggol TV Children Channel
+2025-11-24 12:28:23,539 - DEBUG - 跳过低分辨率线路: Nei Monggol TV Culture Entertainment Channel
+2025-11-24 12:28:23,539 - DEBUG - 跳过低分辨率线路: Nei Monggol TV Economic & Life Channel
+2025-11-24 12:28:23,539 - DEBUG - 跳过低分辨率线路: Nei Monggol TV News Channel
+2025-11-24 12:28:23,539 - DEBUG - 跳过低分辨率线路: Panzihihua Culture Tourism & Life Channel
+2025-11-24 12:28:23,539 - DEBUG - 跳过低分辨率线路: Panzihihua News Channel
+2025-11-24 12:28:23,539 - DEBUG - 跳过低分辨率线路: QTV-1
+2025-11-24 12:28:23,540 - DEBUG - 跳过低分辨率线路: QTV-2
+2025-11-24 12:28:23,540 - DEBUG - 跳过低分辨率线路: QTV-3
+2025-11-24 12:28:23,540 - DEBUG - 跳过低分辨率线路: QTV-4
+2025-11-24 12:28:23,540 - DEBUG - 跳过低分辨率线路: QTV-5
+2025-11-24 12:28:23,540 - DEBUG - 跳过低分辨率线路: QTV-6
+2025-11-24 12:28:23,540 - DEBUG - 跳过低分辨率线路: Shaanxi Agroforestry Satellite TV
+2025-11-24 12:28:23,540 - DEBUG - 跳过低分辨率线路: Shandong Education TV
+2025-11-24 12:28:23,540 - DEBUG - 跳过低分辨率线路: Shanghai Education Television Station
+2025-11-24 12:28:23,541 - DEBUG - 跳过低分辨率线路: Shenzhen Satellite TV (2160p)
+2025-11-24 12:28:23,541 - DEBUG - 跳过低分辨率线路: Sihai Fishing Channel
+2025-11-24 12:28:23,541 - DEBUG - 跳过低分辨率线路: Siping TV
+2025-11-24 12:28:23,541 - DEBUG - 跳过低分辨率线路: SMG Football Channel
+2025-11-24 12:28:23,541 - DEBUG - 跳过低分辨率线路: ST Rembo TV
+2025-11-24 12:28:23,541 - DEBUG - 跳过低分辨率线路: STV City
+2025-11-24 12:28:23,541 - DEBUG - 跳过低分辨率线路: STV News and General
+2025-11-24 12:28:23,542 - DEBUG - 跳过低分辨率线路: Tonghua TV
+2025-11-24 12:28:23,542 - DEBUG - 跳过低分辨率线路: Toonmax TV
+2025-11-24 12:28:23,542 - DEBUG - 跳过低分辨率线路: TV BRICS Chinese (1080p)
+2025-11-24 12:28:23,542 - DEBUG - 跳过低分辨率线路: Ugo Shop TV
+2025-11-24 12:28:23,542 - DEBUG - 跳过低分辨率线路: VOA美国之音
+2025-11-24 12:28:23,542 - DEBUG - 跳过低分辨率线路: Weihai Comprehensive News Channel
+2025-11-24 12:28:23,542 - DEBUG - 跳过低分辨率线路: Weihai Ocean Channel
+2025-11-24 12:28:23,542 - DEBUG - 跳过低分辨率线路: Weihai Public Channel
+2025-11-24 12:28:23,543 - DEBUG - 跳过低分辨率线路: World Economy Channel
+2025-11-24 12:28:23,543 - DEBUG - 跳过低分辨率线路: Xinjiang TV 2
+2025-11-24 12:28:23,543 - DEBUG - 跳过低分辨率线路: Xinjiang TV 3
+2025-11-24 12:28:23,543 - DEBUG - 跳过低分辨率线路: Xinjiang TV 5
+2025-11-24 12:28:23,543 - DEBUG - 跳过低分辨率线路: Xinjiang TV 8
+2025-11-24 12:28:23,543 - DEBUG - 跳过低分辨率线路: Xinjiang TV 9
+2025-11-24 12:28:23,543 - DEBUG - 跳过低分辨率线路: Xinjiang TV 12
+2025-11-24 12:28:23,543 - DEBUG - 跳过低分辨率线路: Xizang TV Tibetan
+2025-11-24 12:28:23,544 - DEBUG - 跳过低分辨率线路: Yanbian Cinese Comprehensive Channel
+2025-11-24 12:28:23,544 - DEBUG - 跳过低分辨率线路: Yicai TV
+2025-11-24 12:28:23,544 - DEBUG - 跳过低分辨率线路: Zhejiang Satellite TV
+2025-11-24 12:28:23,544 - DEBUG - 跳过低分辨率线路: Zhejiang TV International
+2025-11-24 12:28:23,544 - DEBUG - 跳过低分辨率线路: 东方卫视 (2160p)
+2025-11-24 12:28:23,544 - DEBUG - 跳过低分辨率线路: 中国气象 (576p) [Not 24/7]
+2025-11-24 12:28:23,544 - DEBUG - 跳过低分辨率线路: 云南卫视 (1080p)
+2025-11-24 12:28:23,545 - DEBUG - 跳过低分辨率线路: 优漫卡通 (576p)
+2025-11-24 12:28:23,545 - DEBUG - 跳过低分辨率线路: 发现之旅 (576p)
+2025-11-24 12:28:23,545 - DEBUG - 跳过低分辨率线路: 吉林卫视 (2160p)
+2025-11-24 12:28:23,545 - DEBUG - 跳过低分辨率线路: 和政电视台
+2025-11-24 12:28:23,545 - DEBUG - 跳过低分辨率线路: 四川卫视 (576p)
+2025-11-24 12:28:23,545 - DEBUG - 跳过低分辨率线路: 四川妇女儿童 (720p) [Not 24/7]
+2025-11-24 12:28:23,545 - DEBUG - 跳过低分辨率线路: 天津卫视 (1080p)
+2025-11-24 12:28:23,546 - DEBUG - 跳过低分辨率线路: 女性时尚 (576p)
+2025-11-24 12:28:23,546 - DEBUG - 跳过低分辨率线路: 宁夏卫视 (576p) [Not 24/7]
+2025-11-24 12:28:23,546 - DEBUG - 跳过低分辨率线路: 安徽卫视 (2160p)
+2025-11-24 12:28:23,546 - DEBUG - 跳过低分辨率线路: 山东体育 (1080p) [Geo-blocked]
+2025-11-24 12:28:23,546 - DEBUG - 跳过低分辨率线路: 山东农科 (406p) [Geo-blocked]
+2025-11-24 12:28:23,546 - DEBUG - 跳过低分辨率线路: 山东卫视 (720p)
+2025-11-24 12:28:23,546 - DEBUG - 跳过低分辨率线路: 山东卫视 (1080p)
+2025-11-24 12:28:23,547 - DEBUG - 跳过低分辨率线路: 山东少儿 (406p) [Geo-blocked]
+2025-11-24 12:28:23,547 - DEBUG - 跳过低分辨率线路: 山东生活 (1080p) [Geo-blocked]
+2025-11-24 12:28:23,547 - DEBUG - 跳过低分辨率线路: 山东综艺 (406p) [Geo-blocked]
+2025-11-24 12:28:23,547 - DEBUG - 跳过低分辨率线路: 山东齐鲁 (1080p) [Geo-blocked]
+2025-11-24 12:28:23,547 - DEBUG - 跳过低分辨率线路: 山西卫视 (2160p)
+2025-11-24 12:28:23,547 - DEBUG - 跳过低分辨率线路: 广东卫视 (2160p)
+2025-11-24 12:28:23,547 - DEBUG - 跳过低分辨率线路: 广西卫视 (576p)
+2025-11-24 12:28:23,547 - DEBUG - 跳过低分辨率线路: 康巴卫视 (720p) [Not 24/7]
+2025-11-24 12:28:23,547 - DEBUG - 跳过低分辨率线路: 徐州經濟生活 (1080p)
+2025-11-24 12:28:23,548 - DEBUG - 跳过低分辨率线路: 房山电视台 (576p)
+2025-11-24 12:28:23,548 - DEBUG - 跳过低分辨率线路: 敦煌电视台 (1080p)
+2025-11-24 12:28:23,548 - DEBUG - 跳过低分辨率线路: 江苏体育 (576p)
+2025-11-24 12:28:23,548 - DEBUG - 跳过低分辨率线路: 江苏公共 (576p)
+2025-11-24 12:28:23,548 - DEBUG - 跳过低分辨率线路: 江苏卫视 (1080p) [Not 24/7]
+2025-11-24 12:28:23,548 - DEBUG - 跳过低分辨率线路: 江苏城市 (576p)
+2025-11-24 12:28:23,548 - DEBUG - 跳过低分辨率线路: 江苏影视 (576p) [Not 24/7]
+2025-11-24 12:28:23,548 - DEBUG - 跳过低分辨率线路: 江苏教育 (576p) [Not 24/7]
+2025-11-24 12:28:23,549 - DEBUG - 跳过低分辨率线路: 江苏综艺 (576p) [Not 24/7]
+2025-11-24 12:28:23,549 - DEBUG - 跳过低分辨率线路: 江西卫视 (1080p)
+2025-11-24 12:28:23,549 - DEBUG - 跳过低分辨率线路: 河北卫视 (2160p)
+2025-11-24 12:28:23,549 - DEBUG - 跳过低分辨率线路: 河南卫视 (2160p)
+2025-11-24 12:28:23,549 - DEBUG - 跳过低分辨率线路: 浙江少儿 (1080p)
+2025-11-24 12:28:23,549 - DEBUG - 跳过低分辨率线路: 海南卫视 (576p)
+2025-11-24 12:28:23,549 - DEBUG - 跳过低分辨率线路: 湖北卫视 (1080p)
+2025-11-24 12:28:23,549 - DEBUG - 跳过低分辨率线路: 湖南都市 (576p)
+2025-11-24 12:28:23,550 - DEBUG - 跳过低分辨率线路: 滁州市广播电视台 公共频道 (400p)
+2025-11-24 12:28:23,550 - DEBUG - 跳过低分辨率线路: 滁州市广播电视台 新闻综合频道 (1080p)
+2025-11-24 12:28:23,550 - DEBUG - 跳过低分辨率线路: 滁州市广播电视台 科教频道 (400p)
+2025-11-24 12:28:23,550 - DEBUG - 跳过低分辨率线路: 甘肃卫视 (576p)
+2025-11-24 12:28:23,550 - DEBUG - 跳过低分辨率线路: 白城新闻综合 [Geo-blocked]
+2025-11-24 12:28:23,550 - DEBUG - 跳过低分辨率线路: 萍鄉新聞綜合 (576p) [Not 24/7]
+2025-11-24 12:28:23,550 - DEBUG - 跳过低分辨率线路: 西安丝路 (404p) [Not 24/7]
+2025-11-24 12:28:23,550 - DEBUG - 跳过低分辨率线路: 西安商务资讯 (180p) [Not 24/7]
+2025-11-24 12:28:23,551 - DEBUG - 跳过低分辨率线路: 贵州卫视 (576p)
+2025-11-24 12:28:23,551 - DEBUG - 跳过低分辨率线路: 辽宁卫视 (1080p)
+2025-11-24 12:28:23,551 - DEBUG - 跳过低分辨率线路: 酒泉新闻综合 (576p)
+2025-11-24 12:28:23,551 - DEBUG - 跳过低分辨率线路: 重庆卫视 (1080p)
+2025-11-24 12:28:23,551 - DEBUG - 跳过低分辨率线路: 长沙女性 [Geo-blocked]
+2025-11-24 12:28:23,551 - DEBUG - 跳过低分辨率线路: 长沙政法 [Geo-blocked]
+2025-11-24 12:28:23,551 - DEBUG - 跳过低分辨率线路: 长沙新闻 [Geo-blocked]
+2025-11-24 12:28:23,551 - DEBUG - 跳过低分辨率线路: 青海卫视 (1080p)
+2025-11-24 12:28:23,552 - DEBUG - 跳过低分辨率线路: 风尚购物 (1080p)
+2025-11-24 12:28:23,552 - DEBUG - 跳过低分辨率线路: 高台电视台 (1080p)
+2025-11-24 12:28:23,552 - DEBUG - 跳过低分辨率线路: 鹤壁新闻综合 (480p) [Not 24/7]
+2025-11-24 12:28:23,552 - DEBUG - 跳过低分辨率线路: 黑龙江 (1080p)
+2025-11-24 12:28:23,552 - INFO - 从 https://iptv-org.github.io/iptv/countries/cn.m3u 成功提取 1 个频道
+2025-11-24 12:28:23,552 - INFO -   示例频道: [HD] Angel TV Chinese (720p)
+2025-11-24 12:28:23,552 - INFO - 正在处理: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u
+2025-11-24 12:28:23,552 - INFO - 正在获取直播源: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u
+2025-11-24 12:28:23,647 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u: HTTP Error 404: Not Found
+2025-11-24 12:28:23,648 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:23,648 - WARNING - 无法获取 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u 的内容
+2025-11-24 12:28:23,648 - INFO - 正在处理: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u
+2025-11-24 12:28:23,648 - INFO - 正在获取直播源: https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u
+2025-11-24 12:28:23,657 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u: HTTP Error 404: Not Found
+2025-11-24 12:28:23,658 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:23,658 - WARNING - 无法获取 https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u 的内容
+2025-11-24 12:28:23,658 - INFO - 正在处理: https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt
+2025-11-24 12:28:23,658 - INFO - 正在获取直播源: https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt
+2025-11-24 12:28:23,701 - INFO - 成功获取直播源内容，大小: 60629 字节
+2025-11-24 12:28:23,702 - DEBUG - 直播源前5行内容样本:
+2025-11-24 12:28:23,702 - DEBUG -   🇨🇳河南地方,#genre#
+2025-11-24 12:28:23,702 - DEBUG -   河南卫视,http://tvcdn.stream3.hndt.com/tv/65c4a6d5017e1000b2b6ea2500000000_transios/playlist.m3u8?wsSecr...
+2025-11-24 12:28:23,702 - DEBUG -   新闻频道,http://tvcdn.stream3.hndt.com/tv/65bb6966017e100059b75a8500000000_transios/playlist.m3u8?wsSecr...
+2025-11-24 12:28:23,702 - DEBUG -   都市频道,http://tvcdn.stream3.hndt.com/tv/65c3fbc5017e1000fde13faa00000000_transios/playlist.m3u8?wsSecr...
+2025-11-24 12:28:23,702 - DEBUG -   民生频道,http://tvcdn.stream3.hndt.com/tv/65bef28a017e10009c49d5f900000000_transios/playlist.m3u8?wsSecr...
+2025-11-24 12:28:23,704 - WARNING - 从 https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt 未提取到任何频道
+2025-11-24 12:28:23,704 - INFO - 正在处理: https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt
+2025-11-24 12:28:23,704 - INFO - 正在获取直播源: https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt
+2025-11-24 12:28:24,194 - INFO - 成功获取直播源内容，大小: 973955 字节
+2025-11-24 12:28:24,199 - DEBUG - 直播源前5行内容样本:
+2025-11-24 12:28:24,199 - DEBUG -   ﻿🐷綜合直播,#genre#
+2025-11-24 12:28:24,199 - DEBUG -   CCTV-1綜合頻道,http://39.134.24.24/PLTV/88888888/224/3221225684/index.m3u8
+2025-11-24 12:28:24,199 - DEBUG -   CCTV-1綜合頻道,http://39.134.24.24/PLTV/88888888/224/3221225652/index.m3u8
+2025-11-24 12:28:24,199 - DEBUG -   CCTV-1綜合頻道,http://zteres.sn.chinamobile.com:6060/yinhe/2/ch00000090990000001018/index.m3u8?virtualDo...
+2025-11-24 12:28:24,199 - DEBUG -   CCTV-1綜合頻道,http://zteres.sn.chinamobile.com:6060/yinhe/2/ch00000090990000001068/index.m3u8?virtualDo...
+2025-11-24 12:28:24,226 - INFO - 从 https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt 成功提取 3 个频道
+2025-11-24 12:28:24,226 - INFO -   示例频道: [HD] 中央新影-女性時尚,http://111.20.33.70/PLTV/88888893/224/3221226237/index.m3u8
+2025-11-24 12:28:24,226 - INFO -   示例频道: [HD] fox life,http://193.111.244.35:7474/foxlife/manifest.m3u8
+2025-11-24 12:28:24,226 - INFO -   示例频道: [4K] TRAVELXP 4K,http://95.67.12.82:9086
+2025-11-24 12:28:24,226 - INFO - 正在处理: https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt
+2025-11-24 12:28:24,226 - INFO - 正在获取直播源: https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt
+2025-11-24 12:28:24,302 - INFO - 成功获取直播源内容，大小: 2320984 字节
+2025-11-24 12:28:24,309 - DEBUG - 直播源前5行内容样本:
+2025-11-24 12:28:24,309 - DEBUG -   更新时间,#genre#
+2025-11-24 12:28:24,309 - DEBUG -   20251124 04:21,https://d.kstore.dev/download/8880/%E5%85%AC%E5%91%8A.mp4
+2025-11-24 12:28:24,309 - DEBUG -   关于本源(塔利班维护),https://d.kstore.dev/download/8880/%E6%B1%9F%E6%B9%BE%E9%B8%A3%E7%BF%A0103%E5%B9%B3%E8%A...
+2025-11-24 12:28:24,369 - WARNING - 从 https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt 未提取到任何频道
+2025-11-24 12:28:24,369 - INFO - 正在处理: https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt
+2025-11-24 12:28:24,369 - INFO - 正在获取直播源: https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt
+2025-11-24 12:28:24,969 - INFO - 成功获取直播源内容，大小: 1740084 字节
+2025-11-24 12:28:24,975 - DEBUG - 直播源前5行内容样本:
+2025-11-24 12:28:24,975 - DEBUG -   更新时间,#genre#
+2025-11-24 12:28:24,975 - DEBUG -   20251124 09:28:03,https://gitee.com/kabigo/tv/raw/master/assets/about1080p.mp4
+2025-11-24 12:28:24,975 - DEBUG -   关于本源(iptv365.org),https://gitlab.com/p2v5/wangtv/-/raw/main/about1080p.mp4
+2025-11-24 12:28:24,975 - DEBUG -   (百)每日一首,https://www.iesdouyin.com/aweme/v1/playwm/?video_id=v0200f580000bqulipikgg1hr4eidvvg&ratio=7...
+2025-11-24 12:28:24,975 - DEBUG -   (宝)MovieMusic欣赏,https://lotus.stingray.com/manifest/cmusic-cme004-montreal/samsungtvplus/dee3e3af-27...
+2025-11-24 12:28:25,020 - WARNING - 从 https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt 未提取到任何频道
+2025-11-24 12:28:25,021 - INFO - 正在处理: https://raw.githubusercontent.com/Supprise0901/tvlist/main/live.txt
+2025-11-24 12:28:25,021 - INFO - 正在获取直播源: https://raw.githubusercontent.com/Supprise0901/tvlist/main/live.txt
+2025-11-24 12:28:25,136 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/Supprise0901/tvlist/main/live.txt: HTTP Error 404: Not Found
+2025-11-24 12:28:25,137 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:25,137 - WARNING - 无法获取 https://raw.githubusercontent.com/Supprise0901/tvlist/main/live.txt 的内容
+2025-11-24 12:28:25,137 - INFO - 正在处理: https://raw.githubusercontent.com/ffmking/TVlist/main/live.txt
+2025-11-24 12:28:25,137 - INFO - 正在获取直播源: https://raw.githubusercontent.com/ffmking/TVlist/main/live.txt
+2025-11-24 12:28:25,148 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/ffmking/TVlist/main/live.txt: HTTP Error 404: Not Found
+2025-11-24 12:28:25,148 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:25,148 - WARNING - 无法获取 https://raw.githubusercontent.com/ffmking/TVlist/main/live.txt 的内容
+2025-11-24 12:28:25,149 - INFO - 正在处理: https://raw.githubusercontent.com/qingtingjjjjjjj/tvlist1/main/live.txt
+2025-11-24 12:28:25,149 - INFO - 正在获取直播源: https://raw.githubusercontent.com/qingtingjjjjjjj/tvlist1/main/live.txt
+2025-11-24 12:28:25,258 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/qingtingjjjjjjj/tvlist1/main/live.txt: HTTP Error 404: Not Found
+2025-11-24 12:28:25,258 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:25,258 - WARNING - 无法获取 https://raw.githubusercontent.com/qingtingjjjjjjj/tvlist1/main/live.txt 的内容
+2025-11-24 12:28:25,258 - INFO - 正在处理: https://raw.githubusercontent.com/zhonghu32/live/main/888.txt
+2025-11-24 12:28:25,258 - INFO - 正在获取直播源: https://raw.githubusercontent.com/zhonghu32/live/main/888.txt
+2025-11-24 12:28:25,356 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/zhonghu32/live/main/888.txt: HTTP Error 404: Not Found
+2025-11-24 12:28:25,357 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:25,357 - WARNING - 无法获取 https://raw.githubusercontent.com/zhonghu32/live/main/888.txt 的内容
+2025-11-24 12:28:25,357 - INFO - 正在处理: https://raw.githubusercontent.com/cuijian01/dianshi/main/888.txt
+2025-11-24 12:28:25,357 - INFO - 正在获取直播源: https://raw.githubusercontent.com/cuijian01/dianshi/main/888.txt
+2025-11-24 12:28:25,364 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/cuijian01/dianshi/main/888.txt: HTTP Error 404: Not Found
+2025-11-24 12:28:25,365 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:25,365 - WARNING - 无法获取 https://raw.githubusercontent.com/cuijian01/dianshi/main/888.txt 的内容
+2025-11-24 12:28:25,365 - INFO - 正在处理: https://raw.githubusercontent.com/xyy0508/iptv/main/888.txt
+2025-11-24 12:28:25,365 - INFO - 正在获取直播源: https://raw.githubusercontent.com/xyy0508/iptv/main/888.txt
+2025-11-24 12:28:25,478 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/xyy0508/iptv/main/888.txt: HTTP Error 404: Not Found
+2025-11-24 12:28:25,479 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:25,479 - WARNING - 无法获取 https://raw.githubusercontent.com/xyy0508/iptv/main/888.txt 的内容
+2025-11-24 12:28:25,479 - INFO - 正在处理: https://raw.githubusercontent.com/zhonghu32/live/main/live.txt
+2025-11-24 12:28:25,479 - INFO - 正在获取直播源: https://raw.githubusercontent.com/zhonghu32/live/main/live.txt
+2025-11-24 12:28:25,488 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/zhonghu32/live/main/live.txt: HTTP Error 404: Not Found
+2025-11-24 12:28:25,489 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:25,489 - WARNING - 无法获取 https://raw.githubusercontent.com/zhonghu32/live/main/live.txt 的内容
+2025-11-24 12:28:25,489 - INFO - 正在处理: https://raw.githubusercontent.com/cuijian01/dianshi/main/live.txt
+2025-11-24 12:28:25,489 - INFO - 正在获取直播源: https://raw.githubusercontent.com/cuijian01/dianshi/main/live.txt
+2025-11-24 12:28:25,497 - ERROR - 获取直播源失败 https://raw.githubusercontent.com/cuijian01/dianshi/main/live.txt: HTTP Error 404: Not Found
+2025-11-24 12:28:25,498 - DEBUG - 详细错误信息: Traceback (most recent call last):
+  File "/home/runner/work/zhby/zhby/get_cgq_sources.py", line 122, in get_live_source_content
+    with urlopen(req, timeout=TIMEOUT) as response:
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
+
+2025-11-24 12:28:25,498 - WARNING - 无法获取 https://raw.githubusercontent.com/cuijian01/dianshi/main/live.txt 的内容
+2025-11-24 12:28:25,498 - INFO - 正在处理: https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt
+2025-11-24 12:28:25,498 - INFO - 正在获取直播源: https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt
+2025-11-24 12:28:25,523 - INFO - 成功获取直播源内容，大小: 60629 字节
+2025-11-24 12:28:25,523 - DEBUG - 直播源前5行内容样本:
+2025-11-24 12:28:25,523 - DEBUG -   🇨🇳河南地方,#genre#
+2025-11-24 12:28:25,523 - DEBUG -   河南卫视,http://tvcdn.stream3.hndt.com/tv/65c4a6d5017e1000b2b6ea2500000000_transios/playlist.m3u8?wsSecr...
+2025-11-24 12:28:25,523 - DEBUG -   新闻频道,http://tvcdn.stream3.hndt.com/tv/65bb6966017e100059b75a8500000000_transios/playlist.m3u8?wsSecr...
+2025-11-24 12:28:25,523 - DEBUG -   都市频道,http://tvcdn.stream3.hndt.com/tv/65c3fbc5017e1000fde13faa00000000_transios/playlist.m3u8?wsSecr...
+2025-11-24 12:28:25,523 - DEBUG -   民生频道,http://tvcdn.stream3.hndt.com/tv/65bef28a017e10009c49d5f900000000_transios/playlist.m3u8?wsSecr...
+2025-11-24 12:28:25,525 - WARNING - 从 https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt 未提取到任何频道
+2025-11-24 12:28:25,525 - INFO - 正在处理: https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt
+2025-11-24 12:28:25,526 - INFO - 正在获取直播源: https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt
+2025-11-24 12:28:25,995 - INFO - 成功获取直播源内容，大小: 973955 字节
+2025-11-24 12:28:25,999 - DEBUG - 直播源前5行内容样本:
+2025-11-24 12:28:25,999 - DEBUG -   ﻿🐷綜合直播,#genre#
+2025-11-24 12:28:26,000 - DEBUG -   CCTV-1綜合頻道,http://39.134.24.24/PLTV/88888888/224/3221225684/index.m3u8
+2025-11-24 12:28:26,000 - DEBUG -   CCTV-1綜合頻道,http://39.134.24.24/PLTV/88888888/224/3221225652/index.m3u8
+2025-11-24 12:28:26,000 - DEBUG -   CCTV-1綜合頻道,http://zteres.sn.chinamobile.com:6060/yinhe/2/ch00000090990000001018/index.m3u8?virtualDo...
+2025-11-24 12:28:26,000 - DEBUG -   CCTV-1綜合頻道,http://zteres.sn.chinamobile.com:6060/yinhe/2/ch00000090990000001068/index.m3u8?virtualDo...
+2025-11-24 12:28:26,032 - INFO - 从 https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt 成功提取 3 个频道
+2025-11-24 12:28:26,032 - INFO -   示例频道: [HD] 中央新影-女性時尚,http://111.20.33.70/PLTV/88888893/224/3221226237/index.m3u8
+2025-11-24 12:28:26,032 - INFO -   示例频道: [HD] fox life,http://193.111.244.35:7474/foxlife/manifest.m3u8
+2025-11-24 12:28:26,032 - INFO -   示例频道: [4K] TRAVELXP 4K,http://95.67.12.82:9086
+2025-11-24 12:28:26,032 - INFO - 正在处理: https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt
+2025-11-24 12:28:26,032 - INFO - 正在获取直播源: https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt
+2025-11-24 12:28:26,110 - INFO - 成功获取直播源内容，大小: 2320984 字节
+2025-11-24 12:28:26,117 - DEBUG - 直播源前5行内容样本:
+2025-11-24 12:28:26,117 - DEBUG -   更新时间,#genre#
+2025-11-24 12:28:26,117 - DEBUG -   20251124 04:21,https://d.kstore.dev/download/8880/%E5%85%AC%E5%91%8A.mp4
+2025-11-24 12:28:26,117 - DEBUG -   关于本源(塔利班维护),https://d.kstore.dev/download/8880/%E6%B1%9F%E6%B9%BE%E9%B8%A3%E7%BF%A0103%E5%B9%B3%E8%A...
+2025-11-24 12:28:26,175 - WARNING - 从 https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt 未提取到任何频道
+2025-11-24 12:28:26,176 - INFO - 正在处理: https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt
+2025-11-24 12:28:26,176 - INFO - 正在获取直播源: https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt
+2025-11-24 12:28:26,673 - INFO - 成功获取直播源内容，大小: 1740084 字节
+2025-11-24 12:28:26,678 - DEBUG - 直播源前5行内容样本:
+2025-11-24 12:28:26,678 - DEBUG -   更新时间,#genre#
+2025-11-24 12:28:26,678 - DEBUG -   20251124 09:28:03,https://gitee.com/kabigo/tv/raw/master/assets/about1080p.mp4
+2025-11-24 12:28:26,678 - DEBUG -   关于本源(iptv365.org),https://gitlab.com/p2v5/wangtv/-/raw/main/about1080p.mp4
+2025-11-24 12:28:26,678 - DEBUG -   (百)每日一首,https://www.iesdouyin.com/aweme/v1/playwm/?video_id=v0200f580000bqulipikgg1hr4eidvvg&ratio=7...
+2025-11-24 12:28:26,678 - DEBUG -   (宝)MovieMusic欣赏,https://lotus.stingray.com/manifest/cmusic-cme004-montreal/samsungtvplus/dee3e3af-27...
+2025-11-24 12:28:26,724 - WARNING - 从 https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt 未提取到任何频道
+2025-11-24 12:28:26,724 - INFO - 从直播源获取到 7 个原始频道
+2025-11-24 12:28:26,724 - INFO - 原始频道示例 (前10个):
+2025-11-24 12:28:26,724 - INFO -   1. [HD] Angel TV Chinese (720p): https://janya-digimix.akamaized.net/vglive-sk-9994...
+2025-11-24 12:28:26,724 - INFO -   2. [HD] 中央新影-女性時尚,http://111.20.33.70/PLTV/88888893/224/3221226237/index.m3u8: http://zteres.sn.chinamobile.com:6060/yinhe/2/ch00...
+2025-11-24 12:28:26,724 - INFO -   3. [HD] fox life,http://193.111.244.35:7474/foxlife/manifest.m3u8: 101https://limited38.todostreaming.es/live/101tv-A...
+2025-11-24 12:28:26,724 - INFO -   4. [4K] TRAVELXP 4K,http://95.67.12.82:9086: Hhttp://iptv.prosto.tv:7000/ch6/video.m3u8
+2025-11-24 12:28:26,725 - INFO -   5. [HD] 中央新影-女性時尚,http://111.20.33.70/PLTV/88888893/224/3221226237/index.m3u8: http://zteres.sn.chinamobile.com:6060/yinhe/2/ch00...
+2025-11-24 12:28:26,725 - INFO -   6. [HD] fox life,http://193.111.244.35:7474/foxlife/manifest.m3u8: 101https://limited38.todostreaming.es/live/101tv-A...
+2025-11-24 12:28:26,725 - INFO -   7. [4K] TRAVELXP 4K,http://95.67.12.82:9086: Hhttp://iptv.prosto.tv:7000/ch6/video.m3u8
+2025-11-24 12:28:26,725 - INFO - 开始去重处理...
+2025-11-24 12:28:26,725 - DEBUG - 添加唯一频道: Angel TV Chinese (720p) (https://janya-digimix.akamaize...)
+2025-11-24 12:28:26,725 - DEBUG - 添加唯一频道: 中央新影-女性時尚,http://111.20.33.70/PLTV/88888893/224/3221226237/index.m3u8 (http://zteres.sn.chinamobile.c...)
+2025-11-24 12:28:26,725 - DEBUG - 添加唯一频道: fox life,http://193.111.244.35:7474/foxlife/manifest.m3u8 (101https://limited38.todostrea...)
+2025-11-24 12:28:26,725 - DEBUG - 添加唯一频道: TRAVELXP 4K,http://95.67.12.82:9086 (Hhttp://iptv.prosto.tv:7000/ch...)
+2025-11-24 12:28:26,725 - DEBUG - 跳过重复频道: 中央新影-女性時尚,http://111.20.33.70/PLTV/88888893/224/3221226237/index.m3u8 (http://zteres.sn.chinamobile.c...)
+2025-11-24 12:28:26,725 - DEBUG - 跳过重复频道: fox life,http://193.111.244.35:7474/foxlife/manifest.m3u8 (101https://limited38.todostrea...)
+2025-11-24 12:28:26,725 - DEBUG - 跳过重复频道: TRAVELXP 4K,http://95.67.12.82:9086 (Hhttp://iptv.prosto.tv:7000/ch...)
+2025-11-24 12:28:26,725 - INFO - 去重后剩余 4 个唯一频道
+2025-11-24 12:28:26,725 - INFO - 各直播源频道贡献统计:
+2025-11-24 12:28:26,725 - INFO -   https://iptv-org.github.io/iptv/countries/cn.m3u: 1 个频道
+2025-11-24 12:28:26,725 - INFO -   https://raw.githubusercontent.com/MeooPlayer/China: 0 个频道
+2025-11-24 12:28:26,725 - INFO -   https://raw.githubusercontent.com/MeooPlayer/China: 0 个频道
+2025-11-24 12:28:26,725 - INFO -   https://ghcy.eu.org/https://raw.githubusercontent.: 0 个频道
+2025-11-24 12:28:26,725 - INFO -   https://ghfast.top/raw.githubusercontent.com/ffmki: 3 个频道
+2025-11-24 12:28:26,726 - INFO -   https://ghcy.eu.org/https://raw.githubusercontent.: 0 个频道
+2025-11-24 12:28:26,726 - INFO -   https://ghfast.top/https://raw.githubusercontent.c: 0 个频道
+2025-11-24 12:28:26,726 - INFO -   https://raw.githubusercontent.com/Supprise0901/tvl: 0 个频道
+2025-11-24 12:28:26,726 - INFO -   https://raw.githubusercontent.com/ffmking/TVlist/m: 0 个频道
+2025-11-24 12:28:26,726 - INFO -   https://raw.githubusercontent.com/qingtingjjjjjjj/: 0 个频道
+2025-11-24 12:28:26,726 - INFO -   https://raw.githubusercontent.com/zhonghu32/live/m: 0 个频道
+2025-11-24 12:28:26,726 - INFO -   https://raw.githubusercontent.com/cuijian01/diansh: 0 个频道
+2025-11-24 12:28:26,726 - INFO -   https://raw.githubusercontent.com/xyy0508/iptv/mai: 0 个频道
+2025-11-24 12:28:26,726 - INFO -   https://raw.githubusercontent.com/zhonghu32/live/m: 0 个频道
+2025-11-24 12:28:26,726 - INFO -   https://raw.githubusercontent.com/cuijian01/diansh: 0 个频道
+2025-11-24 12:28:26,726 - INFO - 开始分类处理...
+2025-11-24 12:28:26,726 - DEBUG - 频道 'Angel TV Chinese (720p)' 被分类为 '其他频道'
+2025-11-24 12:28:26,726 - DEBUG - 频道 '中央新影-女性時尚,http://111.20.33.70/PLTV/88888893/224/3221226237/index.m3u8' 被分类为 '其他频道'
+2025-11-24 12:28:26,726 - DEBUG - 频道 'fox life,http://193.111.244.35:7474/foxlife/manifest.m3u8' 被分类为 '其他频道'
+2025-11-24 12:28:26,726 - DEBUG - 频道 'TRAVELXP 4K,http://95.67.12.82:9086' 被分类为 '4K央视频道'（匹配关键词: 4K
+2025-11-24 12:28:26,726 - INFO - 分类结果: 4K央视频道(1), 其他频道(3)
+2025-11-24 12:28:26,726 - INFO - 4K央视频道 频道示例 (前5个):
+2025-11-24 12:28:26,727 - INFO -   [4K] TRAVELXP 4K,http://95.67.12.82:9086
+2025-11-24 12:28:26,727 - INFO - 其他频道 频道示例 (前5个):
+2025-11-24 12:28:26,727 - INFO -   [HD] Angel TV Chinese (720p)
+2025-11-24 12:28:26,727 - INFO -   [HD] 中央新影-女性時尚,http://111.20.33.70/PLTV/88888893/224/3221226237/index.m3u8
+2025-11-24 12:28:26,727 - INFO -   [HD] fox life,http://193.111.244.35:7474/foxlife/manifest.m3u8
+2025-11-24 12:28:26,727 - INFO - 成功写入 CGQ.TXT，共 12 行数据
+2025-11-24 12:28:26,727 - INFO - 直播源获取完成！耗时: 3.21 秒
