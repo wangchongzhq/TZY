@@ -56,27 +56,20 @@ ssl._create_default_https_context = ssl._create_unverified_context
 LIVE_SOURCES = [
     # 可靠的直播源
     "https://iptv-org.github.io/iptv/countries/cn.m3u",
-    "https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u",
-    "https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u",
     # 其他直播源
     "https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
     "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
     "https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
     "https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt",
     # 新增的直播源
-    "https://raw.githubusercontent.com/Supprise0901/tvlist/main/live.txt",
-    "https://raw.githubusercontent.com/ffmking/TVlist/main/live.txt",
-    "https://raw.githubusercontent.com/qingtingjjjjjjj/tvlist1/main/live.txt",
-    "https://raw.githubusercontent.com/zhonghu32/live/main/888.txt",
-    "https://raw.githubusercontent.com/cuijian01/dianshi/main/888.txt",
-    "https://raw.githubusercontent.com/xyy0508/iptv/main/888.txt",
-    "https://raw.githubusercontent.com/zhonghu32/live/main/live.txt",
-    "https://raw.githubusercontent.com/cuijian01/dianshi/main/live.txt",
+    "https://ghcy.eu.org/https://raw.githubusercontent.com/onlylove2023/iptv/refs/heads/main/IPTV.m3u",
+    "https://live.icnwe.com/tv/iptv4.txt",
+    "https://live.zbds.top/tv/iptv4.txt",
     # 用户提供的新直播源
+    "https://ghfast.top/https://github.com/8080713/iptv-api666/raw/refs/heads/main/output/result.txt",
     "https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
-    "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
-    "https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt",
+    "https://ghfast.top/https://raw.githubusercontent.com/Rivens7/Livelist/refs/heads/main/IPTV.m3u",
+    "https://zbds.org/tv/iptv4.txt",
 ]
 
 # 超高清直播源的关键词匹配（严格版）
