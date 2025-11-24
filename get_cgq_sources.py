@@ -55,10 +55,9 @@ ssl._create_default_https_context = ssl._create_unverified_context
 # 直播源URL列表
 LIVE_SOURCES = [
     # 可靠的直播源
-    "https://iptv-org.github.io/iptv/countries/cn.m3u",
+    "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
     # 其他直播源
     "https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
-    "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
     "https://ghcy.eu.org/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
     "https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt",
     # 新增的直播源
@@ -67,7 +66,6 @@ LIVE_SOURCES = [
     "https://live.zbds.top/tv/iptv4.txt",
     # 用户提供的新直播源
     "https://ghfast.top/https://github.com/8080713/iptv-api666/raw/refs/heads/main/output/result.txt",
-    "https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
     "https://ghfast.top/https://raw.githubusercontent.com/Rivens7/Livelist/refs/heads/main/IPTV.m3u",
     "https://zbds.org/tv/iptv4.txt",
 ]
