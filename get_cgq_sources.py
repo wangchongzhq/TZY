@@ -16,16 +16,17 @@ import ssl
 import threading
 from queue import Queue
 
-# 启用详细调试模式
-DEBUG = True
+# 启用简洁日志模式
+DEBUG = False
 
-# 配置日志
-log_level = logging.DEBUG if DEBUG else logging.INFO
+# 配置日志（只保留当天数据）
+log_level = logging.INFO  # 固定为INFO级别，减少日志量
+today = time.strftime('%Y-%m-%d')
 logging.basicConfig(
     level=log_level,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('get_cgq_sources.log', encoding='utf-8'),
+        logging.FileHandler(f'get_cgq_sources_{today}.log', encoding='utf-8', mode='w'),  # 每天创建新日志文件，覆盖旧的
         logging.StreamHandler()
     ]
 )
@@ -68,6 +69,65 @@ LIVE_SOURCES = [
     "https://ghfast.top/https://github.com/8080713/iptv-api666/raw/refs/heads/main/output/result.txt",
     "https://ghfast.top/https://raw.githubusercontent.com/Rivens7/Livelist/refs/heads/main/IPTV.m3u",
     "https://zbds.org/tv/iptv4.txt",
+    # GitHub直播源URL
+    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/4K.m3u",
+    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/HDTV.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u",
+    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV.txt",
+    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_143.txt",
+    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_146.txt",
+    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_156.txt",
+    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_160.txt",
+    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_161.txt",
+    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_162.txt",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/us.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/uk.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/jp.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/kr.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/sg.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/my.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/th.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/kh.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/la.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/vn.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/mm.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/id.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ph.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/in.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/pk.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/bd.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/lk.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/sa.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ae.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/qa.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/kw.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/bh.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/om.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/jo.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ps.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/il.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/eg.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ma.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/dz.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tn.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ly.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tun.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/syr.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ir.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/iq.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/yemen.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/com.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/reunion.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/mauritius.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/seychelles.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/madagascar.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/maldives.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/marshall.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/micronesia.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/palau.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/vanuatu.m3u",
 ]
 
 # 超高清直播源的关键词匹配（严格版）
@@ -170,13 +230,9 @@ def get_live_source_content(url):
                 logger.warning(f"UTF-8解码失败，使用latin-1解码: {url}")
                 text_content = content.decode('latin-1')
             
-            # 调试信息
+            # 简化的调试信息
             if DEBUG and text_content:
-                lines = text_content.split('\n')[:5]
-                logger.debug(f"直播源前5行内容样本:")
-                for line in lines:
-                    if line.strip():
-                        logger.debug(f"  {line.strip()[:100]}{'...' if len(line) > 100 else ''}")
+                logger.debug(f"直播源内容行数: {len(text_content.split('\n'))}")
             
             return text_content
     except Exception as e:
@@ -213,12 +269,9 @@ def is_uhd_channel(line, channel_name):
     return False
 
 def log_debug(message):
-    """将调试信息写入到debug.log文件"""
-    try:
-        with open('debug.log', 'a', encoding='utf-8') as f:
-            f.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - {message}\n")
-    except Exception as e:
-        pass  # 忽略写入错误
+    """简化的调试日志，仅在DEBUG模式下记录"""
+    if DEBUG:
+        logger.debug(message)
 
 def is_low_resolution(line, channel_name):
     """判断是否为低分辨率线路
@@ -227,25 +280,21 @@ def is_low_resolution(line, channel_name):
     line_lower = line.lower()
     name_lower = channel_name.lower()
     
-    # 写入调试信息到文件
-    log_debug(f"检查线路: {channel_name}, {line[:50]}...")
-    
     # 明确标记的低分辨率
     if '576p' in line_lower or '576p' in name_lower:
-        log_debug(f"检测到576p低分辨率线路: {channel_name}")
+        logger.debug(f"检测到低分辨率线路: {channel_name}")
         return True
     
     # 其他低分辨率标记
     if '标清' in line or '标清' in channel_name:
-        log_debug(f"检测到标清低分辨率线路: {channel_name}")
+        logger.debug(f"检测到低分辨率线路: {channel_name}")
         return True
     
     # 明确的低质量标记
     if 'sd' in line_lower or '480p' in line_lower:
-        log_debug(f"检测到SD/480p低分辨率线路: {channel_name}")
+        logger.debug(f"检测到低分辨率线路: {channel_name}")
         return True
     
-    log_debug(f"线路保留: {channel_name}")
     return False
 
 def extract_channels(content):
@@ -282,9 +331,11 @@ def extract_channels(content):
                 # 再次验证清理后的URL是否有效
                 if is_valid_url(url):
                     channels.append((channel_name, url, is_uhd))
-                    logger.debug(f"成功提取频道: {channel_name}, URL: {url[:50]}...")
+                    # 减少详细的调试日志
+                    if DEBUG:
+                        logger.debug(f"提取频道: {channel_name}")
                 else:
-                    logger.warning(f"提取到无效URL: {channel_name}, URL: {url}")
+                    logger.warning(f"无效URL: {channel_name}")
                     
                 extinf_line = None
     else:
@@ -305,9 +356,11 @@ def extract_channels(content):
                     
                     is_uhd = is_uhd_channel(channel_name, channel_name)
                     channels.append((channel_name, url, is_uhd))
-                    logger.debug(f"成功提取简单格式频道: {channel_name}")
+                    if DEBUG:
+                        logger.debug(f"提取频道: {channel_name}")
                 else:
-                    logger.warning(f"跳过无效简单格式频道: {channel_name}, URL: {url}")
+                    if DEBUG:
+                        logger.debug(f"跳过无效频道: {channel_name}")
     
     return channels
 
@@ -322,8 +375,9 @@ def categorize_channel(channel_name):
                 logger.debug(f"频道 '{channel_name}' 被分类为 '{category}'（匹配关键词: {keyword}")
                 return category
     
-    # 默认分类，增加日志记录
-    logger.debug(f"频道 '{channel_name}' 被分类为 '其他频道'")
+    # 减少默认分类的日志记录
+            if DEBUG:
+                logger.debug(f"频道 '{channel_name}' 分类为 '其他频道'")
     return "其他频道"
 
 def worker(q, results, lock, source_stats):
@@ -344,14 +398,15 @@ def worker(q, results, lock, source_stats):
                         # 记录该来源的频道数量
                         source_stats[url] = len(channels)
                     local_channels_count += len(channels)
-                    logger.info(f"从 {url} 成功提取 {len(channels)} 个频道")
+                    logger.info(f"从直播源提取到 {len(channels)} 个频道")
                 else:
-                    logger.warning(f"从 {url} 未提取到任何频道")
+                    if DEBUG:
+                logger.warning(f"未提取到频道")
                     with lock:
                         source_stats[url] = 0
             else:
                 local_error_count += 1
-                logger.warning(f"无法获取 {url} 的内容")
+                logger.warning(f"无法获取直播源内容")
                 with lock:
                     source_stats[url] = 0
         except Exception as e:
@@ -375,7 +430,6 @@ def process_all_sources():
     source_stats = {}
     
     logger.info(f"开始处理 {len(LIVE_SOURCES)} 个直播源URL")
-    logger.info(f"直播源列表: {', '.join([url[:30]+'...' if len(url)>30 else url for url in LIVE_SOURCES])}")
     
     # 先验证所有URL
     valid_sources = []
@@ -384,7 +438,8 @@ def process_all_sources():
             valid_sources.append(url)
             source_stats[url] = 0  # 初始化统计
         else:
-            logger.warning(f"跳过无效URL: {url}")
+            if DEBUG:
+                    logger.warning(f"跳过无效URL")
     
     logger.info(f"有效URL数量: {len(valid_sources)}")
     
@@ -408,9 +463,11 @@ def process_all_sources():
             else:
                 logger.warning(f"无法获取 {url} 的内容")
         except Exception as e:
-            logger.error(f"处理 {url} 时出错: {str(e)}")
-            import traceback
-            logger.error(f"错误详细信息: {traceback.format_exc()}")
+            logger.error(f"处理直播源时出错: {str(e)}")
+            # 仅在DEBUG模式下输出详细异常
+            if DEBUG:
+                import traceback
+                logger.error(f"错误详情: {traceback.format_exc()}")
     
     # 合并结果
     total_raw_channels = 0
@@ -550,6 +607,15 @@ def write_channels_to_file(categorized_channels):
     except Exception as e:
         logger.error(f"写入文件失败: {str(e)}")
         return False
+
+# 检查直播源URL数量，确保至少有50个
+MIN_LIVE_SOURCES = 50
+if len(LIVE_SOURCES) < MIN_LIVE_SOURCES:
+    logger.warning(f"警告: 直播源URL数量不足 {MIN_LIVE_SOURCES} 个，当前只有 {len(LIVE_SOURCES)} 个")
+    # 如果是在生产环境或CI/CD中运行，可以考虑退出程序
+    # import sys
+    # sys.exit(1)
+
 
 def main():
     """主函数"""
