@@ -1,638 +1,344 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-简化修复版直播源获取脚本
-修复了导致新增直播源不显示的问题
-"""
 
 import os
 import re
-import time
 import sys
-from urllib.parse import urlparse
+import time
+import ssl
+import json
 from urllib.request import urlopen, Request
+from urllib.parse import urlparse
+from datetime import datetime, timedelta
 
-# 确保UTF-8编码
+# 设置标准输出为UTF-8编码
 sys.stdout = open(sys.stdout.fileno(), mode='w', encoding='utf-8', buffering=1)
 sys.stderr = open(sys.stderr.fileno(), mode='w', encoding='utf-8', buffering=1)
 
-print("开始执行修复版直播源获取脚本...")
+print("开始执行直播源获取脚本...")
 
 # 配置参数
 OUTPUT_FILE = 'CGQ.TXT'
-TIMEOUT = 10  # 秒
+TIMEOUT = 10  # 秒，降低超时时间提高效率
+DAYS_LIMIT = 20  # 只获取近20天有更新的直播源
 
 # 请求头
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
 }
 
-# 直播源URL列表 - 保留原始列表并添加注释说明
-LIVE_SOURCES = [
-    # 4K超高清直播源
-    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/4K.m3u",
-    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/HDTV.m3u",
-    # 添加你的新直播源URL到这里
-    "https://raw.githubusercontent.com/Supprise0901/tvlist/main/live.txt",
-    "https://raw.githubusercontent.com/ffmking/TVlist/main/live.txt",
-    "https://raw.githubusercontent.com/qingtingjjjjjjj/tvlist1/main/live.txt",
-    "https://raw.githubusercontent.com/zhonghu32/live/main/888.txt",
-    "https://raw.githubusercontent.com/cuijian01/dianshi/main/888.txt",
-    "https://raw.githubusercontent.com/xyy0508/iptv/main/888.txt",
-    "https://raw.githubusercontent.com/zhonghu32/live/main/live.txt",
-    "https://raw.githubusercontent.com/cuijian01/dianshi/main/live.txt",
-    "https://raw.githubusercontent.com/xyy0508/iptv/main/live.txt",
-    "https://raw.githubusercontent.com/qwerdtv/tvlist/main/live.txt",
-    "https://raw.githubusercontent.com/dv4all/iptv/master/iptv-playlist.txt",
-    "https://raw.githubusercontent.com/dv4all/iptv/master/iptv-playlist-2.txt",
-    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u",
-    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u",
-    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u",
-    "https://raw.githubusercontent.com/lizheming/open-tv/master/playlist.m3u",
-    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/Global.m3u",
-    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/Asia.m3u",
-    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/China.m3u",
-    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/HDTV.m3u",
-    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/4K.m3u",
-    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/Hongkong.m3u",
-    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/Taiwan.m3u",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_01.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_02.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_03.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_04.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_05.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_06.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_07.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_08.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_09.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_10.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_11.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_12.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_13.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_14.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_15.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_16.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_17.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_18.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_19.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_20.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_21.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_22.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_23.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_24.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_25.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_26.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_27.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_28.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_29.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_30.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_31.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_32.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_33.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_34.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_35.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_36.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_37.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_38.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_39.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_40.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_41.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_42.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_43.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_44.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_45.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_46.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_47.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_48.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_49.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_50.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_51.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_52.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_53.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_54.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_55.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_56.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_57.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_58.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_59.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_60.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_61.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_62.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_63.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_64.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_65.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_66.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_67.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_68.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_69.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_70.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_71.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_72.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_73.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_74.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_75.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_76.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_77.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_78.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_79.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_80.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_81.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_82.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_83.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_84.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_85.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_86.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_87.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_88.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_89.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_90.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_91.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_92.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_93.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_94.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_95.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_96.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_97.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_98.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_99.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_100.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_101.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_102.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_103.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_104.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_105.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_106.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_107.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_108.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_109.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_110.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_111.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_112.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_113.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_114.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_115.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_116.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_117.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_118.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_119.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_120.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_121.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_122.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_123.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_124.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_125.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_126.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_127.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_128.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_129.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_130.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_131.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_132.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_133.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_134.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_135.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_136.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_137.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_138.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_139.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_140.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_141.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_142.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_143.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_144.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_145.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_146.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_147.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_148.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_149.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_150.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_151.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_152.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_153.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_154.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_155.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_156.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_157.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_158.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_159.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_160.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_161.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_162.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_163.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_164.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_165.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_166.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_167.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_168.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_169.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_170.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_171.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_172.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_173.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_174.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_175.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_176.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_177.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_178.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_179.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_180.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_181.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_182.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_183.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_184.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_185.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_186.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_187.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_188.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_189.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_190.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_191.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_192.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_193.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_194.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_195.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_196.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_197.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_198.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_199.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_200.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_201.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_202.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_203.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_204.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_205.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_206.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_207.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_208.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_209.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_210.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_211.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_212.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_213.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_214.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_215.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_216.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_217.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_218.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_219.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_220.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_221.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_222.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_223.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_224.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_225.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_226.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_227.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_228.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_229.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_230.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_231.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_232.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_233.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_234.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_235.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_236.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_237.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_238.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_239.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_240.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_241.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_242.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_243.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_244.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_245.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_246.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_247.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_248.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_249.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_250.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_251.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_252.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_253.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_254.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_255.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_256.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_257.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_258.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_259.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_260.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_261.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_262.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_263.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_264.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_265.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_266.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_267.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_268.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_269.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_270.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_271.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_272.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_273.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_274.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_275.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_276.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_277.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_278.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_279.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_280.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_281.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_282.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_283.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_284.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_285.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_286.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_287.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_288.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_289.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_290.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_291.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_292.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_293.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_294.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_295.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_296.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_297.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_298.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_299.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_300.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_301.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_302.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_303.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_304.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_305.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_306.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_307.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_308.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_309.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_310.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_311.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_312.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_313.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_314.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_315.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_316.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_317.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_318.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_319.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_320.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_321.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_322.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_323.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_324.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_325.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_326.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_327.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_328.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_329.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_330.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_331.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_332.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_333.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_334.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_335.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_336.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_337.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_338.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_339.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_340.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_341.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_342.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_343.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_344.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_345.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_346.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_347.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_348.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_349.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_350.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_351.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_352.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_353.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_354.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_355.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_356.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_357.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_358.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_359.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_360.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_361.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_362.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_363.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_364.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_365.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_366.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_367.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_368.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_369.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_370.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_371.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_372.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_373.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_374.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_375.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_376.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_377.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_378.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_379.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_380.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_381.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_382.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_383.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_384.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_385.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_386.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_387.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_388.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_389.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_390.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_391.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_392.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_393.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_394.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_395.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_396.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_397.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_398.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_399.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_400.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_401.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_402.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_403.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_404.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_405.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_406.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_407.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_408.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_409.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_410.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_411.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_412.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_413.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_414.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_415.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_416.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_417.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_418.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_419.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_420.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_421.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_422.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_423.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_424.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_425.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_426.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_427.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_428.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_429.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_430.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_431.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_432.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_433.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_434.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_435.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_436.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_437.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_438.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_439.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_440.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_441.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_442.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_443.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_444.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_445.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_446.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_447.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_448.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_449.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_450.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_451.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_452.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_453.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_454.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_455.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_456.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_457.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_458.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_459.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_460.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_461.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_462.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_463.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_464.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_465.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_466.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_467.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_468.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_469.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_470.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_471.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_472.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_473.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_474.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_475.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_476.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_477.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_478.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_479.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_480.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_481.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_482.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_483.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_484.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_485.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_486.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_487.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_488.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_489.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_490.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_491.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_492.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_493.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_494.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_495.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_496.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_497.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_498.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_499.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_500.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_501.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_502.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_503.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_504.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_505.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_506.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_507.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_508.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_509.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_510.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_511.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_512.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_513.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_514.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_515.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_516.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_517.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_518.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_519.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_520.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_521.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_522.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_523.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_524.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_525.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_526.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_527.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_528.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_529.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_530.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_531.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_532.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_533.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_534.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_535.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_536.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_537.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_538.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_539.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_540.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_541.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_542.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_543.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_544.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_545.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_546.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_547.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_548.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_549.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_550.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_551.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_552.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_553.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_554.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_555.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_556.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_557.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_558.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_559.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_560.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_561.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_562.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_563.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_564.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_565.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_566.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_567.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_568.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_569.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_570.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_571.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_572.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_573.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_574.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_575.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_576.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_577.txt",
-    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_57
+# 忽略SSL验证
+ssl._create_default_https_context = ssl._create_unverified_context
+
+# 4K/HD关键词
+UHD_KEYWORDS = ['4K', '4k', '超高清', '2160', '2160p', '8K', '8k']
+HD_KEYWORDS = ['HD', '1080p', '高清']
+
+# 频道分类
+CHANNEL_CATEGORIES = {
+    "央视": ['CCTV', '中央电视台'],
+    "卫视": ['卫视', '湖南卫视', '浙江卫视', '江苏卫视', '东方卫视', '北京卫视', '广东卫视'],
+    "电影": ['电影', 'CHC', 'Movie', 'Film'],
+    "体育": ['体育', '足球', '篮球', 'NBA', 'CCTV5', 'sports'],
+    "儿童": ['少儿', '卡通', '动画', 'Cartoon', 'Kids'],
+    "4K央视频道": ['CCTV', '4K'],
+    "4K超高清频道": ['4K超高清', '4K专区'],
+    "高清频道": ['HD', '1080p'],
+}
+
+def is_valid_url(url):
+    """检查URL是否有效"""
+    try:
+        result = urlparse(url)
+        return all([result.scheme, result.netloc])
+    except:
+        return False
+
+def clean_url(url):
+    """清理URL，去除空白字符"""
+    return url.strip()
+
+def get_github_file_info(url):
+    """从GitHub URL获取API信息，用于检查文件更新时间"""
+    try:
+        # 提取GitHub仓库信息
+        pattern = r'https://raw.githubusercontent.com/([^/]+)/([^/]+)/([^/]+)/(.+)'  
+        match = re.match(pattern, url)
+        if not match:
+            return None
+        
+        username, repo, branch, file_path = match.groups()
+        
+        # 构建API URL
+        api_url = f"https://api.github.com/repos/{username}/{repo}/commits?path={file_path}&per_page=1"
+        
+        # 发送请求
+        req = Request(api_url, headers=HEADERS)
+        with urlopen(req, timeout=TIMEOUT) as response:
+            if response.status == 200:
+                data = json.loads(response.read().decode('utf-8'))
+                if data:
+                    commit_date = data[0]['commit']['committer']['date']
+                    return {
+                        'updated_at': commit_date,
+                        'username': username,
+                        'repo': repo,
+                        'file_path': file_path
+                    }
+    except Exception as e:
+        # print(f"获取GitHub文件信息失败: {e}")
+        pass
+    return None
+
+def is_recently_updated(url):
+    """检查URL是否在近20天内更新过"""
+    # 如果不是GitHub URL，我们无法检查更新时间，默认认为是有效的
+    if "github.com" not in url and "raw.githubusercontent.com" not in url:
+        return True
+    
+    # 对于GitHub URL，检查更新时间
+    file_info = get_github_file_info(url)
+    if not file_info:
+        return True  # 如果获取不到信息，默认认为是有效的
+    
+    try:
+        # 解析更新时间
+        updated_at = datetime.strptime(file_info['updated_at'], '%Y-%m-%dT%H:%M:%SZ')
+        
+        # 计算是否在DAYS_LIMIT天内
+        time_diff = datetime.utcnow() - updated_at
+        return time_diff <= timedelta(days=DAYS_LIMIT)
+    except Exception as e:
+        # print(f"解析更新时间失败: {e}")
+        return True
+
+def get_source_content(url):
+    """获取直播源内容，支持重试"""
+    max_retries = 3
+    for retry in range(max_retries):
+        try:
+            url = clean_url(url)
+            if not is_valid_url(url):
+                print(f"无效的URL: {url}")
+                return None
+            
+            # 检查是否在近20天内更新
+            if not is_recently_updated(url):
+                print(f"直播源 {url} 超过20天未更新，跳过")
+                return None
+            
+            print(f"正在获取: {url}")
+            req = Request(url, headers=HEADERS)
+            with urlopen(req, timeout=TIMEOUT) as response:
+                if response.status == 200:
+                    return response.read().decode('utf-8', errors='ignore')
+                else:
+                    print(f"获取失败，状态码: {response.status}")
+        except Exception as e:
+            print(f"获取直播源失败 (尝试 {retry + 1}/{max_retries}): {e}")
+            if retry < max_retries - 1:
+                time.sleep(1)
+    return None
+
+def is_uhd_content(name, url):
+    """检查是否为4K内容"""
+    content = f"{name} {url}".lower()
+    for keyword in UHD_KEYWORDS:
+        if keyword.lower() in content:
+            return True
+    return False
+
+def extract_channels_from_m3u(content):
+    """从M3U格式内容中提取频道"""
+    channels = []
+    lines = content.splitlines()
+    
+    for i, line in enumerate(lines):
+        if line.startswith('#EXTINF:'):
+            # 提取频道名称
+            name_match = re.search(r'tvg-name="([^"]+)"|tvg-title="([^"]+)"|,(.+)', line)
+            if name_match:
+                channel_name = name_match.group(1) or name_match.group(2) or name_match.group(3)
+                if channel_name:
+                    channel_name = channel_name.strip()
+                    # 下一行应该是URL
+                    if i + 1 < len(lines) and not lines[i + 1].startswith('#'):
+                        channel_url = lines[i + 1].strip()
+                        if is_valid_url(channel_url):
+                            channels.append((channel_name, channel_url))
+    
+    return channels
+
+def extract_channels_from_txt(content):
+    """从TXT格式内容中提取频道"""
+    channels = []
+    lines = content.splitlines()
+    
+    for line in lines:
+        line = line.strip()
+        if not line or line.startswith('#'):
+            continue
+        
+        # 支持多种格式: 频道名,URL 或 URL 频道名
+        if ',' in line:
+            parts = line.split(',', 1)
+            if is_valid_url(parts[0]):
+                # URL,频道名
+                channel_url = parts[0].strip()
+                channel_name = parts[1].strip()
+            else:
+                # 频道名,URL
+                channel_name = parts[0].strip()
+                channel_url = parts[1].strip()
+        else:
+            # 只包含URL，使用URL作为名称
+            channel_url = line
+            channel_name = os.path.basename(urlparse(channel_url).path).split('.')[0]
+        
+        if is_valid_url(channel_url):
+            channels.append((channel_name, channel_url))
+    
+    return channels
+
+def categorize_channel(channel_name):
+    """根据频道名称进行分类"""
+    channel_name_lower = channel_name.lower()
+    
+    for category, keywords in CHANNEL_CATEGORIES.items():
+        for keyword in keywords:
+            if keyword in channel_name or keyword.lower() in channel_name_lower:
+                return category
+    
+    # 检查4K/HD
+    for keyword in UHD_KEYWORDS:
+        if keyword in channel_name or keyword.lower() in channel_name_lower:
+            if 'CCTV' in channel_name:
+                return "4K央视频道"
+            return "4K超高清频道"
+    
+    for keyword in HD_KEYWORDS:
+        if keyword in channel_name or keyword.lower() in channel_name_lower:
+            return "高清频道"
+    
+    return "其他频道"
+
+def process_all_live_sources(sources):
+    """处理所有直播源"""
+    all_channels = set()  # 使用集合去重
+    categorized_channels = {}
+    
+    for category in list(CHANNEL_CATEGORIES.keys()) + ["其他频道"]:
+        categorized_channels[category] = []
+    
+    for source in sources:
+        content = get_source_content(source)
+        if not content:
+            continue
+        
+        # 根据内容格式提取频道
+        if '#EXTM3U' in content:
+            channels = extract_channels_from_m3u(content)
+        else:
+            channels = extract_channels_from_txt(content)
+        
+        print(f"从 {source} 提取到 {len(channels)} 个频道")
+        
+        # 添加到总列表并去重
+        for channel_name, channel_url in channels:
+            channel_key = (channel_name, channel_url)
+            if channel_key not in all_channels:
+                all_channels.add(channel_key)
+                
+                # 分类频道
+                category = categorize_channel(channel_name)
+                categorized_channels[category].append((channel_name, channel_url))
+    
+    print(f"\n总计获取到 {len(all_channels)} 个直播频道")
+    return categorized_channels
+
+def write_to_file(categorized_channels):
+    """将分类后的频道写入文件"""
+    try:
+        with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
+            f.write("#EXTM3U\n\n")
+            
+            for category, channels in categorized_channels.items():
+                if not channels:
+                    continue
+                
+                # 写入分类标题
+                f.write(f"# 频道分类: {category}\n")
+                f.write(f"# 频道数量: {len(channels)}\n\n")
+                
+                # 按名称排序并写入频道
+                for channel_name, channel_url in sorted(channels, key=lambda x: x[0]):
+                    f.write(f"#EXTINF:-1 tvg-name=\"{channel_name}\" group-title=\"{category}",{channel_name}\n")
+                    f.write(f"{channel_url}\n\n")
+        
+        print(f"\n直播源已成功写入 {OUTPUT_FILE}")
+        print(f"文件大小: {os.path.getsize(OUTPUT_FILE)} 字节")
+        
+        # 显示各分类频道数量
+        print("\n各分类频道数量:")
+        total = 0
+        for category, channels in categorized_channels.items():
+            if channels:
+                print(f"{category}: {len(channels)} 个频道")
+                total += len(channels)
+        print(f"总计: {total} 个频道")
+        
+    except Exception as e:
+        print(f"写入文件失败: {e}")
+        return False
+    
+    return True
+
+def main():
+    """主函数"""
+    start_time = time.time()
+    
+    # 直播源URL列表
+    LIVE_SOURCES = [
+        # 4K超高清直播源
+        "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/4K.m3u",
+        "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/HDTV.m3u",
+        # 添加你的新直播源URL到这里
+        "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_400.txt",
+        "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_410.txt",
+        "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_420.txt",
+        "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_430.txt",
+        "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_440.txt",
+        "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_450.txt",
+        "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_460.txt",
+        "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_470.txt",
+        "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_480.txt",
+        "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_490.txt",
+        "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_500.txt",
+        "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_510.txt",
+        "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_520.txt",
+        "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_530.txt",
+        "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_540.txt",
+        "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_550.txt",
+        "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_560.txt",
+        "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_570.txt",
+    ]
+    
+    print(f"开始处理 {len(LIVE_SOURCES)} 个直播源")
+    print(f"筛选条件: 近{DAYS_LIMIT}天内更新的直播源")
+    
+    # 处理所有直播源
+    categorized_channels = process_all_live_sources(LIVE_SOURCES)
+    
+    # 写入文件
+    success = write_to_file(categorized_channels)
+    
+    end_time = time.time()
+    print(f"\n脚本执行完成，耗时: {end_time - start_time:.2f} 秒")
+    
+    return 0 if success else 1
+
+# 主函数调用
+if __name__ == "__main__":
+    sys.exit(main())
