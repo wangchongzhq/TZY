@@ -58,9 +58,9 @@ jobs:
           
           # 强制确保本地分支与远程同步
           echo "强制同步本地与远程仓库..."
-          git fetch origin main
-          git checkout main || git checkout -b main
-          git reset --hard origin/main
+          git fetch origin ${{ github.ref_name }}
+          git checkout ${{ github.ref_name }} || git checkout -b ${{ github.ref_name }}
+          git reset --hard origin/${{ github.ref_name }}
           
           echo "本地仓库已重置为远程最新状态"
           
@@ -92,9 +92,9 @@ jobs:
           git commit -m "${REASON}"
           
           # 推送更改，使用--force-with-lease避免覆盖他人的工作
-          git push --force-with-lease origin main || {
+          git push --force-with-lease origin ${{ github.ref_name }} || {
             echo "推送失败，尝试直接强制推送..."
-            git push --force origin main || {
+            git push --force origin ${{ github.ref_name }} || {
               echo "推送仍失败，记录失败信息"
               echo "::error::无法推送到远程仓库，请检查权限和分支状态"
               exit 1
