@@ -1,7 +1,8 @@
-# ³¬¸ßÇåÖ±²¥Ô´ÁĞ±í (°üº¬ËùÓĞ³¬¸ßÇåÏßÂ·)  
-# ¸üĞÂÊ±¼ä: 2025-11-26 07:00:00  
-# ¹²°üº¬ 68 ¸öÆµµÀ£¬ÆäÖĞ³¬¸ßÇåÆµµÀ 68 ¸ö  
-  
-4KÑëÊÓÆµµÀ (³¬¸ßÇå: 67),#genre#  
-BS TV Tokyo 4K,https://vn.utako.moe/bstx4k/index.m3u8,https://vn.utako.moe/wprime/index.m3u8  
-CCTV-4K,http://ddns.xryo.cn:8888/rtp/239.111.205.40:5140,http://ddns.xryo.cn:8888/rtp/239.109.205.192:9608 
+ï»¿# è¶…é«˜æ¸…ç›´æ’­æºåˆ—è¡¨ï¼ˆå…¨çƒé«˜æ¸…çº¿è·¯ï¼‰
+# æ›´æ–°æ—¶é—´: 2025-11-26 08:00:00
+# å…±æ”¶å½• 69 ä¸ªé¢‘é“ï¼Œå…¶ä¸­é«˜æ¸…é¢‘é“ 69 ä¸ª
+
+4Kå¤®è§†é¢‘é“ (é¢‘é“æ•°: 68),#genre#
+BS TV Tokyo 4K,https://vn.utako.moe/bstx4k/index.m3u8,https://vn.utako.moe/wprime/index.m3u8
+CCTV-4K,http://ddns.xryo.cn:8888/rtp/239.111.205.40:5140,http://ddns.xryo.cn:8888/rtp/239.109.205.192:9608
+NHK BS4K,https://example.com/nhk4k/index.m3u8
