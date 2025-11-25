@@ -608,13 +608,14 @@ def write_channels_to_file(categorized_channels):
         logger.error(f"写入文件失败: {str(e)}")
         return False
 
-# 检查直播源URL数量，确保至少有50个
-MIN_LIVE_SOURCES = 50
-if len(LIVE_SOURCES) < MIN_LIVE_SOURCES:
-    logger.warning(f"警告: 直播源URL数量不足 {MIN_LIVE_SOURCES} 个，当前只有 {len(LIVE_SOURCES)} 个")
-    # 如果是在生产环境或CI/CD中运行，可以考虑退出程序
-    # import sys
-    # sys.exit(1)
+# 检查直播源URL数量，记录当前使用的数量
+current_sources_count = len(LIVE_SOURCES)
+logger.info(f"当前直播源URL数量: {current_sources_count} 个")
+
+# 记录直播源URL列表
+logger.debug("直播源URL列表:")
+for i, url in enumerate(LIVE_SOURCES, 1):
+    logger.debug(f"  {i}. {url}")
 
 
 def main():
