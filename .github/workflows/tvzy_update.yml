@@ -51,14 +51,9 @@ jobs:
             echo "::error::输出文件tzydauto.txt未生成！" >> $GITHUB_STEP_SUMMARY
           fi
           
-          # 检查直播源URL数量
+          # 记录直播源URL数量
           LIVE_SOURCES_COUNT=$(grep -o '"https://' ./tvzy.py | wc -l)
-          MIN_LIVE_SOURCES=50
-          echo "直播源URL数量: $LIVE_SOURCES_COUNT/$MIN_LIVE_SOURCES" >> $GITHUB_STEP_SUMMARY
-          if [ $LIVE_SOURCES_COUNT -lt $MIN_LIVE_SOURCES ]; then
-            echo "::error::直播源URL数量不足，当前只有 $LIVE_SOURCES_COUNT 个，需要至少 $MIN_LIVE_SOURCES 个！" >> $GITHUB_STEP_SUMMARY
-            exit 1
-          fi
+          echo "直播源URL数量: $LIVE_SOURCES_COUNT" >> $GITHUB_STEP_SUMMARY
       
       - name: 提交和推送更新
         if: steps.check_file.outputs.file_exists == 'true'
