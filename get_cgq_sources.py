@@ -232,7 +232,9 @@ def get_live_source_content(url):
             
             # 简化的调试信息
             if DEBUG and text_content:
-                logger.debug(f"直播源内容行数: {len(text_content.split('\n'))}")
+                # 完全避免在f-string中使用复杂表达式
+                lines_count = len(text_content.split('\n'))
+                logger.debug("直播源内容行数: " + str(lines_count))
             
             return text_content
     except Exception as e:
