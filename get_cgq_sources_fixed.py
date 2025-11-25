@@ -30,6 +30,9 @@ HEADERS = {
 
 # 直播源URL列表 - 保留原始列表并添加注释说明
 LIVE_SOURCES = [
+    # 4K超高清直播源
+    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/4K.m3u",
+    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/HDTV.m3u",
     # 添加你的新直播源URL到这里
     "https://raw.githubusercontent.com/Supprise0901/tvlist/main/live.txt",
     "https://raw.githubusercontent.com/ffmking/TVlist/main/live.txt",
