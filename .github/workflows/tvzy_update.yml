@@ -44,9 +44,20 @@ jobs:
         run: |
           if [ -f ./tzydauto.txt ]; then
             echo "file_exists=true" >> $GITHUB_OUTPUT
-            echo "文件大小: $(ls -lh ./tzydauto.txt)"
+            echo "文件大小: $(du -h ./tzydauto.txt | cut -f1)" >> $GITHUB_STEP_SUMMARY
+            echo "频道数量: $(grep -v '^#' ./tzydauto.txt | grep ',' | wc -l)" >> $GITHUB_STEP_SUMMARY
           else
             echo "file_exists=false" >> $GITHUB_OUTPUT
+            echo "::error::输出文件tzydauto.txt未生成！" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # 检查直播源URL数量
+          LIVE_SOURCES_COUNT=$(grep -o '"https://' ./tvzy.py | wc -l)
+          MIN_LIVE_SOURCES=50
+          echo "直播源URL数量: $LIVE_SOURCES_COUNT/$MIN_LIVE_SOURCES" >> $GITHUB_STEP_SUMMARY
+          if [ $LIVE_SOURCES_COUNT -lt $MIN_LIVE_SOURCES ]; then
+            echo "::error::直播源URL数量不足，当前只有 $LIVE_SOURCES_COUNT 个，需要至少 $MIN_LIVE_SOURCES 个！" >> $GITHUB_STEP_SUMMARY
+            exit 1
           fi
       
       - name: 提交和推送更新
