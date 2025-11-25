@@ -25,6 +25,7 @@ logging.basicConfig(
     level=log_level,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
+        logging.FileHandler('get_cgq_sources.log', encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
@@ -212,9 +213,12 @@ def is_uhd_channel(line, channel_name):
     return False
 
 def log_debug(message):
-    """调试日志，仅在DEBUG模式下输出到控制台"""
-    if DEBUG:
-        logger.debug(message)
+    """将调试信息写入到debug.log文件"""
+    try:
+        with open('debug.log', 'a', encoding='utf-8') as f:
+            f.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - {message}\n")
+    except Exception as e:
+        pass  # 忽略写入错误
 
 def is_low_resolution(line, channel_name):
     """判断是否为低分辨率线路
@@ -223,7 +227,7 @@ def is_low_resolution(line, channel_name):
     line_lower = line.lower()
     name_lower = channel_name.lower()
     
-    # 调试信息
+    # 写入调试信息到文件
     log_debug(f"检查线路: {channel_name}, {line[:50]}...")
     
     # 明确标记的低分辨率
@@ -549,6 +553,13 @@ def write_channels_to_file(categorized_channels):
 
 def main():
     """主函数"""
+    # 清空之前的调试日志
+    try:
+        with open('debug.log', 'w', encoding='utf-8') as f:
+            f.write(f"=== 开始执行直播源更新脚本 === {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+    except Exception as e:
+        pass
+    
     log_debug(f"Python版本: {sys.version}")
     log_debug(f"当前目录: {os.getcwd()}")
     log_debug(f"调试模式: {'开启' if DEBUG else '关闭'}")
@@ -556,36 +567,41 @@ def main():
     # 确保日志文件目录存在
     log_dir = os.path.dirname(os.path.abspath(__file__))
     log_debug(f"日志目录: {log_dir}")
-    logger.info("开始获取超高清直播源...")
+    logger.info(f"日志目录: {log_dir}")
     
-    # 直接使用print函数输出信息
-    def log_print(message):
-        """打印消息到控制台"""
-        print(message)
-    
-    log_print("开始执行脚本...")
-    log_print(f"Python版本: {sys.version}")
-    log_print(f"当前目录: {os.getcwd()}")
-    log_print(f"调试模式: {'开启' if DEBUG else '关闭'}")
-    
+    # 将输出同时写入文件，以便在环境限制下查看结果
     try:
-        log_print("初始化日志配置...")
-        start_time = time.time()
-        
-        # 显示配置信息
-        log_print(f"并发工作线程数: {MAX_WORKERS}")
-        log_print(f"请求超时时间: {TIMEOUT}秒")
-        log_print(f"直播源URL数量: {len(LIVE_SOURCES)}")
+        with open('script_output.log', 'w', encoding='utf-8') as log_file:
+            def log_print(message):
+                """打印并记录消息"""
+                print(message)
+                log_file.write(message + '\n')
+                log_file.flush()
+            
+            log_print("开始执行脚本...")
+            log_print(f"Python版本: {sys.version}")
+            log_print(f"当前目录: {os.getcwd()}")
+            log_print(f"调试模式: {'开启' if DEBUG else '关闭'}")
+            
+            try:
+                log_print("初始化日志配置...")
+                logger.info("开始获取超高清直播源...")
+                start_time = time.time()
                 
-        # 直接调用process_all_sources()获取实际直播源
-        log_print("开始从网络获取直播源数据...")
-        categorized_channels = process_all_sources()
+                # 显示配置信息
+                log_print(f"并发工作线程数: {MAX_WORKERS}")
+                log_print(f"请求超时时间: {TIMEOUT}秒")
+                log_print(f"直播源URL数量: {len(LIVE_SOURCES)}")
                 
-        # 如果没有获取到数据，提供更丰富的静态备份数据
-        if not categorized_channels:
-            log_print("警告: 未能从网络获取到直播源数据，使用备用数据")
-            logger.warning("使用备用数据")
-            categorized_channels = {
+                # 直接调用process_all_sources()获取实际直播源
+                log_print("开始从网络获取直播源数据...")
+                categorized_channels = process_all_sources()
+                
+                # 如果没有获取到数据，提供更丰富的静态备份数据
+                if not categorized_channels:
+                    log_print("警告: 未能从网络获取到直播源数据，使用备用数据")
+                    logger.warning("使用备用数据")
+                    categorized_channels = {
                         "4K央视频道": [
                             ("CCTV-4K超高清", "https://tv.cctv.com/live/cctv4k/", True),
                             ("CCTV-16 奥林匹克4K", "https://tv.cctv.com/live/cctv16/", True)
@@ -631,9 +647,43 @@ def main():
                 error_trace = traceback.format_exc()
                 log_print(error_trace)
                 return 1
+    except Exception as e:
+        # 如果连日志文件都无法写入，直接输出到控制台
+        print(f"严重错误: 无法创建日志文件 - {str(e)}")
+        print("尝试不使用日志文件继续执行...")
+        
+        try:
+            start_time = time.time()
+            categorized_channels = process_all_sources()
+            
+            if not categorized_channels:
+                print("警告: 使用备用数据")
+                categorized_channels = {
+                    "4K央视频道": [
+                        ("CCTV-4K超高清", "https://tv.cctv.com/live/cctv4k/", True),
+                        ("CCTV-16 奥林匹克4K", "https://tv.cctv.com/live/cctv16/", True)
+                    ],
+                    "4K超高清频道": [
+                        ("TRAVELXP 4K", "http://iptv.prosto.tv:7000/ch6/video.m3u8", True),
+                        ("Fashion One 4K", "https://example.com/fashionone4k.m3u8", True),
+                        ("National Geographic 4K", "https://example.com/natgeo4k.m3u8", True)
+                    ],
+                    "高清频道": [
+                        ("CCTV-1综合", "https://tv.cctv.com/live/cctv1/", False),
+                        ("CCTV-2财经", "https://tv.cctv.com/live/cctv2/", False),
+                        ("CCTV-3综艺", "https://tv.cctv.com/live/cctv3/", False),
+                        ("CCTV-4中文国际", "https://tv.cctv.com/live/cctv4/", False)
+                    ]
+                }
+            
+            if write_channels_to_file(categorized_channels):
+                print(f"✓ 成功生成 {OUTPUT_FILE} 文件")
+                return 0
+            else:
+                print("✗ 生成文件失败")
+                return 1
         except Exception as e:
-            # 直接输出到控制台
-            print(f"程序运行出错: {str(e)}")
+            print(f"程序完全失败: {str(e)}")
             import traceback
             traceback.print_exc()
             return 1
