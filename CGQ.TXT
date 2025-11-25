@@ -1,81 +1,11 @@
 # 超高清直播源列表 (包含所有超高清线路)
-# 更新时间: 2024-11-24 19:07:17
-# 共包含 74 个频道，其中超高清频道 74 个
+# 更新时间: 2024-11-25 00:43:07
+# 共包含 6 个频道，其中超高清频道 6 个
 
-4K央视频道 (超高清: 72),#genre#
-BS TV Tokyo 4K,https://vn.utako.moe/bstx4k/index.m3u8,https://vn.utako.moe/wprime/index.m3u8
-CCTV-4K,http://ddns.xryo.cn:8888/rtp/239.111.205.40:5140,http://ddns.xryo.cn:8888/rtp/239.109.205.192:9608
-CCTV-4K,http://sakura.dynv6.net:64785/rtp/239.111.205.40:5140,http://sakura.dynv6.net:64785/rtp/239.109.205.192:9608
-CCTV-4K超高清頻道,http://jackgao.top:35455/nptv/cctv4k.m3u8,http://jackgao.top:35455/nptv/cctv8k.m3u8
-CCTV-4K超高清頻道,http://phb888.myds.me:35455/nptv/cctv4k.m3u8,http://aiony.top:35455/nptv/cctv4k.m3u8
-CCTV-4K超高清頻道,http://yemingjkl.x3322.net:35455/nptv/cctv4k.m3u8,http://yemingjkl.x3322.net:35455/nptv/cctv8k.m3u8
+4K央视频道 (超高清: 6),#genre#
 CCTV16,http://livetv.wqwqwq.sbs/gaoma/cctv4k16.m3u8,http://lu.wqwqwq.sbs/itv/1000000006000233002.m3u8?cdn=ystenlive
-CCTV16-4K,http://ddns.xryo.cn:8888/rtp/239.111.205.134:5140,http://ddns.xryo.cn:8888/rtp/239.109.205.5:9144
-CCTV16-4K,http://sakura.dynv6.net:64785/rtp/239.111.205.134:5140,http://sakura.dynv6.net:64785/rtp/239.109.205.5:9144
-FUN 4K探索娛樂,https://4gtv.dxjc.pp.ua/4gtv-live011/index.m3u8,https://4gtv.dxjc.pp.ua/4gtv-live206/index.m3u8
-FashionTV 4K(法國全球時尚超高清頻道),https://fash2043.cloudycdn.services/slive/ftv_ftv_4k_hevc_73d_42080_default_466_hls.smil/playlist.m3u8,http://tencentplay.gztv.com/live/nanguodushi.m3u8?txSecret=625e905c507ada3ba448431044224948&txTime=194d0c43cd7
-NHK BS4K,https://mt01.utako.moe/bsp4k/index.m3u8,https://mt01.utako.moe/bstx4k/index.m3u8
-NHK BS4K,https://vn.utako.moe/bsp4k/index.m3u8,https://vn.utako.moe/bsntv/index.m3u8
-NHK BSP4K,http://cdns.jp-primehome.com:8000/zhongying/live/playlist.m3u8?cid=bs01&isp=4,http://cdns.jp-primehome.com:8000/zhongying/live/playlist.m3u8?cid=bs11&isp=4
-TRAVELXP 4K,http://95.67.12.82:9086,Hhttp://iptv.prosto.tv:7000/ch6/video.m3u8
-Русская Комедия,http://gmx9up2a.ottclub.xyz/iptv/9DEUPF9K25U84K/733/index.m3u8,http://live2.mediacdn.ru/sr1/tro/playlist.m3u8
-Суббота orig,http://gmx9up2a.ottclub.xyz/iptv/9DEUPF9K25U84K/9103/index.m3u8,http://194.26.229.209/Detskiy-HD/index.m3u8?token=klimedia.space:Z2pzbGdoYThnYWdsczpnanNsZ2hhOGdhZ2xz
-三明新闻综合,https://ls.qingting.fm/live/5022100/64k.m3u8,https://mgtv.ottiptv.cc/migu/651632657.m3u8?migutoken=348c9164063c2b1df215dd2fa7cd92cb119d8a335ae0edfb5d615a6c714e71b669eee2f5ff1730afa92af7ca41d0aa96e3a280d7e5f2069eb8a3b852f3ebc270147489d7c8bfb08a7c4b9c4d80
-东方卫视4K,http://marswjf.coralangel.com:7088/udp/239.94.0.119:5140$四川电信1,http://marswjf.coralangel.com:7088/udp/239.94.0.120:5140$四川电信1
-东方卫视4K,http://yulang132.cn:58888/udp/239.94.0.119:5140$四川电信3,http://yulang132.cn:58888/udp/239.94.0.120:5140$四川电信3
-佛衛慈悲,https://btsu4k5-hisng.cdn.hinet.net/live/pool/btsLive2/hievent-hls/btsLive2.m3u8,https://btsu4k5-hisng.cdn.hinet.net/live/pool/btsLive2/hievent-hls/btsLive2-video=2000000-audio_AACL_und_64000_34=64000.m3u8
-内蒙经济,https://ls.qingting.fm/live/1885/64k.m3u8,http://tvpull.dxhmt.cn:9081/tv/10527-1.m3u8
-北京新闻,https://ls.qingting.fm/live/339/64k.m3u8,https://brtv-radiolive.rbc.cn/alive/fm945.m3u8
-北京衛視4K,http://106.53.99.30/tv/api.php?id=bjws4k,http://106.53.99.30/tv/api.php?id=sztv4k
-北京衛視4K,http://dbiptv.sn.chinamobile.com/PLTV/88888893/224/3221227112/index.m3u8,http://111.20.109.150:6610/yinhe/2/ch00000090990000001063/index.m3u8?virtualDomain=yinhe.live_hls.zte.com
-北京衛視4K,http://dbiptv.sn.chinamobile.com/PLTV/88888893/224/3221227112/index.m3u8,http://dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221226547/index.m3u8
-北京衛視4K,http://dbiptv.sn.chinamobile.com/PLTV/88888893/224/3221227112/index.m3u8,http://dbiptv.sn.chinamobile.com/PLTV/88888893/224/3221227140/index.m3u8
-北京衛視4K,http://dbiptv.sn.chinamobile.com/PLTV/88888893/224/3221227112/index.m3u8,http://zteres.sn.chinamobile.com:6060/yinhe/2/ch00000090990000001063/index.m3u8?virtualDomain=yinhe.live_hls.zte.com
-四川卫视4K,http://ddns.xryo.cn:8888/rtp/239.110.205.90:7916,http://ddns.xryo.cn:8888/rtp/239.111.205.62:5140
-四川卫视4K,http://marswjf.coralangel.com:7088/udp/239.94.0.115:5140$四川电信1,http://marswjf.coralangel.com:7088/udp/239.94.0.116:5140$四川电信1
-四川卫视4K,http://sakura.dynv6.net:64785/rtp/239.110.205.90:7916,http://sakura.dynv6.net:64785/rtp/239.111.205.62:5140
-四川卫视4K,http://yulang132.cn:58888/udp/239.94.0.115:5140$四川电信3,http://yulang132.cn:58888/udp/239.94.0.116:5140$四川电信3
-四川卫视4K,https://shyd.695847.xyz/cms001/ch00000090990000001690/index.m3u8?IASHttpSessionId=RR4967720251014100028031761&ispcode=12,https://shyd.695847.xyz/cms001/ch00000090990000001582/index.m3u8?IASHttpSessionId=RR4967720251014100028031761&ispcode=12
-山东卫视4K,http://ddns.xryo.cn:8888/rtp/239.110.205.6:9770,http://ddns.xryo.cn:8888/rtp/239.110.205.36:9850
-山东卫视4K,http://sakura.dynv6.net:64785/rtp/239.110.205.6:9770,http://sakura.dynv6.net:64785/rtp/239.110.205.36:9850
-广东卫视4K,https://shyd.695847.xyz/cms001/ch00000090990000001540/index.m3u8?IASHttpSessionId=RR4967720251014100028031761&ispcode=12#https://shyd.695847.xyz/cms001/ch00000090990000001550/index.m3u8?IASHttpSessionId=RR4967720251014100028031761&ispcode=12,https://shyd.695847.xyz/cms001/ch00000090990000001490/index.m3u8?IASHttpSessionId=RR4967720251014100028031761&ispcode=12
-廣東4K超高清,http://2099.tv12.xyz/1351_1752408214496.m3u8,http://xxwx.yoesun.com/xxw/衛視4K.php?id=btv4k
-廣東衛視4K(測試),http://ddns.cyruslee.top:8888/udp/239.77.0.27:5146,http://ddns.cyruslee.top:8888/udp/239.77.1.14:5146
-廣東衛視4K(測試),http://ikuai.haleeyo.cn:9003/udp/239.77.0.27:5146,http://ikuai.haleeyo.cn:9003/udp/239.77.0.2:5146
-廣東衛視4K,http://xxwx.yoesun.com/xxw/衛視4K.php?id=gd4k,http://xxwx.yoesun.com/xxw/衛視4K.php?id=sz4k
-明珠台,http://r.jdshipin.com/ZQ4kN,http://r.jdshipin.com/Nr5jq
-歡笑劇場4K,http://111.20.109.150:6610/yinhe/2/ch00000090990000002156/index.m3u8?virtualDomain=yinhe.live_hls.zte.com,http://111.20.109.150:6610/yinhe/2/ch00000090990000001319/index.m3u8?virtualDomain=yinhe.live_hls.zte.com
-歡笑劇場4K,http://111.20.33.70/PLTV/88888893/224/3221226582/index.m3u8,http://111.20.33.70/PLTV/88888893/224/3221226581/index.m3u8
-歡笑劇場4K,http://111.20.33.70/PLTV/88888893/224/3221226582/index.m3u8,http://zteres.sn.chinamobile.com:6060/000000001000/5000000002000004412/index.m3u8?channel-id=bestzb&Contentid=5000000002000004412&livemode=1&stbId=3
+宁夏经济,https://ls.qingting.fm/live/1841/64k.m3u8,http://dspdhls.appcoo.com:8888/live/dspd/index.m3u8
+安顺新闻,https://ls.qingting.fm/live/5022203/64k.m3u8,http://lbyzztfe.live.sxmty.com/live/hls/645ff4c60e0a49f0a203abbd73dd8be9/0720e665f10f48e98c9639f4f492fb4a-1.m3u8?zshanxd
 武汉一台新闻综合,https://ls.qingting.fm/live/20198/64k.m3u8,https://tvpull.smartwq.cn/wqlive/convergencemedia/playlist.m3u8?ztianjd
-江苏卫视4K,http://marswjf.coralangel.com:7088/udp/239.94.0.117:5140$四川电信1,http://marswjf.coralangel.com:7088/udp/239.94.0.118:5140$四川电信1
-江苏卫视4K,http://yulang132.cn:58888/udp/239.94.0.117:5140$四川电信3,http://yulang132.cn:58888/udp/239.94.0.118:5140$四川电信3
-河北4K,https://event.pull.hebtv.com:443/live/live101.m3u8,https://tencentplaybusiness.gztv.com/live/nanguodushi.m3u8
-河北4K,https://event.pull.hebtv.com:443/live/live101.m3u8,https://tylive.kan0512.com/norecord/csztv4k_4k.m3u8
 河北农民,https://ls.qingting.fm/live/1650/64k.m3u8,http://ls.qingting.fm/live/1650.m3u8
-河南4K實驗頻道,http://www.cdnstv.com:6398/hls/1168/index.m3u8,http://106.46.146.86:8000/rtp/239.16.10.210:2000
-浙江卫视4K,http://vl15191373.imwork.net:8880/udp/239.94.0.118:5140$四川电信2,http://vl15191373.imwork.net:8880/udp/239.94.0.119:5140$四川电信2
-深圳卫视4K,http://ddns.xryo.cn:8888/rtp/239.109.205.195:9642,http://ddns.xryo.cn:8888/rtp/239.109.205.97:8712
-深圳卫视4K,http://sakura.dynv6.net:64785/rtp/239.109.205.195:9642,http://sakura.dynv6.net:64785/rtp/239.109.205.97:8712
-深圳衛視4K(測試),http://ikuai.haleeyo.cn:9003/udp/239.77.1.14:5146,http://push-rtmp-hs-spe-f5.douyincdn.com/live/guangdong_ws4k.flv
-深圳衛視4K(測試),video://https://www.sztv.com.cn/dianshi.shtml?id=24725,http://8.138.7.223/tv/gd.php?id=0201
-深圳衛視4K,https://cdn3.163189.xyz/163189/szws4k,https://cdn3.163189.xyz/163189/szcjsh
-深圳衛視4K,https://vhr.dpdns.org/20001/live/szws4k/stream.m3u8,https://vhr.dpdns.org/20001/live/szcjsh/stream.m3u8
-湖南卫视4K,http://vl15191373.imwork.net:8880/udp/239.94.0.116:5140$四川电信2,http://vl15191373.imwork.net:8880/udp/239.94.0.117:5140$四川电信2
-湖南卫视4K,https://shyd.695847.xyz/cms001/ch00000090990000001710/index.m3u8?IASHttpSessionId=RR4967720251014100028031761&ispcode=12,https://shyd.695847.xyz/cms001/ch00000090990000001510/index.m3u8?IAS
-灌阳新闻综合,https://ls.qingting.fm/live/5043/64k.m3u8,http://tvpull.dxhmt.cn:9081/tv/11282-1.m3u8?zhend
-睢宁综合,https://live-auth.51kandianshi.com/szgd/csztv4k_hd.m3u8,http://live.ynurl.com/video/s10059-SPTV/index.m3u8?zyund
-翡翠台,http://cdn.veryfast.filegear-sg.me/live/fct4k/stream.m3u8,http://edge.163189.xyz/163189/fct
-翡翠台,http://cdn6.veryfast.filegear-sg.me/live/fct4k/stream.m3u8,http://cdn.veryfast.filegear-sg.me/live/fhzw/stream.m3u8
-翡翠台,http://cdn6.veryfast.filegear-sg.me/live/fct4k/stream.m3u8,http://mytv.veryfast.filegear-sg.me/hls/fct/playlist.m3u8
-翡翠台4K,http://o12.veryfast.filegear-sg.me/hls/fct4k/playlist.m3u8,http://cdn3.veryfast.filegear-sg.me/live/hxjc4k/stream.m3u8
-翡翠台4K,http://php.jdshipin.com/TVOD/iptv.php?id=fct4,http://www.v5b7.com.cn:7088/udp/239.45.1.109:5140
-翡翠台4K,https://cdn6.163189.xyz/163189/fct4k,http://php.jdshipin.com/TVOD/iptv.php?id=j1
-翡翠台4K,https://vhr.dpdns.org/20003/live/fct4k/stream.m3u8,https://vhr.dpdns.org/20003/live/fhzw/stream.m3u8
-蘇州 4K,https://live-auth.51kandianshi.com/szgd/csztv4k_hd.m3u8,https://tylive.kan0512.com/norecord/csztv4k_4k.m3u8
 辽宁都市,https://ls.qingting.fm/live/1099/64k.m3u8,http://gslbmgsplive.miguvideo.com/wd_r2/jstv/lygxinwenzonghe/600/index.m3u8?msisdn=20250903090032646047095bc64a1c968e703401c7fec1&mdspid=&spid=699067&netType=0&sid=5500469369&pid=2028597139&timestamp=20250903090032&Channel_ID=0116_2600037000-99000-200300220100002&ProgramID=639731715&ParentNodeID=-99&assertID=5500469369&client_ip=106.13.250.83&SecurityKey=20250903090032&promotionId=&mvid=5102012621&mcid=500020&playurlVersion=WX-A1-8.8.1-RELEASE&userid=&jmhm=&videocodec=h264&bean=mgspad&tid=android&conFee=0&puData=c19beb3ac61dd99e40036c371af55211&ddCalcu=1c11v29a5bx5eafba31a7c36c16d3d09094e&sv=10004&ct=android
-黑龙江新闻法治,https://ls.qingting.fm/live/4974/64k.m3u8,https://idclive.hljtv.com:4430/live/dushi_hd.m3u8
-
-其他频道 (超高清: 2),#genre#
-北京科教紀實8K(1080),http://8.138.7.223/tv/brtv8k.php,https://gdcucc.v1.mk/gdcucc/brtv8k.m3u8
-纪实科教8K,http://111.31.106.140/downflv.brtvcloud.com/8klive/8kliveok.m3u8,https://gdcucc.v1.mk/gdcucc/brtv8k.m3u8
