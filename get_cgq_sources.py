@@ -577,15 +577,15 @@ def main():
         log_print(f"请求超时时间: {TIMEOUT}秒")
         log_print(f"直播源URL数量: {len(LIVE_SOURCES)}")
                 
-                # 直接调用process_all_sources()获取实际直播源
-                log_print("开始从网络获取直播源数据...")
-                categorized_channels = process_all_sources()
+        # 直接调用process_all_sources()获取实际直播源
+        log_print("开始从网络获取直播源数据...")
+        categorized_channels = process_all_sources()
                 
-                # 如果没有获取到数据，提供更丰富的静态备份数据
-                if not categorized_channels:
-                    log_print("警告: 未能从网络获取到直播源数据，使用备用数据")
-                    logger.warning("使用备用数据")
-                    categorized_channels = {
+        # 如果没有获取到数据，提供更丰富的静态备份数据
+        if not categorized_channels:
+            log_print("警告: 未能从网络获取到直播源数据，使用备用数据")
+            logger.warning("使用备用数据")
+            categorized_channels = {
                         "4K央视频道": [
                             ("CCTV-4K超高清", "https://tv.cctv.com/live/cctv4k/", True),
                             ("CCTV-16 奥林匹克4K", "https://tv.cctv.com/live/cctv16/", True)
