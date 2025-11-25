@@ -1,0 +1,12 @@
+# 超高清直播源列表  
+# 更新时间: 2025-11-26  6:49:17.17  
+# 共包含 12 个频道  
+  
+4K央视频道,#genre#  
+CCTV-4K超高清,https://tv.cctv.com/live/cctv4k/  
+CCTV16奥林匹克,https://tv.cctv.com/live/cctv16/  
+  
+高清频道,#genre#  
+CCTV-1,https://tv.cctv.com/live/cctv1/  
+CCTV-5,https://tv.cctv.com/live/cctv5/  
+ 
