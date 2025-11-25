@@ -16,16 +16,20 @@ import ssl
 import threading
 from queue import Queue
 
-# 启用详细调试模式
-DEBUG = True
+# 启用详细调试模式（设置为False以减少日志量）
+DEBUG = False
 
-# 配置日志
-log_level = logging.DEBUG if DEBUG else logging.INFO
+# 配置日志：使用日期命名的日志文件
+current_date = time.strftime('%Y-%m-%d')
+log_file = f'get_cgq_sources_{current_date}.log'
+
+# 配置日志：设置为INFO级别以减少日志量
+log_level = logging.INFO  # 无论DEBUG设置如何，日志文件都使用INFO级别
 logging.basicConfig(
     level=log_level,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('get_cgq_sources.log', encoding='utf-8'),
+        logging.FileHandler(log_file, encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
@@ -213,12 +217,9 @@ def is_uhd_channel(line, channel_name):
     return False
 
 def log_debug(message):
-    """将调试信息写入到debug.log文件"""
-    try:
-        with open('debug.log', 'a', encoding='utf-8') as f:
-            f.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - {message}\n")
-    except Exception as e:
-        pass  # 忽略写入错误
+    """调试日志，仅在DEBUG模式下输出到控制台"""
+    if DEBUG:
+        logger.debug(message)
 
 def is_low_resolution(line, channel_name):
     """判断是否为低分辨率线路
@@ -227,8 +228,9 @@ def is_low_resolution(line, channel_name):
     line_lower = line.lower()
     name_lower = channel_name.lower()
     
-    # 写入调试信息到文件
-    log_debug(f"检查线路: {channel_name}, {line[:50]}...")
+    # 仅在DEBUG模式下记录详细信息
+    if DEBUG:
+        log_debug(f"检查线路: {channel_name}, {line[:50]}...")
     
     # 明确标记的低分辨率
     if '576p' in line_lower or '576p' in name_lower:
@@ -553,34 +555,28 @@ def write_channels_to_file(categorized_channels):
 
 def main():
     """主函数"""
-    # 清空之前的调试日志
-    try:
-        with open('debug.log', 'w', encoding='utf-8') as f:
-            f.write(f"=== 开始执行直播源更新脚本 === {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
-    except Exception as e:
-        pass
+    # 清空之前的调试日志（仅保留功能，不再写入文件）
     
-    log_debug(f"Python版本: {sys.version}")
-    log_debug(f"当前目录: {os.getcwd()}")
-    log_debug(f"调试模式: {'开启' if DEBUG else '关闭'}")
+    # 仅在DEBUG模式下记录详细信息
+    if DEBUG:
+        log_debug(f"Python版本: {sys.version}")
+        log_debug(f"当前目录: {os.getcwd()}")
+        log_debug(f"调试模式: {'开启' if DEBUG else '关闭'}")
     
     # 确保日志文件目录存在
     log_dir = os.path.dirname(os.path.abspath(__file__))
-    log_debug(f"日志目录: {log_dir}")
+    if DEBUG:
+        log_debug(f"日志目录: {log_dir}")
     logger.info(f"日志目录: {log_dir}")
     
-    # 将输出同时写入文件，以便在环境限制下查看结果
-    try:
-        with open('script_output.log', 'w', encoding='utf-8') as log_file:
-            def log_print(message):
-                """打印并记录消息"""
-                print(message)
-                log_file.write(message + '\n')
-                log_file.flush()
-            
-            log_print("开始执行脚本...")
-            log_print(f"Python版本: {sys.version}")
-            log_print(f"当前目录: {os.getcwd()}")
+    # 直接使用print函数输出信息
+    def log_print(message):
+        """打印消息到控制台"""
+        print(message)
+    
+    log_print("开始执行脚本...")
+    log_print(f"Python版本: {sys.version}")
+    log_print(f"当前目录: {os.getcwd()}")
             log_print(f"调试模式: {'开启' if DEBUG else '关闭'}")
             
             try:
