@@ -184,6 +184,7 @@ CCTV3,https://stream1.freetv.fun/cctv3hd-2.m3u8
 CCTV4,https://stream1.freetv.fun/cctv4hd-2.m3u8
 CCTV4,https://stream1.freetv.fun/cctv4-6.m3u8
 CCTV4,https://stream1.freetv.fun/cctv-4-5.ctv
+CCTV4,https://stream1.freetv.fun/cctv4-52.m3u8
 CCTV4,https://stream1.freetv.fun/cctv4-33.m3u8
 CCTV4,https://stream1.freetv.fun/cctv4-gq-1.ctv
 CCTV4,https://stream1.freetv.fun/cctv4-zhong-yang-wei-shi-2.ctv
@@ -231,31 +232,6 @@ CCTV1,http://106.59.3.229:55555/rtp/239.200.200.194:8780
 CCTV1,http://125.76.196.106:8899/rtp/239.111.205.134:5140
 
 #卫视频道,#genre#
-##内蒙古卫视
-内蒙古卫视,https://ali-m-l.cztv.com/channels/lantian/channel007/1080p.m3u8
-##湖南卫视
-湖南卫视,https://migu.188766.xyz/?migutoken=75c6539b35f1a34c26246d4efd71b3b8&id=%E6%B9%96%E5%8D%97%E5%8D%AB%E8%A7%864K&pp=1
-湖南卫视,http://58.46.31.42:8188/udp/239.76.252.115:9000
-湖南卫视,http://58.46.31.42:8188/udp/239.76.245.115:1234
-湖南卫视,http://113.106.171.234:8899/rtp/239.20.0.95:3020
-湖南卫视,http://175.15.58.252:4022/udp/239.76.252.115:9000
-湖南卫视,http://175.15.58.252:4022/udp/239.76.245.115:1234
-湖南卫视,http://175.8.180.171:7878/udp/239.76.252.115:9000
-湖南卫视,http://175.8.180.171:7878/udp/239.76.245.115:1234
-##浙江卫视
-浙江卫视,https://migu.188766.xyz/?migutoken=429a05f369a705f01f17ecffec86296a&id=%E6%B5%99%E6%B1%9F%E5%8D%AB%E8%A7%864K&pp=1
-浙江卫视,http://ali-m-l.cztv.com/channels/lantian/channel001/1080p.m3u8
-浙江卫视,http://183.207.248.71/cntv/live1/HD-2500k-1080P-zhejiangstv/HD-2500k-1080P-zhejiangstv
-浙江卫视,http://112.25.48.68/live/program/live/zjwshd/4000000/mnf.m3u8
-浙江卫视,http://113.106.171.234:8899/rtp/239.20.0.94:3024
-浙江卫视,http://183.207.249.34/PLTV/4/224/3221227393/index.m3u8
-浙江卫视,http://223.110.243.173/PLTV/3/224/3221227215/index.m3u8
-浙江卫视,http://183.207.248.71/cntv/live1/zhejiangstv/zhejiangstv
-浙江卫视,http://39.134.115.163:8080/PLTV/88888910/224/3221225703/index.m3u8
-浙江卫视,http://39.134.115.163:8080/PLTV/88888910/224/3221225744/index.m3u8
-浙江卫视,http://223.110.254.210:6610/cntv/live1/zhejiangstv/zhejiangstv/1.m3u8
-浙江卫视,http://223.110.245.143/ott.js.chinamobile.com/PLTV/3/224/3221227483/index.m3u8
-浙江卫视,http://223.110.245.159/ott.js.chinamobile.com/PLTV/3/224/3221227393/index.m3u8
 ##东南卫视
 东南卫视,http://118.81.195.79:9003/hls/24/index.m3u8
 ##东方卫视
@@ -307,6 +283,20 @@ CCTV1,http://125.76.196.106:8899/rtp/239.111.205.134:5140
 河北卫视,http://118.81.195.79:9003/hls/29/index.m3u8
 ##河南卫视
 河南卫视,http://118.81.195.79:9003/hls/30/index.m3u8
+##浙江卫视
+浙江卫视,https://migu.188766.xyz/?migutoken=429a05f369a705f01f17ecffec86296a&id=%E6%B5%99%E6%B1%9F%E5%8D%AB%E8%A7%864K&pp=1
+浙江卫视,http://ali-m-l.cztv.com/channels/lantian/channel001/1080p.m3u8
+浙江卫视,http://183.207.248.71/cntv/live1/HD-2500k-1080P-zhejiangstv/HD-2500k-1080P-zhejiangstv
+浙江卫视,http://112.25.48.68/live/program/live/zjwshd/4000000/mnf.m3u8
+浙江卫视,http://113.106.171.234:8899/rtp/239.20.0.94:3024
+浙江卫视,http://183.207.249.34/PLTV/4/224/3221227393/index.m3u8
+浙江卫视,http://223.110.243.173/PLTV/3/224/3221227215/index.m3u8
+浙江卫视,http://183.207.248.71/cntv/live1/zhejiangstv/zhejiangstv
+浙江卫视,http://39.134.115.163:8080/PLTV/88888910/224/3221225703/index.m3u8
+浙江卫视,http://39.134.115.163:8080/PLTV/88888910/224/3221225744/index.m3u8
+浙江卫视,http://223.110.254.210:6610/cntv/live1/zhejiangstv/zhejiangstv/1.m3u8
+浙江卫视,http://223.110.245.143/ott.js.chinamobile.com/PLTV/3/224/3221227483/index.m3u8
+浙江卫视,http://223.110.245.159/ott.js.chinamobile.com/PLTV/3/224/3221227393/index.m3u8
 ##深圳卫视
 深圳卫视,http://183.207.248.71/cntv/live1/HD-2500k-1080P-shenzhenstv/HD-2500k-1080P-shenzhenstv
 深圳卫视,http://117.169.120.140:8080/live/hdshenzhenstv/.m3u8
@@ -335,6 +325,17 @@ CCTV1,http://125.76.196.106:8899/rtp/239.111.205.134:5140
 青海卫视,http://live.geermurmt.com/qhws/sd/live.m3u8
 ##黑龙江卫视
 黑龙江卫视,http://118.81.195.79:9003/hls/31/index.m3u8
+##内蒙古卫视
+内蒙古卫视,https://ali-m-l.cztv.com/channels/lantian/channel007/1080p.m3u8
+##湖南卫视
+湖南卫视,https://migu.188766.xyz/?migutoken=75c6539b35f1a34c26246d4efd71b3b8&id=%E6%B9%96%E5%8D%97%E5%8D%AB%E8%A7%864K&pp=1
+湖南卫视,http://58.46.31.42:8188/udp/239.76.252.115:9000
+湖南卫视,http://58.46.31.42:8188/udp/239.76.245.115:1234
+湖南卫视,http://113.106.171.234:8899/rtp/239.20.0.95:3020
+湖南卫视,http://175.15.58.252:4022/udp/239.76.252.115:9000
+湖南卫视,http://175.15.58.252:4022/udp/239.76.245.115:1234
+湖南卫视,http://175.8.180.171:7878/udp/239.76.252.115:9000
+湖南卫视,http://175.8.180.171:7878/udp/239.76.245.115:1234
 ##四川卫视
 四川卫视,http://113.106.171.234:8899/rtp/239.20.0.82:3072
 
@@ -367,6 +368,12 @@ CCTV1,http://125.76.196.106:8899/rtp/239.111.205.134:5140
 凤凰资讯,http://php.jdshipin.com:8880/smt.php?id=phoenixinfo_hd
 
 #电影频道,#genre#
+##CHC动作电影
+CHC动作电影,http://39.134.19.68/dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221226465/index.m3u8
+##星空卫视
+星空卫视,http://scgctvshow.sctv.com/hdlive/sctv6/index.m3u8
+##CHC家庭影院
+CHC家庭影院,http://39.134.19.153/dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221226462/index.m3u8
 ##淘电影
 淘电影,http://zzy789.xyz/douyu1.php?id=85894
 淘电影,http://zzy789.xyz/douyu1.php?id=4246519
@@ -380,12 +387,6 @@ CCTV1,http://125.76.196.106:8899/rtp/239.111.205.134:5140
 淘电影,http://175.8.180.171:7878/udp/239.76.245.119:1234
 淘电影,http://183.207.248.71/cntv/live1/jdianying/jdianying
 淘电影,http://39.134.19.76/dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221226463/index.m3u8
-##CHC动作电影
-CHC动作电影,http://39.134.19.68/dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221226465/index.m3u8
-##星空卫视
-星空卫视,http://scgctvshow.sctv.com/hdlive/sctv6/index.m3u8
-##CHC家庭影院
-CHC家庭影院,http://39.134.19.153/dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221226462/index.m3u8
 
 #儿童频道,#genre#
 ##黑莓动画
