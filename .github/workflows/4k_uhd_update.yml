@@ -1,0 +1,80 @@
+name: 4K超高清直播源自动更新
+
+on:
+  schedule:
+    - cron: '0 19 * * *'  # 每天UTC 19:00触发（北京时间次日3:00）
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  update-4k-uhd-channels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 设置Python环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install requests
+
+      - name: 运行4K超高清直播源更新脚本
+        run: python process_4k_channels.py
+
+      - name: 检查4K_uhd_channels.txt文件是否存在
+        id: check_file
+        run: |
+          if [ -f "4K_uhd_channels.txt" ]; then
+            echo "file_exists=true" >> $GITHUB_OUTPUT
+            echo "file_size=$(wc -c < 4K_uhd_channels.txt)" >> $GITHUB_OUTPUT
+            echo "file_lines=$(wc -l < 4K_uhd_channels.txt)" >> $GITHUB_OUTPUT
+          else
+            echo "file_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 输出文件信息
+        run: |
+          echo "文件存在: ${{ steps.check_file.outputs.file_exists }}"
+          echo "文件大小: ${{ steps.check_file.outputs.file_size }} 字节"
+          echo "文件行数: ${{ steps.check_file.outputs.file_lines }} 行"
+          if [ "${{ steps.check_file.outputs.file_exists }}" = "true" ]; then
+            echo "文件前10行内容:"
+            head -n 10 4K_uhd_channels.txt
+          fi
+
+      - name: 配置Git用户信息
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: 检查4K_uhd_channels.txt是否有变化
+        id: check_changes
+        run: |
+          git add 4K_uhd_channels.txt
+          if git diff --staged --quiet; then
+            echo "changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 提交和推送更新
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          git commit -m "自动更新4K_uhd_channels.txt文件，限制每个GitHub仓库的直播源URL数量不超过5个"
+          git push origin main
+
+      - name: 保存4K_uhd_channels.txt文件作为产物
+        uses: actions/upload-artifact@v3
+        with:
+          name: 4K_uhd_channels
+          path: 4K_uhd_channels.txt
+          retention-days: 7
