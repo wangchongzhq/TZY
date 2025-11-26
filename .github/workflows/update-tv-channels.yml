@@ -39,15 +39,15 @@ jobs:
       
       # 执行脚本收集电视直播线路
       - name: 收集电视直播线路
-        run: python tvzy.py
+        run: python tvzy.py -o tzydayauto.txt
       
       # 检查输出文件是否存在
       - name: 检查输出文件
         id: check_file
         run: |
-          if [ -f "tzydauto.txt" ]; then
+          if [ -f "tzydayauto.txt" ]; then
             echo "file_exists=true" >> $GITHUB_OUTPUT
-            echo "文件大小: $(du -h tzydauto.txt | cut -f1)" >> $GITHUB_STEP_SUMMARY
+            echo "文件大小: $(du -h tzydayauto.txt | cut -f1)" >> $GITHUB_STEP_SUMMARY
           else
             echo "file_exists=false" >> $GITHUB_OUTPUT
           fi
@@ -76,7 +76,7 @@ jobs:
           python tvzy.py
           
           # 添加文件
-          git add tzydauto.txt
+          git add tzydayauto.txt
           
           # 检查是否有更改
           if git diff --staged --quiet; then
@@ -103,7 +103,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tv-channels-list
-          path: tzydauto.txt
+          path: tzydayauto.txt
           retention-days: 7
       
       # 生成构建摘要
@@ -112,6 +112,6 @@ jobs:
         run: |
           echo "## 电视直播线路更新摘要" >> $GITHUB_STEP_SUMMARY
           echo "- 执行时间: $(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_STEP_SUMMARY
-          echo "- 输出文件: tzydauto.txt" >> $GITHUB_STEP_SUMMARY
-          echo "- 文件大小: $(du -h tzydauto.txt | cut -f1)" >> $GITHUB_STEP_SUMMARY
-          echo "- 频道数量: $(grep -v '^#' tzydauto.txt | wc -l)" >> $GITHUB_STEP_SUMMARY
+          echo "- 输出文件: tzydayauto.txt" >> $GITHUB_STEP_SUMMARY
+          echo "- 文件大小: $(du -h tzydayauto.txt | cut -f1)" >> $GITHUB_STEP_SUMMARY
+          echo "- 频道数量: $(grep -v '^#' tzydayauto.txt | wc -l)" >> $GITHUB_STEP_SUMMARY

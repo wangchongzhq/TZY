@@ -5,6 +5,7 @@ import concurrent.futures
 import time
 import sys
 import logging
+import argparse
 
 # 配置日志记录
 logging.basicConfig(level=logging.INFO,
@@ -20,7 +21,17 @@ MAX_WORKERS = 10
 TIMEOUT = 10
 MIN_LINES_PER_CHANNEL = 10
 MAX_LINES_PER_CHANNEL = 90
-OUTPUT_FILE = 'tzydauto.txt'
+# 默认输出文件名
+DEFAULT_OUTPUT_FILE = 'tzydauto.txt'
+# 解析命令行参数
+def parse_args():
+    parser = argparse.ArgumentParser(description='电视直播线路收集和处理脚本')
+    parser.add_argument('-o', '--output', default=DEFAULT_OUTPUT_FILE, help=f'输出文件名（默认: {DEFAULT_OUTPUT_FILE}）')
+    return parser.parse_args()
+
+# 获取命令行参数
+args = parse_args()
+OUTPUT_FILE = args.output
 
 # 请求头
 HEADERS = {
@@ -648,6 +659,7 @@ def main():
     """主函数"""
     try:
         logger.info("开始收集和处理电视直播线路...")
+        logger.info(f"输出文件将保存为: {OUTPUT_FILE}")
         start_time = time.time()
         
         # 并发处理所有数据源
