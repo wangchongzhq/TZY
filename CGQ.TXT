@@ -1,2 +1,29 @@
-#EXTM3U
+# 超高清直播源列表（全球高清线路）
+# 更新时间: 2025-11-26 02:01:55
+# 收录频道总数: 15 个
+
+4K央视频道 (频道数: 4),#genre#
+BS TV Tokyo 4K,https://vn.utako.moe/bstx4k/index.m3u8
+CCTV-1 4K,http://example.com/cctv14k.m3u8
+CCTV-4K,http://example.com/cctv4k.m3u8
+NHK BS4K,https://example.com/nhk4k/index.m3u8
+
+4K超高清频道 (频道数: 2),#genre#
+4K测试频道,http://example.com/test4k.m3u8
+4K电影频道,http://example.com/4kmovie.m3u8
+
+高清频道 (频道数: 4),#genre#
+CCTV-1 高清,http://example.com/cctv1hd.m3u8
+CCTV-2 高清,http://example.com/cctv2hd.m3u8
+浙江卫视高清,http://example.com/zhejianghd.m3u8
+湖南卫视高清,http://example.com/hunanhd.m3u8
+
+央视 (频道数: 3),#genre#
+CCTV-1,http://example.com/cctv1.m3u8
+CCTV-2,http://example.com/cctv2.m3u8
+CCTV-3,http://example.com/cctv3.m3u8
+
+卫视 (频道数: 2),#genre#
+浙江卫视,http://example.com/zhejiang.m3u8
+湖南卫视,http://example.com/hunan.m3u8
 
