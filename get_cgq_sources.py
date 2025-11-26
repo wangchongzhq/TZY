@@ -274,7 +274,7 @@ def write_to_file(categorized_channels):
                 
                 # 按名称排序并写入频道
                 for channel_name, channel_url in sorted(channels, key=lambda x: x[0]):
-                    f.write(f"#EXTINF:-1 tvg-name=\"{channel_name}\" group-title=\"{category}",{channel_name}\n")
+                    f.write(f"#EXTINF:-1 tvg-name=\"{channel_name}\" group-title=\"{category}\",{channel_name}\n")
                     f.write(f"{channel_url}\n\n")
         
         print(f"\n直播源已成功写入 {OUTPUT_FILE}")
