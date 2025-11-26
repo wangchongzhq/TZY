@@ -1,8 +1,2 @@
-﻿# 超高清直播源列表（全球高清线路）
-# 更新时间: 2025-11-26 08:00:00
-# 共收录 69 个频道，其中高清频道 69 个
+#EXTM3U
 
-4K央视频道 (频道数: 68),#genre#
-BS TV Tokyo 4K,https://vn.utako.moe/bstx4k/index.m3u8,https://vn.utako.moe/wprime/index.m3u8
-CCTV-4K,http://ddns.xryo.cn:8888/rtp/239.111.205.40:5140,http://ddns.xryo.cn:8888/rtp/239.109.205.192:9608
-NHK BS4K,https://example.com/nhk4k/index.m3u8
