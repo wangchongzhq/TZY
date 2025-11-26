@@ -1038,13 +1038,6 @@ CHC影迷电影,http://122.228.73.138:2380/hw1live.rxip.sc96655.com.huan.tv/live
 优漫卡通,http://nn.7x9d.cn/xzc2.php?ua=TW96aWxsYS81LjAgKFdpbmRvd3MgTlQgNi4xOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTA2LjAuMC4wIFNhZmFyaS81MzcuMzY=&hls=aHR0cDovL3R2dGoxLmp4d2x0eC5jb206ODAwMy9jdXN0b20xMS5tM3U4
 
 #综合频道,#genre#
-##求索纪录
-求索纪录,http://ali-m-l.cztv.com/channels/lantian/channel12/1080p.m3u8
-求索纪录,http://ali-m-l.cztv.com/channels/lantian/channel012/1080p.m3u8
-求索纪录,https://ali-m-l.cztv.com/channels/lantian/channel012/1080p.m3u8
-求索纪录,https://ali-m-l.cztv.com/channels/lantian/channel012/1080p.m3u8
-求索纪录,https://ali-m-l.cztv.com/channels/lantian/channel012/1080p.m3u8
-求索纪录,http://hw-m-l.cztv.com/channels/lantian/channel012/1080p.m3u8?zzhed
 ##都市剧场
 都市剧场,https://ls.qingting.fm/live/1099/64k.m3u8
 都市剧场,https://stream1.freetv.fun/4knan-guo-du-shi-1.m3u8
@@ -1069,6 +1062,13 @@ CHC影迷电影,http://122.228.73.138:2380/hw1live.rxip.sc96655.com.huan.tv/live
 都市剧场,http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221227102/index.m3u8
 都市剧场,http://tencentplay.gztv.com/live/nanguodushi.m3u8?txSecret=625e905c507ada3ba448431044224948&txTime=194d0c43cd7
 都市剧场,http://zteres.sn.chinamobile.com:6060/000000001000/5000000010000018926/1.m3u8?channel-id=bestzb&Contentid=5000000010000018926&livemode=1&stbId=3
+##求索纪录
+求索纪录,http://ali-m-l.cztv.com/channels/lantian/channel12/1080p.m3u8
+求索纪录,http://ali-m-l.cztv.com/channels/lantian/channel012/1080p.m3u8
+求索纪录,https://ali-m-l.cztv.com/channels/lantian/channel012/1080p.m3u8
+求索纪录,https://ali-m-l.cztv.com/channels/lantian/channel012/1080p.m3u8
+求索纪录,https://ali-m-l.cztv.com/channels/lantian/channel012/1080p.m3u8
+求索纪录,http://hw-m-l.cztv.com/channels/lantian/channel012/1080p.m3u8?zzhed
 ##游戏风云
 游戏风云,https://hd.ijycnd.com/play/PdROOLeG/index.m3u8
 游戏风云,https://hd.ijycnd.com/play/7axWoPJe/index.m3u8
