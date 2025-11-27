@@ -11,14 +11,25 @@ on:
 jobs:
   update-channels:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       # 检出代码
       - name: 检出代码
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: true
           token: ${{ secrets.GITHUB_TOKEN }}  # 显式提供令牌
+          repository: wangchongzhq/TZY
+          
+      # 配置git远程引用
+      - name: 配置git远程引用
+        run: |
+          git remote -v
+          git remote remove TZY || echo "TZY远程引用不存在，将创建新的"
+          git remote add TZY https://${{ secrets.GITHUB_TOKEN }}@github.com/wangchongzhq/TZY.git
+          git remote -v
       
       # 设置Python环境
       - name: 设置Python环境
@@ -66,14 +77,14 @@ jobs:
           
           # 强制确保本地分支与远程同步
           echo "强制同步本地与远程仓库..."
-          git fetch origin ${{ github.ref_name }}
+          git fetch TZY ${{ github.ref_name }}
           git checkout ${{ github.ref_name }} || git checkout -b ${{ github.ref_name }}
-          git reset --hard origin/${{ github.ref_name }}
+          git reset --hard TZY/${{ github.ref_name }}
           
           echo "本地仓库已重置为远程最新状态"
           
           # 重新执行脚本确保生成最新文件
-          python tvzy.py
+          python tvzy.py -o tzydayauto.txt
           
           # 添加文件
           git add tzydayauto.txt
@@ -89,11 +100,11 @@ jobs:
           
           # 尝试多种推送方式，确保成功率
           echo "尝试推送更改到远程仓库..."
-          git push origin ${{ github.ref_name }} || {
+          git push TZY ${{ github.ref_name }} || {
             echo "推送失败，尝试使用--force-with-lease推送..."
-            git push --force-with-lease origin ${{ github.ref_name }} || {
+            git push --force-with-lease TZY ${{ github.ref_name }} || {
               echo "--force-with-lease推送失败，最后尝试使用--force推送..."
-              git push --force origin ${{ github.ref_name }}
+              git push --force TZY ${{ github.ref_name }}
             }
           }
       
