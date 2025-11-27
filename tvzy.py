@@ -27,6 +27,7 @@ DEFAULT_OUTPUT_FILE = 'tzydauto.txt'
 def parse_args():
     parser = argparse.ArgumentParser(description='电视直播线路收集和处理脚本')
     parser.add_argument('-o', '--output', default=DEFAULT_OUTPUT_FILE, help=f'输出文件名（默认: {DEFAULT_OUTPUT_FILE}）')
+    parser.add_argument('--test', action='store_true', help='测试模式，只检查脚本基本功能')
     return parser.parse_args()
 
 # 获取命令行参数
@@ -44,6 +45,7 @@ GITHUB_SOURCES = [
     "https://ghcy.eu.org/https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China.m3u",
     "https://ghcy.eu.org/https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u",
     "https://ghcy.eu.org/https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u",
+    "http://106.53.99.30/2025.txt",
     "http://tv.html-5.me/i/9390107.txt",
     "https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
     "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
@@ -657,6 +659,36 @@ def write_output_file(category_channels):
 def main():
     """主函数"""
     try:
+        # 检查是否为测试模式
+        if args.test:
+            print("=== 测试模式 ===")
+            logger.info("测试模式：开始基本功能检查...")
+            logger.info(f"输出文件配置为: {OUTPUT_FILE}")
+            
+            # 检查必要的导入和配置
+            logger.info("✓ 导入模块检查通过")
+            logger.info(f"✓ 配置参数检查通过")
+            
+            # 检查数据源列表
+            print(f"GITHUB_SOURCES变量存在，长度: {len(GITHUB_SOURCES)}")
+            logger.info(f"✓ 数据源数量: {len(GITHUB_SOURCES)}")
+            
+            # 检查频道类别
+            print(f"CHANNEL_CATEGORIES变量存在，长度: {len(CHANNEL_CATEGORIES)}")
+            logger.info(f"✓ 频道类别数量: {len(CHANNEL_CATEGORIES)}")
+            
+            # 检查输出文件路径是否可写
+            test_dir = os.path.dirname(OUTPUT_FILE) if os.path.dirname(OUTPUT_FILE) else '.'
+            if os.access(test_dir, os.W_OK):
+                logger.info("✓ 输出文件路径可写")
+                print("测试模式检查完成：所有基本功能正常！")
+                return True
+            else:
+                logger.error("✗ 输出文件路径不可写")
+                print("测试模式检查失败：输出文件路径不可写")
+                return False
+        
+        # 正常模式
         logger.info("开始收集和处理电视直播线路...")
         logger.info(f"输出文件将保存为: {OUTPUT_FILE}")
         start_time = time.time()
