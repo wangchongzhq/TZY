@@ -37,9 +37,56 @@ jobs:
 
     - name: Commit and push if changes
       run: |
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git config --global user.name "github-actions[bot]"
-        # 添加日志文件到git
+        # 配置git身份和行为
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "GitHub Actions Bot"
+        git config --global pull.rebase false  # 使用merge而不是rebase
+        git config --global core.autocrlf false  # 防止行尾字符转换问题
+        
+        echo "=== 开始Git操作 ==="
+        echo "当前分支: $(git branch --show-current)"
+        
+        # 强制确保本地分支与远程同步
+        echo "强制同步本地与远程仓库..."
+        git fetch origin ${{ github.ref_name }}
+        git checkout ${{ github.ref_name }} || git checkout -b ${{ github.ref_name }}
+        git reset --hard origin/${{ github.ref_name }}
+        
+        echo "本地仓库已重置为远程最新状态"
+        
+        # 重新执行脚本确保生成最新文件
+        echo "重新执行脚本生成最新文件..."
+        python ipzy.py
+        
+        # 检查文件是否存在
+        if [ ! -f "ipzy.m3u" ]; then
+          echo "::error::错误：ipzy.m3u文件未生成"
+          exit 1
+        fi
+        
+        # 添加文件
+        echo "添加更改的文件..."
         git add ipzy.m3u iptv统计数据.log
-        git diff --staged --quiet || git commit -m "Auto-update IPTV files"
-        git push
+        
+        # 检查是否有更改
+        if git diff --staged --quiet; then
+          echo "没有检测到更改，跳过提交"
+          exit 0
+        fi
+        
+        # 提交更改
+        echo "提交更改..."
+        git commit -m "Auto-update IPTV files - $(date '+%Y-%m-%d %H:%M:%S')"
+        
+        # 推送到远程仓库
+        echo "尝试推送更改到远程仓库..."
+        git push origin ${{ github.ref_name }} || {
+          echo "推送失败，尝试使用--force-with-lease推送..."
+          git push --force-with-lease origin ${{ github.ref_name }} || {
+            echo "--force-with-lease推送失败，最后尝试使用--force推送..."
+            git push --force origin ${{ github.ref_name }} || {
+              echo "::error::所有推送方式均失败，请检查GitHub权限配置"
+              exit 1
+            }
+          }
+        }
