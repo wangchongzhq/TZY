@@ -33,7 +33,7 @@ jobs:
     - name: Run script to generate m3u and convert to txt
       run: |
         # 首先运行原始脚本生成m3u文件
-        python ipzy.py
+        python ipzyauto.py
         # 然后转换为txt格式（生成ipzyauto.txt）
         python convert_to_txt.py
 
@@ -61,7 +61,7 @@ jobs:
         
         # 重新执行脚本确保生成最新文件
         echo "重新执行脚本生成最新文件..."
-        python ipzy.py
+        python ipzyauto.py
         python convert_to_txt.py
         
         # 检查文件是否存在
