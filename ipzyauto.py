@@ -629,19 +629,19 @@ def generate_statistics_log(all_channels, source_stats, user_sources, txt_filena
 def main():
     # 在这里添加您的稳定IPTV源URL
     default_sources = [
-        "https://ghcy.eu.org/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u",
-        "https://ghcy.eu.org/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u",
-        "https://ghcy.eu.org/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv4.txt",
+        "https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u",
+        "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u",
+        "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv4.txt",
         "http://106.53.99.30/2025.txt",
     ]
     
     user_sources = [
         "http://tv.html-5.me/i/9390107.txt",
-        "https://ghcy.eu.org/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
+        "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
         "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
         "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
         "https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt",
-        "https://ghcy.eu.org/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u",
+        "https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u",
     ]
     
     urls = default_sources + user_sources
