@@ -171,18 +171,6 @@ def get_source_content(url):
         print(f"获取内容异常: {e} - {url}")
         return None
 
-def is_uhd_content(name, url):
-    """判断是否为超高清内容"""
-    if not name and not url:
-        return False
-    
-    for keyword in UHD_KEYWORDS:
-        if name and keyword in name:
-            return True
-        if url and keyword in url:
-            return True
-    return False
-
 def extract_channels_from_m3u(content):
     """从M3U格式内容中提取频道"""
     channels = []
@@ -455,4 +443,3 @@ def main():
 if __name__ == "__main__":
     result = main()
     sys.exit(0 if result else 1)
-    
