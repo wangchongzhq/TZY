@@ -22,6 +22,7 @@ jobs:
           persist-credentials: true
           token: ${{ secrets.GITHUB_TOKEN }}  # 显式提供令牌
           repository: wangchongzhq/TZY
+<<<<<<< HEAD
           
       # 配置git远程引用
       - name: 配置git远程引用
@@ -30,6 +31,8 @@ jobs:
           git remote remove TZY || echo "TZY远程引用不存在，将创建新的"
           git remote add TZY https://${{ secrets.GITHUB_TOKEN }}@github.com/wangchongzhq/TZY.git
           git remote -v
+=======
+>>>>>>> c4edddf (Update all workflows to use TZY remote instead of origin)
       
       # 设置Python环境
       - name: 设置Python环境

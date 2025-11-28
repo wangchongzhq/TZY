@@ -14,6 +14,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+          repository: wangchongzhq/TZY
 
       - name: 设置Python环境
         uses: actions/setup-python@v4
@@ -70,7 +71,7 @@ jobs:
         if: steps.check_changes.outputs.changes == 'true'
         run: |
           git commit -m "自动更新4K_uhd_channels.txt文件，限制每个GitHub仓库的直播源URL数量不超过5个"
-          git push origin main
+          git push TZY main
 
       - name: 保存4K_uhd_channels.txt文件作为产物
         uses: actions/upload-artifact@v3

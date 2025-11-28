@@ -14,15 +14,3 @@ CCTV-8 电视剧4K,https://cctv4k.cdn20.com:8800/live/2024CCTV-8/2024CCTV-8/9007
 
 # 建议添加到get_cgq_sources.py的LIVE_SOURCES列表中的GitHub直播源URL：
 # 以下是至少50个GitHub直播源URL建议：
-# 1. https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/4K.m3u
-# 2. https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/HDTV.m3u
-# 3. https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u
-# 11. https://raw.githubusercontent.com/iptv-org/iptv/master/streams/us.m3u
-# 12. https://raw.githubusercontent.com/iptv-org/iptv/master/streams/uk.m3u
-# 13. https://raw.githubusercontent.com/iptv-org/iptv/master/streams/jp.m3u
-# 14. https://raw.githubusercontent.com/iptv-org/iptv/master/streams/kr.m3u
-# 4. https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV.txt
-# 5. https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_143.txt
-# 6. https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_146.txt
-# 7. https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_156.txt
-# 8. https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_160.txt

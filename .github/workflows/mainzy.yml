@@ -18,6 +18,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
+        repository: wangchongzhq/TZY
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -48,9 +49,9 @@ jobs:
         
         # 强制确保本地分支与远程同步
         echo "强制同步本地与远程仓库..."
-        git fetch origin ${{ github.ref_name }}
+        git fetch TZY ${{ github.ref_name }}
         git checkout ${{ github.ref_name }} || git checkout -b ${{ github.ref_name }}
-        git reset --hard origin/${{ github.ref_name }}
+        git reset --hard TZY/${{ github.ref_name }}
         
         echo "本地仓库已重置为远程最新状态"
         
@@ -80,11 +81,11 @@ jobs:
         
         # 推送到远程仓库
         echo "尝试推送更改到远程仓库..."
-        git push origin ${{ github.ref_name }} || {
+        git push TZY ${{ github.ref_name }} || {
           echo "推送失败，尝试使用--force-with-lease推送..."
-          git push --force-with-lease origin ${{ github.ref_name }} || {
+          git push --force-with-lease TZY ${{ github.ref_name }} || {
             echo "--force-with-lease推送失败，最后尝试使用--force推送..."
-            git push --force origin ${{ github.ref_name }} || {
+            git push --force TZY ${{ github.ref_name }} || {
               echo "::error::所有推送方式均失败，请检查GitHub权限配置"
               exit 1
             }
