@@ -20,12 +20,110 @@ HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
 }
 
-# 4K直播源URL列表
+# 4K直播源URL列表 - 大大扩展了数量以获取更多原始直播源
 UHD_SOURCES = [
+    # imDazui仓库
     "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/4K.m3u",
     "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/HDTV.m3u",
+    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/IPTV.m3u",
+    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/CCTV.m3u",
+    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/DiYi.m3u",
+    "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/LocalTV.m3u",
+    
+    # iptv-org仓库
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/4k.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hd.m3u",
     "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/asia.m3u",
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/world.m3u",
+    
+    # Free-IPTV仓库
+    "https://raw.githubusercontent.com/Free-IPTV/IPTV/main/4K.m3u",
+    "https://raw.githubusercontent.com/Free-IPTV/IPTV/main/HD.m3u",
+    "https://raw.githubusercontent.com/Free-IPTV/IPTV/main/CCTV.m3u",
+    "https://raw.githubusercontent.com/Free-IPTV/IPTV/main/卫视.m3u",
+    "https://raw.githubusercontent.com/Free-IPTV/IPTV/main/地方.m3u",
+    
+    # liuminghang仓库
     "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV.txt",
+    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_143.txt",
+    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_144.txt",
+    "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_145.txt",
+    
+    # KyleBing仓库
+    "https://raw.githubusercontent.com/KyleBing/iptv/master/cn.m3u",
+    "https://raw.githubusercontent.com/KyleBing/iptv/master/asia.m3u",
+    "https://raw.githubusercontent.com/KyleBing/iptv/master/iptv.m3u",
+    "https://raw.githubusercontent.com/KyleBing/iptv/master/hd.m3u",
+    
+    # iptv-collection仓库
+    "https://raw.githubusercontent.com/iptv-collection/iptv-collection/master/4K.m3u",
+    "https://raw.githubusercontent.com/iptv-collection/iptv-collection/master/4k.m3u",
+    "https://raw.githubusercontent.com/iptv-collection/iptv-collection/master/HD.m3u",
+    "https://raw.githubusercontent.com/iptv-collection/iptv-collection/master/hd.m3u",
+    "https://raw.githubusercontent.com/iptv-collection/iptv-collection/master/CCTV.m3u",
+    "https://raw.githubusercontent.com/iptv-collection/iptv-collection/master/卫视.m3u",
+    
+    # iptv仓库
+    "https://raw.githubusercontent.com/iptv/iptv/main/4K.m3u",
+    "https://raw.githubusercontent.com/iptv/iptv/main/4k.m3u",
+    "https://raw.githubusercontent.com/iptv/iptv/main/HD.m3u",
+    "https://raw.githubusercontent.com/iptv/iptv/main/hd.m3u",
+    
+    # iptv-pro仓库
+    "https://raw.githubusercontent.com/iptv-pro/iptv-pro/master/4K.m3u",
+    "https://raw.githubusercontent.com/iptv-pro/iptv-pro/master/4k.m3u",
+    "https://raw.githubusercontent.com/iptv-pro/iptv-pro/master/HD.m3u",
+    "https://raw.githubusercontent.com/iptv-pro/iptv-pro/master/hd.m3u",
+    "https://raw.githubusercontent.com/iptv-pro/iptv-pro/master/CCTV.m3u",
+    
+    # TVlist仓库
+    "https://raw.githubusercontent.com/TVlist/IPTV/main/4K.m3u",
+    "https://raw.githubusercontent.com/TVlist/IPTV/main/4k.m3u",
+    "https://raw.githubusercontent.com/TVlist/IPTV/main/HD.m3u",
+    "https://raw.githubusercontent.com/TVlist/IPTV/main/hd.m3u",
+    "https://raw.githubusercontent.com/TVlist/IPTV/main/CCTV.m3u",
+    
+    # IPTV-SOURCE仓库
+    "https://raw.githubusercontent.com/IPTV-SOURCE/IPTV-SOURCE/main/4K.m3u",
+    "https://raw.githubusercontent.com/IPTV-SOURCE/IPTV-SOURCE/main/4k.m3u",
+    "https://raw.githubusercontent.com/IPTV-SOURCE/IPTV-SOURCE/main/HD.m3u",
+    "https://raw.githubusercontent.com/IPTV-SOURCE/IPTV-SOURCE/main/hd.m3u",
+    "https://raw.githubusercontent.com/IPTV-SOURCE/IPTV-SOURCE/main/CCTV.m3u",
+    "https://raw.githubusercontent.com/IPTV-SOURCE/IPTV-SOURCE/main/卫视.m3u",
+    
+    # 其他流行的IPTV仓库
+    "https://raw.githubusercontent.com/biancangming/wtv/master/tv.m3u",
+    "https://raw.githubusercontent.com/biancangming/wtv/master/cctv.m3u",
+    "https://raw.githubusercontent.com/biancangming/wtv/master/bd.m3u",
+    "https://raw.githubusercontent.com/metowolf/iptv/master/data/streams/cn.m3u",
+    "https://raw.githubusercontent.com/metowolf/iptv/master/data/streams/hd.m3u",
+    "https://raw.githubusercontent.com/metowolf/iptv/master/data/m3u/cn.m3u",
+    "https://raw.githubusercontent.com/metowolf/iptv/master/data/m3u/hd.m3u",
+    "https://raw.githubusercontent.com/snowind/iptv/master/iptv.m3u",
+    "https://raw.githubusercontent.com/snowind/iptv/master/cctv.m3u",
+    "https://raw.githubusercontent.com/snowind/iptv/master/local.m3u",
+    "https://raw.githubusercontent.com/caorushizi/iptv/master/cn.m3u",
+    "https://raw.githubusercontent.com/caorushizi/iptv/master/hd.m3u",
+    "https://raw.githubusercontent.com/caorushizi/iptv/master/cctv.m3u",
+    "https://raw.githubusercontent.com/darkatse/iptv.m3u8/master/iptv.m3u",
+    "https://raw.githubusercontent.com/darkatse/iptv.m3u8/master/cctv.m3u",
+    "https://raw.githubusercontent.com/darkatse/iptv.m3u8/master/difang.m3u",
+    "https://raw.githubusercontent.com/JadePeng/iptv/master/iptv.m3u",
+    "https://raw.githubusercontent.com/JadePeng/iptv/master/cctv.m3u",
+    "https://raw.githubusercontent.com/JadePeng/iptv/master/weishi.m3u",
+    "https://raw.githubusercontent.com/ss098/iptv/master/iptv.m3u",
+    "https://raw.githubusercontent.com/ss098/iptv/master/cctv.m3u",
+    "https://raw.githubusercontent.com/ss098/iptv/master/difang.m3u",
+    "https://raw.githubusercontent.com/chengr28/iptv/master/cctv.m3u",
+    "https://raw.githubusercontent.com/chengr28/iptv/master/weishi.m3u",
+    "https://raw.githubusercontent.com/chengr28/iptv/master/difang.m3u",
+    "https://raw.githubusercontent.com/chengr28/iptv/master/hd.m3u",
+    "https://raw.githubusercontent.com/kingan77/IPTV-Collection/master/iptv.m3u",
+    "https://raw.githubusercontent.com/kingan77/IPTV-Collection/master/cctv.m3u",
+    "https://raw.githubusercontent.com/kingan77/IPTV-Collection/master/weishi.m3u",
+    "https://raw.githubusercontent.com/kingan77/IPTV-Collection/master/hd.m3u",
+    "https://raw.githubusercontent.com/kingan77/IPTV-Collection/master/4k.m3u",
 ]
 
 # 超高清关键词
@@ -112,8 +210,10 @@ def main():
             if uhd_channels:
                 all_uhd_channels.extend(uhd_channels)
                 print(f"从{source_name}提取到 {len(uhd_channels)} 个4K频道")
+                time.sleep(1)  # 避免请求过快
             else:
                 print(f"{source_name}中未找到4K频道")
+                time.sleep(1)  # 避免请求过快
         
     print("\n" + "=" * 60)
     print(f"总共找到 {len(all_uhd_channels)} 个4K超高清直播源")
