@@ -156,3 +156,79 @@
 2025-11-29 11:11:31,126 - INFO - 按类别分组后共有 12 个类别
 2025-11-29 11:11:31,127 - INFO - 已成功生成 tzydauto.txt，共包含 128 个频道，1058 条线路
 2025-11-29 11:11:31,127 - INFO - 处理完成！耗时: 7.72 秒
+2025-11-29 19:01:27,905 - INFO - 开始收集和处理电视直播线路...
+2025-11-29 19:01:27,905 - INFO - 输出文件将保存为: tzydauto.txt
+2025-11-29 19:01:27,906 - INFO - 开始处理数据源: http://tv.html-5.me/i/9390107.txt
+2025-11-29 19:01:27,906 - INFO - 开始处理数据源: https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt
+2025-11-29 19:01:27,907 - INFO - 开始处理数据源: https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt
+2025-11-29 19:01:27,911 - INFO - 开始处理数据源: https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt
+2025-11-29 19:01:27,911 - INFO - 开始处理数据源: https://freetv.fun/test_channels_new.txt
+2025-11-29 19:01:27,914 - INFO - 开始处理数据源: https://ghfast.top/https://github.com/kimwang1978/collect-txt/blob/main/bbxx.txt
+2025-11-29 19:01:27,914 - INFO - 开始处理数据源: https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt
+2025-11-29 19:01:27,916 - INFO - 开始处理数据源: https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt
+2025-11-29 19:01:27,917 - INFO - 开始处理数据源: https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u
+2025-11-29 19:01:27,918 - INFO - 开始处理数据源: https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u
+2025-11-29 19:01:28,005 - INFO - 成功获取 https://freetv.fun/test_channels_new.txt
+2025-11-29 19:01:28,011 - INFO - 成功提取了 3928 个频道
+2025-11-29 19:01:28,094 - INFO - 从数据源 https://stream1.freetv.fun/tvm-3-1.m3u8 成功处理了 53 个高清频道
+2025-11-29 19:01:28,094 - INFO - 开始处理数据源: https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u
+2025-11-29 19:01:28,097 - INFO - 成功获取 https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt
+2025-11-29 19:01:28,102 - INFO - 成功提取了 2982 个频道
+2025-11-29 19:01:28,176 - INFO - 成功获取 https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt
+2025-11-29 19:01:28,188 - INFO - 成功提取了 658 个频道
+2025-11-29 19:01:28,204 - INFO - 从数据源 http://live.iill.top/yy.php?id=1354210357 成功处理了 112 个高清频道
+2025-11-29 19:01:28,209 - INFO - 开始处理数据源: https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt
+2025-11-29 19:01:28,235 - INFO - 从数据源 https://gcalic.v.myalicdn.com/gc/hlzycc_1/index.m3u8 成功处理了 7 个高清频道
+2025-11-29 19:01:28,236 - INFO - 开始处理数据源: https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u
+2025-11-29 19:01:29,271 - WARNING - 重试 (1/3) 获取 https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u...
+2025-11-29 19:01:29,807 - INFO - 成功获取 https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u
+2025-11-29 19:01:29,809 - INFO - 成功提取了 64 个频道
+2025-11-29 19:01:29,811 - INFO - 从数据源 https://lylive-videorent.cdn.hinet.net/out/u/live/gop4/ly/ly-Live1/hls-cl-tv/index.m3u8 成功处理了 0 个高清频道
+2025-11-29 19:01:29,811 - INFO - 开始处理数据源: https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt
+2025-11-29 19:01:29,851 - INFO - 成功获取 http://tv.html-5.me/i/9390107.txt
+2025-11-29 19:01:29,863 - INFO - 成功提取了 13230 个频道
+2025-11-29 19:01:29,946 - WARNING - 重试 (1/3) 获取 https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt...
+2025-11-29 19:01:30,091 - INFO - 成功获取 https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u
+2025-11-29 19:01:30,123 - INFO - 成功提取了 17 个频道
+2025-11-29 19:01:30,129 - INFO - 从数据源 http://202.69.67.66:443/webcast/bshdlive-pc/playlist.m3u8 成功处理了 0 个高清频道
+2025-11-29 19:01:30,129 - INFO - 开始处理数据源: https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-11-29 19:01:30,159 - INFO - 从数据源 http://117.12.150.38:4022/rtp/225.1.1.180:5002 成功处理了 243 个高清频道
+2025-11-29 19:01:30,160 - INFO - 开始处理数据源: https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u
+2025-11-29 19:01:30,187 - INFO - 成功获取 https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt
+2025-11-29 19:01:30,198 - INFO - 成功提取了 9678 个频道
+2025-11-29 19:01:30,430 - INFO - 成功获取 https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u
+2025-11-29 19:01:30,446 - WARNING - 尝试标准化空频道名称
+2025-11-29 19:01:30,448 - INFO - 成功提取了 608 个频道
+2025-11-29 19:01:30,492 - INFO - 从数据源 https://klmysjtzb.rcsxzx.com/hls/klmy2.m3u8 成功处理了 93 个高清频道
+2025-11-29 19:01:30,503 - INFO - 从数据源 https://d2uumv81tp8szk.cloudfront.net/ZERO_CINEMA/ZERO_CINEMA_04.mp4 成功处理了 154 个高清频道
+2025-11-29 19:01:30,952 - WARNING - 重试 (1/3) 获取 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt...
+2025-11-29 19:01:30,954 - INFO - 成功获取 https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt
+2025-11-29 19:01:30,956 - INFO - 成功提取了 624 个频道
+2025-11-29 19:01:30,971 - INFO - 从数据源 http://www.douzhicloud.site:35455/huya/23824164 成功处理了 18 个高清频道
+2025-11-29 19:01:30,979 - INFO - 成功获取 https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt
+2025-11-29 19:01:31,026 - INFO - 成功提取了 26813 个频道
+2025-11-29 19:01:31,069 - INFO - 成功获取 https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt
+2025-11-29 19:01:31,086 - INFO - 成功提取了 0 个频道
+2025-11-29 19:01:31,096 - WARNING - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt 未提取到任何频道
+2025-11-29 19:01:31,144 - WARNING - 重试 (1/3) 获取 https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u...
+2025-11-29 19:01:31,458 - WARNING - 重试 (2/3) 获取 https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u...
+2025-11-29 19:01:31,751 - INFO - 成功获取 https://ghfast.top/https://github.com/kimwang1978/collect-txt/blob/main/bbxx.txt
+2025-11-29 19:01:31,799 - INFO - 从数据源 http://ngcdn013.cnr.cn/live/wygb/index.m3u8 成功处理了 512 个高清频道
+2025-11-29 19:01:31,809 - INFO - 成功提取了 22304 个频道
+2025-11-29 19:01:32,137 - WARNING - 重试 (2/3) 获取 https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt...
+2025-11-29 19:01:32,376 - INFO - 从数据源 https://yzzy.play-cdn7.com/20221013/22732_018e6020/index.m3u8 成功处理了 402 个高清频道
+2025-11-29 19:01:33,050 - WARNING - 重试 (2/3) 获取 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt...
+2025-11-29 19:01:33,268 - WARNING - 重试 (2/3) 获取 https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u...
+2025-11-29 19:01:33,589 - ERROR - 获取 https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u 失败: 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u
+2025-11-29 19:01:33,590 - WARNING - 数据源 https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u 没有返回内容或获取失败
+2025-11-29 19:01:34,241 - ERROR - 获取 https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt 失败: 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt
+2025-11-29 19:01:34,242 - WARNING - 数据源 https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt 没有返回内容或获取失败
+2025-11-29 19:01:35,363 - ERROR - 获取 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt 失败: 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-11-29 19:01:35,364 - WARNING - 数据源 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt 没有返回内容或获取失败
+2025-11-29 19:01:35,372 - ERROR - 获取 https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u 失败: 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u
+2025-11-29 19:01:35,373 - WARNING - 数据源 https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u 没有返回内容或获取失败
+2025-11-29 19:01:35,374 - INFO - 总共收集到 1594 条频道线路
+2025-11-29 19:01:35,374 - INFO - 去重后共有 136 个频道
+2025-11-29 19:01:35,379 - INFO - 按类别分组后共有 12 个类别
+2025-11-29 19:01:35,381 - INFO - 已成功生成 tzydauto.txt，共包含 136 个频道，1561 条线路
+2025-11-29 19:01:35,381 - INFO - 处理完成！耗时: 7.48 秒
