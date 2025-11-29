@@ -1,12 +1,11 @@
 # 4K超高清直播源列表
 # 更新时间: 2025-11-29
-# 4K超高清直播源列表
-# 更新时间: 2024-11-24
 # 共包含 0 个4K超高清频道
+
 
 # 4K央视频道
 
-# 建议添加到get_cgq_sources.py的LIVE_SOURCES列表中的GitHub直播源URL：
+
 # 以下是至少200个GitHub直播源URL建议：
 # 注意：以下URL经过筛选，优先包含4K、超高清等高质量直播源
 # 1. https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/4K.m3u
