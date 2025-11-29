@@ -84,7 +84,7 @@ jobs:
         
         # 添加文件
         echo "添加更改的文件..."
-        git add ipzy.m3u ipzyauto.txt iptv统计数据.log
+        git add ipzy.m3u ipzyauto.txt ipzyauto统计数据.log
         
         # 检查是否有更改
         if git diff --staged --quiet; then
