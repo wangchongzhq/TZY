@@ -42,14 +42,14 @@ HEADERS = {
 # 数据源列表
 GITHUB_SOURCES = [
     # 有效的中国电视频道源
-    "https://ghfast.top/https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China.m3u",
-    "https://ghfast.top/https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_UHD.m3u",
-    "https://ghfast.top/https://raw.githubusercontent.com/MeooPlayer/China-M3U-List/main/China_HD.m3u",
     "http://tv.html-5.me/i/9390107.txt",
     "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
     "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
     "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
     "https://freetv.fun/test_channels_new.txt",
+    "https://ghfast.top/https://github.com/kimwang1978/collect-txt/blob/main/bbxx.txt",
+    "https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt",
+    "https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt",
     # 其他稳定的IPTV源
     "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u",
     "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u",
