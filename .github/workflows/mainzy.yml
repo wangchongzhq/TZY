@@ -31,7 +31,7 @@ jobs:
         pip install requests
 
     - name: Run script to generate m3u
-      run: python ipzy.py
+      run: python ipzyauto.py
 
     - name: Debug - List generated files
       run: ls -la
@@ -69,7 +69,7 @@ jobs:
         
         # 重新执行脚本确保生成最新文件
         echo "重新执行脚本生成最新文件..."
-        python ipzy.py
+        python ipzyauto.py
         
         # 检查文件是否存在
         if [ ! -f "ipzy.m3u" ]; then
