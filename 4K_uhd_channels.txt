@@ -1,16 +1,10 @@
 # 4K超高清直播源列表
+# 更新时间: 2025-11-29
+# 4K超高清直播源列表
 # 更新时间: 2024-11-24
-# 共包含 8 个4K超高清频道
+# 共包含 0 个4K超高清频道
 
 # 4K央视频道
-CCTV-4K,https://cctv4k.cdn20.com:8800/live/2024CCTV-4K/2024CCTV-4K/8977.m3u8
-CCTV-16 奥林匹克4K,https://cctv4k.cdn20.com:8800/live/2024CCTV-16/2024CCTV-16/9002.m3u8
-CCTV-1 4K,https://cctv4k.cdn20.com:8800/live/2024CCTV-1/2024CCTV-1/9001.m3u8
-CCTV-5 体育4K,https://cctv4k.cdn20.com:8800/live/2024CCTV-5/2024CCTV-5/9003.m3u8
-CCTV-5+ 体育赛事4K,https://cctv4k.cdn20.com:8800/live/2024CCTV-5plus/2024CCTV-5plus/9004.m3u8
-CCTV-3 综艺4K,https://cctv4k.cdn20.com:8800/live/2024CCTV-3/2024CCTV-3/9005.m3u8
-CCTV-6 电影4K,https://cctv4k.cdn20.com:8800/live/2024CCTV-6/2024CCTV-6/9006.m3u8
-CCTV-8 电视剧4K,https://cctv4k.cdn20.com:8800/live/2024CCTV-8/2024CCTV-8/9007.m3u8
 
 # 建议添加到get_cgq_sources.py的LIVE_SOURCES列表中的GitHub直播源URL：
 # 以下是至少200个GitHub直播源URL建议：
