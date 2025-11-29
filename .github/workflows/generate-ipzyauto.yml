@@ -11,12 +11,15 @@ on:
 jobs:
   generate-iptv:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 授予写入内容的权限
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
         repository: wangchongzhq/TZY
+        persist-credentials: true  # 保持凭据以便推送
       
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -88,11 +91,12 @@ jobs:
         
         # 推送到远程仓库
         echo "尝试推送更改到远程仓库..."
-        git push TZY main || {
+        # 直接推送到origin而不是创建新的远程仓库引用
+        git push origin main || {
           echo "推送失败，尝试使用--force-with-lease推送..."
-          git push --force-with-lease TZY main || {
+          git push --force-with-lease origin main || {
             echo "--force-with-lease推送失败，最后尝试使用--force推送..."
-            git push --force TZY main || {
+            git push --force origin main || {
               echo "::error::所有推送方式均失败，请检查GitHub权限配置"
               exit 1
             }
