@@ -20,7 +20,7 @@ print("开始执行直播源获取脚本...")
 # 文件配置
 OUTPUT_FILE = 'CGQ.TXT'  # 输出文件
 TIMEOUT = 10  # 超时时间（秒）
-DAYS_LIMIT = 20  # 只获取近20天有更新的直播源
+DAYS_LIMIT = 100  # 扩大时间范围以获取更多直播源
 
 # 请求头
 HEADERS = {
@@ -124,26 +124,32 @@ def is_recently_updated(url):
         # 获取文件信息
         file_info = get_github_file_info(url)
         if not file_info:
-            return False
+            # 如果获取文件信息失败，仍然尝试获取内容
+            print(f"获取文件信息失败，仍然尝试获取内容: {url}")
+            return True
         
         # 检查更新时间
         if 'updated_at' in file_info:
             updated_time = datetime.strptime(file_info['updated_at'], '%Y-%m-%dT%H:%M:%SZ')
             current_time = datetime.utcnow()
             days_diff = (current_time - updated_time).days
-            return days_diff <= DAYS_LIMIT
+            if days_diff > DAYS_LIMIT:
+                print(f"{url} 超过{DAYS_LIMIT}天未更新，但仍然尝试获取内容")
+            return True  # 总是尝试获取内容，扩大直播源范围
         elif 'commit' in file_info and 'commit' in file_info['commit'] and 'author' in file_info['commit']['commit']:
             commit_info = file_info['commit']['commit']['author']
             if 'date' in commit_info:
                 updated_time = datetime.strptime(commit_info['date'], '%Y-%m-%dT%H:%M:%SZ')
                 current_time = datetime.utcnow()
                 days_diff = (current_time - updated_time).days
-                return days_diff <= DAYS_LIMIT
+                if days_diff > DAYS_LIMIT:
+                    print(f"{url} 超过{DAYS_LIMIT}天未更新，但仍然尝试获取内容")
+            return True  # 总是尝试获取内容，扩大直播源范围
         
-        return False
+        return True  # 总是尝试获取内容，扩大直播源范围
     except Exception as e:
-        print(f"检查更新时间失败: {e}")
-        return False
+        print(f"检查更新时间失败，仍然尝试获取内容: {e} - {url}")
+        return True  # 发生异常时仍然尝试获取内容
 
 def get_source_content(url):
     """获取直播源内容"""
@@ -401,11 +407,31 @@ def main():
     start_time = time.time()
     
     try:
-        # 简化的直播源URL列表 - 减少GitHub API调用
+        # 扩展的直播源URL列表 - 确保获取足够的直播源
         LIVE_SOURCES = [
             # 4K超高清直播源
             "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/4K.m3u",
-            # 减少API调用，提高成功率
+            "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/HDTV.m3u",
+            "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/4k.m3u",
+            "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hd.m3u",
+            # 增加更多直播源
+            "https://raw.githubusercontent.com/Free-IPTV/IPTV/refs/heads/main/playlist.m3u",
+            "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_400.txt",
+            "https://raw.githubusercontent.com/KyleBing/TV-Box/main/IPTV/IPTV.m3u",
+            "https://raw.githubusercontent.com/iptv-collection/iptv/master/iptv.m3u",
+            "https://raw.githubusercontent.com/iptv/iptv/refs/heads/master/channels/cn.m3u",
+            "https://raw.githubusercontent.com/iptv-pro/iptv-pro/master/4K.m3u",
+            "https://raw.githubusercontent.com/TVlist/IPTV/master/IPTV.m3u",
+            "https://raw.githubusercontent.com/IPTV-SOURCE/IPTV/master/IPTV.m3u",
+            # 额外的直播源
+            "https://raw.githubusercontent.com/Supprise0901/tvlist/main/live.txt",
+            "https://raw.githubusercontent.com/ffmking/TVlist/main/live.txt",
+            "https://raw.githubusercontent.com/qingtingjjjjjjj/tvlist1/main/live.txt",
+            "https://raw.githubusercontent.com/zhonghu32/live/main/888.txt",
+            "https://raw.githubusercontent.com/cuijian01/dianshi/main/888.txt",
+            "https://raw.githubusercontent.com/xyy0508/iptv/main/888.txt",
+            "https://raw.githubusercontent.com/zhonghu32/live/main/live.txt",
+            "https://raw.githubusercontent.com/cuijian01/dianshi/main/live.txt",
         ]
         
         print(f"开始处理 {len(LIVE_SOURCES)} 个直播源")

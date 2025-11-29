@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import requests
+import re
 
 # 定义要处理的文件路径
 FILE_PATH = '4K_uhd_channels.txt'
@@ -17,24 +18,37 @@ def validate_url(url, timeout=10):
     """使用requests库验证URL是否可以访问，返回是否有效"""
     try:
         print(f"验证URL: {url}")
-        response = requests.get(url, headers=HEADERS, timeout=timeout, stream=True)
+        
+        # 对GitHub原始文件URL添加ghfast.top前缀
+        if url.startswith('https://raw.githubusercontent.com/'):
+            # 构建代理URL
+            proxied_url = f"https://ghfast.top/{url}"
+            print(f"  原始URL: {url}")
+            print(f"  使用代理: {proxied_url}")
+            response = requests.get(proxied_url, headers=HEADERS, timeout=15, stream=True)
+        else:
+            response = requests.get(url, headers=HEADERS, timeout=timeout, stream=True)
+        
+        # 打印HTTP状态码
+        print(f"  HTTP状态码: {response.status_code}")
+        
         # 只检查响应头，不下载整个内容
         response.close()
         
         if response.status_code == 200:
-            print(f"URL有效: {url}")
+            print("  URL有效")
             return True
         elif response.status_code == 404:
-            print(f"URL返回404错误: {url}")
+            print("  URL返回404，无效")
             return False
         else:
-            print(f"URL返回状态码: {response.status_code}, {url}")
+            print(f"  URL返回{response.status_code}，无效")
             return False
     except requests.exceptions.RequestException as e:
-        print(f"URL请求失败: {str(e)}, {url}")
+        print(f"  请求异常: {str(e)}")
         return False
     except Exception as e:
-        print(f"URL验证发生未知错误: {str(e)}, {url}")
+        print(f"  URL验证发生未知错误: {str(e)}")
         return False
 
 # 读取文件内容
@@ -85,17 +99,38 @@ def process_uhd_channels(lines):
         # 处理注释行
         if line.startswith('#'):
             # 检查是否进入GitHub源建议部分
-            if '建议添加到get_cgq_sources.py' in line:
+            if '建议添加到get_cgq_sources.py' in line or '以下是' in line:
                 github_sources_section = True
                 channel_section = False
+                processed_lines.append(line + '\n')
+                print("进入GitHub直播源建议部分")
             # 检查是否进入4K央视频道部分
             elif line == '# 4K央视频道':
                 github_sources_section = False
                 channel_section = True
                 processed_lines.append('# 4K央视频道\n')
                 processed_lines.append('\n')
-            # 保留其他注释行，特别是GitHub源建议
-            elif github_sources_section:
+            # 处理GitHub源建议中的URL注释行
+            elif '# ' in line and 'https://raw.githubusercontent.com/' in line:
+                # 提取URL并添加前缀
+                match = re.search(r'(# \d+\.) (https://raw\.githubusercontent\.com/.+)', line)
+                if match:
+                    prefix = match.group(1)
+                    url = match.group(2)
+                    # 添加ghfast.top前缀
+                    proxied_url = f"https://ghfast.top/{url}"
+                    print(f"为GitHub URL添加前缀: {url} -> {proxied_url}")
+                    # 无论验证结果如何，都将带有前缀的URL写入文件
+                    processed_lines.append(f"{prefix} {proxied_url}\n")
+                    # 验证带有前缀的URL，只有验证通过才计入有效频道
+                    if validate_url(proxied_url):
+                        valid_channels.append((f"GitHub源建议", proxied_url))
+                    else:
+                        print(f"  带有前缀的GitHub直播源 {proxied_url} 验证失败")
+                else:
+                    processed_lines.append(line + '\n')
+            # 保留其他注释行
+            else:
                 processed_lines.append(line + '\n')
         # 处理频道行（格式：频道名称,URL）
         elif ',' in line and channel_section:
@@ -104,10 +139,39 @@ def process_uhd_channels(lines):
                 channel_name = parts[0].strip()
                 url = parts[1].strip()
                 
-                # 验证URL
-                if validate_url(url):
-                    valid_channels.append((channel_name, url))
-                    processed_lines.append(f"{channel_name},{url}\n")
+                print(f"验证频道: {channel_name}")
+                
+                # 如果是GitHub URL，添加前缀
+                if url.startswith('https://raw.githubusercontent.com/'):
+                    proxied_url = f"https://ghfast.top/{url}"
+                    print(f"为GitHub URL添加前缀: {url} -> {proxied_url}")
+                    # 无论验证结果如何，都将带有前缀的URL写入文件
+                    processed_lines.append(f"{channel_name},{proxied_url}\n")
+                    # 验证带有前缀的URL，只有验证通过才计入有效频道
+                    if validate_url(proxied_url):
+                        valid_channels.append((channel_name, proxied_url))
+                    else:
+                        print(f"  带有前缀的GitHub直播源 {proxied_url} 验证失败")
+                else:
+                    # 验证原始URL
+                    if validate_url(url):
+                        valid_channels.append((channel_name, url))
+                        processed_lines.append(f"{channel_name},{url}\n")
+        # 处理GitHub源建议中的直接URL行
+        elif line.startswith('https://raw.githubusercontent.com/'):
+            # 为直接URL添加前缀
+            proxied_url = f"https://ghfast.top/{line}"
+            print(f"为直接GitHub URL添加前缀: {line} -> {proxied_url}")
+            # 无论验证结果如何，都将带有前缀的URL写入文件
+            processed_lines.append(proxied_url + '\n')
+            # 验证带有前缀的URL，只有验证通过才计入有效频道
+            if validate_url(proxied_url):
+                valid_channels.append((f"GitHub源建议", proxied_url))
+            else:
+                print(f"  带有前缀的GitHub直播源 {proxied_url} 验证失败")
+        # 保留其他行
+        else:
+            processed_lines.append(line + '\n')
     
     # 更新频道数量
     for i, line in enumerate(processed_lines):
