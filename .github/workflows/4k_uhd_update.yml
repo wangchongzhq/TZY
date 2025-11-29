@@ -67,10 +67,82 @@ jobs:
           fi
 
       - name: 提交和推送更新
-        if: steps.check_changes.outputs.changes == 'true'
-        run: |
-          git commit -m "自动更新4K_uhd_channels.txt文件，限制每个GitHub仓库的直播源URL数量不超过5个"
-          git push TZY main
+      if: steps.check_changes.outputs.changes == 'true'
+      run: |
+        # 配置git身份和行为
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "GitHub Actions Bot"
+        git config --global pull.rebase false  # 使用merge而不是rebase
+        git config --global core.autocrlf false  # 防止行尾字符转换问题
+        
+        echo "=== 开始Git操作 ==="
+        echo "当前分支: $(git branch --show-current)"
+        
+        # 配置TZY远程仓库（使用与origin相同的URL）
+        echo "配置TZY远程仓库..."
+        git remote -v
+        git remote add TZY $(git remote get-url origin) || echo "TZY远程仓库已存在"
+        git remote -v
+        
+        # 强制同步本地与远程仓库
+        echo "强制同步本地与远程仓库..."
+        git fetch TZY main || {
+          echo "fetch TZY失败，尝试使用origin..."
+          git fetch origin main
+        }
+        git checkout main || git checkout -b main
+        git reset --hard TZY/main || {
+          echo "reset TZY失败，尝试使用origin..."
+          git reset --hard origin/main
+        }
+        
+        echo "本地仓库已重置为远程最新状态"
+        
+        # 重新执行脚本确保生成最新文件
+        echo "重新执行脚本生成最新文件..."
+        python process_4k_channels.py
+        
+        # 检查文件是否存在
+        if [ ! -f "4K_uhd_channels.txt" ]; then
+          echo "::error::错误：4K_uhd_channels.txt文件未生成"
+          exit 1
+        fi
+        
+        # 添加文件
+        echo "添加更改的文件..."
+        git add 4K_uhd_channels.txt
+        
+        # 检查是否有更改
+        if git diff --staged --quiet; then
+          echo "没有检测到更改，跳过提交"
+          exit 0
+        fi
+        
+        # 提交更改
+        echo "提交更改..."
+        git commit -m "自动更新4K_uhd_channels.txt文件，限制每个GitHub仓库的直播源URL数量不超过5个"
+        
+        # 推送到远程仓库
+        echo "尝试推送更改到远程仓库..."
+        git push TZY main || {
+          echo "推送TZY失败，尝试使用origin..."
+          git push origin main || {
+            echo "推送origin失败，尝试使用--force-with-lease推送..."
+            git push --force-with-lease TZY main || {
+              echo "--force-with-lease TZY推送失败，尝试使用--force-with-lease origin..."
+              git push --force-with-lease origin main || {
+                echo "--force-with-lease origin推送失败，最后尝试使用--force TZY推送..."
+                git push --force TZY main || {
+                  echo "--force TZY推送失败，最后尝试使用--force origin推送..."
+                  git push --force origin main || {
+                    echo "::error::所有推送方式均失败，请检查GitHub权限配置"
+                    exit 1
+                  }
+                }
+              }
+            }
+          }
+        }
 
       - name: 保存4K_uhd_channels.txt文件作为产物
         uses: actions/upload-artifact@v4

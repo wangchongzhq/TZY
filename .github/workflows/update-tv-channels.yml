@@ -22,17 +22,6 @@ jobs:
           persist-credentials: true
           token: ${{ secrets.GITHUB_TOKEN }}  # 显式提供令牌
           repository: wangchongzhq/TZY
-<<<<<<< HEAD
-          
-      # 配置git远程引用
-      - name: 配置git远程引用
-        run: |
-          git remote -v
-          git remote remove TZY || echo "TZY远程引用不存在，将创建新的"
-          git remote add TZY https://${{ secrets.GITHUB_TOKEN }}@github.com/wangchongzhq/TZY.git
-          git remote -v
-=======
->>>>>>> c4edddf (Update all workflows to use TZY remote instead of origin)
       
       # 设置Python环境
       - name: 设置Python环境
@@ -77,12 +66,29 @@ jobs:
           # 配置git身份
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "GitHub Actions Bot"
+          git config --global pull.rebase false  # 使用merge而不是rebase
+          git config --global core.autocrlf false  # 防止行尾字符转换问题
+          
+          echo "=== 开始Git操作 ==="
+          echo "当前分支: $(git branch --show-current)"
+          
+          # 配置TZY远程仓库（使用与origin相同的URL）
+          echo "配置TZY远程仓库..."
+          git remote -v
+          git remote add TZY $(git remote get-url origin) || echo "TZY远程仓库已存在"
+          git remote -v
           
           # 强制确保本地分支与远程同步
           echo "强制同步本地与远程仓库..."
-          git fetch TZY ${{ github.ref_name }}
+          git fetch TZY ${{ github.ref_name }} || {
+            echo "fetch TZY失败，尝试使用origin..."
+            git fetch origin ${{ github.ref_name }}
+          }
           git checkout ${{ github.ref_name }} || git checkout -b ${{ github.ref_name }}
-          git reset --hard TZY/${{ github.ref_name }}
+          git reset --hard TZY/${{ github.ref_name }} || {
+            echo "reset TZY失败，尝试使用origin..."
+            git reset --hard origin/${{ github.ref_name }}
+          }
           
           echo "本地仓库已重置为远程最新状态"
           
@@ -90,6 +96,7 @@ jobs:
           python tvzy.py -o tzydayauto.txt
           
           # 添加文件
+          echo "添加更改的文件..."
           git add tzydayauto.txt
           
           # 检查是否有更改
@@ -99,15 +106,28 @@ jobs:
           fi
           
           # 提交更改
+          echo "提交更改..."
           git commit -m "自动更新电视直播线路 $(date +'%Y-%m-%d %H:%M:%S')"
           
           # 尝试多种推送方式，确保成功率
           echo "尝试推送更改到远程仓库..."
           git push TZY ${{ github.ref_name }} || {
-            echo "推送失败，尝试使用--force-with-lease推送..."
-            git push --force-with-lease TZY ${{ github.ref_name }} || {
-              echo "--force-with-lease推送失败，最后尝试使用--force推送..."
-              git push --force TZY ${{ github.ref_name }}
+            echo "推送TZY失败，尝试使用origin..."
+            git push origin ${{ github.ref_name }} || {
+              echo "推送origin失败，尝试使用--force-with-lease推送..."
+              git push --force-with-lease TZY ${{ github.ref_name }} || {
+                echo "--force-with-lease TZY推送失败，尝试使用--force-with-lease origin..."
+                git push --force-with-lease origin ${{ github.ref_name }} || {
+                  echo "--force-with-lease origin推送失败，最后尝试使用--force TZY推送..."
+                  git push --force TZY ${{ github.ref_name }} || {
+                    echo "--force TZY推送失败，最后尝试使用--force origin推送..."
+                    git push --force origin ${{ github.ref_name }} || {
+                      echo "::error::所有推送方式均失败，请检查GitHub权限配置"
+                      exit 1
+                    }
+                  }
+                }
+              }
             }
           }
       
