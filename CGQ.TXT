@@ -1,30 +1,32 @@
 # 超高清直播源列表（全球高清线路）
-# 更新时间: 2025-11-30 11:53:43
-# 收录频道总数: 20 个
+# 更新时间: 2025-11-30 11:56:45
+# 收录频道总数: 25 个
 
 4K央视频道 (频道数: 2),#genre#
-CCTV16 4K,https://example.org/test1.m3u8
-CCTV4 4K,https://example.org/test3.m3u8
+CCTV16 4K,https://example.org/cctv164k.m3u8
+CCTV4K,https://example.org/cctv4k.m3u8
 
-央视 (频道数: 1),#genre#
-CCTV-5+ UHD,https://example.org/test2.m3u8
-
-卫视 (频道数: 17),#genre#
-上海卫视 4K,https://example.org/test10.m3u8
-东方卫视 4K,https://example.org/test11.m3u8
-北京卫视 4K,https://example.org/test9.m3u8
-四川卫视 频道 4K,https://example.org/test12.m3u8
-安徽卫视 4K,https://example.org/test18.m3u8
-山东卫视UHD,https://example.org/test13.m3u8
-广东卫视_ 4K,https://example.org/test7.m3u8
-江苏卫视 4K,https://example.org/test5.m3u8
-江西卫视 4K,https://example.org/test19.m3u8
-河北卫视 4K,https://example.org/test14.m3u8
-河南卫视 4K,https://example.org/test17.m3u8
-浙江卫视 4K,https://example.org/test6.m3u8
-深圳卫视4K,https://example.org/test8.m3u8
-湖北卫视 4K,https://example.org/test16.m3u8
-湖南卫视 4K,https://example.org/test4.m3u8
-福建卫视 4K,https://example.org/test15.m3u8
-辽宁卫视 4K,https://example.org/test20.m3u8
-
+4K超高清频道 (频道数: 23),#genre#
+东方卫视4K,https://example.org/dongfang4k.m3u8
+北京IPTV4K,https://example.org/beijingiptv4k.m3u8
+北京卫视4K,https://example.org/beijing4k.m3u8
+华数爱上4K,https://example.org/huashu4k.m3u8
+南国都市4K,https://example.org/nanguo4k.m3u8
+咪视界4K,https://example.org/mishijie4k.m3u8
+四川卫视4K,https://example.org/sichuan4k.m3u8
+山东卫视4K,https://example.org/shandong4k.m3u8
+峨眉电影4K,https://example.org/emei4k.m3u8
+广东卫视4K,https://example.org/guangdong4k.m3u8
+欢笑剧场4K,https://example.org/huanxiao4k.m3u8
+求索4K,https://example.org/qiuzuo4k.m3u8
+江苏卫视4K,https://example.org/jiangsu4k.m3u8
+河北卫视4K,https://example.org/hebei4k.m3u8
+浙江卫视4K,https://example.org/zhejiang4k.m3u8
+深圳卫视4K,https://example.org/shenzhen4k.m3u8
+湖南卫视4K,https://example.org/hunan4k.m3u8
+百事通少儿4K,https://example.org/bestkids4k.m3u8
+百事通电影4K,https://example.org/bestmovie4k.m3u8
+百事通纪实4K,https://example.org/bestdoc4k.m3u8
+翡翠台4K,https://example.org/feicui4k.m3u8
+至臻视界4K,https://example.org/zhizhen4k.m3u8
+苏州4K,https://example.org/suzhou4k.m3u8
