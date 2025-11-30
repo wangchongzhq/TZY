@@ -1,6 +1,6 @@
 # 超高清直播源列表（全球高清线路）
-# 更新时间: 2025-11-30 11:28:17
-# 收录频道总数: 29 个
+# 更新时间: 2025-11-30 03:40:26
+# 收录频道总数: 25 个
 
 4K央视频道 (频道数: 2),#genre#
 CCTV16 4K,https://example.org/cctv164k.m3u8
@@ -30,14 +30,4 @@ CCTV4K,https://example.org/cctv4k.m3u8
 翡翠台4K,https://example.org/feicui4k.m3u8
 至臻视界4K,https://example.org/zhizhen4k.m3u8
 苏州4K,https://example.org/suzhou4k.m3u8
-
-高清频道 (频道数: 2),#genre#
-CCTV-1 高清,https://example.org/cctv1hd.m3u8
-CCTV-2 高清,https://example.org/cctv2hd.m3u8
-
-央视 (频道数: 1),#genre#
-CCTV-1,https://example.org/cctv1.m3u8
-
-卫视 (频道数: 1),#genre#
-湖南卫视,https://example.org/hunan.m3u8
 
