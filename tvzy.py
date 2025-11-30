@@ -10,6 +10,8 @@ MIN_LINES_PER_CHANNEL = 10
 MAX_LINES_PER_CHANNEL = 90
 # 默认输出文件名
 OUTPUT_FILE = 'tzydauto.txt'
+# 允许的直播源域名列表
+ALLOWED_DOMAINS = ['http://example.com/']
 
 # 请求头
 HEADERS = {
@@ -364,6 +366,13 @@ HD_PATTERNS = [
 
 HD_REGEX = re.compile('|'.join(HD_PATTERNS), re.IGNORECASE)
 
+def should_exclude_url(url):
+    """检查URL是否应该被排除（只保留ALLOWED_DOMAINS中的直播源）"""
+    for domain in ALLOWED_DOMAINS:
+        if url.startswith(domain):
+            return False
+    return True
+
 def fetch_content(url, timeout=10, max_retries=3):
     """获取URL内容，支持超时和重试"""
     retries = 0
@@ -468,7 +477,7 @@ def extract_channels(content):
                     if name_match and i + 1 < len(lines):
                         name = name_match.group(1).strip()
                         url = lines[i + 1].strip()
-                        if url.startswith(('http://', 'https://')):
+                        if url.startswith(('http://', 'https://')) and not should_exclude_url(url):
                             channels.append((name, url))
         
         # 2. 文本格式: 频道名,URL
@@ -480,7 +489,7 @@ def extract_channels(content):
                         name, url = line.rsplit(',', 1)
                         name = name.strip()
                         url = url.strip()
-                        if url.startswith(('http://', 'https://')):
+                        if url.startswith(('http://', 'https://')) and not should_exclude_url(url):
                             channels.append((name, url))
                     except ValueError:
                         continue
@@ -490,10 +499,10 @@ def extract_channels(content):
             lines = content.splitlines()
             for line in lines:
                 line = line.strip()
-                if line.startswith(('http://', 'https://')):
-                    # 尝试从URL中提取名称
-                    name = line.split('/')[-1].split('?')[0].split('#')[0]
-                    channels.append((name, line))
+                if line.startswith(('http://', 'https://')) and not should_exclude_url(line):
+                        # 尝试从URL中提取名称
+                        name = line.split('/')[-1].split('?')[0].split('#')[0]
+                        channels.append((name, line))
     except Exception:
         pass
     
@@ -516,7 +525,7 @@ def process_source(source_url):
         processed_channels = []
         for name, url in channels:
             # 检查URL和名称
-            if not url or not url.startswith(('http://', 'https://')):
+            if not url or not url.startswith(('http://', 'https://')) or should_exclude_url(url):
                 continue
             
             # 过滤高清线路

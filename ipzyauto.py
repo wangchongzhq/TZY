@@ -333,6 +333,12 @@ def is_preferred_url(url: str) -> bool:
             return True
     return False
 
+def should_exclude_url(url: str) -> bool:
+    """检查是否应该排除特定URL"""
+    if not url:
+        return False
+    return 'http://example.com/' in url
+
 # 移除URL模糊处理函数，简化代码
 
 def fetch_lines_with_retry(url: str, max_retries=3):
@@ -377,7 +383,7 @@ def parse_lines(lines):
             if i + 1 < len(lines):
                 url = lines[i + 1].strip()
                 url = url.split("$")[0].strip()
-                if (re.match(ipv4_regex, url) or re.match(ipv6_regex, url)) and not is_invalid_url(url):
+                if (re.match(ipv4_regex, url) or re.match(ipv6_regex, url)) and not is_invalid_url(url) and not should_exclude_url(url):
                     norm_name = normalize_channel_name(current_name)
                     channels_dict[norm_name].append(url)
             current_name = None
@@ -388,7 +394,7 @@ def parse_lines(lines):
             if len(parts) == 2:
                 ch_name, url = parts[0].strip(), parts[1].strip()
                 url = url.split("$")[0].strip()
-                if (re.match(ipv4_regex, url) or re.match(ipv6_regex, url)) and not is_invalid_url(url):
+                if (re.match(ipv4_regex, url) or re.match(ipv6_regex, url)) and not is_invalid_url(url) and not should_exclude_url(url):
                     norm_name = normalize_channel_name(ch_name)
                     channels_dict[norm_name].append(url)
 
@@ -408,8 +414,11 @@ def create_txt_file(all_channels, filename="ipzyauto.txt"):
                 if ch in all_channels and all_channels[ch]:
                     unique_urls = list(dict.fromkeys(all_channels[ch]))
                     
-                    ipv4_urls = [url for url in unique_urls if re.match(ipv4_regex, url)]
-                    ipv6_urls = [url for url in unique_urls if re.match(ipv6_regex, url)]
+                    # 过滤掉需要排除的URL
+                    filtered_urls = [url for url in unique_urls if not should_exclude_url(url)]
+                    
+                    ipv4_urls = [url for url in filtered_urls if re.match(ipv4_regex, url)]
+                    ipv6_urls = [url for url in filtered_urls if re.match(ipv6_regex, url)]
                     
                     preferred_ipv4 = [url for url in ipv4_urls if is_preferred_url(url)]
                     other_ipv4 = [url for url in ipv4_urls if not is_preferred_url(url)]

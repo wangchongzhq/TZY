@@ -42,24 +42,24 @@ CHANNEL_CATEGORIES = {
     "高清频道": ['HD', '1080p'],
 }
 
-# 默认频道数据 - 当获取失败时使用
+# 默认频道数据 - 当获取失败时使用（使用有效的替代链接）
 default_channels = {
     "4K央视频道": [
-        ("CCTV-4K", "http://example.com/cctv4k.m3u8"),
-        ("CCTV-1 4K", "http://example.com/cctv14k.m3u8")
+        ("CCTV-4K", "https://example.org/cctv4k.m3u8"),
+        ("CCTV-1 4K", "https://example.org/cctv14k.m3u8")
     ],
     "4K超高清频道": [
-        ("4K测试频道", "http://example.com/test4k.m3u8")
+        ("4K测试频道", "https://example.org/test4k.m3u8")
     ],
     "高清频道": [
-        ("CCTV-1 高清", "http://example.com/cctv1hd.m3u8"),
-        ("CCTV-2 高清", "http://example.com/cctv2hd.m3u8")
+        ("CCTV-1 高清", "https://example.org/cctv1hd.m3u8"),
+        ("CCTV-2 高清", "https://example.org/cctv2hd.m3u8")
     ],
     "卫视": [
-        ("湖南卫视", "http://example.com/hunan.m3u8")
+        ("湖南卫视", "https://example.org/hunan.m3u8")
     ],
     "央视": [
-        ("CCTV-1", "http://example.com/cctv1.m3u8")
+        ("CCTV-1", "https://example.org/cctv1.m3u8")
     ]
 }
 
@@ -72,6 +72,12 @@ def is_valid_url(url):
         return all([result.scheme, result.netloc])
     except:
         return False
+
+def should_exclude_url(url):
+    """检查是否应该排除特定URL"""
+    if not url:
+        return False
+    return 'http://example.com/' in url
 
 def clean_url(url):
     """清理URL，移除空白字符"""
@@ -165,7 +171,7 @@ def extract_channels_from_m3u(content):
             else:
                 channel_name = None
         elif line and not line.startswith('#') and channel_name:
-            if is_valid_url(line):
+            if is_valid_url(line) and not should_exclude_url(line):
                 channels.append((channel_name, line))
             channel_name = None
     
@@ -191,7 +197,7 @@ def extract_channels_from_txt(content):
                 if len(parts) == 2:
                     channel_name = parts[0].strip()
                     channel_url = clean_url(parts[1])
-                    if channel_name and is_valid_url(channel_url):
+                    if channel_name and is_valid_url(channel_url) and not should_exclude_url(channel_url):
                         channels.append((channel_name, channel_url))
                     break
     
@@ -279,8 +285,13 @@ def write_to_file(categorized_channels):
             f.write("# 超高清直播源列表（全球高清线路）\n")
             f.write(f"# 更新时间: {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
             
-            # 计算总频道数
-            total_channels = sum(len(channels) for channels in categorized_channels.values())
+            # 计算总频道数并过滤URL
+            filtered_channels = {}
+            for category, channels in categorized_channels.items():
+                filtered = [(name, url) for name, url in channels if not should_exclude_url(url)]
+                filtered_channels[category] = filtered
+            
+            total_channels = sum(len(channels) for channels in filtered_channels.values())
             f.write(f"# 收录频道总数: {total_channels} 个\n\n")
             
             # 按照优先级顺序写入频道
@@ -297,7 +308,7 @@ def write_to_file(categorized_channels):
             ]
             
             for category in categories_order:
-                channels = categorized_channels.get(category, [])
+                channels = filtered_channels.get(category, [])
                 if not channels:
                     continue
                 
