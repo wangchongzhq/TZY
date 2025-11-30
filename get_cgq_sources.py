@@ -72,17 +72,8 @@ default_channels = {
         ("百事通少儿4K", "https://example.org/bestkids4k.m3u8"),
         ("百事通纪实4K", "https://example.org/bestdoc4k.m3u8"),
         ("华数爱上4K", "https://example.org/huashu4k.m3u8")
-    ],
-    "高清频道": [
-        ("CCTV-1 高清", "https://example.org/cctv1hd.m3u8"),
-        ("CCTV-2 高清", "https://example.org/cctv2hd.m3u8")
-    ],
-    "卫视": [
-        ("湖南卫视", "https://example.org/hunan.m3u8")
-    ],
-    "央视": [
-        ("CCTV-1", "https://example.org/cctv1.m3u8")
     ]
+        
 }
 
 def is_valid_url(url):
