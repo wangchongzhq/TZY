@@ -76,33 +76,33 @@ CHANNEL_MAPPING = {
 # 默认频道数据 - 当获取失败时使用（使用有效的替代链接）
 default_channels = {
     "4K央视频道": [
-        ("CCTV4K", "https://sample.com/cctv4k.m3u8"),
-        ("CCTV16 4K", "https://sample.com/cctv164k.m3u8")
+        ("CCTV4K", "https://tvstream.demo.com/cctv4k.m3u8"),
+        ("CCTV16 4K", "https://tvstream.demo.com/cctv164k.m3u8")
     ],
     "4K超高清频道": [
-        ("北京卫视4K", "https://sample.com/beijing4k.m3u8"),
-        ("北京IPTV4K", "https://sample.com/beijingiptv4k.m3u8"),
-        ("湖南卫视4K", "https://sample.com/hunan4k.m3u8"),
-        ("山东卫视4K", "https://sample.com/shandong4k.m3u8"),
-        ("广东卫视4K", "https://sample.com/guangdong4k.m3u8"),
-        ("四川卫视4K", "https://sample.com/sichuan4k.m3u8"),
-        ("浙江卫视4K", "https://sample.com/zhejiang4k.m3u8"),
-        ("江苏卫视4K", "https://sample.com/jiangsu4k.m3u8"),
-        ("东方卫视4K", "https://sample.com/dongfang4k.m3u8"),
-        ("深圳卫视4K", "https://sample.com/shenzhen4k.m3u8"),
-        ("河北卫视4K", "https://sample.com/hebei4k.m3u8"),
-        ("峨眉电影4K", "https://sample.com/emei4k.m3u8"),
-        ("求索4K", "https://sample.com/qiuzuo4k.m3u8"),
-        ("咪视界4K", "https://sample.com/mishijie4k.m3u8"),
-        ("欢笑剧场4K", "https://sample.com/huanxiao4k.m3u8"),
-        ("苏州4K", "https://sample.com/suzhou4k.m3u8"),
-        ("至臻视界4K", "https://sample.com/zhizhen4k.m3u8"),
-        ("南国都市4K", "https://sample.com/nanguo4k.m3u8"),
-        ("翡翠台4K", "https://sample.com/feicui4k.m3u8"),
-        ("百事通电影4K", "https://sample.com/bestmovie4k.m3u8"),
-        ("百事通少儿4K", "https://sample.com/bestkids4k.m3u8"),
-        ("百事通纪实4K", "https://sample.com/bestdoc4k.m3u8"),
-        ("华数爱上4K", "https://sample.com/huashu4k.m3u8")
+        ("北京卫视4K", "https://tvstream.demo.com/beijing4k.m3u8"),
+        ("北京IPTV4K", "https://tvstream.demo.com/beijingiptv4k.m3u8"),
+        ("湖南卫视4K", "https://tvstream.demo.com/hunan4k.m3u8"),
+        ("山东卫视4K", "https://tvstream.demo.com/shandong4k.m3u8"),
+        ("广东卫视4K", "https://tvstream.demo.com/guangdong4k.m3u8"),
+        ("四川卫视4K", "https://tvstream.demo.com/sichuan4k.m3u8"),
+        ("浙江卫视4K", "https://tvstream.demo.com/zhejiang4k.m3u8"),
+        ("江苏卫视4K", "https://tvstream.demo.com/jiangsu4k.m3u8"),
+        ("东方卫视4K", "https://tvstream.demo.com/dongfang4k.m3u8"),
+        ("深圳卫视4K", "https://tvstream.demo.com/shenzhen4k.m3u8"),
+        ("河北卫视4K", "https://tvstream.demo.com/hebei4k.m3u8"),
+        ("峨眉电影4K", "https://tvstream.demo.com/emei4k.m3u8"),
+        ("求索4K", "https://tvstream.demo.com/qiuzuo4k.m3u8"),
+        ("咪视界4K", "https://tvstream.demo.com/mishijie4k.m3u8"),
+        ("欢笑剧场4K", "https://tvstream.demo.com/huanxiao4k.m3u8"),
+        ("苏州4K", "https://tvstream.demo.com/suzhou4k.m3u8"),
+        ("至臻视界4K", "https://tvstream.demo.com/zhizhen4k.m3u8"),
+        ("南国都市4K", "https://tvstream.demo.com/nanguo4k.m3u8"),
+        ("翡翠台4K", "https://tvstream.demo.com/feicui4k.m3u8"),
+        ("百事通电影4K", "https://tvstream.demo.com/bestmovie4k.m3u8"),
+        ("百事通少儿4K", "https://tvstream.demo.com/bestkids4k.m3u8"),
+        ("百事通纪实4K", "https://tvstream.demo.com/bestdoc4k.m3u8"),
+        ("华数爱上4K", "https://tvstream.demo.com/huashu4k.m3u8")
     ]
 }
 
@@ -118,13 +118,12 @@ def is_valid_url(url):
 
 def should_exclude_url(url):
     """检查是否应该排除特定URL
-    排除从http://example或https://example开头的URL，这些域名不应该被用于获取直播源。
+    排除所有包含"example"字符的URL，这些域名不应该被用于获取直播源。
     """
     if not url:
         return True
-    # 排除http://example或https://example开头的URL
-    is_excluded = url.startswith('http://example') or url.startswith('https://example')
-    return is_excluded
+    # 排除所有包含"example"字符的URL
+    return "example" in url
 
 def clean_url(url):
     """清理URL，移除空白字符"""
