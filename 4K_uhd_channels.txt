@@ -1,11 +1,15 @@
 # 4K超高清直播源列表
 # 更新时间: 2025-11-30
+# 共包含 81 个4K超高清频道
+
+# 更新时间: 2025-11-30
 # 共包含 99 个4K超高清频道
 
 # 更新时间: 2025-11-30
 # 共包含 374 个4K超高清频道
 
 # 4K央视频道
+
 
 
 #4K频道,#genre#
@@ -17,11 +21,9 @@
 
 
 
-翡翠台4K,http://cdn.veryfast.filegear-sg.me/live/fct4k/stream.m3u8
 
 翡翠台4K,http://cdn6.veryfast.filegear-sg.me/live/fct4k/stream.m3u8
 
-翡翠台4K,http://o12.veryfast.filegear-sg.me/hls/fct4k/playlist.m3u8
 
 
 
@@ -29,7 +31,6 @@
 ##CCTV4K
 CCTV4K,https://httop.top/ysp-cctv4k
 
-CCTV4K,http://aiony.top:35455/nptv/cctv4k.m3u8
 
 CCTV4K,https://stream1.freetv.fun/cctv4k-2.ctv
 
@@ -37,7 +38,6 @@ CCTV4K,https://stream1.freetv.fun/cctv-4k-1.ctv
 
 
 
-CCTV4K,https://iptv.catvod.com/live.php?id=CCTV4K
 
 
 CCTV4K,http://phb888.myds.me:35455/nptv/cctv4k.m3u8
@@ -185,7 +185,6 @@ CCTV4K,http://leo0911.mycloudnas.com:35455/nptv/cctv4k.m3u8
 
 北京卫视4K,http://49.235.65.250:600/beijing/beijing.php?id=bjws4k
 
-北京卫视4K,https://zby.130519.xyz/PLTV/11/224/3221225724/index.m3u8
 
 
 北京卫视4K,https://shyd.695847.xyz/cms001/ch00000090990000001510/index.m3u8?IAS
@@ -243,7 +242,6 @@ CCTV4K,http://leo0911.mycloudnas.com:35455/nptv/cctv4k.m3u8
 
 
 
-广东卫视4K,https://iptv.catvod.com/live.php?id=%E5%B9%BF%E4%B8%9C%E5%8D%AB%E8%A7%864K%E5%8F%B0
 
 
 
@@ -316,13 +314,11 @@ CCTV4K,http://leo0911.mycloudnas.com:35455/nptv/cctv4k.m3u8
 
 
 
-深圳卫视4K,https://iptv.catvod.com/live.php?id=%E6%B7%B1%E5%9C%B3%E5%8D%AB%E8%A7%864K%E5%8F%B0
 
 深圳卫视4K,https://migu.188766.xyz/?migutoken=3100906f039cd53c8274bdf515d565e3&id=%E6%B7%B1%E5%9C%B3%E5%8D%AB%E8%A7%86&pp=1
 
 深圳卫视4K,https://migu.188766.xyz/?migutoken=6dbfdaaddc42715e00238b7ddf205493&id=%E6%B7%B1%E5%9C%B3%E5%8D%AB%E8%A7%86&pp=1
 
-深圳卫视4K,https://migu.188766.xyz/?migutoken=d118916d517f7c3e651ab2730ab6dc38&id=%E6%B7%B1%E5%9C%B3%E5%8D%AB%E8%A7%86&pp=1
 
 深圳卫视4K,https://migu.188766.xyz/?migutoken=aee62f182139c84321695d811e2537db&id=%E6%B7%B1%E5%9C%B3%E5%8D%AB%E8%A7%86&pp=1
 
@@ -401,11 +397,8 @@ CCTV16 4K,http://ddns.xryo.cn:8888/rtp/239.111.205.134:5140
 
 
 
-北京IPTV4K,http://[2409:8087:1:20:20::26]/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226550/1.m3u8?GuardEncType=2&accountinfo=~~V2.0~e2qS8h6u-xp3gd50vNr1sw~_eNUbgU9sJGUcVVduOMKhafLvQUgE_zlz_7pvDimJNPPFD3HVWEytEVyliOxehfe%2CEND
 
-北京IPTV4K,http://[2409:8087:8:21::04]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226550/1.m3u8?GuardEncType=2&accountinfo=~~V2.0~e2qS8h6u-xp3gd50vNr1sw~_eNUbgU9sJGUcVVduOMKhafLvQUgE_zlz_7pvDimJNPPFD3HVWEytEVyliOxehfe%2CEND
 
-北京IPTV4K,http://39.134.135.80/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226550/1.m3u8?zoneoffset=480&servicetype=1&icpid=88888888&limitflux=-1&limitdur=-1&tenantId=8601&accountinfo=~~V2.0~e2qS8h6u-xp3gd50vNr1sw~Q8NsqL2Ii48SUgC4QMl6hh6MtnXuZ2CwNhT-dTFoMLL2G3Q2BYmATYXRv1nKmDi5C1jJAt50zoNF4cIM-01_7rCa0ZemjVk37nsYr4Zr0bk~ExtInfo9bj61dxzlMXrsixrqcFYPg%3A20240802122114%2C162944%2C119.123.69.186%2C20240802122114%2C10000100000000050000000003887500%2C162944%2C-1%2C0%2C1%2C%2C%2C2%2C%2C%2C%2C2%2C%2C10000100000000060000000007266388_0%2CEND&GuardEncType=2&RTS=1729247386&from=6&ocs=2_39.135.238.65_80&popid=6&hms_devid=3771&prioritypopid=6&vqe=31%2C0%2C1%2C%2C%2C2%2C%2C%2C%2C2%2C%2C10000100000000060000000007266388_0%2CEND&GuardEncType=2&RTS=1729247386&from=6&ocs=2_39.135.238.65_80&popid=6&hms_devid=3771&prioritypopid=6&vqe=3
 
 ##苏州4K
 
@@ -462,18 +455,13 @@ CCTV16 4K,http://ddns.xryo.cn:8888/rtp/239.111.205.134:5140
 http://api.kkitv.itv888.cn:8080/hls/og4kq4cnqm/index.m3u8
 http://101.43.145.141:12002/gaoma/cctv4k16_10m.m3u8
 http://dl.wifi942.com:66/jsyd/jsyd.php?id=G_CCTV-3-AVS-4K264
-CCTV3,http://iptv.huuc.edu.cn/hls/cctv3hd.m3u8
 https://stream1.freetv.fun/cctv4k-4.m3u8
 http://36.105.100.208:35455/gaoma/cctv4k.m3u8
 http://dl.wifi942.com:66/jsyd/jsyd.php?id=G_CCTV-5-AVS-4K264
-CCTV5,http://iptv.huuc.edu.cn/hls/cctv5hd.m3u8
 http://dl.wifi942.com:66/jsyd/jsyd.php?id=G_CCTV-6-AVS-4K264
-CCTV6,http://iptv.huuc.edu.cn/hls/cctv6hd.m3u8
 http://dl.wifi942.com:66/jsyd/jsyd.php?id=G_CCTV-8-AVS-4K264
-CCTV8,http://iptv.huuc.edu.cn/hls/cctv8hd.m3u8
 http://livetv.wqwqwq.sbs/gaoma/cctv4k16.m3u8
 http://dl.wifi942.com:66/jsyd/jsyd.php?id=G_CCTV-1-AVS-4K264
-CCTV1,http://iptv.huuc.edu.cn/hls/cctv1hd.m3u8
 http://101.35.240.114:88/live.php?id=%E5%B9%BF%E4%B8%9C%E5%8D%AB%E8%A7%864K
 http://101.35.240.114:88/live.php?id=%E6%B5%99%E6%B1%9F%E5%8D%AB%E8%A7%864K
 浙江卫视,http://ali-m-l.cztv.com/channels/lantian/channel01/1080p.m3u8
@@ -486,11 +474,9 @@ http://101.35.240.114:88/live.php?id=%E5%9B%9B%E5%B7%9D%E5%8D%AB%E8%A7%864K
 https://iptv.catvod.com/live.php?id=%E5%8C%97%E4%BA%AC%E5%8D%AB%E8%A7%864K%E5%8F%B0
 北京卫视,http://joyznm.i234.me:20000/udp/239.3.1.241:8000###des:1080P###HLS\\n
 https://ls.qingting.fm/live/339/64k.m3u8
-北京新闻,http://iptv.huuc.edu.cn/hls/btv9hd.m3u8
 http://101.35.240.114:88/live.php?id=%E5%B1%B1%E4%B8%9C%E5%8D%AB%E8%A7%864K
 山东卫视,http://joyznm.i234.me:20000/udp/239.3.1.209:8052###des:1080P###HLS\\n
 https://4k.11cn.dpdns.org/27.m3u8
-凤凰中文,https://live.catvod.com/iptv.php?id=ly4kzfbq
 https://4k.11cn.dpdns.org/28.m3u8
 https://4k.11cn.dpdns.org/29.m3u8
 https://ls.qingting.fm/live/1099/64k.m3u8
