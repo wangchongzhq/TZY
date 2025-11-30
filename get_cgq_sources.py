@@ -325,7 +325,8 @@ def write_to_file(categorized_channels):
     except:
         return False
 
-def verify_and_fix_file():    """验证文件内容并在必要时修复"""
+def verify_and_fix_file():
+    """验证文件内容并在必要时修复"""
     if not os.path.exists(OUTPUT_FILE):
         return write_to_file(default_channels)
     
