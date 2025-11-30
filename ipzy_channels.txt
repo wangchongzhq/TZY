@@ -11,7 +11,6 @@
 CCTV+ 1,https://cd-live-stream.news.cctvplus.com/live/smil:CHANNEL1.smil/playlist.m3u8
 CCTV+ 2,https://cd-live-stream.news.cctvplus.com/live/smil:CHANNEL2.smil/playlist.m3u8
 CCTV-1,http://123.175.209.52:9003/hls/1/index.m3u8
-CCTV-1,http://iptv.4666888.xyz/iptv2A.php?id=7
 CCTV-1,http://221.198.198.213:8888/udp/225.1.1.120:5002
 CCTV-1,http://222.95.175.5:58888/udp/239.49.8.19:9614
 CCTV-1,http://180.157.233.109:4022/udp/239.45.3.145:5140
@@ -326,7 +325,6 @@ KICCTV,https://live.mdc.akamaized.net/hls/livestream/kicctv/playlist.m3u8
 Red CCTV,https://solo.disfrutaenlared.com:1936/redcctv/redcctv/playlist.m3u8
 # 共 32 个频道，317 条线路 (平均9.9条/频道)
 
-卫视,#genre#
 BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 三沙卫视,http://222.95.175.5:58888/udp/239.49.0.167:8000
 三沙卫视,http://220.176.219.18:9000/udp/239.252.219.76:5140
@@ -984,14 +982,12 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 黑龙江卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226965/1.m3u8
 # 共 45 个频道，655 条线路 (平均14.6条/频道)
 
-港澳台,#genre#
 SET News,http://seb.sason.top/sc/sllive_fhd.m3u8
 TVBS Asia,http://38.64.72.148/hls/modn/list/4005/playlist.m3u8
 浙江国际,https://ct-m-l.cztv.com/channels/lantian/channel010/1080p.m3u8
 浙江国际,https://qiniup-m-l.cztv.com/channels/lantian/channel010/1080p.m3u8
 # 共 3 个频道，4 条线路 (平均1.3条/频道)
 
-影视剧,#genre#
 &TV,https://amg01117-amg01117c1-amgplt0165.playout.now3.amagi.tv/playlist.m3u8
 &prive HD,http://87.255.35.150:18494
 &xplor HD,https://playyonogames.in/z5/stream.m3u8?id=0-9-209
@@ -1122,7 +1118,6 @@ Zee Cinemalu,http://87.255.35.150:18578
 高清电影,http://39.134.19.76/dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221226463/index.m3u8
 # 共 121 个频道，128 条线路 (平均1.1条/频道)
 
-4K,#genre#
 24KZ,https://tvcdn01.oktv.kz/tv/24kz/index.m3u8
 24Kitchen Serbia,http://91.132.74.5:8000/play/a00a
 4K Travel TV,https://streams2.sofast.tv/sofastplayout/33c31ac4-51fa-46ae-afd0-0d1fe5e60a80_0_HLS/master.m3u8
@@ -1151,7 +1146,6 @@ Shenzhen Satellite TV,https://livepull-tcms.sztv.com.cn/live/sz4Kpgm.m3u8
 苏州4k,https://live-auth.51kandianshi.com/szgd/csztv4k_hd.m3u8
 # 共 24 个频道，26 条线路 (平均1.1条/频道)
 
-音乐,#genre#
 13 Festival,https://origin.dpsgo.com/ssai/event/Nftd0fM2SXasfDlRphvUsg/master.m3u8
 70-80 TV,https://585b674743bbb.streamlock.net/9050/9050/playlist.m3u8
 9X Jalwa,https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/9x-jalwa/master.m3u8
@@ -1379,7 +1373,6 @@ m2o TV,https://4c4b867c89244861ac216426883d1ad0.msvdn.net/live/S62628868/uhdWBlk
 Матур ТВ,https://public.streaming.matur-tv.ru/hls/h264_aac/stream.m3u8
 # 共 224 个频道，225 条线路 (平均1.0条/频道)
 
-其他,#genre#
 10 Bold Adelaide,https://dce3793146fef017.mediapackage.us-west-2.amazonaws.com/out/v1/55cdf73af7894775ba6de8f57482b66a/CMAF_HLS/index.m3u8
 101tv Cádiz,https://streaming101tv.es:19360/cadiz/cadiz.m3u8
 101tv Ronda,https://streaming101tv.es/hls/webronda.m3u8
@@ -3837,7 +3830,6 @@ teltOwkanal,https://h056.video-stream-hosting.de/easycast8-live/_definst_/mp4:li
 百事通体育7,http://112.25.48.68/live/program/live/hdnba7/4000000/mnf.m3u8
 石景山电视台,https://live.sjsrm.com/bjsjs/sd/live.m3u8
 福州广播电视台新闻综合频道,http://live.zohi.tv/video/s10001-fztv-1/index.m3u8
-福州广播电视台都市生活频道,http://live.zohi.tv/video/s10001-fztv-3/index.m3u8
 福州电视台少儿频道,http://live.zohi.tv/video/s10001-fztv-4/index.m3u8
 积石山电视台,http://117.156.28.119/270000001111/1110000152/index.m3u8
 罗山电视台,http://live.dxhmt.cn:9081/tv/11521-1.m3u8
