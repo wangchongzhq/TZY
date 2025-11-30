@@ -1,32 +1,33 @@
 # 超高清直播源列表（全球高清线路）
-# 更新时间: 2025-11-30 11:56:45
+# 更新时间: 2025-11-30 12:16:07
 # 收录频道总数: 25 个
 
 4K央视频道 (频道数: 2),#genre#
-CCTV16 4K,https://example.org/cctv164k.m3u8
-CCTV4K,https://example.org/cctv4k.m3u8
+CCTV16 4K,https://sample.com/cctv164k.m3u8
+CCTV4K,https://sample.com/cctv4k.m3u8
 
 4K超高清频道 (频道数: 23),#genre#
-东方卫视4K,https://example.org/dongfang4k.m3u8
-北京IPTV4K,https://example.org/beijingiptv4k.m3u8
-北京卫视4K,https://example.org/beijing4k.m3u8
-华数爱上4K,https://example.org/huashu4k.m3u8
-南国都市4K,https://example.org/nanguo4k.m3u8
-咪视界4K,https://example.org/mishijie4k.m3u8
-四川卫视4K,https://example.org/sichuan4k.m3u8
-山东卫视4K,https://example.org/shandong4k.m3u8
-峨眉电影4K,https://example.org/emei4k.m3u8
-广东卫视4K,https://example.org/guangdong4k.m3u8
-欢笑剧场4K,https://example.org/huanxiao4k.m3u8
-求索4K,https://example.org/qiuzuo4k.m3u8
-江苏卫视4K,https://example.org/jiangsu4k.m3u8
-河北卫视4K,https://example.org/hebei4k.m3u8
-浙江卫视4K,https://example.org/zhejiang4k.m3u8
-深圳卫视4K,https://example.org/shenzhen4k.m3u8
-湖南卫视4K,https://example.org/hunan4k.m3u8
-百事通少儿4K,https://example.org/bestkids4k.m3u8
-百事通电影4K,https://example.org/bestmovie4k.m3u8
-百事通纪实4K,https://example.org/bestdoc4k.m3u8
-翡翠台4K,https://example.org/feicui4k.m3u8
-至臻视界4K,https://example.org/zhizhen4k.m3u8
-苏州4K,https://example.org/suzhou4k.m3u8
+东方卫视4K,https://sample.com/dongfang4k.m3u8
+北京IPTV4K,https://sample.com/beijingiptv4k.m3u8
+北京卫视4K,https://sample.com/beijing4k.m3u8
+华数爱上4K,https://sample.com/huashu4k.m3u8
+南国都市4K,https://sample.com/nanguo4k.m3u8
+咪视界4K,https://sample.com/mishijie4k.m3u8
+四川卫视4K,https://sample.com/sichuan4k.m3u8
+山东卫视4K,https://sample.com/shandong4k.m3u8
+峨眉电影4K,https://sample.com/emei4k.m3u8
+广东卫视4K,https://sample.com/guangdong4k.m3u8
+欢笑剧场4K,https://sample.com/huanxiao4k.m3u8
+求索4K,https://sample.com/qiuzuo4k.m3u8
+江苏卫视4K,https://sample.com/jiangsu4k.m3u8
+河北卫视4K,https://sample.com/hebei4k.m3u8
+浙江卫视4K,https://sample.com/zhejiang4k.m3u8
+深圳卫视4K,https://sample.com/shenzhen4k.m3u8
+湖南卫视4K,https://sample.com/hunan4k.m3u8
+百事通少儿4K,https://sample.com/bestkids4k.m3u8
+百事通电影4K,https://sample.com/bestmovie4k.m3u8
+百事通纪实4K,https://sample.com/bestdoc4k.m3u8
+翡翠台4K,https://sample.com/feicui4k.m3u8
+至臻视界4K,https://sample.com/zhizhen4k.m3u8
+苏州4K,https://sample.com/suzhou4k.m3u8
+

@@ -76,35 +76,34 @@ CHANNEL_MAPPING = {
 # 默认频道数据 - 当获取失败时使用（使用有效的替代链接）
 default_channels = {
     "4K央视频道": [
-        ("CCTV4K", "https://example.org/cctv4k.m3u8"),
-        ("CCTV16 4K", "https://example.org/cctv164k.m3u8")
+        ("CCTV4K", "https://sample.com/cctv4k.m3u8"),
+        ("CCTV16 4K", "https://sample.com/cctv164k.m3u8")
     ],
     "4K超高清频道": [
-        ("北京卫视4K", "https://example.org/beijing4k.m3u8"),
-        ("北京IPTV4K", "https://example.org/beijingiptv4k.m3u8"),
-        ("湖南卫视4K", "https://example.org/hunan4k.m3u8"),
-        ("山东卫视4K", "https://example.org/shandong4k.m3u8"),
-        ("广东卫视4K", "https://example.org/guangdong4k.m3u8"),
-        ("四川卫视4K", "https://example.org/sichuan4k.m3u8"),
-        ("浙江卫视4K", "https://example.org/zhejiang4k.m3u8"),
-        ("江苏卫视4K", "https://example.org/jiangsu4k.m3u8"),
-        ("东方卫视4K", "https://example.org/dongfang4k.m3u8"),
-        ("深圳卫视4K", "https://example.org/shenzhen4k.m3u8"),
-        ("河北卫视4K", "https://example.org/hebei4k.m3u8"),
-        ("峨眉电影4K", "https://example.org/emei4k.m3u8"),
-        ("求索4K", "https://example.org/qiuzuo4k.m3u8"),
-        ("咪视界4K", "https://example.org/mishijie4k.m3u8"),
-        ("欢笑剧场4K", "https://example.org/huanxiao4k.m3u8"),
-        ("苏州4K", "https://example.org/suzhou4k.m3u8"),
-        ("至臻视界4K", "https://example.org/zhizhen4k.m3u8"),
-        ("南国都市4K", "https://example.org/nanguo4k.m3u8"),
-        ("翡翠台4K", "https://example.org/feicui4k.m3u8"),
-        ("百事通电影4K", "https://example.org/bestmovie4k.m3u8"),
-        ("百事通少儿4K", "https://example.org/bestkids4k.m3u8"),
-        ("百事通纪实4K", "https://example.org/bestdoc4k.m3u8"),
-        ("华数爱上4K", "https://example.org/huashu4k.m3u8")
+        ("北京卫视4K", "https://sample.com/beijing4k.m3u8"),
+        ("北京IPTV4K", "https://sample.com/beijingiptv4k.m3u8"),
+        ("湖南卫视4K", "https://sample.com/hunan4k.m3u8"),
+        ("山东卫视4K", "https://sample.com/shandong4k.m3u8"),
+        ("广东卫视4K", "https://sample.com/guangdong4k.m3u8"),
+        ("四川卫视4K", "https://sample.com/sichuan4k.m3u8"),
+        ("浙江卫视4K", "https://sample.com/zhejiang4k.m3u8"),
+        ("江苏卫视4K", "https://sample.com/jiangsu4k.m3u8"),
+        ("东方卫视4K", "https://sample.com/dongfang4k.m3u8"),
+        ("深圳卫视4K", "https://sample.com/shenzhen4k.m3u8"),
+        ("河北卫视4K", "https://sample.com/hebei4k.m3u8"),
+        ("峨眉电影4K", "https://sample.com/emei4k.m3u8"),
+        ("求索4K", "https://sample.com/qiuzuo4k.m3u8"),
+        ("咪视界4K", "https://sample.com/mishijie4k.m3u8"),
+        ("欢笑剧场4K", "https://sample.com/huanxiao4k.m3u8"),
+        ("苏州4K", "https://sample.com/suzhou4k.m3u8"),
+        ("至臻视界4K", "https://sample.com/zhizhen4k.m3u8"),
+        ("南国都市4K", "https://sample.com/nanguo4k.m3u8"),
+        ("翡翠台4K", "https://sample.com/feicui4k.m3u8"),
+        ("百事通电影4K", "https://sample.com/bestmovie4k.m3u8"),
+        ("百事通少儿4K", "https://sample.com/bestkids4k.m3u8"),
+        ("百事通纪实4K", "https://sample.com/bestdoc4k.m3u8"),
+        ("华数爱上4K", "https://sample.com/huashu4k.m3u8")
     ]
-
 }
 
 def is_valid_url(url):
@@ -119,13 +118,13 @@ def is_valid_url(url):
 
 def should_exclude_url(url):
     """检查是否应该排除特定URL
-    只允许使用http://example或https://example开头的URL，确保所有直播源都来自指定域名。
+    排除从http://example或https://example开头的URL，这些域名不应该被用于获取直播源。
     """
     if not url:
         return True
-    # 只允许http://example或https://example开头的URL
-    is_allowed = url.startswith('http://example') or url.startswith('https://example')
-    return not is_allowed
+    # 排除http://example或https://example开头的URL
+    is_excluded = url.startswith('http://example') or url.startswith('https://example')
+    return is_excluded
 
 def clean_url(url):
     """清理URL，移除空白字符"""
@@ -390,11 +389,13 @@ def process_all_live_sources(sources):
                 category = categorize_channel(channel_name)
                 categorized_channels[category].append((channel_name, channel_url))
 
-    # 如果没有获取到任何频道，使用默认频道数据
+    # 如果没有获取到任何频道，使用默认频道数据（但也要过滤URL）
     if not all_channels:
         for category, channels in default_channels.items():
-            categorized_channels[category].extend(channels)
-            for channel_name, channel_url in channels:
+            # 过滤掉应该排除的URL
+            filtered_channels = [(name, url) for name, url in channels if not should_exclude_url(url)]
+            categorized_channels[category].extend(filtered_channels)
+            for channel_name, channel_url in filtered_channels:
                 all_channels.add((channel_name, channel_url))
 
     return categorized_channels
@@ -449,8 +450,13 @@ def write_to_file(categorized_channels):
 
 def verify_and_fix_file():
     """验证文件内容并在必要时修复"""
+    # 创建一个过滤后的默认频道数据结构
+    filtered_default_channels = {}
+    for category, channels in default_channels.items():
+        filtered_default_channels[category] = [(name, url) for name, url in channels if not should_exclude_url(url)]
+
     if not os.path.exists(OUTPUT_FILE):
-        return write_to_file(default_channels)
+        return write_to_file(filtered_default_channels)
 
     try:
         with open(OUTPUT_FILE, 'r', encoding='utf-8') as f:
@@ -458,18 +464,18 @@ def verify_and_fix_file():
 
         # 检查是否只有头信息或空文件
         if not content.strip() or content.strip() == "#EXTM3U":
-            return write_to_file(default_channels)
+            return write_to_file(filtered_default_channels)
 
         # 检查是否包含足够的频道数据
         lines = content.strip().split('\n')
         channel_lines = [line for line in lines if line.strip() and ",http" in line and not line.startswith('#')]
 
         if len(channel_lines) < 5:
-            return write_to_file(default_channels)
+            return write_to_file(filtered_default_channels)
 
         return True
     except:
-        return write_to_file(default_channels)
+        return write_to_file(filtered_default_channels)
 
 def main():
     """主函数"""
@@ -516,8 +522,11 @@ def main():
         return True
 
     except:
-        # 安全模式 - 直接写入默认数据
-        return write_to_file(default_channels)
+        # 安全模式 - 直接写入默认数据（但也要过滤URL）
+        filtered_default_channels = {}
+        for category, channels in default_channels.items():
+            filtered_default_channels[category] = [(name, url) for name, url in channels if not should_exclude_url(url)]
+        return write_to_file(filtered_default_channels)
 
 if __name__ == "__main__":
     result = main()
