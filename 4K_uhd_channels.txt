@@ -1,6 +1,6 @@
 # 4K超高清直播源列表
 # 更新时间: 2025-11-30
-# 共包含 99 个4K超高清频道
+# 共包含 107 个4K超高清频道
 
 # 更新时间: 2025-11-30
 # 共包含 374 个4K超高清频道
@@ -86,7 +86,9 @@ CCTV4K,http://ddns.xryo.cn:8888/rtp/239.109.205.192:9608
 
 
 
+CCTV4K,http://113.101.245.153:9988/udp/239.77.0.174:5146
 
+CCTV4K,http://113.101.245.153:9988/udp/239.77.0.194:5146
 
 
 CCTV4K,http://183.220.107.138:4022/rtp/239.10.0.108:5140
@@ -138,6 +140,7 @@ CCTV4K,http://leo0911.mycloudnas.com:35455/nptv/cctv4k.m3u8
 
 
 
+北京卫视4K,http://tnvcn.com:8012/rtp/239.3.1.140:8001
 
 
 北京卫视4K,http://ddns.xryo.cn:8888/rtp/239.109.205.5:9144
@@ -201,6 +204,7 @@ CCTV4K,http://leo0911.mycloudnas.com:35455/nptv/cctv4k.m3u8
 ##四川卫视4K
 四川卫视4K,http://ddns.xryo.cn:8888/rtp/239.110.205.90:7916
 
+四川卫视4K,http://ddns.xryo.cn:8888/rtp/239.111.205.62:5140
 
 四川卫视4K,http://ddns.xryo.cn:8888/udp/239.111.205.62:5140
 
@@ -235,8 +239,10 @@ CCTV4K,http://leo0911.mycloudnas.com:35455/nptv/cctv4k.m3u8
 
 广东卫视4K,http://144.255.32.94:8288/rtp/239.21.2.173:5002
 
+广东卫视4K,http://ddns.xryo.cn:8888/rtp/239.110.205.36:9850
 
 
+广东卫视4K,http://ddns.xryo.cn:8888/udp/239.111.205.103:5140
 
 广东卫视4K,http://ikuai.haleeyo.cn:9003/udp/239.77.0.27:5146
 
@@ -276,8 +282,8 @@ CCTV4K,http://leo0911.mycloudnas.com:35455/nptv/cctv4k.m3u8
 
 ##江苏卫视4K
 
-江苏卫视4K,http://ddns.xryo.cn:8888/rtp/239.109.205.97:8712
 
+江苏卫视4K,http://ddns.xryo.cn:8888/udp/239.111.205.64:5140
 
 江苏卫视4K,http://yulang132.cn:58888/udp/239.94.0.117:5140$四川电信3
 
@@ -310,6 +316,7 @@ CCTV4K,http://leo0911.mycloudnas.com:35455/nptv/cctv4k.m3u8
 
 深圳卫视4K,http://ikuai.haleeyo.cn:9003/udp/239.77.1.14:5146
 
+深圳卫视4K,http://ddns.xryo.cn:8888/udp/239.111.205.104:5140
 
 
 
@@ -367,7 +374,6 @@ CCTV16 4K,http://ddns.xryo.cn:8888/rtp/239.111.205.134:5140
 
 
 
-华数爱上4K,http://ddns.xryo.cn:8888/rtp/239.109.205.53:8360
 
 
 
@@ -381,6 +387,7 @@ CCTV16 4K,http://ddns.xryo.cn:8888/rtp/239.111.205.134:5140
 
 
 
+华数爱上4K,http://ddns.xryo.cn:8888/udp/239.112.205.186:5140
 
 
 
@@ -475,6 +482,7 @@ http://livetv.wqwqwq.sbs/gaoma/cctv4k16.m3u8
 http://dl.wifi942.com:66/jsyd/jsyd.php?id=G_CCTV-1-AVS-4K264
 CCTV1,http://iptv.huuc.edu.cn/hls/cctv1hd.m3u8
 http://101.35.240.114:88/live.php?id=%E5%B9%BF%E4%B8%9C%E5%8D%AB%E8%A7%864K
+广东卫视,http://joyznm.i234.me:20000/udp/239.3.1.142:8048###des:1080P###HLS\\n
 http://101.35.240.114:88/live.php?id=%E6%B5%99%E6%B1%9F%E5%8D%AB%E8%A7%864K
 浙江卫视,http://ali-m-l.cztv.com/channels/lantian/channel01/1080p.m3u8
 http://101.35.240.114:88/live.php?id=%E6%B9%96%E5%8D%97%E5%8D%AB%E8%A7%864K
