@@ -42,30 +42,65 @@ class UHDChannelMerger:
         self.output_file = output_file
     
     def extract_m3u_urls(self):
-        """从输入文件中提取.m3u URL"""
-        print(f"� 正在读取输入文件: {self.input_file}")
-        urls = set()  # 使用集合自动去重
+        """从输入文件中提取.m3u URL和直接的频道URL"""
+        print(f"📝 正在读取输入文件: {self.input_file}")
+        m3u_urls = set()  # 存储.m3u文件URL
+        direct_channels = []  # 存储直接的频道信息 (name, url)
         
         try:
             with open(self.input_file, 'r', encoding='utf-8-sig') as f:
-                content = f.read()
+                lines = f.readlines()
                 
-                # 提取HTTP/HTTPS URL
-                http_urls = re.findall(r'https?://[^\s"\'\n]+\.m3u', content, re.IGNORECASE)
-                urls.update(http_urls)
+            for line in lines:
+                line = line.strip()
                 
-                # 提取本地文件URL
-                file_urls = re.findall(r'file://[^\s"\'\n]+\.m3u', content, re.IGNORECASE)
-                urls.update(file_urls)
+                # 跳过空行和注释行
+                if not line or line.startswith('#'):
+                    continue
+                
+                # 检查是否是频道名称,URL格式
+                if ',' in line:
+                    parts = line.split(',', 1)  # 只按第一个逗号分割
+                    if len(parts) == 2:
+                        channel_name, channel_url = parts[0].strip(), parts[1].strip()
+                        
+                        # 验证URL格式
+                        if channel_url.startswith(('http://', 'https://')):
+                            direct_channels.append((channel_name, channel_url))
+                            print(f"   📡 直接频道: {channel_name} -> {channel_url}")
+                
+                # 提取HTTP/HTTPS的.m3u URL
+                http_m3u = re.search(r'https?://[^\s"\'\n]+\.m3u', line, re.IGNORECASE)
+                if http_m3u:
+                    m3u_urls.add(http_m3u.group(0))
+                
+                # 提取本地文件的.m3u URL
+                file_m3u = re.search(r'file://[^\s"\'\n]+\.m3u', line, re.IGNORECASE)
+                if file_m3u:
+                    m3u_urls.add(file_m3u.group(0))
             
-            urls = sorted(urls)
-            print(f"📊 找到 {len(urls)} 个.m3u直播源URL")
+            # 处理直接的频道
+            if direct_channels:
+                print(f"📊 找到 {len(direct_channels)} 个直接频道URL")
+                
+                # 直接将这些频道添加到channel_map中（去重）
+                for channel_name, channel_url in direct_channels:
+                    if channel_url not in self.channel_map:
+                        self.channel_map[channel_url] = channel_name
+                        self.success_channels += 1
+                    else:
+                        print(f"    ⚠️  跳过重复频道 (URL已存在): {channel_name} -> {channel_url}")
             
-            # 显示找到的URL
-            for i, url in enumerate(urls, 1):
-                print(f"   {i}. {url}")
+            # 处理.m3u文件URL
+            m3u_urls = sorted(m3u_urls)
+            if m3u_urls:
+                print(f"📊 找到 {len(m3u_urls)} 个.m3u直播源URL")
+                
+                # 显示找到的.m3u URL
+                for i, url in enumerate(m3u_urls, 1):
+                    print(f"   {i}. {url}")
             
-            return urls
+            return m3u_urls
             
         except FileNotFoundError:
             print(f"❌ 输入文件 {self.input_file} 不存在")
@@ -268,11 +303,12 @@ class UHDChannelMerger:
         start_time = time.time()
         
         try:
-            # 1. 提取M3U URL
+            # 1. 提取M3U URL和直接频道
             m3u_urls = self.extract_m3u_urls()
             
-            if not m3u_urls:
-                print("🚫 没有找到.m3u直播源URL")
+            # 检查是否有任何内容需要处理
+            if not m3u_urls and not self.channel_map:
+                print("🚫 没有找到任何直播源URL或频道")
                 sys.exit(1)
             
             # 2. 下载并解析所有M3U内容
