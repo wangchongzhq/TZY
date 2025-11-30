@@ -1,15 +1,9 @@
 import requests
 import re
-import json
-import datetime
 import time
-import os
-import urllib.parse
 from collections import defaultdict
 
-# =============================================
-# 频道分类（正规区域）
-# =============================================
+# 频道分类
 CHANNEL_CATEGORIES = {
     "4K频道": ['CCTV4K', 'CCTV8K', 'CCTV16 4K', '北京卫视4K', '北京IPTV4K', '湖南卫视4K', '山东卫视4K','广东卫视4K', '四川卫视4K', 
                  '浙江卫视4K', '江苏卫视4K', '东方卫视4K', '深圳卫视4K', '河北卫视4K', '峨眉电影4K', '求索4K', '咪视界4K', '欢笑剧场4K',
@@ -48,9 +42,7 @@ CHANNEL_CATEGORIES = {
                  '精品体育', '精品大剧', '精品纪录', '精品萌宠', '怡伴健康'],
 }
 
-# =============================================
 # 频道映射（别名 -> 规范名）
-# =============================================
 CHANNEL_MAPPING = {
     # 4K频道
     "CCTV4K": ["CCTV 4K", "CCTV-4K超高清頻道", "CCTV4K超高清頻道", "CCTV-4K"],
@@ -341,111 +333,32 @@ def is_preferred_url(url: str) -> bool:
             return True
     return False
 
-def obfuscate_url(url: str) -> str:
-    """
-    对URL进行模糊处理，保护隐私
-    保留域名和部分路径信息，其他用星号替换
-    """
-    try:
-        parsed = urllib.parse.urlparse(url)
-        
-        # 处理域名部分
-        domain_parts = parsed.netloc.split('.')
-        if len(domain_parts) >= 2:
-            # 保留主域名，子域名用星号替换
-            main_domain = '.'.join(domain_parts[-2:])
-            if len(domain_parts) > 2:
-                domain = '*' * 3 + '.' + main_domain
-            else:
-                domain = main_domain
-        else:
-            domain = '*' * 8  # 如果域名解析失败，用星号替代
-        
-        # 处理路径部分
-        path = parsed.path
-        if path:
-            path_parts = path.split('/')
-            # 保留最后一部分文件名（如果有）
-            if len(path_parts) > 1 and path_parts[-1]:
-                filename = path_parts[-1]
-                # 文件名也进行部分隐藏
-                if len(filename) > 8:
-                    filename = filename[:4] + '*' * 4 + filename[-4:]
-                path = '/***/' + filename
-            else:
-                path = '/***/'
-        else:
-            path = '/***/'
-        
-        # 重建URL
-        obfuscated_url = f"{parsed.scheme}://{domain}{path}"
-        
-        return obfuscated_url
-    
-    except Exception:
-        # 如果解析失败，返回完全模糊的URL
-        return "https://******/***/****"
+# 移除URL模糊处理函数，简化代码
 
-def create_robust_session():
-    """创建健壮的会话，包含重试机制和超时设置"""
+def fetch_lines_with_retry(url: str, max_retries=3):
+    """带重试机制的下载函数"""
     session = requests.Session()
-    
-    # 设置请求头
     session.headers.update({
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
         'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
-        'Accept-Encoding': 'gzip, deflate',
-        'Connection': 'keep-alive',
-        'Upgrade-Insecure-Requests': '1',
     })
-    
-    return session
-
-def fetch_lines_with_retry(url: str, max_retries=3):
-    """带重试机制的下载函数"""
-    session = create_robust_session()
     
     for attempt in range(max_retries):
         try:
-            # 针对特定URL调整超时时间
             timeout = 25 if 'tv.html-5.me' in url else 15
-            
             response = session.get(url, timeout=timeout)
             response.encoding = "utf-8"
             
-            # 检查响应状态
             if response.status_code == 200:
                 return response.text.splitlines()
-            else:
-                print(f"⚠️  HTTP状态码: {response.status_code}")
-                
-        except requests.exceptions.ConnectTimeout as e:
-            print(f"❌ 连接超时 (尝试 {attempt + 1}): {e}")
-        except requests.exceptions.ReadTimeout as e:
-            print(f"❌ 读取超时 (尝试 {attempt + 1}): {e}")
-        except requests.exceptions.ConnectionError as e:
-            print(f"❌ 连接错误 (尝试 {attempt + 1}): {e}")
-        except requests.exceptions.RequestException as e:
-            print(f"❌ 请求异常 (尝试 {attempt + 1}): {e}")
-        except Exception as e:
-            print(f"❌ 未知错误 (尝试 {attempt + 1}): {e}")
+        except Exception:
+            pass
         
-        # 如果不是最后一次尝试，等待后重试
         if attempt < max_retries - 1:
-            wait_time = 2 ** attempt  # 指数退避：1, 2, 4秒
-            print(f"⏳ 等待 {wait_time} 秒后重试...")
-            time.sleep(wait_time)
+            time.sleep(2 ** attempt)
     
     return []
-
-# =============================================
-# 核心功能函数
-# =============================================
-
-def fetch_lines(url: str):
-    """下载并分行返回内容（使用改进版本）"""
-    return fetch_lines_with_retry(url, max_retries=3)
 
 def parse_lines(lines):
     """解析 M3U 或 TXT 内容，返回 {频道名: [url列表]}"""
@@ -486,12 +399,10 @@ def create_txt_file(all_channels, filename="ipzyauto.txt"):
     with open(filename, "w", encoding="utf-8") as f:
         f.write("公告,#genre#\n")
         f.write("IPTV直播源 - 自动生成\n")
-        f.write(f"生成时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
         f.write("格式: 频道名称,播放URL\n")
         f.write("分组: 4K频道,央视频道,卫视频道,北京频道,山东频道,港澳频道,电影频道,儿童频道,iHOT频道,综合频道,体育频道,剧场频道\n\n")
         
         for group, channel_list in CHANNEL_CATEGORIES.items():
-            # 修改分组行格式：去掉"# "和"开始"，添加",#genre#"
             f.write(f"{group},#genre#\n")
             for ch in channel_list:
                 if ch in all_channels and all_channels[ch]:
@@ -510,124 +421,18 @@ def create_txt_file(all_channels, filename="ipzyauto.txt"):
                     
                     for url in sorted_urls:
                         f.write(f"{ch},{url}\n")
-            # 去掉原来的"# {group}结束\n\n"行
             f.write("\n")
     
     return filename
 
-def generate_statistics_log(all_channels, source_stats, user_sources, txt_filename="ipzyauto.txt"):
-    """生成详细的统计日志，与txt文件对应"""
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    # 根据txt文件名生成对应的日志文件名
-    base_name = os.path.splitext(txt_filename)[0]  # 去掉扩展名
-    log_filename = f"{base_name}统计数据.log"
-    
-    # 获取txt文件的完整路径，确保日志文件在同一目录
-    txt_dir = os.path.dirname(txt_filename) if os.path.dirname(txt_filename) else "."
-    log_filepath = os.path.join(txt_dir, log_filename)
-    
-    print(f"📁 统计日志将保存到: {log_filepath}")
-    
-    try:
-        with open(log_filepath, "w", encoding="utf-8") as log_file:
-            log_file.write("=" * 60 + "\n")
-            log_file.write(f"📊 IPTV 源统计报告 - {timestamp}\n")
-            log_file.write(f"📺 对应文件: {txt_filename}\n")
-            log_file.write("🔒 隐私保护: 所有源URL已进行模糊处理\n")
-            log_file.write("=" * 60 + "\n\n")
-            
-            # 总体统计
-            total_channels = len(all_channels)
-            total_sources = sum(len(urls) for urls in all_channels.values())
-            
-            # 统计IPv4和IPv6数量
-            ipv4_count = 0
-            ipv6_count = 0
-            for urls in all_channels.values():
-                for url in urls:
-                    if re.match(ipv4_regex, url):
-                        ipv4_count += 1
-                    elif re.match(ipv6_regex, url):
-                        ipv6_count += 1
-            
-            log_file.write("📈 总体统计:\n")
-            log_file.write(f"   总频道数: {total_channels}\n")
-            log_file.write(f"   总源数量: {total_sources}\n")
-            log_file.write(f"   IPv4源: {ipv4_count}\n")
-            log_file.write(f"   IPv6源: {ipv6_count}\n")
-            if total_sources > 0:
-                log_file.write(f"   源类型比例: IPv4 {ipv4_count/total_sources*100:.1f}% | IPv6 {ipv6_count/total_sources*100:.1f}%\n")
-            else:
-                log_file.write(f"   源类型比例: 无可用源\n")
-            log_file.write("\n")
-            
-            # 按分类统计
-            log_file.write("📺 频道分类统计:\n")
-            category_stats = {}
-            for category, channels in CHANNEL_CATEGORIES.items():
-                category_channels = [ch for ch in channels if ch in all_channels and all_channels[ch]]
-                category_count = len(category_channels)
-                category_sources = sum(len(all_channels[ch]) for ch in category_channels if ch in all_channels)
-                category_stats[category] = {
-                    'channels': category_count,
-                    'sources': category_sources
-                }
-                log_file.write(f"   {category}: {category_count}个频道, {category_sources}个源\n")
-            
-            log_file.write("\n")
-            
-            # 源质量评估（使用模糊处理的URL）
-            log_file.write("🔍 源质量评估:\n")
-            for url, stats in source_stats.items():
-                source_type = "用户添加" if url in user_sources else "默认源"
-                quality_rating = "★★★★★" if stats['channels'] > 50 else "★★★★" if stats['channels'] > 30 else "★★★" if stats['channels'] > 15 else "★★" if stats['channels'] > 5 else "★"
-                
-                # 使用模糊处理的URL
-                obfuscated_url = obfuscate_url(url)
-                log_file.write(f"   {source_type}: {obfuscated_url}\n")
-                log_file.write(f"     频道数: {stats['channels']} | IPv4: {stats['ipv4']} | IPv6: {stats['ipv6']} | 质量: {quality_rating}\n")
-            
-            log_file.write("\n")
-            
-            # 推荐最佳源（使用模糊处理的URL）
-            if user_sources:
-                user_source_stats = [(url, stats) for url, stats in source_stats.items() if url in user_sources]
-                if user_source_stats:
-                    best_user_source = max(user_source_stats, key=lambda x: x[1]['channels'])
-                    
-                    log_file.write("🏆 最佳用户源推荐:\n")
-                    obfuscated_best_url = obfuscate_url(best_user_source[0])
-                    log_file.write(f"   {obfuscated_best_url}\n")
-                    log_file.write(f"   该源贡献了 {best_user_source[1]['channels']} 个频道\n")
-                    log_file.write(f"   包含 {best_user_source[1]['ipv4']} 个IPv4源和 {best_user_source[1]['ipv6']} 个IPv6源\n\n")
-            
-            # 频道数量排行榜
-            log_file.write("📊 频道源数量排行榜 (前10):\n")
-            channel_source_count = [(ch, len(urls)) for ch, urls in all_channels.items() if urls]
-            channel_source_count.sort(key=lambda x: x[1], reverse=True)
-            
-            for i, (channel, count) in enumerate(channel_source_count[:10]):
-                log_file.write(f"   {i+1:2d}. {channel}: {count}个源\n")
-            
-            log_file.write("\n" + "=" * 60 + "\n")
-            log_file.write("💡 提示: 建议优先使用IPv4源，IPv6源作为备选\n")
-            log_file.write("🔒 隐私说明: 源URL已模糊处理以保护数据安全\n")
-            log_file.write("=" * 60 + "\n")
-        
-        print(f"✅ 详细统计已保存到: {log_filepath}")
-        return log_filepath
-        
-    except Exception as e:
-        print(f"❌ 保存统计日志失败: {e}")
-        return None
+# 移除统计日志生成功能
 
 # =============================================
 # 主函数
 # =============================================
 
 def main():
-    # 在这里添加您的稳定IPTV源URL
+    # 直播源URL列表
     default_sources = [
         "https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u",
         "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u",
@@ -647,69 +452,20 @@ def main():
     urls = default_sources + user_sources
 
     all_channels = defaultdict(list)
-    source_stats = {}
 
     # 从每个URL获取频道数据
     for url in urls:
-        print(f"📡 正在获取: {url}")
+        max_retries = 5 if 'tv.html-5.me' in url else 3
+        lines = fetch_lines_with_retry(url, max_retries=max_retries)
         
-        # 对问题URL使用更宽松的超时设置
-        if 'tv.html-5.me' in url:
-            print("⚠️  检测到问题URL，使用增强的重试机制...")
-            lines = fetch_lines_with_retry(url, max_retries=5)  # 更多重试次数
-        else:
-            lines = fetch_lines_with_retry(url, max_retries=3)
-            
         if lines:
             parsed = parse_lines(lines)
-            
-            # 统计该源的IPv4和IPv6数量
-            ipv4_count = 0
-            ipv6_count = 0
-            for urls_list in parsed.values():
-                for url_item in urls_list:
-                    if re.match(ipv4_regex, url_item):
-                        ipv4_count += 1
-                    elif re.match(ipv6_regex, url_item):
-                        ipv6_count += 1
-            
-            source_stats[url] = {
-                'channels': len(parsed),
-                'ipv4': ipv4_count,
-                'ipv6': ipv6_count
-            }
-            
             # 合并到总频道列表
             for ch, urls_list in parsed.items():
                 all_channels[ch].extend(urls_list)
-            
-            print(f"✅ 从该源获取到 {len(parsed)} 个频道 (IPv4: {ipv4_count}, IPv6: {ipv6_count})")
-        else:
-            print(f"❌ 无法从该源获取数据: {url}")
-            source_stats[url] = {'channels': 0, 'ipv4': 0, 'ipv6': 0}
 
     # 生成TXT文件
-    txt_filename = create_txt_file(all_channels, "ipzyauto.txt")
-    
-    # 生成统计日志
-    log_filename = generate_statistics_log(all_channels, source_stats, user_sources, txt_filename)
-    
-    # 控制台简要统计
-    total_channels = len(all_channels)
-    total_sources = sum(len(urls) for urls in all_channels.values())
-    
-    print(f"\n📊 汇总统计:")
-    print(f"   总频道数: {total_channels}")
-    print(f"   总源数量: {total_sources}")
-    
-    print(f"\n✅ 已生成 {txt_filename}")
-    if log_filename:
-        print(f"✅ 已生成 {log_filename}")
-    else:
-        print(f"❌ 未能生成统计日志文件")
-    print(f"   文件包含 {total_channels} 个频道，{total_sources} 个播放源")
-    print(f"   播放源排序：IPv4优选 → IPv4其他 → IPv6优选 → IPv6其他")
-    print(f"🔒 隐私保护: 日志文件中的源URL已进行模糊处理")
+    create_txt_file(all_channels, "ipzyauto.txt")
 
 if __name__ == "__main__":
     main()

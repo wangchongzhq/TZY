@@ -7,7 +7,6 @@
 
 import os
 import chardet
-import sys
 
 def detect_file_encoding(file_path):
     """检测文件编码"""
@@ -21,14 +20,10 @@ def deduplicate_live_sources(file_path):
     try:
         # 检测文件编码
         encoding = detect_file_encoding(file_path)
-        print(f"处理文件: {file_path} (编码: {encoding})")
         
         # 读取文件内容
         with open(file_path, 'r', encoding=encoding) as f:
             lines = f.readlines()
-        
-        total_lines = len(lines)
-        print(f"原始行数: {total_lines}")
         
         # 存储分类行和频道标题行
         result_lines = []
@@ -55,25 +50,14 @@ def deduplicate_live_sources(file_path):
                         unique_urls.add(url)
                         result_lines.append(line)
         
-        # 计算去重结果
-        deduplicated_lines = len(result_lines)
-        removed_lines = total_lines - deduplicated_lines
-        
         # 写入去重后的内容
         with open(file_path, 'w', encoding=encoding) as f:
             f.write('\n'.join(result_lines))
         
-        # 输出结果
-        print(f"去重后行数: {deduplicated_lines}")
-        print(f"移除重复行数: {removed_lines}")
-        if total_lines > 0:
-            print(f"减少比例: {removed_lines / total_lines:.2%}\n")
+        return True
         
-        return removed_lines
-        
-    except Exception as e:
-        print(f"处理文件 {file_path} 时出错: {e}")
-        return 0
+    except:
+        return False
 
 def main():
     """主函数"""
@@ -87,20 +71,11 @@ def main():
         'tzydayauto.txt'
     ]
     
-    print("开始处理所有TXT文件的直播源去重...\n")
-    
-    total_removed = 0
-    
     # 处理每个文件
     for file_name in txt_files:
         file_path = os.path.abspath(file_name)
         if os.path.exists(file_path):
-            removed = deduplicate_live_sources(file_path)
-            total_removed += removed
-        else:
-            print(f"文件不存在: {file_path}\n")
-    
-    print(f"\n去重完成! 总共移除 {total_removed} 行重复内容。")
+            deduplicate_live_sources(file_path)
 
 if __name__ == "__main__":
     main()

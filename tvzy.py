@@ -2,19 +2,6 @@ import os
 import re
 import requests
 import concurrent.futures
-import time
-import sys
-import logging
-import argparse
-
-# 配置日志记录
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s',
-                    handlers=[
-                        logging.StreamHandler(sys.stdout),
-                        logging.FileHandler('tvzy.log', encoding='utf-8')
-                    ])
-logger = logging.getLogger(__name__)
 
 # 配置参数
 MAX_WORKERS = 10
@@ -22,21 +9,11 @@ TIMEOUT = 10
 MIN_LINES_PER_CHANNEL = 10
 MAX_LINES_PER_CHANNEL = 90
 # 默认输出文件名
-DEFAULT_OUTPUT_FILE = 'tzydauto.txt'
-# 解析命令行参数
-def parse_args():
-    parser = argparse.ArgumentParser(description='电视直播线路收集和处理脚本')
-    parser.add_argument('-o', '--output', default=DEFAULT_OUTPUT_FILE, help=f'输出文件名（默认: {DEFAULT_OUTPUT_FILE}）')
-    parser.add_argument('--test', action='store_true', help='测试模式，只检查脚本基本功能')
-    return parser.parse_args()
-
-# 获取命令行参数
-args = parse_args()
-OUTPUT_FILE = args.output
+OUTPUT_FILE = 'tzydauto.txt'
 
 # 请求头
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 }
 
 # 数据源列表
@@ -394,14 +371,11 @@ def fetch_content(url, timeout=10, max_retries=3):
         try:
             response = requests.get(url, timeout=timeout, headers=HEADERS)
             response.raise_for_status()  # 如果状态码不是200，抛出异常
-            logger.info(f"成功获取 {url}")
             return response.text
-        except requests.RequestException as e:
+        except requests.RequestException:
             retries += 1
             if retries >= max_retries:
-                logger.error(f"获取 {url} 失败: {e}")
                 return None
-            logger.warning(f"重试 ({retries}/{max_retries}) 获取 {url}...")
             time.sleep(2)  # 重试前等待2秒
 
 def is_high_quality(line):
@@ -428,7 +402,6 @@ def is_high_quality(line):
 def normalize_channel_name(name):
     """标准化频道名称，进行精确匹配、包含匹配、反向匹配和关键词匹配"""
     if not name:
-        logger.warning("尝试标准化空频道名称")
         return None
     
     # 移除一些常见的后缀或标识符
@@ -471,8 +444,8 @@ def normalize_channel_name(name):
             canonical_cctv = f"CCTV{cctv_num}"
             if canonical_cctv in CHANNEL_MAPPING:
                 return canonical_cctv
-    except Exception as e:
-        logger.error(f"标准化频道名称 '{name}' 时出错: {e}")
+    except Exception:
+        pass
     
     # 无匹配，返回原始名称
     return None
@@ -480,7 +453,6 @@ def normalize_channel_name(name):
 def extract_channels(content):
     """从内容中提取频道信息"""
     if not content:
-        logger.warning("尝试从空内容中提取频道信息")
         return []
     
     channels = []
@@ -522,10 +494,8 @@ def extract_channels(content):
                     # 尝试从URL中提取名称
                     name = line.split('/')[-1].split('?')[0].split('#')[0]
                     channels.append((name, line))
-        
-        logger.info(f"成功提取了 {len(channels)} 个频道")
-    except Exception as e:
-        logger.error(f"提取频道信息时出错: {e}")
+    except Exception:
+        pass
     
     return channels
 
@@ -534,15 +504,12 @@ def process_source(source_url):
     try:
         # 清理URL，移除可能的引号和空格
         url = source_url.strip('"`\' ')
-        logger.info(f"开始处理数据源: {url}")
         content = fetch_content(url)
         if not content:
-            logger.warning(f"数据源 {url} 没有返回内容或获取失败")
             return []
         
         channels = extract_channels(content)
         if not channels:
-            logger.warning(f"从数据源 {url} 未提取到任何频道")
             return []
         
         # 过滤和标准化频道
@@ -562,10 +529,8 @@ def process_source(source_url):
             if normalized_name:
                 processed_channels.append((normalized_name, url))
         
-        logger.info(f"从数据源 {url} 成功处理了 {len(processed_channels)} 个高清频道")
         return processed_channels
-    except Exception as e:
-        logger.error(f"处理数据源 {source_url} 时出错: {e}")
+    except Exception:
         return []
 
 def sort_and_limit_lines(lines):
@@ -620,8 +585,6 @@ def write_output_file(category_channels):
     """写入输出文件"""
     try:
         output_lines = []
-        channel_count = 0
-        source_count = 0
         
         # 按照指定的顺序遍历类别
         for category in CATEGORY_ORDER:
@@ -634,8 +597,6 @@ def write_output_file(category_channels):
             # 添加该类别的频道
             for channel_name, lines in category_channels[category].items():
                 output_lines.append(f"##{channel_name}")
-                channel_count += 1
-                source_count += len(lines)
                 for name, url in lines:
                     # 验证URL
                     if url and url.startswith(('http://', 'https://')):
@@ -648,63 +609,23 @@ def write_output_file(category_channels):
         with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
             f.write('\n'.join(output_lines))
         
-        logger.info(f"已成功生成 {OUTPUT_FILE}，共包含 {channel_count} 个频道，{source_count} 条线路")
-        print(f"已成功生成 {OUTPUT_FILE}，共包含 {channel_count} 个频道，{source_count} 条线路")
         return True
-    except Exception as e:
-        logger.error(f"写入输出文件时出错: {e}")
+    except Exception:
         return False
 
 def main():
     """主函数"""
     try:
-        # 检查是否为测试模式
-        if args.test:
-            print("=== 测试模式 ===")
-            logger.info("测试模式：开始基本功能检查...")
-            logger.info(f"输出文件配置为: {OUTPUT_FILE}")
-            
-            # 检查必要的导入和配置
-            logger.info("✓ 导入模块检查通过")
-            logger.info(f"✓ 配置参数检查通过")
-            
-            # 检查数据源列表
-            print(f"GITHUB_SOURCES变量存在，长度: {len(GITHUB_SOURCES)}")
-            logger.info(f"✓ 数据源数量: {len(GITHUB_SOURCES)}")
-            
-            # 检查频道类别
-            print(f"CHANNEL_CATEGORIES变量存在，长度: {len(CHANNEL_CATEGORIES)}")
-            logger.info(f"✓ 频道类别数量: {len(CHANNEL_CATEGORIES)}")
-            
-            # 检查输出文件路径是否可写
-            test_dir = os.path.dirname(OUTPUT_FILE) if os.path.dirname(OUTPUT_FILE) else '.'
-            if os.access(test_dir, os.W_OK):
-                logger.info("✓ 输出文件路径可写")
-                print("测试模式检查完成：所有基本功能正常！")
-                return True
-            else:
-                logger.error("✗ 输出文件路径不可写")
-                print("测试模式检查失败：输出文件路径不可写")
-                return False
-        
-        # 正常模式
-        logger.info("开始收集和处理电视直播线路...")
-        logger.info(f"输出文件将保存为: {OUTPUT_FILE}")
-        start_time = time.time()
-        
         # 并发处理所有数据源
         all_channels = []
         with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             future_to_source = {executor.submit(process_source, source): source for source in GITHUB_SOURCES}
             for future in concurrent.futures.as_completed(future_to_source):
-                source = future_to_source[future]
                 try:
                     channels = future.result()
                     all_channels.extend(channels)
-                except Exception as e:
-                    logger.error(f"处理 {source} 时发生异常: {e}")
-        
-        logger.info(f"总共收集到 {len(all_channels)} 条频道线路")
+                except Exception:
+                    pass
         
         # 按频道名称分组
         channel_map = {}
@@ -712,8 +633,6 @@ def main():
             if name not in channel_map:
                 channel_map[name] = []
             channel_map[name].append((name, url))
-        
-        logger.info(f"去重后共有 {len(channel_map)} 个频道")
         
         # 排序并限制每个频道的线路数量
         for name in channel_map:
@@ -728,24 +647,10 @@ def main():
                     category_channels[category] = {}
                 category_channels[category][channel_name] = lines
         
-        logger.info(f"按类别分组后共有 {len(category_channels)} 个类别")
-        
         # 写入输出文件
-        if write_output_file(category_channels):
-            logger.info(f"处理完成！耗时: {time.time() - start_time:.2f} 秒")
-            print(f"处理完成！耗时: {time.time() - start_time:.2f} 秒")
-        else:
-            logger.error("处理失败：无法写入输出文件")
-            print("处理失败：无法写入输出文件")
-            sys.exit(1)
-    except KeyboardInterrupt:
-        logger.info("程序被用户中断")
-        print("程序被用户中断")
-        sys.exit(130)
-    except Exception as e:
-        logger.error(f"程序运行过程中发生未捕获的异常: {e}", exc_info=True)
-        print(f"程序运行过程中发生错误: {e}")
-        sys.exit(1)
+        write_output_file(category_channels)
+    except Exception:
+        pass
 
 if __name__ == "__main__":
     main()

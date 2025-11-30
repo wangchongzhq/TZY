@@ -9,13 +9,7 @@ import ssl
 import json
 from urllib.request import urlopen, Request
 from urllib.parse import urlparse
-from datetime import datetime, timedelta
-
-# 设置标准输出为UTF-8编码
-sys.stdout = open(sys.stdout.fileno(), mode='w', encoding='utf-8', buffering=1)
-sys.stderr = open(sys.stderr.fileno(), mode='w', encoding='utf-8', buffering=1)
-
-print("开始执行直播源获取脚本...")
+from datetime import datetime
 
 # 文件配置
 OUTPUT_FILE = 'CGQ.TXT'  # 输出文件
@@ -52,28 +46,20 @@ CHANNEL_CATEGORIES = {
 default_channels = {
     "4K央视频道": [
         ("CCTV-4K", "http://example.com/cctv4k.m3u8"),
-        ("CCTV-1 4K", "http://example.com/cctv14k.m3u8"),
-        ("NHK BS4K", "https://example.com/nhk4k/index.m3u8"),
-        ("BS TV Tokyo 4K", "https://vn.utako.moe/bstx4k/index.m3u8")
+        ("CCTV-1 4K", "http://example.com/cctv14k.m3u8")
     ],
     "4K超高清频道": [
-        ("4K测试频道", "http://example.com/test4k.m3u8"),
-        ("4K电影频道", "http://example.com/4kmovie.m3u8")
+        ("4K测试频道", "http://example.com/test4k.m3u8")
     ],
     "高清频道": [
         ("CCTV-1 高清", "http://example.com/cctv1hd.m3u8"),
-        ("CCTV-2 高清", "http://example.com/cctv2hd.m3u8"),
-        ("湖南卫视高清", "http://example.com/hunanhd.m3u8"),
-        ("浙江卫视高清", "http://example.com/zhejianghd.m3u8")
+        ("CCTV-2 高清", "http://example.com/cctv2hd.m3u8")
     ],
     "卫视": [
-        ("湖南卫视", "http://example.com/hunan.m3u8"),
-        ("浙江卫视", "http://example.com/zhejiang.m3u8")
+        ("湖南卫视", "http://example.com/hunan.m3u8")
     ],
     "央视": [
-        ("CCTV-1", "http://example.com/cctv1.m3u8"),
-        ("CCTV-2", "http://example.com/cctv2.m3u8"),
-        ("CCTV-3", "http://example.com/cctv3.m3u8")
+        ("CCTV-1", "http://example.com/cctv1.m3u8")
     ]
 }
 
@@ -108,24 +94,18 @@ def get_github_file_info(url):
         req = Request(api_url, headers=HEADERS)
         with urlopen(req, timeout=TIMEOUT) as response:
             content = response.read().decode('utf-8')
-            data = json.loads(content)
-            return data
-    except Exception as e:
-        print(f"获取GitHub文件信息失败: {e}")
+            return json.loads(content)
+    except:
         return None
 
 def is_recently_updated(url):
     """检查GitHub文件是否最近更新"""
     if not url or 'github.com' not in url:
-        # 非GitHub链接，认为是最近更新的
         return True
     
     try:
-        # 获取文件信息
         file_info = get_github_file_info(url)
         if not file_info:
-            # 如果获取文件信息失败，仍然尝试获取内容
-            print(f"获取文件信息失败，仍然尝试获取内容: {url}")
             return True
         
         # 检查更新时间
@@ -134,8 +114,7 @@ def is_recently_updated(url):
             current_time = datetime.utcnow()
             days_diff = (current_time - updated_time).days
             if days_diff > DAYS_LIMIT:
-                print(f"{url} 超过{DAYS_LIMIT}天未更新，但仍然尝试获取内容")
-            return True  # 总是尝试获取内容，扩大直播源范围
+                return True  # 总是尝试获取内容
         elif 'commit' in file_info and 'commit' in file_info['commit'] and 'author' in file_info['commit']['commit']:
             commit_info = file_info['commit']['commit']['author']
             if 'date' in commit_info:
@@ -143,38 +122,28 @@ def is_recently_updated(url):
                 current_time = datetime.utcnow()
                 days_diff = (current_time - updated_time).days
                 if days_diff > DAYS_LIMIT:
-                    print(f"{url} 超过{DAYS_LIMIT}天未更新，但仍然尝试获取内容")
-            return True  # 总是尝试获取内容，扩大直播源范围
+                    return True  # 总是尝试获取内容
         
-        return True  # 总是尝试获取内容，扩大直播源范围
-    except Exception as e:
-        print(f"检查更新时间失败，仍然尝试获取内容: {e} - {url}")
-        return True  # 发生异常时仍然尝试获取内容
+        return True
+    except:
+        return True
 
 def get_source_content(url):
     """获取直播源内容"""
     if not is_valid_url(url):
-        print(f"无效的URL: {url}")
         return None
     
     try:
-        # 检查是否最近更新
         if not is_recently_updated(url):
-            print(f"{url} 不是最近{DAYS_LIMIT}天内更新的，跳过")
             return None
         
-        # 发送请求
         req = Request(url, headers=HEADERS)
         with urlopen(req, timeout=TIMEOUT) as response:
             if response.getcode() == 200:
-                content = response.read().decode('utf-8')
-                print(f"成功获取 {url}")
-                return content
+                return response.read().decode('utf-8')
             else:
-                print(f"获取失败，状态码: {response.getcode()} - {url}")
                 return None
-    except Exception as e:
-        print(f"获取内容异常: {e} - {url}")
+    except:
         return None
 
 def extract_channels_from_m3u(content):
@@ -185,9 +154,8 @@ def extract_channels_from_m3u(content):
     
     lines = content.strip().split('\n')
     channel_name = None
-    channel_url = None
     
-    for i, line in enumerate(lines):
+    for line in lines:
         line = line.strip()
         if line.startswith('#EXTINF:'):
             # 提取频道名称
@@ -197,11 +165,9 @@ def extract_channels_from_m3u(content):
             else:
                 channel_name = None
         elif line and not line.startswith('#') and channel_name:
-            channel_url = line
-            if is_valid_url(channel_url):
-                channels.append((channel_name, channel_url))
+            if is_valid_url(line):
+                channels.append((channel_name, line))
             channel_name = None
-            channel_url = None
     
     return channels
 
@@ -286,8 +252,6 @@ def process_all_live_sources(sources):
         else:
             channels = extract_channels_from_txt(content)
         
-        print(f"从 {source} 提取到 {len(channels)} 个频道")
-        
         # 添加到总列表并去重
         for channel_name, channel_url in channels:
             channel_key = (channel_name, channel_url)
@@ -298,17 +262,12 @@ def process_all_live_sources(sources):
                 category = categorize_channel(channel_name)
                 categorized_channels[category].append((channel_name, channel_url))
     
-    print(f"\n总计获取到 {len(all_channels)} 个直播频道")
-    
     # 如果没有获取到任何频道，使用默认频道数据
     if not all_channels:
-        print("\n警告: 未获取到任何直播源，使用默认频道数据")
         for category, channels in default_channels.items():
             categorized_channels[category].extend(channels)
             for channel_name, channel_url in channels:
                 all_channels.add((channel_name, channel_url))
-        
-        print(f"使用默认频道数据: {sum(len(channels) for channels in default_channels.values())} 个频道")
     
     return categorized_channels
 
@@ -351,40 +310,20 @@ def write_to_file(categorized_channels):
                 
                 f.write("\n")
         
-        print(f"\n直播源已成功写入 {OUTPUT_FILE}")
-        print(f"文件大小: {os.path.getsize(OUTPUT_FILE)} 字节")
-        
-        # 显示各分类频道数量
-        print("\n各分类频道数量:")
-        total = 0
-        for category, channels in categorized_channels.items():
-            if channels:
-                print(f"{category}: {len(channels)} 个频道")
-                total += len(channels)
-        print(f"总计: {total} 个频道")
-        
         return True
-    except Exception as e:
-        print(f"写入文件失败: {e}")
+    except:
         return False
 
-def verify_and_fix_file():
-    """验证文件内容并在必要时修复"""
+def verify_and_fix_file():    """验证文件内容并在必要时修复"""
     if not os.path.exists(OUTPUT_FILE):
-        print(f"文件 {OUTPUT_FILE} 不存在，创建默认文件")
         return write_to_file(default_channels)
     
     try:
         with open(OUTPUT_FILE, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        print(f"\n===== 文件验证 =====")
-        print(f"文件大小: {len(content)} 字符")
-        print(f"文件行数: {len(content.splitlines())}")
-        
         # 检查是否只有头信息或空文件
         if not content.strip() or content.strip() == "#EXTM3U":
-            print("警告: 文件内容异常，重新写入默认数据")
             return write_to_file(default_channels)
         
         # 检查是否包含足够的频道数据
@@ -392,20 +331,14 @@ def verify_and_fix_file():
         channel_lines = [line for line in lines if line.strip() and ",http" in line and not line.startswith('#')]
         
         if len(channel_lines) < 5:
-            print(f"警告: 文件中频道数量过少 ({len(channel_lines)}个)，重新写入默认数据")
             return write_to_file(default_channels)
         
-        print(f"文件验证通过，包含 {len(channel_lines)} 个频道")
         return True
-    except Exception as e:
-        print(f"验证文件失败: {e}")
-        print("重新写入默认数据")
+    except:
         return write_to_file(default_channels)
 
 def main():
     """主函数"""
-    start_time = time.time()
-    
     try:
         # 扩展的直播源URL列表 - 确保获取足够的直播源
         LIVE_SOURCES = [
@@ -434,9 +367,6 @@ def main():
             "https://raw.githubusercontent.com/cuijian01/dianshi/main/live.txt",
         ]
         
-        print(f"开始处理 {len(LIVE_SOURCES)} 个直播源")
-        print(f"筛选条件: 近{DAYS_LIMIT}天内更新的直播源")
-        
         # 处理所有直播源
         categorized_channels = process_all_live_sources(LIVE_SOURCES)
         
@@ -447,24 +377,13 @@ def main():
         if success:
             verify_success = verify_and_fix_file()
             if not verify_success:
-                print("严重错误: 文件验证修复失败")
                 return False
         
-        end_time = time.time()
-        print(f"\n任务完成！总耗时: {end_time - start_time:.2f} 秒")
         return True
         
-    except Exception as e:
-        print(f"主程序异常: {e}")
-        
+    except:
         # 安全模式 - 直接写入默认数据
-        print("\n安全模式: 直接写入默认频道数据")
-        if write_to_file(default_channels):
-            print("安全模式写入成功")
-            return True
-        else:
-            print("安全模式写入失败")
-            return False
+        return write_to_file(default_channels)
 
 if __name__ == "__main__":
     result = main()

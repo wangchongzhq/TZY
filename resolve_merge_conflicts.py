@@ -7,7 +7,6 @@
 
 import os
 
-
 def resolve_merge_conflicts(input_file, output_file=None):
     """
     解决文件中的Git合并冲突
@@ -20,17 +19,13 @@ def resolve_merge_conflicts(input_file, output_file=None):
         output_file = input_file
     
     # 读取文件内容
-    print(f"正在读取文件: {input_file}")
     with open(input_file, 'r', encoding='utf-8') as f:
         lines = f.readlines()
-    
-    print(f"文件总行数: {len(lines)}")
     
     # 处理冲突并去重
     processed_lines = []
     current_section = None  # None, 'ours', 'theirs', 'common'
     channel_sources = set()  # 用于存储当前频道的直播源
-    conflict_count = 0
     
     for line in lines:
         line = line.rstrip()  # 去除行尾的换行符和空格
@@ -38,7 +33,6 @@ def resolve_merge_conflicts(input_file, output_file=None):
         # 处理冲突标记
         if line.startswith('<<<<<<<'):
             current_section = 'ours'
-            conflict_count += 1
             continue
         elif line.startswith('======='):
             current_section = 'theirs'
@@ -87,20 +81,10 @@ def resolve_merge_conflicts(input_file, output_file=None):
     if channel_sources:
         processed_lines.extend(channel_sources)
     
-    # 计算处理后的行数
-    total_processed_lines = len(processed_lines)
-    print(f"解决的冲突数: {conflict_count}")
-    print(f"处理后行数: {total_processed_lines}")
-    print(f"减少的行数: {len(lines) - total_processed_lines}")
-    print(f"减少的百分比: {(len(lines) - total_processed_lines) / len(lines) * 100:.2f}%")
-    
     # 写入处理后的内容
-    print(f"正在写入文件: {output_file}")
     with open(output_file, 'w', encoding='utf-8') as f:
         for line in processed_lines:
             f.write(line + '\n')
-    
-    print("冲突解决完成！")
 
 
 if __name__ == "__main__":
@@ -108,9 +92,5 @@ if __name__ == "__main__":
     input_file = "tzydauto.txt"
     
     # 检查文件是否存在
-    if not os.path.exists(input_file):
-        print(f"错误: 文件 {input_file} 不存在")
-        exit(1)
-    
-    # 执行冲突解决操作
-    resolve_merge_conflicts(input_file)
+    if os.path.exists(input_file):
+        resolve_merge_conflicts(input_file)

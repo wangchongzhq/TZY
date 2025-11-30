@@ -13,11 +13,6 @@ with open('get_cgq_sources.py', 'r', encoding='utf-8') as f:
 # 使用正则表达式查找所有的URL
 live_sources = re.findall(r'"(https://[^"]+)"', content)
 
-# 打印结果
-print(f'找到的直播源URL数量: {len(live_sources)}')
-print(f'是否满足最小50个的要求: {len(live_sources) >= 50}')
-
-# 打印前10个URL作为示例
-print('\n前10个URL示例:')
-for i, url in enumerate(live_sources[:10], 1):
-    print(f'{i}. {url}')
+# 输出URL数量
+print(len(live_sources))
+print(len(live_sources) >= 50)
