@@ -149,6 +149,8 @@ def process_uhd_channels(lines):
 
 # 主函数
 def main():
+    print("🚀 4K直播源处理工具启动")
+    
     # 读取文件内容
     lines = read_file()
     
@@ -157,6 +159,8 @@ def main():
     
     # 写入处理后的内容
     write_file(processed_lines)
+    
+    print("\n🏆 4K频道处理任务完成！")
 
 # 测试脚本
 if __name__ == "__main__":
