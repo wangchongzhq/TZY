@@ -147,104 +147,13 @@ def process_uhd_channels(lines):
     
     return processed_lines
 
-# 生成大量的GitHub直播源URL
-def generate_github_sources():
-    """生成大量的GitHub直播源URL，为每个仓库生成多个不同路径的URL"""
-    # 定义GitHub仓库列表（选择50个不同的仓库名）
-    github_repos = [
-        'imDazui', 'iptv-org', 'Free-IPTV', 'liuminghang', 'KyleBing',
-        'iptv-collection', 'iptv', 'iptv-pro', 'TVlist', 'IPTV-SOURCE',
-        'biancangming', 'metowolf', 'snowind', 'caorushizi', 'darkatse',
-        'JadePeng', 'ss098', 'chengr28', 'kingan77', 'lizhijie',
-        'shenludui', 'xiaomo', 'xiaohu', 'xiaowu', 'xiaozhang',
-        'xiaoli', 'xiaowang', 'tiger', 'lion', 'monkey',
-        'elephant', 'zebra', 'giraffe', 'cat', 'dog',
-        'fish', 'bird', 'snake', 'turtle', 'apple',
-        'banana', 'orange', 'grape', 'pear', 'lemon',
-        'red', 'blue', 'green', 'yellow', 'purple'
-    ]
-
-    # 定义M3U文件名列表（选择10个常用文件名）
-    m3u_files = [
-        '4K.m3u', '4k.m3u', 'HD.m3u', 'hd.m3u', 'CCTV.m3u',
-        '卫视.m3u', '地方.m3u', 'IPTV.m3u', 'tv.m3u', 'live.m3u'
-    ]
-
-    # 生成大量的GitHub直播源URL
-    urls = []
-    counter = 1
-
-    for repo in github_repos:
-        for file in m3u_files:
-            # 为每个仓库和文件名生成4个不同路径的URL
-            for i in range(4):
-                # 使用不同的路径格式
-                paths = [
-                    f'{repo}/Tvlist-awesome-m3u-m3u8/master/m3u/{file}',
-                    f'{repo}/iptv/master/streams/{file}',
-                    f'{repo}/IPTV/main/{file}',
-                    f'{repo}/iptv-collection/master/{file}'
-                ]
-                path = paths[i % len(paths)]
-                
-                # 构建完整的URL（不带前缀）
-                url = f'https://raw.githubusercontent.com/{path}'
-                urls.append(f'# {counter}. {url}')
-                counter += 1
-
-    return urls
-
-# 筛选GitHub直播源，为每个仓库最多保留2个直播源
-def filter_github_sources(sources):
-    """筛选GitHub直播源，为每个仓库最多保留2个直播源"""
-    # 定义正则表达式来提取GitHub仓库名称
-    github_pattern = re.compile(r'https://raw\.githubusercontent\.com/([^/]+)/')
-
-    # 统计每个仓库的直播源数量
-    repo_count = {}
-    selected_sources = []
-
-    # 遍历所有直播源，筛选每个仓库前2个直播源
-    for source in sources:
-        match = github_pattern.search(source)
-        if match:
-            repo_name = match.group(1)
-            if repo_count.get(repo_name, 0) < 2:
-                selected_sources.append(source)
-                repo_count[repo_name] = repo_count.get(repo_name, 0) + 1
-
-    return selected_sources
-
 # 主函数
 def main():
     # 读取文件内容
     lines = read_file()
     
-    # 生成新的GitHub直播源URL
-    new_github_sources = generate_github_sources()
-    
-    # 筛选GitHub直播源，为每个仓库最多保留2个直播源
-    filtered_sources = filter_github_sources(new_github_sources)
-    
-    # 创建新的文件内容
-    new_lines = []
-    
-    # 添加文件头部
-    new_lines.append("# 4K超高清直播源列表\n")
-    new_lines.append(f"# 更新时间: {time.strftime('%Y-%m-%d')}\n")
-    new_lines.append("# 共包含 0 个4K超高清频道\n")
-    new_lines.append("\n\n\n")
-    new_lines.append("# 4K央视频道\n")
-    new_lines.append("\n\n\n")
-    
-    # 添加GitHub直播源URL
-    new_lines.append("# 以下是至少400个GitHub直播源URL建议：\n")
-    new_lines.append("# 注意：以下URL经过筛选，优先包含4K、超高清等高质量直播源\n")
-    for source in filtered_sources:
-        new_lines.append(f"{source}\n")
-    
     # 处理4K频道，验证URL并更新时间戳
-    processed_lines = process_uhd_channels(new_lines)
+    processed_lines = process_uhd_channels(lines)
     
     # 写入处理后的内容
     write_file(processed_lines)

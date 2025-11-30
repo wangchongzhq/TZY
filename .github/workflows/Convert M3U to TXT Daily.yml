@@ -2,7 +2,7 @@ name: Convert M3U to TXT Daily
 
 on:
   schedule:
-    - cron: '0 2 * * *'  # 每天UTC时间2:00运行（北京时间10:00）
+    - cron: '0 20 * * *'  # 每天UTC时间20:00运行（北京时间4:00）
   workflow_dispatch:      # 允许手动触发
   push:
     paths:
