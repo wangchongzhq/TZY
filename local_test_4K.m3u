@@ -1,0 +1,7 @@
+#EXTM3U
+#EXTINF:-1 tvg-id="CCTV-1" tvg-name="CCTV-1" tvg-logo="https://example.com/cctv1.png" group-title="央视",CCTV-1
+https://example.com/cctv1.m3u8
+#EXTINF:-1 tvg-id="CCTV-16-4K" tvg-name="CCTV-16 4K" tvg-logo="https://example.com/cctv16-4k.png" group-title="央视4K",CCTV-16 4K
+https://example.com/cctv16-4k.m3u8
+#EXTINF:-1 tvg-id="Hunan-4K" tvg-name="湖南卫视4K" tvg-logo="https://example.com/hunan-4k.png" group-title="卫视4K",湖南卫视4K
+https://example.com/hunan-4k.m3u8

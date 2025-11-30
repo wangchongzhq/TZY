@@ -1,0 +1,138 @@
+name: 4K超高清直播源自动合并转换
+
+on:
+  # 定时运行：每天凌晨2点
+  schedule:
+    - cron: '0 18 * * *'  # UTC时间，对应北京时间凌晨2点
+  
+  # 手动触发
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: '日志级别'
+        required: true
+        default: 'info'
+        type: choice
+        options:
+          - info
+          - debug
+        
+      forceUpdate:
+        description: '强制更新所有源'
+        required: false
+        default: true
+        type: boolean
+
+# 权限设置
+permissions:
+  contents: write  # 允许写入文件
+  pull-requests: write  # 允许创建PR
+
+jobs:
+  merge-and-convert:
+    runs-on: windows-latest
+    
+    steps:
+      # 1. 检出代码库
+      - name: 检出代码库
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      
+      # 2. 设置Python环境
+      - name: 设置Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+      
+      # 3. 安装依赖
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+      
+      # 4. 显示当前目录结构
+      - name: 检查项目结构
+        run: |
+          echo "📁 当前目录结构："
+          dir /b /s
+          
+          echo "📄 检查4K_uhd_channels.txt："
+          if exist 4K_uhd_channels.txt (
+            echo "✅ 文件存在"
+            findstr /C:".m3u" 4K_uhd_channels.txt | head -10
+            echo "..."
+          ) else (
+            echo "❌ 文件不存在"
+          )
+      
+      # 5. 运行合并转换脚本
+      - name: 运行合并转换脚本
+        run: |
+          echo "🎬 开始运行4K_uhd_merger.py..."
+          python 4K_uhd_merger.py
+        env:
+          # 设置环境变量
+          PYTHONIOENCODING: utf-8
+      
+      # 6. 验证输出结果
+      - name: 验证输出结果
+        run: |
+          echo "📊 验证输出文件："
+          if exist 4K_uhd_hb.txt (
+            echo "✅ 4K_uhd_hb.txt 创建成功"
+            echo "📁 文件大小：$(Get-Item 4K_uhd_hb.txt).Length / 1KB KB"
+            echo "📄 前15行内容："
+            Get-Content 4K_uhd_hb.txt -TotalCount 15
+          ) else (
+            echo "❌ 4K_uhd_hb.txt 未创建"
+            exit 1
+          )
+      
+      # 7. 提交更改
+      - name: 提交更改
+        run: |
+          echo "📝 准备提交更改..."
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 检查是否有更改
+          git status
+          
+          if (git diff --quiet) {
+            echo "✅ 没有文件需要更新"
+          } else {
+            echo "🔄 发现需要更新的文件"
+            git add 4K_uhd_hb.txt
+            git commit -m "🚀 自动更新4K超高清直播源 ($(Get-Date -Format 'yyyy-MM-dd'))"
+            
+            # 推送到GitHub
+            git push origin HEAD:main
+            echo "✅ 更改已提交到GitHub"
+          }
+        
+      # 8. 创建PR（可选）
+      - name: 创建PR（如果有更新）
+        uses: peter-evans/create-pull-request@v5
+        if: steps.commit.outputs.changes != 'false'
+        with:
+          title: '🚀 自动更新4K超高清直播源'
+          body: |
+            ## 自动更新报告
+            
+            - **更新时间**: ${{ github.event.head_commit.timestamp }}
+            - **工作流**: ${{ github.workflow }}
+            - **触发方式**: ${{ github.event_name }}
+            
+            ### 更新内容
+            - 合并了4K_uhd_channels.txt中的.m3u直播源
+            - 转换为4K_uhd_hb.txt格式
+            - 保留了频道名称与URL对应关系
+            - 去除了重复的直播线路
+            
+            ### 操作日志
+            请查看工作流日志获取详细信息。
+          labels: 'automated-update,4k-channels'
+          branch: 'auto-update-4k-channels'
+          base: 'main'
