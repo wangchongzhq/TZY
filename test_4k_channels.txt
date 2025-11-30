@@ -1,5 +1,0 @@
-# 4K超高清直播源列表
-# 更新时间: 2025-11-29 18:00:00
-# 4K频道数: 0
-
-file:///c:/Users/Administrator/Documents/GitHub/TZY/local_test_4K.m3u
