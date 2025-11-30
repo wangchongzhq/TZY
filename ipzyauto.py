@@ -336,8 +336,9 @@ def is_preferred_url(url: str) -> bool:
 def should_exclude_url(url: str) -> bool:
     """检查是否应该排除特定URL"""
     if not url:
-        return False
-    return 'http://example.com/' in url
+        return True
+    # 只允许http://example或https://example开头的URL
+    return not (url.startswith('http://example') or url.startswith('https://example'))
 
 # 移除URL模糊处理函数，简化代码
 

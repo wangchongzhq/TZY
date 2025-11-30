@@ -367,11 +367,11 @@ HD_PATTERNS = [
 HD_REGEX = re.compile('|'.join(HD_PATTERNS), re.IGNORECASE)
 
 def should_exclude_url(url):
-    """检查URL是否应该被排除（只保留ALLOWED_DOMAINS中的直播源）"""
-    for domain in ALLOWED_DOMAINS:
-        if url.startswith(domain):
-            return False
-    return True
+    """检查是否应该排除特定URL"""
+    if not url:
+        return True
+    # 只允许http://example或https://example开头的URL
+    return not (url.startswith('http://example') or url.startswith('https://example'))
 
 def fetch_content(url, timeout=10, max_retries=3):
     """获取URL内容，支持超时和重试"""

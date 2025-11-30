@@ -45,11 +45,33 @@ CHANNEL_CATEGORIES = {
 # 默认频道数据 - 当获取失败时使用（使用有效的替代链接）
 default_channels = {
     "4K央视频道": [
-        ("CCTV-4K", "https://example.org/cctv4k.m3u8"),
-        ("CCTV-1 4K", "https://example.org/cctv14k.m3u8")
+        ("CCTV4K", "https://example.org/cctv4k.m3u8"),
+        ("CCTV16 4K", "https://example.org/cctv164k.m3u8")
     ],
     "4K超高清频道": [
-        ("4K测试频道", "https://example.org/test4k.m3u8")
+        ("北京卫视4K", "https://example.org/beijing4k.m3u8"),
+        ("北京IPTV4K", "https://example.org/beijingiptv4k.m3u8"),
+        ("湖南卫视4K", "https://example.org/hunan4k.m3u8"),
+        ("山东卫视4K", "https://example.org/shandong4k.m3u8"),
+        ("广东卫视4K", "https://example.org/guangdong4k.m3u8"),
+        ("四川卫视4K", "https://example.org/sichuan4k.m3u8"),
+        ("浙江卫视4K", "https://example.org/zhejiang4k.m3u8"),
+        ("江苏卫视4K", "https://example.org/jiangsu4k.m3u8"),
+        ("东方卫视4K", "https://example.org/dongfang4k.m3u8"),
+        ("深圳卫视4K", "https://example.org/shenzhen4k.m3u8"),
+        ("河北卫视4K", "https://example.org/hebei4k.m3u8"),
+        ("峨眉电影4K", "https://example.org/emei4k.m3u8"),
+        ("求索4K", "https://example.org/qiuzuo4k.m3u8"),
+        ("咪视界4K", "https://example.org/mishijie4k.m3u8"),
+        ("欢笑剧场4K", "https://example.org/huanxiao4k.m3u8"),
+        ("苏州4K", "https://example.org/suzhou4k.m3u8"),
+        ("至臻视界4K", "https://example.org/zhizhen4k.m3u8"),
+        ("南国都市4K", "https://example.org/nanguo4k.m3u8"),
+        ("翡翠台4K", "https://example.org/feicui4k.m3u8"),
+        ("百事通电影4K", "https://example.org/bestmovie4k.m3u8"),
+        ("百事通少儿4K", "https://example.org/bestkids4k.m3u8"),
+        ("百事通纪实4K", "https://example.org/bestdoc4k.m3u8"),
+        ("华数爱上4K", "https://example.org/huashu4k.m3u8")
     ],
     "高清频道": [
         ("CCTV-1 高清", "https://example.org/cctv1hd.m3u8"),
@@ -76,8 +98,9 @@ def is_valid_url(url):
 def should_exclude_url(url):
     """检查是否应该排除特定URL"""
     if not url:
-        return False
-    return 'http://example.com/' in url
+        return True
+    # 只允许http://example或https://example开头的URL
+    return not (url.startswith('http://example') or url.startswith('https://example'))
 
 def clean_url(url):
     """清理URL，移除空白字符"""
