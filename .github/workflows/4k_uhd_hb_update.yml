@@ -1,0 +1,59 @@
+name: 4K超高清直播源自动更新
+
+on:
+  # 定时触发：每天凌晨2点运行
+  schedule:
+    - cron: '0 2 * * *'
+  
+  # 手动触发
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: '手动触发的原因'
+        required: false
+        default: '手动更新'
+
+jobs:
+  update-4k-uhd-hb:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 检出代码
+      - name: 检出代码
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: true
+      
+      # 设置Python环境
+      - name: 设置Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+      
+      # 安装依赖
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install requests
+      
+      # 运行4K超高清直播源处理脚本
+      - name: 运行4K超高清直播源处理脚本
+        run: python process_4k_uhd_hb.py
+      
+      # 检查是否有文件变更
+      - name: 检查文件变更
+        id: check_changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add 4K_uhd_hb.txt
+          git diff --quiet --staged || echo "::set-output name=changed::true"
+      
+      # 提交变更
+      - name: 提交变更
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git commit -m "自动化更新4K超高清直播源列表"
+          git push origin ${{ github.ref }}
