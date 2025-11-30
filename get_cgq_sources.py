@@ -118,11 +118,14 @@ def is_valid_url(url):
         return False
 
 def should_exclude_url(url):
-    """检查是否应该排除特定URL"""
+    """检查是否应该排除特定URL
+    只允许使用http://example或https://example开头的URL，确保所有直播源都来自指定域名。
+    """
     if not url:
         return True
     # 只允许http://example或https://example开头的URL
-    return not (url.startswith('http://example') or url.startswith('https://example'))
+    is_allowed = url.startswith('http://example') or url.startswith('https://example')
+    return not is_allowed
 
 def clean_url(url):
     """清理URL，移除空白字符"""
