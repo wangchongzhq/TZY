@@ -1,5 +1,5 @@
 # 超高清直播源列表（全球高清线路）
-# 更新时间: 2025-11-30 12:30:00
+# 更新时间: 2025-11-30 04:31:02
 # 收录频道总数: 25 个
 
 4K央视频道 (频道数: 2),#genre#
@@ -30,3 +30,4 @@ CCTV4K,https://tvstream.demo.com/cctv4k.m3u8
 翡翠台4K,https://tvstream.demo.com/feicui4k.m3u8
 至臻视界4K,https://tvstream.demo.com/zhizhen4k.m3u8
 苏州4K,https://tvstream.demo.com/suzhou4k.m3u8
+
