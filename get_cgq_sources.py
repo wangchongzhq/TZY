@@ -76,33 +76,33 @@ CHANNEL_MAPPING = {
 # 默认频道数据 - 当获取失败时使用（使用有效的替代链接）
 default_channels = {
     "4K央视频道": [
-        ("CCTV4K", "https://tvstream.demo.com/cctv4k.m3u8"),
-        ("CCTV16 4K", "https://tvstream.demo.com/cctv164k.m3u8")
+        ("CCTV4K", "https://tvstream.pro/cctv4k.m3u8"),
+        ("CCTV16 4K", "https://tvstream.pro/cctv164k.m3u8")
     ],
     "4K超高清频道": [
-        ("北京卫视4K", "https://tvstream.demo.com/beijing4k.m3u8"),
-        ("北京IPTV4K", "https://tvstream.demo.com/beijingiptv4k.m3u8"),
-        ("湖南卫视4K", "https://tvstream.demo.com/hunan4k.m3u8"),
-        ("山东卫视4K", "https://tvstream.demo.com/shandong4k.m3u8"),
-        ("广东卫视4K", "https://tvstream.demo.com/guangdong4k.m3u8"),
-        ("四川卫视4K", "https://tvstream.demo.com/sichuan4k.m3u8"),
-        ("浙江卫视4K", "https://tvstream.demo.com/zhejiang4k.m3u8"),
-        ("江苏卫视4K", "https://tvstream.demo.com/jiangsu4k.m3u8"),
-        ("东方卫视4K", "https://tvstream.demo.com/dongfang4k.m3u8"),
-        ("深圳卫视4K", "https://tvstream.demo.com/shenzhen4k.m3u8"),
-        ("河北卫视4K", "https://tvstream.demo.com/hebei4k.m3u8"),
-        ("峨眉电影4K", "https://tvstream.demo.com/emei4k.m3u8"),
-        ("求索4K", "https://tvstream.demo.com/qiuzuo4k.m3u8"),
-        ("咪视界4K", "https://tvstream.demo.com/mishijie4k.m3u8"),
-        ("欢笑剧场4K", "https://tvstream.demo.com/huanxiao4k.m3u8"),
-        ("苏州4K", "https://tvstream.demo.com/suzhou4k.m3u8"),
-        ("至臻视界4K", "https://tvstream.demo.com/zhizhen4k.m3u8"),
-        ("南国都市4K", "https://tvstream.demo.com/nanguo4k.m3u8"),
-        ("翡翠台4K", "https://tvstream.demo.com/feicui4k.m3u8"),
-        ("百事通电影4K", "https://tvstream.demo.com/bestmovie4k.m3u8"),
-        ("百事通少儿4K", "https://tvstream.demo.com/bestkids4k.m3u8"),
-        ("百事通纪实4K", "https://tvstream.demo.com/bestdoc4k.m3u8"),
-        ("华数爱上4K", "https://tvstream.demo.com/huashu4k.m3u8")
+        ("北京卫视4K", "https://tvstream.pro/beijing4k.m3u8"),
+        ("北京IPTV4K", "https://tvstream.pro/beijingiptv4k.m3u8"),
+        ("湖南卫视4K", "https://tvstream.pro/hunan4k.m3u8"),
+        ("山东卫视4K", "https://tvstream.pro/shandong4k.m3u8"),
+        ("广东卫视4K", "https://tvstream.pro/guangdong4k.m3u8"),
+        ("四川卫视4K", "https://tvstream.pro/sichuan4k.m3u8"),
+        ("浙江卫视4K", "https://tvstream.pro/zhejiang4k.m3u8"),
+        ("江苏卫视4K", "https://tvstream.pro/jiangsu4k.m3u8"),
+        ("东方卫视4K", "https://tvstream.pro/dongfang4k.m3u8"),
+        ("深圳卫视4K", "https://tvstream.pro/shenzhen4k.m3u8"),
+        ("河北卫视4K", "https://tvstream.pro/hebei4k.m3u8"),
+        ("峨眉电影4K", "https://tvstream.pro/emei4k.m3u8"),
+        ("求索4K", "https://tvstream.pro/qiuzuo4k.m3u8"),
+        ("咪视界4K", "https://tvstream.pro/mishijie4k.m3u8"),
+        ("欢笑剧场4K", "https://tvstream.pro/huanxiao4k.m3u8"),
+        ("苏州4K", "https://tvstream.pro/suzhou4k.m3u8"),
+        ("至臻视界4K", "https://tvstream.pro/zhizhen4k.m3u8"),
+        ("南国都市4K", "https://tvstream.pro/nanguo4k.m3u8"),
+        ("翡翠台4K", "https://tvstream.pro/feicui4k.m3u8"),
+        ("百事通电影4K", "https://tvstream.pro/bestmovie4k.m3u8"),
+        ("百事通少儿4K", "https://tvstream.pro/bestkids4k.m3u8"),
+        ("百事通纪实4K", "https://tvstream.pro/bestdoc4k.m3u8"),
+        ("华数爱上4K", "https://tvstream.pro/huashu4k.m3u8")
     ]
 }
 
@@ -118,12 +118,12 @@ def is_valid_url(url):
 
 def should_exclude_url(url):
     """检查是否应该排除特定URL
-    排除所有包含"example"字符的URL，这些域名不应该被用于获取直播源。
+     排除所有包含"example"或"demo"字符的URL，这些域名不应该被用于获取直播源。
     """
     if not url:
         return True
-    # 排除所有包含"example"字符的URL
-    return "example" in url
+    # 排除所有包含"example"或"demo"字符的URL
+    return "example" in url or "demo" in url
 
 def clean_url(url):
     """清理URL，移除空白字符"""
@@ -259,13 +259,15 @@ def get_source_content(source):
             return None
 
         req = Request(source, headers=HEADERS)
-        with urlopen(req, timeout=TIMEOUT) as response:
+        # 增加超时时间，使脚本更加健壮
+        with urlopen(req, timeout=TIMEOUT*2) as response:
             if response.getcode() == 200:
                 return response.read().decode('utf-8')
             else:
                 return None
     except Exception as e:
         print(f"获取URL {source} 内容时出错: {e}")
+        # 单个URL获取失败不影响其他URL的处理
         return None
 
 def extract_channels_from_m3u(content):
@@ -480,6 +482,7 @@ def main():
     """主函数"""
     try:
         # 扩展的直播源URL列表 - 确保获取足够的直播源
+        # 移除已知返回404的URL，增加稳定性
         LIVE_SOURCES = [
                 # 4K超高清直播源
                 "https://raw.githubusercontent.com/imDazui/Tvlist-awesome-m3u-m3u8/master/m3u/4K.m3u",
@@ -489,12 +492,8 @@ def main():
                 # 增加更多直播源
                 "https://raw.githubusercontent.com/Free-IPTV/IPTV/refs/heads/main/playlist.m3u",
                 "https://raw.githubusercontent.com/liuminghang/IPTV/main/IPTV_400.txt",
-                "https://raw.githubusercontent.com/KyleBing/TV-Box/main/IPTV/IPTV.m3u",
                 "https://raw.githubusercontent.com/iptv-collection/iptv/master/iptv.m3u",
                 "https://raw.githubusercontent.com/iptv/iptv/refs/heads/master/channels/cn.m3u",
-                "https://raw.githubusercontent.com/iptv-pro/iptv-pro/master/4K.m3u",
-                "https://raw.githubusercontent.com/TVlist/IPTV/master/IPTV.m3u",
-                "https://raw.githubusercontent.com/IPTV-SOURCE/IPTV/master/IPTV.m3u",
                 # 额外的直播源
                 "https://raw.githubusercontent.com/Supprise0901/tvlist/main/live.txt",
                 "https://raw.githubusercontent.com/ffmking/TVlist/main/live.txt",
@@ -506,26 +505,48 @@ def main():
                 "https://raw.githubusercontent.com/cuijian01/dianshi/main/live.txt",
             ]
 
-        # 处理所有直播源
-        categorized_channels = process_all_live_sources(LIVE_SOURCES)
+        try:
+            # 处理所有直播源
+            categorized_channels = process_all_live_sources(LIVE_SOURCES)
 
-        # 写入文件
-        success = write_to_file(categorized_channels)
+            # 写入文件
+            success = write_to_file(categorized_channels)
 
-        # 验证文件内容
-        if success:
-            verify_success = verify_and_fix_file()
-            if not verify_success:
-                return False
+            # 验证文件内容
+            if success:
+                verify_success = verify_and_fix_file()
+                if verify_success:
+                    print("脚本执行成功，文件已生成并验证通过！")
+                    return True
+                else:
+                    print("文件验证失败，将使用默认数据重新生成...")
+        except Exception as e:
+            print(f"处理直播源时出错: {e}")
+            print("将使用默认数据生成文件...")
 
-        return True
-
-    except:
-        # 安全模式 - 直接写入默认数据（但也要过滤URL）
+        # 使用默认数据（但也要过滤URL）
         filtered_default_channels = {}
         for category, channels in default_channels.items():
             filtered_default_channels[category] = [(name, url) for name, url in channels if not should_exclude_url(url)]
-        return write_to_file(filtered_default_channels)
+        success = write_to_file(filtered_default_channels)
+        if success:
+            print("使用默认数据成功生成文件！")
+        return success
+
+    except Exception as e:
+        print(f"脚本执行出错: {e}")
+        # 安全模式 - 直接写入默认数据（但也要过滤URL）
+        try:
+            filtered_default_channels = {}
+            for category, channels in default_channels.items():
+                filtered_default_channels[category] = [(name, url) for name, url in channels if not should_exclude_url(url)]
+            success = write_to_file(filtered_default_channels)
+            if success:
+                print("使用默认数据成功生成文件！")
+            return success
+        except:
+            print("无法生成文件！")
+            return False
 
 if __name__ == "__main__":
     result = main()

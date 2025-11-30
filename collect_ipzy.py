@@ -60,6 +60,14 @@ HD_KEYWORDS = [
     r'FHD', r'Full HD', r'超清', r'4K', r'4k', r'UHD', r'2160'
 ]
 
+# 排除规则 - 排除包含特定字符的URL
+def should_exclude_url(url):
+    """
+    判断是否应该排除该URL
+    排除规则：URL中包含"example"或"demo"字符
+    """
+    return "example" in url.lower() or "demo" in url.lower()
+
 def download_m3u(url, retries=2):
     """下载M3U文件"""
     for attempt in range(retries):
@@ -189,7 +197,8 @@ def parse_m3u_content(content, source_name):
                             'sources': set()
                         }
                     
-                    if line not in channels[channel_name]['urls']:
+                    # 检查URL是否应该被排除
+                    if not should_exclude_url(line) and line not in channels[channel_name]['urls']:
                         channels[channel_name]['urls'].append(line)
                         channels[channel_name]['sources'].add(source_name)
                 
@@ -273,9 +282,9 @@ def merge_all_channels(all_channels_dicts):
                 merged_channels[channel_name] = channel_info.copy()
                 merged_channels[channel_name]['sources'] = set(channel_info['sources'])
             else:
-                # 合并URLs
+                # 合并URLs，同时排除不需要的URL
                 for url in channel_info['urls']:
-                    if url not in merged_channels[channel_name]['urls']:
+                    if not should_exclude_url(url) and url not in merged_channels[channel_name]['urls']:
                         merged_channels[channel_name]['urls'].append(url)
                 merged_channels[channel_name]['sources'].update(channel_info['sources'])
     

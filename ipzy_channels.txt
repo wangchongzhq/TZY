@@ -1184,7 +1184,6 @@ Deluxe Rap,https://sdn-global-live-streaming-packager-cache.3qsdn.com/65183/6518
 Dijlah Tarab,https://ghaasiflu.online/tarab/index.m3u8
 Ecua Stereo Radio TV,https://video.misistemareseller.com/ecuastereotv/ecuastereotv/playlist.m3u8
 El Sol Network TV,https://server40.servistreaming.com:3174/live/elsolnetworklive.m3u8
-EnerGeek Radio,https://backend.energeek.cl/webtv/egradioweb/index.m3u8?token=ZZDemoIPTVGH
 Eska Hity na Czasie,https://s-pl-01.mediatool.tv/playout/espl-abr/index.m3u8
 Eska Rock Dobrze Rockuje,https://s-pl-01.mediatool.tv/playout/erpl-abr/index.m3u8
 Eska TV,http://185.236.229.62:9981/play/a02f
@@ -1256,7 +1255,6 @@ ONE1 Music,https://cdne.folxplay.tv/folx-trz/streams/ch-3/master.m3u8
 One Adria,https://cdne.folxplay.tv/folx-trz/streams/ch-6/master.m3u8
 Oxygen Music,https://oxygenmusic.hu:2443/hls/oxygenmusic.m3u8
 PMC Royale,https://pmcrohls.wns.live/hls/stream.m3u8
-PRIDEtv LATAM,https://backend.energeek.cl/webtv/pridetvweb/index.m3u8?token=ZZDemoIPTVGH
 Pamir TV,http://live.stream.cdn.pamirtv.com/ptv/d0dbe915091d400bd8ee7f27f0791303.sdp/index.m3u8
 Panik TV,https://livetv.streams.ovh:1936/paniktv/paniktv/playlist.m3u8
 Panorama FM,https://d6izdil55uftn.cloudfront.net/out/v1/0a06d1d6377c47edbd48721ed724bd08/index.m3u8
@@ -1290,7 +1288,6 @@ Radio Freccia TV,https://dd782ed59e2a4e86aabf6fc508674b59.msvdn.net/live/S316084
 Radio JND,https://radiojnd.cdn.hostin.cc/radiojnd/playlist.m3u8
 Radio Javan TV,https://rjtvhls.wns.live/hls/stream.m3u8
 Radio SWH TV,https://00ff00.latnet.media/edge/swh_tv.smil/playlist.m3u8
-Radio Suyai TV,https://signal.suyaitv.cl/live/26/playlist.m3u8?password=9PcdCnFxUe&username=ZZDemoIPTVGH
 Radio TV Tendencias,https://s1.tvdatta.com:3950/multi_web/play.m3u8
 Radio Zeta TV,https://dd782ed59e2a4e86aabf6fc508674b59.msvdn.net/live/S9346184/XEx1LqlYbNic/playlist_video.m3u8
 RadioNL TV,https://stream.radionl.tv/radionltv/radionltv/playlist.m3u8
@@ -2316,7 +2313,6 @@ KTV Sport,https://kwtspta.cdn.mangomolo.com/sp/smil:sp.stream.smil/chunklist.m3u
 KTV Sport Plus,https://kwtsplta.cdn.mangomolo.com/spl/smil:spl.stream.smil/chunklist.m3u8
 KVVB-TV 33 Victor Valley,https://2-fss-2.streamhoster.com/pl_138/amlst:201950-1309230/playlist.m3u8
 Kalac TV,https://edge13.vedge.infomaniak.com/livecast/ik:kalactv/chunklist_w280736538.m3u8
-Kanade,https://backend.energeek.cl/webtv/kanadeweb/index.m3u8?token=ZZDemoIPTVGH
 Kanade Brasil,https://backend.energeek.cl/webtv/kanadebr/index.m3u8?token=deM0kanADeweB
 Kanal 3,https://live.artidijitalmedya.com/artidijital_kanal3/kanal3/playlist.m3u8
 Kanal 7,https://kanal7-live.daioncdn.net/kanal7/kanal7.m3u8
@@ -3165,7 +3161,6 @@ Surf Cinema,https://amg13231-actve-amg13231c4-samsung-nz-3093.playouts.now.amagi
 Surfing+,https://dr4jwhk0sty71.cloudfront.net/scheduler/scheduleMaster/444.m3u8
 Survivor,https://amg00627-amg00627c16-samsung-nz-2811.playouts.now.amagi.tv/playlist/amg00627-banijayfast-survivor-samsungnz/playlist.m3u8
 Surya TV,https://livestream10.sunnxt.com/DolbyVision/SuryaTV_HDR/SuryaTV_HDR_Endpoints/SuryaTV-HDR10-IN-index.m3u8
-Suyai TV,https://signal.suyaitv.cl/live/35/playlist.m3u8?password=9PcdCnFxUe&username=ZZDemoIPTVGH
 Swamiji TV American,https://stream.swamiji.tv/YogaIPTV/smil:YogaStreamUS.smil/playlist.m3u8
 Swamiji TV Australian,https://stream.swamiji.tv/YogaIPTV/smil:YogaStreamAU.smil/playlist.m3u8
 Swamiji TV European,https://stream.swamiji.tv/YogaIPTV/smil:YogaStream.smil/playlist.m3u8
