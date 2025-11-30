@@ -1,0 +1,141 @@
+name: 4K超高清直播源延迟2小时更新
+
+on:
+  workflow_run:
+    workflows: ["4K超高清直播源自动更新"]
+    types:
+      - completed
+    branches: [main]
+
+jobs:
+  delayed-update-4k-uhd-channels:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 授予写入内容的权限
+    # 只有当原工作流成功完成并且有提交时才执行
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_commit != null }}
+    steps:
+      - name: 等待2小时
+        run: sleep 7200  # 2小时 = 7200秒
+
+      - name: 检出仓库
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true  # 保持凭据以便推送
+
+      - name: 设置Python环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install requests
+
+      - name: 运行4K超高清直播源更新脚本（延迟更新）
+        run: python process_4k_channels.py
+
+      - name: 检查4K_uhd_channels.txt文件是否存在
+        id: check_file
+        run: |
+          if [ -f "4K_uhd_channels.txt" ]; then
+            echo "file_exists=true" >> $GITHUB_OUTPUT
+            echo "file_size=$(wc -c < 4K_uhd_channels.txt)" >> $GITHUB_OUTPUT
+            echo "file_lines=$(wc -l < 4K_uhd_channels.txt)" >> $GITHUB_OUTPUT
+          else
+            echo "file_exists=false" >> $GITHUB_OUTPUT
+
+      - name: 输出文件信息
+        run: |
+          echo "文件存在: ${{ steps.check_file.outputs.file_exists }}"
+          echo "文件大小: ${{ steps.check_file.outputs.file_size }} 字节"
+          echo "文件行数: ${{ steps.check_file.outputs.file_lines }} 行"
+          if [ "${{ steps.check_file.outputs.file_exists }}" = "true" ]; then
+            echo "文件前10行内容:"
+            head -n 10 4K_uhd_channels.txt
+          fi
+
+      - name: 配置Git用户信息
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: 检查4K_uhd_channels.txt是否有变化
+        id: check_changes
+        run: |
+          git add 4K_uhd_channels.txt
+          if git diff --staged --quiet; then
+            echo "changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 提交和推送更新
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          # 配置git身份和行为
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "GitHub Actions Bot"
+          git config --global pull.rebase false  # 使用merge而不是rebase
+          git config --global core.autocrlf false  # 防止行尾字符转换问题
+          
+          echo "=== 开始Git操作 ==="
+          echo "当前分支: $(git branch --show-current)"
+          
+          # 直接使用origin远程仓库
+          echo "同步本地与远程仓库..."
+          git remote -v
+          git fetch origin main
+          git checkout main || git checkout -b main
+          git reset --hard origin/main
+          
+          echo "本地仓库已重置为远程最新状态"
+          
+          # 重新执行脚本确保生成最新文件
+          echo "重新执行脚本生成最新文件..."
+          python process_4k_channels.py
+          
+          # 检查文件是否存在
+          if [ ! -f "4K_uhd_channels.txt" ]; then
+            echo "::error::错误：4K_uhd_channels.txt文件未生成"
+            exit 1
+          fi
+          
+          # 添加文件
+          echo "添加更改的文件..."
+          git add 4K_uhd_channels.txt
+          
+          # 检查是否有更改
+          if git diff --staged --quiet; then
+            echo "没有检测到更改，跳过提交"
+            exit 0
+          fi
+          
+          # 提交更改
+          echo "提交更改..."
+          git commit -m "延迟2小时自动更新4K_uhd_channels.txt文件，限制每个GitHub仓库的直播源URL数量不超过5个"
+          
+          # 推送到远程仓库
+          echo "尝试推送更改到远程仓库..."
+          # 直接推送到origin
+          git push origin main || {
+            echo "推送失败，尝试使用--force-with-lease推送..."
+            git push --force-with-lease origin main || {
+              echo "--force-with-lease推送失败，最后尝试使用--force推送..."
+              git push --force origin main || {
+                echo "::error::所有推送方式均失败，请检查GitHub权限配置"
+                exit 1
+              }
+            }
+          }
+
+      - name: 保存4K_uhd_channels.txt文件作为产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: 4K_uhd_channels_delayed
+          path: 4K_uhd_channels.txt
+          retention-days: 7

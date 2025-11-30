@@ -1,0 +1,8 @@
+# 4K超高清直播频道列表
+# 更新时间: 2025-11-30 12:55:27
+# 收录频道总数: 3 个
+
+# 4K超高清频道
+CCTV-16 4K,https://example.com/cctv16_4k.m3u8
+湖南卫视 4K,https://example.com/hunan_4k.m3u8
+广东卫视 超高清,https://example.com/guangdong_uhd.m3u8
