@@ -1,0 +1,21 @@
+# 测试4K频道自动规范化
+CCTV 16 4K,https://example.org/test1.m3u8
+CCTV-5+ UHD,https://example.org/test2.m3u8
+中央电视台 8K,https://example.org/test3.m3u8
+湖南卫视(4K),https://example.org/test4.m3u8
+江苏卫视 [4k],https://example.org/test5.m3u8
+浙江卫视 超高清,https://example.org/test6.m3u8
+广东卫视_4K,https://example.org/test7.m3u8
+深圳卫视-4K,https://example.org/test8.m3u8
+北京卫视(4K超高清),https://example.org/test9.m3u8
+上海卫视4K,https://example.org/test10.m3u8
+东方卫视[超高清],https://example.org/test11.m3u8
+四川卫视 4K频道,https://example.org/test12.m3u8
+山东卫视UHD,https://example.org/test13.m3u8
+河北卫视4K,https://example.org/test14.m3u8
+福建卫视4K,https://example.org/test15.m3u8
+湖北卫视4K,https://example.org/test16.m3u8
+河南卫视4K,https://example.org/test17.m3u8
+安徽卫视4K,https://example.org/test18.m3u8
+江西卫视4K,https://example.org/test19.m3u8
+辽宁卫视4K,https://example.org/test20.m3u8
