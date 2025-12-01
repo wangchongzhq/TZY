@@ -245,18 +245,28 @@ def extract_channels_from_m3u(content):
     
     for match in matches:
         tvg_name = match[0].strip() if match[0] else match[2].strip()
-        group_title = match[1].strip() if len(match) > 1 else "未分类"
         channel_name = match[2].strip()
         url = match[3].strip()
         
         # 规范化频道名称
         normalized_name = normalize_channel_name(channel_name)
         if normalized_name:
-            channels[group_title].append((normalized_name, url))
+            # 获取频道分类
+            category = get_channel_category(normalized_name)
+            channels[category].append((normalized_name, url))
         else:
-            channels[group_title].append((channel_name, url))
+            # 未规范化的频道放在其他频道
+            channels["其他频道"].append((channel_name, url))
     
     return channels
+
+# 获取频道分类
+def get_channel_category(channel_name):
+    """获取频道所属的分类"""
+    for category, channels in CHANNEL_CATEGORIES.items():
+        if channel_name in channels:
+            return category
+    return "其他频道"
 
 # 规范化频道名称
 def normalize_channel_name(name):
@@ -303,13 +313,21 @@ def generate_m3u_file(channels, output_path):
     
     with open(output_path, 'w', encoding='utf-8') as f:
         # 写入文件头
-        f.write("#EXTM3U\n")
+        f.write("#EXTM3U x-tvg-url=\"https://kakaxi-1.github.io/IPTV/epg.xml\"\n")
         
-        # 按分类写入频道
-        for group_title, channel_list in channels.items():
-            for channel_name, url in channel_list:
+        # 按CHANNEL_CATEGORIES中定义的顺序写入分类
+        for category in CHANNEL_CATEGORIES:
+            if category in channels:
+                for channel_name, url in channels[category]:
+                    # 写入频道信息
+                    f.write(f"#EXTINF:-1 tvg-name=\"{channel_name}\" group-title=\"{category}\",{channel_name}\n")
+                    f.write(f"{url}\n")
+        
+        # 最后写入其他频道
+        if "其他频道" in channels:
+            for channel_name, url in channels["其他频道"]:
                 # 写入频道信息
-                f.write(f"#EXTINF:-1 tvg-name=\"{channel_name}\" group-title=\"{group_title}\",{channel_name}\n")
+                f.write(f"#EXTINF:-1 tvg-name=\"{channel_name}\" group-title=\"其他频道\",{channel_name}\n")
                 f.write(f"{url}\n")
     
     print(f"✅ 成功生成 {output_path}")
@@ -328,13 +346,30 @@ def generate_txt_file(channels, output_path):
         f.write("# 按分组排列\n")
         f.write("\n")
         
-        # 按分类写入频道
-        for group_title, channel_list in channels.items():
+        # 写入频道分类说明
+        f.write("# 频道分类: 4K频道,央视频道,卫视频道,北京专属频道,山东专属频道,港澳频道,电影频道,儿童频道,iHOT频道,综合频道,体育频道,剧场频道,其他频道\n")
+        f.write("\n")
+        
+        # 按CHANNEL_CATEGORIES中定义的顺序写入分类
+        for category in CHANNEL_CATEGORIES:
+            if category in channels and channels[category]:
+                # 写入分组标题
+                f.write(f"#{category}#\n")
+                
+                # 写入该分组下的所有频道
+                for channel_name, url in channels[category]:
+                    f.write(f"{channel_name},{url}\n")
+                
+                # 分组之间添加空行
+                f.write("\n")
+        
+        # 最后写入其他频道
+        if "其他频道" in channels and channels["其他频道"]:
             # 写入分组标题
-            f.write(f"#{group_title}#\n")
+            f.write("#其他频道#\n")
             
             # 写入该分组下的所有频道
-            for channel_name, url in channel_list:
+            for channel_name, url in channels["其他频道"]:
                 f.write(f"{channel_name},{url}\n")
             
             # 分组之间添加空行
@@ -347,18 +382,12 @@ def generate_txt_file(channels, output_path):
 def extract_channels_from_txt(file_path):
     """从本地TXT文件提取频道信息"""
     channels = defaultdict(list)
-    current_group = "其他频道"
     
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             for line in f:
                 line = line.strip()
                 if not line or line.startswith('#'):
-                    # 检查是否是分组标题
-                    if line.startswith('#') and '#' in line[1:]:
-                        parts = line.split('#')
-                        if len(parts) >= 3:
-                            current_group = parts[1]
                     continue
                 
                 # 解析频道信息（格式：频道名称,URL）
@@ -370,9 +399,12 @@ def extract_channels_from_txt(file_path):
                     # 规范化频道名称
                     normalized_name = normalize_channel_name(channel_name)
                     if normalized_name:
-                        channels[current_group].append((normalized_name, url))
+                        # 获取频道分类
+                        category = get_channel_category(normalized_name)
+                        channels[category].append((normalized_name, url))
                     else:
-                        channels[current_group].append((channel_name, url))
+                        # 未规范化的频道放在其他频道
+                        channels["其他频道"].append((channel_name, url))
     except Exception as e:
         print(f"解析本地文件 {file_path} 时出错: {e}")
     
