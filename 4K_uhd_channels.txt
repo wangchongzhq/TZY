@@ -1,5 +1,9 @@
 # 4K超高清直播源列表
 # 更新时间: 2025-12-01
+# 共包含 0 个4K超高清频道
+# 测速结果会在文件中以注释形式显示
+
+# 更新时间: 2025-12-01
 # 共包含 67 个4K超高清频道
 # 测速结果会在文件中以注释形式显示
 
@@ -26,7 +30,7 @@
 
 ##翡翠台4K
 翡翠台4K,https://cdn6.163189.xyz/163189/fct4k
-# 速度: 0.1 KB/s, 稳定性: 1.00 
+# 速度: 0.1 KB/s, 稳定性: 1.00
 # 速度: 0.1 KB/s, 稳定性: 1.00
 
 
@@ -35,7 +39,7 @@
 
 
 翡翠台4K,http://cdn6.veryfast.filegear-sg.me/live/fct4k/stream.m3u8
-# 速度: 1.8 KB/s, 稳定性: 1.00 
+# 速度: 1.8 KB/s, 稳定性: 1.00
 # 速度: 1.5 KB/s, 稳定性: 1.00
 
 
@@ -44,7 +48,7 @@
 
 ##CCTV4K
 CCTV4K,https://httop.top/ysp-cctv4k
-# 速度: 1.5 KB/s, 稳定性: 1.00 
+# 速度: 1.5 KB/s, 稳定性: 1.00
 # 速度: 1.6 KB/s, 稳定性: 1.00
 
 
@@ -55,7 +59,7 @@ CCTV4K,https://httop.top/ysp-cctv4k
 
 
 CCTV4K,http://phb888.myds.me:35455/nptv/cctv4k.m3u8
-# 状态: 有效，但无法测速 
+# 状态: 有效，但无法测速
 # 状态: 有效，但无法测速
 
 
@@ -67,7 +71,7 @@ CCTV4K,http://phb888.myds.me:35455/nptv/cctv4k.m3u8
 
 
 CCTV4K,http://183.236.43.98:4111/udp/239.77.0.174:5146
-# 状态: 有效，但无法测速 
+# 状态: 有效，但无法测速
 # 状态: 有效，但无法测速
 
 
@@ -76,7 +80,7 @@ CCTV4K,http://183.236.43.98:4111/udp/239.77.0.174:5146
 
 
 CCTV4K,http://183.236.43.98:4013/udp/239.77.0.174:5146
-# 状态: 有效，但无法测速 
+# 状态: 有效，但无法测速
 # 状态: 有效，但无法测速
 
 
@@ -100,13 +104,13 @@ CCTV4K,http://183.236.43.98:4013/udp/239.77.0.174:5146
 
 
 CCTV4K,http://113.101.245.153:9988/udp/239.77.0.174:5146
-# 状态: 有效，但无法测速 
+# 状态: 有效，但无法测速
 # 状态: 有效，但无法测速
 
 
 
 CCTV4K,http://183.220.107.138:4022/rtp/239.10.0.108:5140
-# 状态: 有效，但无法测速 
+# 状态: 有效，但无法测速
 # 状态: 有效，但无法测速
 
 
@@ -187,22 +191,22 @@ CCTV4K,http://183.220.107.138:4022/rtp/239.10.0.108:5140
 
 
 北京卫视4K,http://49.235.65.250:600/beijing/beijing.php?id=bjws4k
-# 速度: 39.3 KB/s, 稳定性: 1.00 
+# 速度: 39.3 KB/s, 稳定性: 1.00
 # 速度: 39.5 KB/s, 稳定性: 1.00
 
 
 
 
 北京卫视4K,https://migu.188766.xyz/?migutoken=4de3a99b22fd347ac2c3019df7c6454b&id=%E5%8C%97%E4%BA%AC%E5%8D%AB%E8%A7%86&pp=1
-# 速度: 0.1 KB/s, 稳定性: 1.00 
+# 速度: 0.1 KB/s, 稳定性: 1.00
 # 速度: 0.2 KB/s, 稳定性: 1.00
 
 北京卫视4K,https://migu.188766.xyz/?migutoken=3db112733dbbd9d9081b733f24d7aaa4&id=%E5%8C%97%E4%BA%AC%E5%8D%AB%E8%A7%86&pp=1
-# 速度: 0.1 KB/s, 稳定性: 1.00 
+# 速度: 0.1 KB/s, 稳定性: 1.00
 # 速度: 0.2 KB/s, 稳定性: 1.00
 
 北京卫视4K,https://migu.188766.xyz/?migutoken=b40db0a0e564a4b183527b465e6657de&id=%E5%8C%97%E4%BA%AC%E5%8D%AB%E8%A7%86&type=yy
-# 速度: 0.2 KB/s, 稳定性: 1.00 
+# 速度: 0.2 KB/s, 稳定性: 1.00
 # 速度: 0.2 KB/s, 稳定性: 1.00
 
 
@@ -286,7 +290,7 @@ CCTV4K,http://183.220.107.138:4022/rtp/239.10.0.108:5140
 
 
 深圳卫视4K,https://cdn3.163189.xyz/163189/szws4k
-# 速度: 0.3 KB/s, 稳定性: 1.00 
+# 速度: 0.3 KB/s, 稳定性: 1.00
 # 速度: 0.2 KB/s, 稳定性: 1.00
 
 
@@ -309,16 +313,16 @@ CCTV4K,http://183.220.107.138:4022/rtp/239.10.0.108:5140
 
 
 深圳卫视4K,https://migu.188766.xyz/?migutoken=3100906f039cd53c8274bdf515d565e3&id=%E6%B7%B1%E5%9C%B3%E5%8D%AB%E8%A7%86&pp=1
-# 速度: 0.1 KB/s, 稳定性: 1.00 
+# 速度: 0.1 KB/s, 稳定性: 1.00
 # 速度: 0.1 KB/s, 稳定性: 1.00
 
 深圳卫视4K,https://migu.188766.xyz/?migutoken=6dbfdaaddc42715e00238b7ddf205493&id=%E6%B7%B1%E5%9C%B3%E5%8D%AB%E8%A7%86&pp=1
-# 速度: 0.1 KB/s, 稳定性: 1.00 
+# 速度: 0.1 KB/s, 稳定性: 1.00
 # 速度: 0.1 KB/s, 稳定性: 1.00
 
 
 深圳卫视4K,https://migu.188766.xyz/?migutoken=aee62f182139c84321695d811e2537db&id=%E6%B7%B1%E5%9C%B3%E5%8D%AB%E8%A7%86&pp=1
-# 速度: 0.1 KB/s, 稳定性: 1.00 
+# 速度: 0.1 KB/s, 稳定性: 1.00
 # 速度: 0.1 KB/s, 稳定性: 1.00
 
 
@@ -331,7 +335,7 @@ CCTV4K,http://183.220.107.138:4022/rtp/239.10.0.108:5140
 
 
 湖南卫视4K,http://hlsal-ldvt.qing.mgtv.com/nn_live/nn_x64/dWlwPTEyNy4wLjAuMSZ1aWQ9cWluZy1jbXMmbm5fdGltZXpvbmU9OCZjZG5leF9pZD1hbF9obHNfbGR2dCZ1dWlkPTliODY4NmU5ZTM2YzYwMmMmZT02OTE0NjA0JnY9MSZpZD1ITldTWkdTVCZzPTcwN2RiYTc2YzJjNmJmMTQ4MmUyZGYzOWU2NWM3YWFi/HNWSZGST.m3u8
-# 速度: 1.2 KB/s, 稳定性: 1.00 
+# 速度: 1.2 KB/s, 稳定性: 1.00
 # 速度: 1.2 KB/s, 稳定性: 1.00
 
 ##浙江卫视4K
@@ -339,7 +343,7 @@ CCTV4K,http://183.220.107.138:4022/rtp/239.10.0.108:5140
 
 
 浙江卫视4K,https://play-qukan.cztv.com/live/1758879019692345.m3u8
-# 速度: 0.6 KB/s, 稳定性: 1.00 
+# 速度: 0.6 KB/s, 稳定性: 1.00
 # 速度: 0.8 KB/s, 稳定性: 1.00
 
 
@@ -399,11 +403,11 @@ CCTV4K,http://183.220.107.138:4022/rtp/239.10.0.108:5140
 ##苏州4K
 
 苏州4K,https://tylive.kan0512.com/norecord/csztv4k_4k.m3u8
-# 速度: 0.5 KB/s, 稳定性: 1.00 
+# 速度: 0.5 KB/s, 稳定性: 1.00
 # 速度: 0.6 KB/s, 稳定性: 1.00
 
 苏州4K,https://live-auth.51kandianshi.com/szgd/csztv4k_hd.m3u8
-# 速度: 0.4 KB/s, 稳定性: 1.00 
+# 速度: 0.4 KB/s, 稳定性: 1.00
 # 速度: 0.4 KB/s, 稳定性: 1.00
 
 
@@ -416,7 +420,7 @@ CCTV4K,http://183.220.107.138:4022/rtp/239.10.0.108:5140
 
 <<<<<<< HEAD
 南国都市4K,https://tencentplay.gztv.com/live/nanguodushi.m3u8?txSecret=550af55c0ea34ce492748481415b6dfa&txTime=1903e7b17de
-# 速度: 0.4 KB/s, 稳定性: 1.00 
+# 速度: 0.4 KB/s, 稳定性: 1.00
 # 速度: 0.3 KB/s, 稳定性: 1.00
 =======
 >>>>>>> be655426133b2625fc2abc4fec6402e7c82a241d
@@ -468,7 +472,7 @@ http://dl.wifi942.com:66/jsyd/jsyd.php?id=G_CCTV-1-AVS-4K264
 http://101.35.240.114:88/live.php?id=%E5%B9%BF%E4%B8%9C%E5%8D%AB%E8%A7%864K
 http://101.35.240.114:88/live.php?id=%E6%B5%99%E6%B1%9F%E5%8D%AB%E8%A7%864K
 浙江卫视,http://ali-m-l.cztv.com/channels/lantian/channel01/1080p.m3u8
-# 速度: 2.6 KB/s, 稳定性: 1.00 
+# 速度: 2.6 KB/s, 稳定性: 1.00
 # 速度: 1.4 KB/s, 稳定性: 1.00
 http://101.35.240.114:88/live.php?id=%E6%B9%96%E5%8D%97%E5%8D%AB%E8%A7%864K
 http://101.35.240.114:88/live.php?id=%E4%B8%9C%E6%96%B9%E5%8D%AB%E8%A7%864K
@@ -482,11 +486,11 @@ https://4k.11cn.dpdns.org/28.m3u8
 https://4k.11cn.dpdns.org/29.m3u8
 https://ls.qingting.fm/live/1099/64k.m3u8
 都市剧场,https://stream1.freetv.fun/4knan-guo-du-shi-1.m3u8
-# 速度: 0.1 KB/s, 稳定性: 1.00 
+# 速度: 0.1 KB/s, 稳定性: 1.00
 # 速度: 0.1 KB/s, 稳定性: 1.00
 https://ls.qingting.fm/live/1885/64k.m3u8
 求索生活,http://ali-m-l.cztv.com/channels/lantian/channel03/1080p.m3u8
-# 速度: 5.2 KB/s, 稳定性: 1.00 
+# 速度: 5.2 KB/s, 稳定性: 1.00
 # 速度: 5.9 KB/s, 稳定性: 1.00
 https://ls.qingting.fm/live/4974/64k.m3u8
 http://otttv.bj.chinamobile.com/PLTV/88888888/224/3221226978/1.m3u8?GuardEncType=2&accountinfo=%7E%7EV2.0%7EEZy1Vmu4k2lYOlZCsti1BQ%7EtP4-l0lmSfjwLWEfK_el1vH_mv-s1zo4AQJwdedaVwG9xkuFTDg8J26cwOrNJzn20BErrHdLhuZ9EzLUCD3PMW-OMx4MGteHV2vLeW6BqoY%2CEND
