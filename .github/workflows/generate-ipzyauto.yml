@@ -42,9 +42,6 @@ jobs:
           echo "📺 频道文件: $(wc -l < ipzyauto.txt) 行"
           echo "📊 实际频道数: $(grep -c "^[^#]" ipzyauto.txt || echo "0")"
         fi
-        if [ -f "ipzyauto统计数据.log" ]; then
-          echo "📋 日志文件: $(ls -lh ipzyauto统计数据.log | awk '{print $5}')"
-        fi
         
     - name: Commit and push if changed
       run: |
@@ -77,7 +74,7 @@ jobs:
         
         # 添加文件
         echo "添加更改的文件..."
-        git add ipzyauto.txt ipzyauto统计数据.log
+        git add ipzyauto.txt
         
         # 检查是否有更改
         if git diff --staged --quiet; then
