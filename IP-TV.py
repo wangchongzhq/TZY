@@ -2,6 +2,7 @@
 """
 IPTV直播源自动生成工具
 功能：从多个来源获取IPTV直播源并生成M3U文件
+支持：手动更新和每天北京时间早上4点自动更新
 """
 
 import asyncio
@@ -10,8 +11,22 @@ import re
 import time
 import requests
 import datetime
+import threading
+import logging
+import schedule
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
+
+# 配置日志
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('iptv_update.log', encoding='utf-8'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
 # 频道分类
 CHANNEL_CATEGORIES = {
@@ -446,16 +461,16 @@ def merge_sources(sources, local_files):
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-def main():
-    """主函数"""
-    print("🚀 IPTV直播源自动生成工具")
-    print(f"📅 运行时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("=" * 50)
+def update_iptv_sources():
+    """更新IPTV直播源"""
+    logger.info("🚀 IPTV直播源自动生成工具")
+    logger.info(f"📅 运行时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    logger.info("=" * 50)
     
     # 合并所有直播源
     all_sources = default_sources + user_sources
-    print(f"📡 正在获取{len(all_sources)}个远程直播源...")
-    print(f"💻 正在读取{len(default_local_sources)}个本地直播源文件...")
+    logger.info(f"📡 正在获取{len(all_sources)}个远程直播源...")
+    logger.info(f"💻 正在读取{len(default_local_sources)}个本地直播源文件...")
     
     start_time = time.time()
     all_channels = merge_sources(all_sources, default_local_sources)
@@ -464,18 +479,18 @@ def main():
     total_channels = sum(len(channel_list) for channel_list in all_channels.values())
     total_groups = len(all_channels)
     
-    print("=" * 50)
-    print(f"📊 统计信息:")
-    print(f"📡 直播源数量: {len(all_sources)}")
-    print(f"📺 频道组数: {total_groups}")
-    print(f"📚 总频道数: {total_channels}")
-    print(f"⏱️  耗时: {format_interval(time.time() - start_time)}")
-    print("=" * 50)
+    logger.info("=" * 50)
+    logger.info(f"📊 统计信息:")
+    logger.info(f"📡 直播源数量: {len(all_sources)}")
+    logger.info(f"📺 频道组数: {total_groups}")
+    logger.info(f"📚 总频道数: {total_channels}")
+    logger.info(f"⏱️  耗时: {format_interval(time.time() - start_time)}")
+    logger.info("=" * 50)
     
     # 显示频道组信息
-    print("📋 频道组详情:")
+    logger.info("📋 频道组详情:")
     for group_title, channel_list in all_channels.items():
-        print(f"   {group_title}: {len(channel_list)}个频道")
+        logger.info(f"   {group_title}: {len(channel_list)}个频道")
     
     # 生成M3U文件
     output_file_m3u = "jieguo.m3u"  # 将输出文件改为jieguo.m3u
@@ -483,9 +498,63 @@ def main():
     output_file_txt = "jieguo.txt"  # 新增TXT格式输出文件
     
     if generate_m3u_file(all_channels, output_file_m3u) and generate_txt_file(all_channels, output_file_txt):
-        print(f"🎉 任务完成！")
+        logger.info(f"🎉 任务完成！")
+        return True
     else:
-        print("💥 生成文件失败！")
+        logger.error("💥 生成文件失败！")
+        return False
+
+
+def run_scheduled_updates():
+    """运行定时更新任务"""
+    # 设置每天北京时间早上4点执行更新
+    schedule.every().day.at("04:00").do(update_iptv_sources)
+    
+    logger.info("⏰ 定时更新任务已启动，每天北京时间早上4点自动更新")
+    logger.info("🔄 如需立即更新，请按Ctrl+C退出程序并运行: python IP-TV.py --update")
+    logger.info("💡 如需停止定时更新，请按Ctrl+C")
+    
+    try:
+        while True:
+            schedule.run_pending()
+            time.sleep(60)  # 每分钟检查一次
+    except KeyboardInterrupt:
+        logger.info("� 定时更新任务已停止")
+    except Exception as e:
+        logger.error(f"❌ 定时更新任务出错: {e}")
+
+
+def main():
+    """主函数"""
+    import sys
+    
+    # 检查命令行参数
+    if len(sys.argv) > 1 and sys.argv[1] == "--update":
+        # 手动更新模式
+        update_iptv_sources()
+    else:
+        # 显示帮助信息
+        print("=" * 60)
+        print("      IPTV直播源自动生成工具")
+        print("=" * 60)
+        print("功能：")
+        print("  1. 从多个来源获取IPTV直播源")
+        print("  2. 生成M3U和TXT格式的直播源文件")
+        print("  3. 支持手动更新和定时自动更新")
+        print("")
+        print("使用方法：")
+        print("  python IP-TV.py --update     # 立即手动更新直播源")
+        print("  python IP-TV.py              # 启动定时更新服务（每天早上4点自动更新）")
+        print("")
+        print("输出文件：")
+        print("  - jieguo.m3u   # M3U格式的直播源文件")
+        print("  - jieguo.txt   # TXT格式的直播源文件")
+        print("  - iptv_update.log  # 更新日志文件")
+        print("=" * 60)
+        print("启动定时更新服务...")
+        
+        # 启动定时更新
+        run_scheduled_updates()
 
 
 if __name__ == "__main__":
