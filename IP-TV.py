@@ -368,8 +368,8 @@ def generate_txt_file(channels, output_path):
         # 按CHANNEL_CATEGORIES中定义的顺序写入分类
         for category in CHANNEL_CATEGORIES:
             if category in channels and channels[category]:
-                # 写入分组标题
-                f.write(f"#{category}#\n")
+                # 写入分组标题，添加,#genre#后缀
+                f.write(f"#{category}#,genre#\n")
                 
                 # 写入该分组下的所有频道
                 for channel_name, url in channels[category]:
@@ -380,8 +380,8 @@ def generate_txt_file(channels, output_path):
         
         # 最后写入其他频道
         if "其他频道" in channels and channels["其他频道"]:
-            # 写入分组标题
-            f.write("#其他频道#\n")
+            # 写入分组标题，添加,#genre#后缀
+            f.write("#其他频道#,#genre#\n")
             
             # 写入该分组下的所有频道
             for channel_name, url in channels["其他频道"]:
@@ -405,11 +405,19 @@ def extract_channels_from_txt(file_path):
                 if not line or line.startswith('#'):
                     continue
                 
+                # 跳过格式不正确的分组标题行（如"4K频道,#genre#"）
+                if line.endswith(',#genre#') or line.endswith(',genre#'):
+                    continue
+                
                 # 解析频道信息（格式：频道名称,URL）
                 if ',' in line:
                     channel_name, url = line.split(',', 1)
                     channel_name = channel_name.strip()
                     url = url.strip()
+                    
+                    # 跳过无效的URL
+                    if not url.startswith(('http://', 'https://')):
+                        continue
                     
                     # 规范化频道名称
                     normalized_name = normalize_channel_name(channel_name)
