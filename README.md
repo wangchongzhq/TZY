@@ -16,7 +16,7 @@
 
 #### IPTV直播源生成
 - 📡 **IPZY直播源**：自动生成`ipzy.m3u`、`ipzy.txt`、`ipzyauto.txt`和`ipzy_channels.txt`等IPTV直播源文件
-- 📊 **数据统计**：生成详细的直播源统计数据（ipzyauto统计数据.log）
+- 📊 **数据统计**：生成详细的直播源统计数据
 - 🔄 **自动更新**：通过`collect_ipzy.py`和GitHub Actions每天定时更新IPTV直播源内容
 
 #### 电视直播线路更新
@@ -72,7 +72,7 @@
 ├── 📄 ipzy_channels.txt                      # IPZY频道列表
 ├── 📄 ipzyauto.py                            # IPZY自动生成工具
 ├── 📄 ipzyauto.txt                           # IPZY自动生成TXT文件
-├── 📄 ipzyauto统计数据.log                    # IPZY自动统计数据日志
+
 ├── 📄 local_test_4K.m3u                      # 本地测试4K直播源
 ├── 📄 process_4k_channels.py                 # 处理4K频道工具
 ├── 📄 requirements.txt                       # Python依赖配置

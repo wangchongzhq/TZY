@@ -83,10 +83,10 @@ jobs:
         fi
         
         # 添加文件
-        echo "添加更改的文件..."
-        git add ipzy.m3u ipzyauto.txt ipzyauto统计数据.log
-        
-        # 检查是否有更改
+          echo "添加更改的文件..."
+          git add ipzy.m3u ipzyauto.txt
+          
+          # 检查是否有更改
         if git diff --staged --quiet; then
           echo "没有检测到更改，跳过提交"
           exit 0
