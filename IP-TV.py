@@ -183,6 +183,7 @@ CHANNEL_MAPPING = {
 # 默认直播源URL
 default_sources = [
     "https://iptv-org.github.io/iptv/index.m3u",
+    "https://freetv.fun/test_channels_new.txt",
 ]
 
 # 本地直播源文件
