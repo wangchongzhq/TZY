@@ -409,8 +409,9 @@ def extract_channels_from_txt(file_path):
                 if not line or line.startswith('#'):
                     continue
                 
-                # 跳过格式不正确的分组标题行（如"4K频道,#genre#"）
-                if line.endswith(',#genre#') or line.endswith(',genre#'):
+                # 只跳过格式不正确的行（不以#开头但包含,#genre#的行）
+                # 正确格式的分组标题行（以#开头且包含,#genre#）已经在上面的line.startswith('#')条件中被跳过了
+                if not line.startswith('#') and (line.endswith(',#genre#') or line.endswith(',genre#')):
                     continue
                 
                 # 解析频道信息（格式：频道名称,URL）
