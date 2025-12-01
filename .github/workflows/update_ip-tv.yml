@@ -1,0 +1,110 @@
+name: IP-TV Update Workflow
+
+on:
+  schedule:
+    # 北京时间每天早上4点运行 (UTC 20:00)
+    - cron: '0 20 * * *'
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'info'
+        type: choice
+        options:
+          - info
+          - debug
+          - warn
+
+jobs:
+  update-iptv:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write  # 授予写入内容的权限
+
+    steps:
+    - name: Checkout代码
+      uses: actions/checkout@v4
+      with:
+        repository: wangchongzhq/TZY
+        persist-credentials: true  # 保持凭据以便推送
+
+    - name: 设置Python环境
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: 安装依赖
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests schedule
+
+    - name: 运行IP-TV脚本
+      run: |
+        python IP-TV.py --update
+
+    - name: 检查文件变更
+      id: check_changes
+      run: |
+        git add jieguo.m3u jieguo.txt
+        git diff --staged --quiet || echo "changes=true" >> $GITHUB_OUTPUT
+
+    - name: 提交更新
+      if: steps.check_changes.outputs.changes == 'true'
+      run: |
+        # 配置git身份和行为
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "GitHub Actions Bot"
+        git config --global pull.rebase false  # 使用merge而不是rebase
+        git config --global core.autocrlf false  # 防止行尾字符转换问题
+        
+        echo "=== 开始Git操作 ==="
+        echo "当前分支: $(git branch --show-current)"
+        
+        # 直接使用origin远程仓库
+        echo "同步本地与远程仓库..."
+        git remote -v
+        git fetch origin ${{ github.ref_name }}
+        git checkout ${{ github.ref_name }} || git checkout -b ${{ github.ref_name }}
+        git reset --hard origin/${{ github.ref_name }}
+        
+        echo "本地仓库已重置为远程最新状态"
+        
+        # 重新执行脚本确保生成最新文件
+        echo "重新执行脚本生成最新文件..."
+        python IP-TV.py --update
+        
+        # 检查文件是否存在
+        if [ ! -f "jieguo.m3u" ] || [ ! -f "jieguo.txt" ]; then
+          echo "::error::错误：生成的文件未找到"
+          exit 1
+        fi
+        
+        # 添加文件
+        echo "添加更改的文件..."
+        git add jieguo.m3u jieguo.txt
+        
+        # 检查是否有更改
+        if git diff --staged --quiet; then
+          echo "没有检测到更改，跳过提交"
+          exit 0
+        fi
+        
+        # 提交更改
+        echo "提交更改..."
+        git commit -m "自动更新IP-TV频道列表 [$(date +'%Y-%m-%d %H:%M:%S')]"
+        
+        # 推送到远程仓库
+        echo "尝试推送更改到远程仓库..."
+        # 直接推送到origin
+        git push origin ${{ github.ref_name }} || {
+          echo "推送失败，尝试使用--force-with-lease推送..."
+          git push --force-with-lease origin ${{ github.ref_name }} || {
+            echo "--force-with-lease推送失败，最后尝试使用--force推送..."
+            git push --force origin ${{ github.ref_name }} || {
+              echo "::error::所有推送方式均失败，请检查GitHub权限配置"
+              exit 1
+            }
+          }
+        }

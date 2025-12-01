@@ -2,7 +2,7 @@
 """
 IPTV直播源自动生成工具
 功能：从多个来源获取IPTV直播源并生成M3U文件
-支持：手动更新和每天北京时间早上4点自动更新
+support：手动更新和通过GitHub Actions工作流定时更新
 """
 
 import asyncio
@@ -13,7 +13,6 @@ import requests
 import datetime
 import threading
 import logging
-import schedule
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 
@@ -506,25 +505,6 @@ def update_iptv_sources():
         return False
 
 
-def run_scheduled_updates():
-    """运行定时更新任务"""
-    # 设置每天北京时间早上4点执行更新
-    schedule.every().day.at("04:00").do(update_iptv_sources)
-    
-    logger.info("⏰ 定时更新任务已启动，每天北京时间早上4点自动更新")
-    logger.info("🔄 如需立即更新，请按Ctrl+C退出程序并运行: python IP-TV.py --update")
-    logger.info("💡 如需停止定时更新，请按Ctrl+C")
-    
-    try:
-        while True:
-            schedule.run_pending()
-            time.sleep(60)  # 每分钟检查一次
-    except KeyboardInterrupt:
-        logger.info("� 定时更新任务已停止")
-    except Exception as e:
-        logger.error(f"❌ 定时更新任务出错: {e}")
-
-
 def main():
     """主函数"""
     import sys
@@ -541,21 +521,17 @@ def main():
         print("功能：")
         print("  1. 从多个来源获取IPTV直播源")
         print("  2. 生成M3U和TXT格式的直播源文件")
-        print("  3. 支持手动更新和定时自动更新")
+        print("  3. 支持手动更新和通过GitHub Actions工作流定时更新")
         print("")
         print("使用方法：")
         print("  python IP-TV.py --update     # 立即手动更新直播源")
-        print("  python IP-TV.py              # 启动定时更新服务（每天早上4点自动更新）")
+        print("  通过GitHub Actions工作流自动更新")
         print("")
         print("输出文件：")
         print("  - jieguo.m3u   # M3U格式的直播源文件")
         print("  - jieguo.txt   # TXT格式的直播源文件")
         print("  - iptv_update.log  # 更新日志文件")
         print("=" * 60)
-        print("启动定时更新服务...")
-        
-        # 启动定时更新
-        run_scheduled_updates()
 
 
 if __name__ == "__main__":
