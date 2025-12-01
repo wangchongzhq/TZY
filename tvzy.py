@@ -2,6 +2,8 @@ import os
 import re
 import requests
 import concurrent.futures
+import argparse
+import time
 
 # 配置参数
 MAX_WORKERS = 10
@@ -661,5 +663,18 @@ def main():
     except Exception:
         pass
 
+def parse_args():
+    """解析命令行参数"""
+    parser = argparse.ArgumentParser(description='TV Channel Processor')
+    parser.add_argument('-o', '--output', type=str, default=OUTPUT_FILE, help='Output file name')
+    return parser.parse_args()
+
 if __name__ == "__main__":
+    # 解析命令行参数
+    args = parse_args()
+    
+    # 如果指定了输出文件名，更新全局变量
+    if args.output:
+        OUTPUT_FILE = args.output
+    
     main()
