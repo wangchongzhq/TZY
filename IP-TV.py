@@ -181,8 +181,12 @@ CHANNEL_MAPPING = {
 
 # 默认直播源URL
 default_sources = [
+    "https://iptv-org.github.io/iptv/countries/cn.m3u",
     "https://iptv-org.github.io/iptv/index.m3u",
-    "https://freetv.fun/test_channels_new.txt",
+    "https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/global.m3u",
+    "https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u",
+    "https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u",
+    "http://106.53.99.30/2025.txt",
 ]
 
 # 本地直播源文件
