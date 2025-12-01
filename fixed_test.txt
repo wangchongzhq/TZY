@@ -1,0 +1,15 @@
+公告,#genre#
+IPTV直播源 - 自动生成
+格式: 频道名称,播放URL
+分组: 4K频道,央视频道,卫视频道,北京频道,山东频道,港澳频道,电影频道,儿童频道,iHOT频道,综合频道,体育频道,剧场频道,其他频道
+备注: 每个频道后的测速结果仅供参考，实际播放效果可能因网络环境而异
+
+央视频道,#genre#
+CCTV1,http://example.com/cctv1
+CCTV2,http://example.com/cctv2
+CCTV3,http://example.com/cctv3
+
+其他频道,#genre#
+湖南卫视,http://example.com/hntv
+江苏卫视,http://example.com/jstv
+

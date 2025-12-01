@@ -1,6 +1,8 @@
-import requests
 import re
 import time
+import requests
+import statistics
+import concurrent.futures
 from collections import defaultdict
 
 # 频道分类
@@ -293,11 +295,10 @@ ipv4_regex = r"http://\d+\.\d+\.\d+\.\d+(?::\d+)?"
 ipv6_regex = r"http://\[[0-9a-fA-F:]+\]"
 
 def normalize_channel_name(name: str) -> str:
-    """根据别名映射表统一频道名称"""
-    for standard, aliases in CHANNEL_MAPPING.items():
-        if name == standard or name in aliases:
-            return standard
-    return name
+    """标准化频道名称"""
+    if not name:
+        return "未知频道"
+    return name.strip()
 
 def is_invalid_url(url: str) -> bool:
     """检查是否为无效 URL"""
@@ -333,14 +334,136 @@ def is_preferred_url(url: str) -> bool:
             return True
     return False
 
-def should_exclude_url(url: str) -> bool:
-    """检查是否应该排除特定URL"""
-    if not url:
-        return True
-    # 只允许http://example或https://example开头的URL
-    return not (url.startswith('http://example') or url.startswith('https://example'))
+def should_exclude_url(url):
+    """检查是否应该排除某个URL"""
+    # 排除特定域名的URL
+    exclude_patterns = [
+        # 这里可以添加需要排除的域名模式
+    ]
+    
+    for pattern in exclude_patterns:
+        if re.match(pattern, url):
+            return True
+    
+    return False
 
 # 移除URL模糊处理函数，简化代码
+
+# =============================================
+# 测速功能配置
+# =============================================
+
+# 测速配置
+def speed_test_config():
+    return {
+        'enabled': False,         # 禁用测速功能，减少网络请求
+        'timeout': 5,           # 超时时间(秒)
+        'test_duration': 3,      # 测速持续时间(秒)
+        'max_workers': 10,       # 并发线程数
+        'min_download_bytes': 1024.0 * 512.0,  # 最小下载量(KB)
+    }
+
+# 测试单个URL的速度
+def test_url_speed(url, config):
+    try:
+        session = requests.Session()
+        session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
+        })
+        
+        start_time = time.time()
+        response = session.get(url, stream=True, timeout=config['timeout'])
+        
+        if response.status_code != 200:
+            return {'url': url, 'speed_kbps': 0, 'status': 'unavailable', 'error': f'HTTP {response.status_code}'}
+        
+        downloaded_bytes = 0
+        speed_samples = []
+        sample_start = time.time()
+        sample_bytes = 0
+        
+        while time.time() - start_time < config['test_duration']:
+            chunk = response.raw.read(8192)
+            if not chunk:
+                break
+            
+            downloaded_bytes += len(chunk)
+            sample_bytes += len(chunk)
+            
+            # 每0.5秒采样一次速度
+            if time.time() - sample_start >= 0.5:
+                if sample_bytes > 0:
+                    speed_kbps = (sample_bytes * 8) / (1024 * (time.time() - sample_start))
+                    speed_samples.append(speed_kbps)
+                    sample_start = time.time()
+                    sample_bytes = 0
+        
+        response.close()
+        
+        # 计算平均速度
+        if speed_samples:
+            avg_speed_kbps = statistics.mean(speed_samples)
+            # 计算速度稳定性 (标准差/均值，越小越稳定)
+            if len(speed_samples) > 1:
+                std_dev = statistics.stdev(speed_samples)
+                stability = 1.0 / (1.0 + std_dev / avg_speed_kbps) if avg_speed_kbps > 0 else 0
+            else:
+                stability = 1.0
+            
+            return {
+                'url': url,
+                'speed_kbps': avg_speed_kbps,
+                'status': 'available',
+                'stability': stability,
+                'downloaded_kb': downloaded_bytes / 1024
+            }
+        else:
+            return {'url': url, 'speed_kbps': 0, 'status': 'available', 'error': '无法获取速度样本', 'stability': 0}
+            
+    except Exception as e:
+        return {'url': url, 'speed_kbps': 0, 'status': 'unavailable', 'error': str(e)}
+
+# 批量测试URL速度
+def batch_test_urls(urls, config):
+    results = {}
+    total_urls = len(urls)
+    
+    if not urls:
+        return results
+    
+    print(f"\n开始测速，共 {total_urls} 个URL，配置：")
+    print(f"  - 超时时间: {config['timeout']}秒")
+    print(f"  - 测速时长: {config['test_duration']}秒")
+    print(f"  - 并发线程: {config['max_workers']}")
+    print(f"  - 最小下载: {config['min_download_bytes']/1024:.1f}KB")
+    
+    start_time = time.time()
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=config['max_workers']) as executor:
+        future_to_url = {executor.submit(test_url_speed, url, config): url for url in urls}
+        
+        for i, future in enumerate(concurrent.futures.as_completed(future_to_url)):
+            url = future_to_url[future]
+            try:
+                result = future.result()
+                results[url] = result
+                
+                # 显示进度
+                progress = (i + 1) / total_urls * 100
+                print(f"  测速进度: {i+1}/{total_urls} ({progress:.1f}%)", end="\r")
+            except Exception as e:
+                results[url] = {'url': url, 'speed_kbps': 0, 'status': 'error', 'error': str(e)}
+    
+    elapsed_time = time.time() - start_time
+    print(f"\n测速完成，耗时: {elapsed_time:.2f}秒")
+    
+    # 统计结果
+    available_count = sum(1 for r in results.values() if r['status'] == 'available' and r['speed_kbps'] > 0)
+    print(f"  成功测速: {available_count}/{total_urls} ({available_count/total_urls*100:.1f}%)")
+    
+    return results
 
 def fetch_lines_with_retry(url: str, max_retries=3):
     """带重试机制的下载函数"""
@@ -371,68 +494,157 @@ def parse_lines(lines):
     """解析 M3U 或 TXT 内容，返回 {频道名: [url列表]}"""
     channels_dict = defaultdict(list)
     current_name = None
+    total_lines = len(lines)
+    processed_lines = 0
+    m3u_count = 0
+    txt_count = 0
+
+    print(f"解析开始，共{total_lines}行数据")
 
     for i, line in enumerate(lines):
         line = line.strip()
         if not line:
             continue
 
+        processed_lines += 1
+        print(f"处理行 {i+1}: {line[:100]}{'...' if len(line) > 100 else ''}")
+
         # M3U #EXTINF 格式
         if line.startswith("#EXTINF"):
+            m3u_count += 1
             if "," in line:
                 current_name = line.split(",")[-1].strip()
+                print(f"  找到M3U频道: {current_name}")
             if i + 1 < len(lines):
                 url = lines[i + 1].strip()
-                url = url.split("$")[0].strip()
-                if (re.match(ipv4_regex, url) or re.match(ipv6_regex, url)) and not is_invalid_url(url) and not should_exclude_url(url):
+                print(f"  找到URL: {url}")
+                if url.startswith("http://") or url.startswith("https://"):
                     norm_name = normalize_channel_name(current_name)
                     channels_dict[norm_name].append(url)
+                    print(f"  添加到字典: {norm_name} -> {url}")
             current_name = None
 
         # TXT 频道名,URL 格式
-        elif "," in line:
+        elif "," in line and not line.startswith("#"):
+            txt_count += 1
             parts = line.split(",", 1)
             if len(parts) == 2:
                 ch_name, url = parts[0].strip(), parts[1].strip()
-                url = url.split("$")[0].strip()
-                if (re.match(ipv4_regex, url) or re.match(ipv6_regex, url)) and not is_invalid_url(url) and not should_exclude_url(url):
+                print(f"  找到TXT频道: {ch_name}, URL: {url}")
+                if url.startswith("http://") or url.startswith("https://"):
                     norm_name = normalize_channel_name(ch_name)
                     channels_dict[norm_name].append(url)
-
+                    print(f"  添加到字典: {norm_name} -> {url}")
+    
+    # 添加调试信息
+    print(f"解析结果: 共{total_lines}行，处理{processed_lines}行，M3U格式{str(m3u_count)}行，TXT格式{str(txt_count)}行")
+    print(f"解析到频道数: {len(channels_dict)}个频道")
+    print(f"解析到URL数: {sum(len(urls) for urls in channels_dict.values())}个URL")
+    
+    # 打印前10个频道作为示例
+    print("前10个频道示例:")
+    for i, (ch, urls) in enumerate(list(channels_dict.items())[:10]):
+        print(f"  {i+1}. {ch}: {len(urls)}个URL")
+    
     return channels_dict
 
-def create_txt_file(all_channels, filename="ipzyauto.txt"):
-    """生成带分类的 TXT 文件，每个频道和URL各占一行"""
+def create_txt_file(all_channels, filename="ipzyauto.txt", speed_results=None):
+    """生成带分类的 TXT 文件，每个频道和URL各占一行，并添加测速结果"""
+    print(f"\n开始生成文件 {filename}...")
+    print(f"总频道数: {len(all_channels)}")
+    
+    # 添加调试信息：打印所有频道
+    print("所有频道列表：")
+    channel_list = list(all_channels.keys())
+    for i, channel in enumerate(channel_list[:20]):  # 只打印前20个频道
+        print(f"  {i+1}. {channel}: {len(all_channels[channel])}个URL")
+    if len(channel_list) > 20:
+        print(f"  ... 还有 {len(channel_list) - 20} 个频道")
+    
     with open(filename, "w", encoding="utf-8") as f:
         f.write("公告,#genre#\n")
         f.write("IPTV直播源 - 自动生成\n")
         f.write("格式: 频道名称,播放URL\n")
-        f.write("分组: 4K频道,央视频道,卫视频道,北京频道,山东频道,港澳频道,电影频道,儿童频道,iHOT频道,综合频道,体育频道,剧场频道\n\n")
+        f.write("分组: 4K频道,央视频道,卫视频道,北京频道,山东频道,港澳频道,电影频道,儿童频道,iHOT频道,综合频道,体育频道,剧场频道,其他频道\n")
+        f.write("备注: 每个频道后的测速结果仅供参考，实际播放效果可能因网络环境而异\n\n")
         
-        for group, channel_list in CHANNEL_CATEGORIES.items():
-            f.write(f"{group},#genre#\n")
-            for ch in channel_list:
-                if ch in all_channels and all_channels[ch]:
-                    unique_urls = list(dict.fromkeys(all_channels[ch]))
-                    
-                    # 过滤掉需要排除的URL
-                    filtered_urls = [url for url in unique_urls if not should_exclude_url(url)]
-                    
-                    ipv4_urls = [url for url in filtered_urls if re.match(ipv4_regex, url)]
-                    ipv6_urls = [url for url in filtered_urls if re.match(ipv6_regex, url)]
-                    
-                    preferred_ipv4 = [url for url in ipv4_urls if is_preferred_url(url)]
-                    other_ipv4 = [url for url in ipv4_urls if not is_preferred_url(url)]
-                    
-                    preferred_ipv6 = [url for url in ipv6_urls if is_preferred_url(url)]
-                    other_ipv6 = [url for url in ipv6_urls if not is_preferred_url(url)]
-                    
-                    sorted_urls = preferred_ipv4 + other_ipv4 + preferred_ipv6 + other_ipv6
-                    
-                    for url in sorted_urls:
-                        f.write(f"{ch},{url}\n")
-            f.write("\n")
+        # 写入央视频道分类
+        f.write("央视频道,#genre#\n")
+        print("  处理分类: 央视频道")
+        
+        # 先处理央视频道
+        common_cctv_channels = ['CCTV1', 'CCTV2', 'CCTV3', 'CCTV4', 'CCTV5', 'CCTV6', 'CCTV7', 'CCTV8', 'CCTV9', 'CCTV10',
+                               'CCTV11', 'CCTV12', 'CCTV13', 'CCTV14', 'CCTV15', 'CCTV16', 'CCTV17', 'CCTV4K', 'CCTV8K']
+        cctv_written = 0
+        
+        # 先处理特定的央视频道
+        for channel in common_cctv_channels:
+            if channel in all_channels and all_channels[channel]:
+                url = all_channels[channel][0]  # 只取第一个URL
+                # 添加测速结果作为注释
+                speed_comment = ""
+                if speed_results and url in speed_results:
+                    speed_data = speed_results[url]
+                    if speed_data['status'] == 'available' and speed_data['speed_kbps'] > 0:
+                        speed_comment = f"$测速:{speed_data['speed_kbps']:.1f}kbps"
+                    else:
+                        speed_comment = "$测速:不可用"
+                
+                f.write(f"{channel},{url}{speed_comment}\n")
+                print(f"      写入: {channel},{url}{speed_comment}")
+                cctv_written += 1
+        
+        # 再处理其他CCTV频道（以CCTV开头但不在common列表中的）
+        for channel, urls in list(all_channels.items()):
+            if channel.startswith('CCTV') and channel not in common_cctv_channels and urls:
+                url = urls[0]  # 只取第一个URL
+                # 添加测速结果作为注释
+                speed_comment = ""
+                if speed_results and url in speed_results:
+                    speed_data = speed_results[url]
+                    if speed_data['status'] == 'available' and speed_data['speed_kbps'] > 0:
+                        speed_comment = f"$测速:{speed_data['speed_kbps']:.1f}kbps"
+                    else:
+                        speed_comment = "$测速:不可用"
+                
+                f.write(f"{channel},{url}{speed_comment}\n")
+                print(f"      写入: {channel},{url}{speed_comment}")
+                cctv_written += 1
+        
+        print(f"  央视频道写入完成，共 {cctv_written} 个频道")
+        f.write("\n")
+        
+        # 写入其他频道分类
+        f.write("其他频道,#genre#\n")
+        print("  处理分类: 其他频道")
+        
+        # 写入所有非CCTV频道
+        other_written = 0
+        for channel, urls in list(all_channels.items()):
+            if not channel.startswith('CCTV') and urls:
+                url = urls[0]  # 只取第一个URL
+                # 添加测速结果作为注释
+                speed_comment = ""
+                if speed_results and url in speed_results:
+                    speed_data = speed_results[url]
+                    if speed_data['status'] == 'available' and speed_data['speed_kbps'] > 0:
+                        speed_comment = f"$测速:{speed_data['speed_kbps']:.1f}kbps"
+                    else:
+                        speed_comment = "$测速:不可用"
+                
+                f.write(f"{channel},{url}{speed_comment}\n")
+                print(f"      写入: {channel},{url}{speed_comment}")
+                other_written += 1
+                
+                # 每写入50个频道就打印进度
+                if other_written % 50 == 0:
+                    print(f"      已写入 {other_written} 个其他频道...")
+        
+        print(f"  其他频道写入完成，共 {other_written} 个频道")
+        f.write("\n")
     
+    print(f"\n文件生成完成！")
+    print(f"总计写入: {len(all_channels)} 个频道")
     return filename
 
 # 移除统计日志生成功能
@@ -442,6 +654,10 @@ def create_txt_file(all_channels, filename="ipzyauto.txt"):
 # =============================================
 
 def main():
+    # 获取测速配置
+    speed_config = speed_test_config()
+    print(f"测速功能: {'已启用' if speed_config['enabled'] else '已禁用'}")
+    
     # 直播源URL列表
     default_sources = [
         "https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u",
@@ -465,6 +681,7 @@ def main():
 
     # 从每个URL获取频道数据
     for url in urls:
+        print(f"正在获取: {url}")
         max_retries = 5 if 'tv.html-5.me' in url else 3
         lines = fetch_lines_with_retry(url, max_retries=max_retries)
         
@@ -473,9 +690,114 @@ def main():
             # 合并到总频道列表
             for ch, urls_list in parsed.items():
                 all_channels[ch].extend(urls_list)
-
+    
+    print(f"\n获取完成，开始数据处理...")
+    print(f"总频道数: {len(all_channels)}")
+    print(f"总URL数: {sum(len(urls) for urls in all_channels.values())}")
+    
+    # 添加调试信息：打印all_channels的前10个频道
+    print("\n前10个频道详情：")
+    for i, (channel, urls) in enumerate(list(all_channels.items())[:10]):
+        print(f"  {i+1}. 频道: '{channel}', URL数量: {len(urls)}")
+        if urls:  # 如果该频道有URL，打印第一个URL
+            print(f"      第一个URL: {urls[0]}")
+    
+    # 收集所有需要测速的URL（限制数量，避免测试时间过长）
+    all_urls_for_testing = []
+    for ch, urls_list in all_channels.items():
+        unique_urls = list(dict.fromkeys(urls_list))
+        filtered_urls = [url for url in unique_urls if not should_exclude_url(url)]
+        # 每个频道最多测试3个URL
+        all_urls_for_testing.extend(filtered_urls[:3])
+    
+    # 去重URL列表并限制总数
+    all_urls_for_testing = list(set(all_urls_for_testing))[:200]  # 最多测试200个URL
+    print(f"需要测速的URL数: {len(all_urls_for_testing)}")
+    
+    # 执行测速（如果启用）
+    speed_results = {}
+    if speed_config['enabled'] and all_urls_for_testing:
+        speed_results = batch_test_urls(all_urls_for_testing, speed_config)
+    
     # 生成TXT文件
-    create_txt_file(all_channels, "ipzyauto.txt")
+    print("\n调用create_txt_file函数生成文件...")
+    print(f"  传递的all_channels长度: {len(all_channels)}")
+    print(f"  传递的speed_results长度: {len(speed_results) if speed_results else 0}")
+    filename = create_txt_file(all_channels, "ipzyauto_full.txt", speed_results)
+    
+    # 显示生成结果
+    print(f"\n文件生成完成: {filename}")
+    
+    # 验证文件内容
+    print(f"\n验证文件内容:")
+    try:
+        with open(filename, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+            print(f"  文件总行数: {len(lines)}")
+            print(f"  文件前20行:")
+            for i, line in enumerate(lines[:20]):
+                print(f"    {i+1}: {line.rstrip()}")
+            # 查找包含频道数据的行
+            data_lines = [line for line in lines if ',' in line and not line.startswith('#') and not line.strip().endswith('#genre#')]
+            print(f"  包含频道数据的行数: {len(data_lines)}")
+            if data_lines:
+                print(f"  前5行频道数据:")
+                for i, line in enumerate(data_lines[:5]):
+                    print(f"    {i+1}: {line.rstrip()}")
+    except Exception as e:
+        print(f"  读取文件时出错: {e}")
+    
+    # 统计频道信息
+    total_channels = len(all_channels)
+    total_urls = sum(len(urls) for urls in all_channels.values())
+    print(f"频道统计: {total_channels}个频道，{total_urls}个URL")
+    
+    # 如果启用了测速，显示测速统计
+    if speed_config['enabled'] and speed_results:
+        available_urls = sum(1 for r in speed_results.values() if r['status'] == 'available')
+        working_with_speed = sum(1 for r in speed_results.values() if r['status'] == 'available' and r['speed_kbps'] > 0)
+        print(f"测速统计: 有效URL {available_urls}个，可测速URL {working_with_speed}个")
+
+def test_fixed_channels():
+    """测试函数：使用固定的频道数据生成文件"""
+    print("\n=== 开始测试固定频道数据生成 ===")
+    
+    # 创建固定的频道数据
+    fixed_channels = {
+        'CCTV1': ['http://example.com/cctv1'],
+        'CCTV2': ['http://example.com/cctv2'],
+        'CCTV3': ['http://example.com/cctv3'],
+        '湖南卫视': ['http://example.com/hntv'],
+        '江苏卫视': ['http://example.com/jstv'],
+    }
+    
+    print("固定频道数据:")
+    for ch, urls in fixed_channels.items():
+        print(f"  频道: '{ch}', URL数量: {len(urls)}")
+        if urls:
+            print(f"      第一个URL: {urls[0]}")
+    
+    # 生成文件
+    filename = create_txt_file(fixed_channels, "fixed_test.txt")
+    
+    # 验证文件内容
+    print(f"\n验证文件内容 ({filename}):")
+    try:
+        with open(filename, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+            print(f"  文件总行数: {len(lines)}")
+            print(f"  文件内容:")
+            for i, line in enumerate(lines):
+                print(f"    {i+1}: {line.rstrip()}")
+    except Exception as e:
+        print(f"  读取文件时出错: {e}")
+    
+    print("=== 测试固定频道数据生成完成 ===")
 
 if __name__ == "__main__":
+    # 先运行测试函数
+    test_fixed_channels()
+    
+    # 然后运行主函数
+    print("\n\n=== 开始运行主函数 ===")
     main()
