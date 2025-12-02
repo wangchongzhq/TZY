@@ -189,6 +189,7 @@ default_sources = [
     "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u",
     "https://ghfast.top/https://github.com/kimwang1978/collect-txt/blob/main/bbxx.txt",
     "https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt",
+    "https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.m3u",
     "https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt",
     "https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u",
 ]
