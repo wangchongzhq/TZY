@@ -7,7 +7,7 @@ from collections import defaultdict
 
 # 频道分类
 CHANNEL_CATEGORIES = {
-    "4K频道": ['CCTV4K', 'CCTV8K', 'CCTV16 4K', '北京卫视4K', '北京IPTV4K', '湖南卫视4K', '山东卫视4K','广东卫视4K', '四川卫视4K', 
+    "4K频道": ['CCTV4K', 'CCTV8K', 'CCTV16 4K', '北京卫视4K', '北京IPTV4K', '湖南卫视4K', '山东卫视4K','广东卫视4K', '四川卫视4K',
                  '浙江卫视4K', '江苏卫视4K', '东方卫视4K', '深圳卫视4K', '河北卫视4K', '峨眉电影4K', '求索4K', '咪视界4K', '欢笑剧场4K',
                  '苏州4K', '至臻视界4K', '南国都市4K', '翡翠台4K', '百事通电影4K', '百事通少儿4K', '百事通纪实4K', '华数爱上4K'],
 
@@ -20,7 +20,7 @@ CHANNEL_CATEGORIES = {
                  '青海卫视', '新疆卫视', '西藏卫视', '三沙卫视', '厦门卫视', '兵团卫视', '延边卫视', '安多卫视', '康巴卫视', '农林卫视', '山东教育',
                  'CETV1', 'CETV2', 'CETV3', 'CETV4', '早期教育'],
 
-    "北京专属频道": ['北京卫视', '北京财经', '北京纪实', '北京生活', '北京体育休闲', '北京国际', '北京文艺', '北京新闻', 
+    "北京专属频道": ['北京卫视', '北京财经', '北京纪实', '北京生活', '北京体育休闲', '北京国际', '北京文艺', '北京新闻',
                  '北京淘电影', '北京淘剧场', '北京淘4K', '北京淘娱乐', '北京淘BABY', '北京萌宠TV', '北京卡酷少儿'],
 
     "山东专属频道": ['山东卫视', '山东齐鲁', '山东综艺', '山东少儿', '山东生活',
@@ -73,7 +73,7 @@ CHANNEL_MAPPING = {
     "百事通少儿4K": ["百事通少儿 4K", "百事通少儿-4K"],
     "百事通纪实4K": ["百事通纪实 4K", "百事通纪实-4K"],
     "华数爱上4K": ["华数爱上 4K", "爱上 4K", "爱上4K",  "爱上-4K", "华数爱上-4K"],
-    
+
     # 央视频道
     "CCTV1": ["CCTV-1", "CCTV-1 HD", "CCTV1综合", "CCTV-1 综合"],
     "CCTV2": ["CCTV-2", "CCTV-2 HD", "CCTV2 财经", "CCTV-2 财经"],
@@ -108,7 +108,7 @@ CHANNEL_MAPPING = {
     "央视文化精品": ["CCTV-央视文化精品", "CCTV央视文化精品", "CCTV文化精品", "CCTV-文化精品", "文化精品"],
     "卫生健康": ["CCTV-卫生健康", "CCTV卫生健康"],
     "电视指南": ["CCTV-电视指南", "CCTV电视指南"],
-    
+
     # 卫视频道
     "山东卫视": ["山东卫视 HD"],
     "浙江卫视": ["浙江卫视 HD"],
@@ -155,7 +155,6 @@ CHANNEL_MAPPING = {
     "CETV3": ["中国教育3台", "中国教育三台", "中国教育3", "CETV-3 教育服务", "CETV-3"],
     "CETV4": ["中国教育4台", "中国教育四台", "中国教育4", "CETV-4 职业教育", "CETV-4"],
     "早期教育": ["中国教育5台", "中国教育5", "中国教育五台", "CETV早期教育", "CETV-早期教育", "CETV 早期教育", "CETV-5", "CETV5"],
-    
 
     # 北京专属频道
     "北京卫视": ["北京卫视 HD"],
@@ -173,7 +172,7 @@ CHANNEL_MAPPING = {
     "北京淘BABY": ["IPTV淘BABY", "北京IPTV淘BABY", "北京淘Baby", "IPTV淘baby", "IPTV淘Baby", "北京IPTV淘baby", "北京淘baby"],
     "北京萌宠TV": ["IPTV淘萌宠", "北京IPTV淘萌宠", "北京淘萌宠"],
     "北京卡酷少儿": ["北京卡酷少儿 HD", "北京KAKU少儿", "北京KAKU少儿 HD", "北京kaku少儿", "北京kaku少儿 HD"],
-    
+
     # 山东专属频道
     "山东卫视": ["山东卫视频道", "山东卫视 HD"],
     "山东齐鲁": ["山东齐鲁频道", "齐鲁频道 HD"],
@@ -184,13 +183,13 @@ CHANNEL_MAPPING = {
     "山东国际": ["山东国际频道", "山东新闻频道 HD"],
     "山东体育": ["山东体育频道", "山东体育频道 HD"],
     "山东文旅": ["山东文旅频道", "山东文旅频道 HD"],
-  
+
     # 港澳频道
     "凤凰中文": ["凤凰卫视中文台", "凤凰中文台", "凤凰卫视中文"],
     "凤凰资讯": ["凤凰卫视资讯台", "凤凰资讯台", "凤凰咨询", "凤凰咨询台", "凤凰卫视咨询台", "凤凰卫视资讯", "凤凰卫视咨询"],
     "凤凰香港": ["凤凰卫视香港台", "凤凰卫视香港", "凤凰香港"],
     "凤凰电影": ["凤凰卫视电影台", "凤凰电影台", "凤凰卫视电影", "鳳凰衛視電影台", "凤凰电影"],
-    
+
     # 电影频道
     "CHC动作电影": ["CHC动作电影 HD"],
     "CHC家庭影院": ["CHC家庭影院 HD"],
@@ -204,7 +203,7 @@ CHANNEL_MAPPING = {
     "中国功夫": ["NewTV中国功夫", "NewTV 中国功夫", "newtv 中国功夫", "NEWTV 中国功夫", "NEWTV中国功夫"],
     "动作电影": ["NewTV动作电影", "NewTV 动作电影", "newtv 动作电影", "NEWTV 动作电影", "NEWTV动作电影"],
     "超级电影": ["NewTV超级电影", "NewTV 超级电影", "newtv 超级电影", "NEWTV 超级电影", "NEWTV超级电影"],
-    
+
     # 儿童频道
     "动漫秀场": ["动漫秀场4K", "SiTV动漫秀场", "SiTV 动漫秀场", "上海动漫秀场"],
     "哒啵电竞": ["哒啵电竞 HD"],
@@ -214,7 +213,7 @@ CHANNEL_MAPPING = {
     "优漫卡通": ["优漫卡通 HD"],
     "哈哈炫动": ["炫动卡通", "上海哈哈炫动", "哈哈炫动 HD"],
     "嘉佳卡通": ["嘉佳卡通 HD"],
-    
+
     # iHOT频道
     "iHOT爱喜剧": ["iHOT 爱喜剧", "IHOT 爱喜剧", "IHOT爱喜剧", "ihot爱喜剧", "爱喜剧", "ihot 爱喜剧"],
     "iHOT爱科幻": ["iHOT 爱科幻", "IHOT 爱科幻", "IHOT爱科幻", "ihot爱科幻", "爱科幻", "ihot 爱科幻"],
@@ -231,7 +230,7 @@ CHANNEL_MAPPING = {
     "iHOT爱奇谈": ["iHOT 爱奇谈", "IHOT 爱奇谈", "IHOT爱奇谈", "ihot爱奇谈", "ihot 爱奇谈", "爱奇谈"],
     "iHOT爱科学": ["iHOT 爱科学", "IHOT 爱科学", "IHOT爱科学", "ihot爱科学", "ihot 爱科学", "爱科学"],
     "iHOT爱动漫": ["iHOT 爱动漫", "IHOT 爱动漫", "IHOT爱动漫", "ihot爱动漫", "ihot 爱动漫", "爱动漫"],
-    
+
     # 综合频道
     "重温经典": ["重温经典 HD"],
     "CHANNEL[V]": ["CHANNEL V", "Channel V"],
@@ -256,14 +255,14 @@ CHANNEL_MAPPING = {
     "金色学堂": ["金色学堂4K", "SiTV金色学堂", "SiTV 金色学堂"],
     "法治天地": ["法治天地 HD", "上海法治天地"],
     "哒啵赛事": ["哒啵赛事 HD"],
-    
+
     # 体育频道
     "天元围棋": ["天元围棋 HD"],
     "魅力足球": ["魅力足球 HD"],
     "五星体育": ["五星体育 HD"],
     "劲爆体育": ["劲爆体育 HD"],
     "超级体育": ["NewTV超级体育", "NewTV 超级体育", "newtv 超级体育", "NEWTV 超级体育", "NEWTV超级体育"],
-    
+
     # 剧场频道
     "古装剧场": ["NewTV古装剧场", "NewTV 古装剧场", "newtv 古装剧场", "NEWTV 古装剧场", "NEWTV古装剧场"],
     "家庭剧场": ["NewTV家庭剧场", "NewTV 家庭剧场", "newtv 家庭剧场", "NEWTV 家庭剧场", "NEWTV家庭剧场"],
@@ -306,7 +305,7 @@ def is_invalid_url(url: str) -> bool:
         r"http://\[[a-fA-F0-9:]+\](?::\d+)?/ottrrs\.hl\.chinamobile\.com/.+/.+",
         r"http://\[2409:8087:1a01:df::7005\]/.*",
     ]
-    
+
     for pattern in invalid_patterns:
         if re.search(pattern, url):
             return True
@@ -328,7 +327,7 @@ def is_preferred_url(url: str) -> bool:
         r".*\.cn.*",
         r".*\.net.*",
     ]
-    
+
     for pattern in preferred_patterns:
         if re.search(pattern, url, re.IGNORECASE):
             return True
@@ -340,11 +339,11 @@ def should_exclude_url(url):
     exclude_patterns = [
         # 这里可以添加需要排除的域名模式
     ]
-    
+
     for pattern in exclude_patterns:
         if re.match(pattern, url):
             return True
-    
+
     return False
 
 # 移除URL模糊处理函数，简化代码
@@ -372,26 +371,26 @@ def test_url_speed(url, config):
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
         })
-        
+
         start_time = time.time()
         response = session.get(url, stream=True, timeout=config['timeout'])
-        
+
         if response.status_code != 200:
             return {'url': url, 'speed_kbps': 0, 'status': 'unavailable', 'error': f'HTTP {response.status_code}'}
-        
+
         downloaded_bytes = 0
         speed_samples = []
         sample_start = time.time()
         sample_bytes = 0
-        
+
         while time.time() - start_time < config['test_duration']:
             chunk = response.raw.read(8192)
             if not chunk:
                 break
-            
+
             downloaded_bytes += len(chunk)
             sample_bytes += len(chunk)
-            
+
             # 每0.5秒采样一次速度
             if time.time() - sample_start >= 0.5:
                 if sample_bytes > 0:
@@ -399,9 +398,9 @@ def test_url_speed(url, config):
                     speed_samples.append(speed_kbps)
                     sample_start = time.time()
                     sample_bytes = 0
-        
+
         response.close()
-        
+
         # 计算平均速度
         if speed_samples:
             avg_speed_kbps = statistics.mean(speed_samples)
@@ -411,7 +410,7 @@ def test_url_speed(url, config):
                 stability = 1.0 / (1.0 + std_dev / avg_speed_kbps) if avg_speed_kbps > 0 else 0
             else:
                 stability = 1.0
-            
+
             return {
                 'url': url,
                 'speed_kbps': avg_speed_kbps,
@@ -421,7 +420,7 @@ def test_url_speed(url, config):
             }
         else:
             return {'url': url, 'speed_kbps': 0, 'status': 'available', 'error': '无法获取速度样本', 'stability': 0}
-            
+
     except Exception as e:
         return {'url': url, 'speed_kbps': 0, 'status': 'unavailable', 'error': str(e)}
 
@@ -429,40 +428,31 @@ def test_url_speed(url, config):
 def batch_test_urls(urls, config):
     results = {}
     total_urls = len(urls)
-    
+
     if not urls:
         return results
-    
-    print(f"\n开始测速，共 {total_urls} 个URL，配置：")
-    print(f"  - 超时时间: {config['timeout']}秒")
-    print(f"  - 测速时长: {config['test_duration']}秒")
-    print(f"  - 并发线程: {config['max_workers']}")
-    print(f"  - 最小下载: {config['min_download_bytes']/1024:.1f}KB")
-    
+
     start_time = time.time()
-    
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=config['max_workers']) as executor:
         future_to_url = {executor.submit(test_url_speed, url, config): url for url in urls}
-        
+
         for i, future in enumerate(concurrent.futures.as_completed(future_to_url)):
             url = future_to_url[future]
             try:
                 result = future.result()
                 results[url] = result
-                
+
                 # 显示进度
                 progress = (i + 1) / total_urls * 100
-                print(f"  测速进度: {i+1}/{total_urls} ({progress:.1f}%)", end="\r")
             except Exception as e:
                 results[url] = {'url': url, 'speed_kbps': 0, 'status': 'error', 'error': str(e)}
-    
+
     elapsed_time = time.time() - start_time
-    print(f"\n测速完成，耗时: {elapsed_time:.2f}秒")
-    
+
     # 统计结果
     available_count = sum(1 for r in results.values() if r['status'] == 'available' and r['speed_kbps'] > 0)
-    print(f"  成功测速: {available_count}/{total_urls} ({available_count/total_urls*100:.1f}%)")
-    
+
     return results
 
 def fetch_lines_with_retry(url: str, max_retries=3):
@@ -473,21 +463,21 @@ def fetch_lines_with_retry(url: str, max_retries=3):
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
         'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
     })
-    
+
     for attempt in range(max_retries):
         try:
             timeout = 25 if 'tv.html-5.me' in url else 15
             response = session.get(url, timeout=timeout)
             response.encoding = "utf-8"
-            
+
             if response.status_code == 200:
                 return response.text.splitlines()
         except Exception:
             pass
-        
+
         if attempt < max_retries - 1:
             time.sleep(2 ** attempt)
-    
+
     return []
 
 def parse_lines(lines):
@@ -519,7 +509,7 @@ def parse_lines(lines):
                 if url.startswith("http://") or url.startswith("https://"):
                     norm_name = normalize_channel_name(ch_name)
                     channels_dict[norm_name].append(url)
-    
+
     return channels_dict
 
 def create_txt_file(all_channels, filename="ipzyauto.txt", speed_results=None):
@@ -530,14 +520,14 @@ def create_txt_file(all_channels, filename="ipzyauto.txt", speed_results=None):
         f.write("格式: 频道名称,播放URL\n")
         f.write("分组: 4K频道,央视频道,卫视频道,北京频道,山东频道,港澳频道,电影频道,儿童频道,iHOT频道,综合频道,体育频道,剧场频道,其他频道\n")
         f.write("备注: 每个频道后的测速结果仅供参考，实际播放效果可能因网络环境而异\n\n")
-        
+
         # 写入央视频道分类
         f.write("央视频道,#genre#\n")
-        
+
         # 先处理央视频道
         common_cctv_channels = ['CCTV1', 'CCTV2', 'CCTV3', 'CCTV4', 'CCTV5', 'CCTV6', 'CCTV7', 'CCTV8', 'CCTV9', 'CCTV10',
                                'CCTV11', 'CCTV12', 'CCTV13', 'CCTV14', 'CCTV15', 'CCTV16', 'CCTV17', 'CCTV4K', 'CCTV8K']
-        
+
         # 先处理特定的央视频道
         for channel in common_cctv_channels:
             if channel in all_channels and all_channels[channel]:
@@ -550,9 +540,9 @@ def create_txt_file(all_channels, filename="ipzyauto.txt", speed_results=None):
                         speed_comment = f"$测速:{speed_data['speed_kbps']:.1f}kbps"
                     else:
                         speed_comment = "$测速:不可用"
-                
+
                 f.write(f"{channel},{url}{speed_comment}\n")
-        
+
         # 再处理其他CCTV频道（以CCTV开头但不在common列表中的）
         for channel, urls in list(all_channels.items()):
             if channel.startswith('CCTV') and channel not in common_cctv_channels and urls:
@@ -565,14 +555,14 @@ def create_txt_file(all_channels, filename="ipzyauto.txt", speed_results=None):
                         speed_comment = f"$测速:{speed_data['speed_kbps']:.1f}kbps"
                     else:
                         speed_comment = "$测速:不可用"
-                
+
                 f.write(f"{channel},{url}{speed_comment}\n")
-        
+
         f.write("\n")
-        
+
         # 写入其他频道分类
         f.write("其他频道,#genre#\n")
-        
+
         # 写入所有非CCTV频道
         for channel, urls in list(all_channels.items()):
             if not channel.startswith('CCTV') and urls:
@@ -585,11 +575,11 @@ def create_txt_file(all_channels, filename="ipzyauto.txt", speed_results=None):
                         speed_comment = f"$测速:{speed_data['speed_kbps']:.1f}kbps"
                     else:
                         speed_comment = "$测速:不可用"
-                
+
                 f.write(f"{channel},{url}{speed_comment}\n")
-        
+
         f.write("\n")
-    
+
     return filename
 
 # 移除统计日志生成功能
@@ -601,7 +591,7 @@ def create_txt_file(all_channels, filename="ipzyauto.txt", speed_results=None):
 def main():
     # 获取测速配置
     speed_config = speed_test_config()
-    
+
     # 直播源URL列表
     default_sources = [
         "https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u",
@@ -609,7 +599,7 @@ def main():
         "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv4.txt",
         "http://106.53.99.30/2025.txt",
     ]
-    
+
     user_sources = [
         "http://tv.html-5.me/i/9390107.txt",
         "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
@@ -618,7 +608,7 @@ def main():
         "https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt",
         "https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u",
     ]
-    
+
     urls = default_sources + user_sources
 
     all_channels = defaultdict(list)
@@ -627,13 +617,13 @@ def main():
     for url in urls:
         max_retries = 5 if 'tv.html-5.me' in url else 3
         lines = fetch_lines_with_retry(url, max_retries=max_retries)
-        
+
         if lines:
             parsed = parse_lines(lines)
             # 合并到总频道列表
             for ch, urls_list in parsed.items():
                 all_channels[ch].extend(urls_list)
-    
+
     # 收集所有需要测速的URL（限制数量，避免测试时间过长）
     all_urls_for_testing = []
     for ch, urls_list in all_channels.items():
@@ -641,18 +631,18 @@ def main():
         filtered_urls = [url for url in unique_urls if not should_exclude_url(url)]
         # 每个频道最多测试3个URL
         all_urls_for_testing.extend(filtered_urls[:3])
-    
+
     # 去重URL列表并限制总数
     all_urls_for_testing = list(set(all_urls_for_testing))[:200]  # 最多测试200个URL
-    
+
     # 执行测速（如果启用）
     speed_results = {}
     if speed_config['enabled'] and all_urls_for_testing:
         speed_results = batch_test_urls(all_urls_for_testing, speed_config)
-    
+
     # 生成TXT文件
     filename = create_txt_file(all_channels, "ipzyauto_full.txt", speed_results)
-    
+
     return filename
 
 if __name__ == "__main__":

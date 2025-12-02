@@ -29,7 +29,6 @@ GITHUB_SOURCES = [
     "https://ghfast.top/https://github.com/kimwang1978/collect-txt/blob/main/bbxx.txt",
     "https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt",
     "https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt",
-    "https://codeberg.org/zxj/mao/raw/branch/main/live.txt",
     # 其他稳定的IPTV源
     "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u",
     "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u",
@@ -47,7 +46,7 @@ CHANNEL_CATEGORIES = {
     "4K频道": ['CCTV4K', 'CCTV16 4K', '北京卫视4K', '北京IPTV4K', '湖南卫视4K', '山东卫视4K', '广东卫视4K', '四川卫视4K',
                 '浙江卫视4K', '江苏卫视4K', '东方卫视4K', '深圳卫视4K', '河北卫视4K', '峨眉电影4K', '求索4K', '咪视界4K', '欢笑剧场4K',
                 '苏州4K', '至臻视界4K', '南国都市4K', '翡翠台4K', '百事通电影4K', '百事通少儿4K', '百事通纪实4K', '华数爱上4K'],
-    
+
     "央视频道": ['CCTV1', 'CCTV2', 'CCTV3', 'CCTV4', 'CCTV4欧洲', 'CCTV4美洲', 'CCTV5', 'CCTV5+', 'CCTV6', 'CCTV7', 'CCTV8', 'CCTV9',
                 'CCTV10', 'CCTV11', 'CCTV12', 'CCTV13', 'CCTV14', 'CCTV15', 'CCTV16', 'CCTV17', '兵器科技', '风云音乐', '风云足球',
                 '风云剧场', '怀旧剧场', '第一剧场', '女性时尚', '世界地理', '央视台球', '高尔夫网球', '央视文化精品', '北京纪实科教',
@@ -394,14 +393,14 @@ def is_high_quality(line):
     high_def_patterns = re.compile(r'(1080[pdi]|1440[pdi]|2160[pdi]|[48]k|fhd|uhd|超高清|4k)', re.IGNORECASE)
     if high_def_patterns.search(line):
         return True
-    
+
     # 其次检查是否包含其他高清标识
     if HD_REGEX.search(line):
         # 排除一些可能误判的情况
         low_quality_patterns = re.compile(r'(360|480|576|标清|sd|low)', re.IGNORECASE)
         if not low_quality_patterns.search(line):
             return True
-    
+
     # 检查URL中是否包含特定的高清参数
     url_high_patterns = re.compile(r'(\bhd\b|quality=high|res=[1-9]\d{3}|bitrate=[8-9]\d{2}|bitrate=\d{4,})', re.IGNORECASE)
     return bool(url_high_patterns.search(line))
@@ -410,39 +409,39 @@ def normalize_channel_name(name):
     """标准化频道名称，进行精确匹配、包含匹配、反向匹配和关键词匹配"""
     if not name:
         return None
-    
+
     # 移除一些常见的后缀或标识符
     name = name.strip()
     for suffix in ['高清', 'HD', '(高清)', '[高清]', '(HD)', '[HD]', '-HD', '·HD', '\t']:
         if name.endswith(suffix):
             name = name[:-len(suffix)].strip()
-    
+
     # 精确匹配
     if name in CHANNEL_MAPPING:
         return name
-    
+
     # 包含匹配 - 检查频道名是否包含规范名
     for canonical_name, aliases in CHANNEL_MAPPING.items():
         # 检查规范名是否在当前名称中
         if canonical_name in name:
             return canonical_name
-        
+
         # 检查别名是否在当前名称中
         for alias in aliases:
             if alias in name:
                 return canonical_name
-    
+
     # 反向匹配 - 检查规范名是否包含当前名称
     for canonical_name in CHANNEL_MAPPING:
         if name in canonical_name:
             return canonical_name
-    
+
     # 关键词匹配 - 提取名称中的关键词进行匹配
     keywords = re.findall(r'[a-zA-Z0-9\u4e00-\u9fa5]+', name)
     for keyword in keywords:
         if keyword in CHANNEL_MAPPING:
             return keyword
-    
+
     # 特殊处理CCTV频道
     cctv_match = re.search(r'CCTV(\d{1,2})', name, re.IGNORECASE)
     if cctv_match:
@@ -450,7 +449,7 @@ def normalize_channel_name(name):
         canonical_cctv = f"CCTV{cctv_num}"
         if canonical_cctv in CHANNEL_MAPPING:
             return canonical_cctv
-    
+
     # 无匹配，返回原始名称
     return None
 
@@ -458,9 +457,9 @@ def extract_channels(content):
     """从内容中提取频道信息"""
     if not content:
         return []
-    
+
     channels = []
-    
+
     # 1. M3U格式
     if '#EXTM3U' in content:
         lines = content.splitlines()
@@ -473,7 +472,7 @@ def extract_channels(content):
                     url = lines[i + 1].strip()
                     if url.startswith(('http://', 'https://')) and not should_exclude_url(url):
                         channels.append((name, url))
-    
+
     # 2. 文本格式: 频道名,URL
     elif ',' in content:
         lines = content.splitlines()
@@ -487,7 +486,7 @@ def extract_channels(content):
                         channels.append((name, url))
                 except ValueError:
                     continue
-    
+
     # 3. 每行一个URL，尝试从URL中提取信息
     else:
         lines = content.splitlines()
@@ -497,7 +496,7 @@ def extract_channels(content):
                     # 尝试从URL中提取名称
                     name = line.split('/')[-1].split('?')[0].split('#')[0]
                     channels.append((name, line))
-    
+
     return channels
 
 def process_source(source_url):
@@ -507,28 +506,28 @@ def process_source(source_url):
     content = fetch_content(url)
     if not content:
         return []
-    
+
     channels = extract_channels(content)
     if not channels:
         return []
-    
+
     # 过滤和标准化频道
     processed_channels = []
     for name, url in channels:
         # 检查URL和名称
         if not url or not url.startswith(('http://', 'https://')) or should_exclude_url(url):
             continue
-        
+
         # 过滤高清线路
         combined = name + ' ' + url
         if not is_high_quality(combined):
             continue
-        
+
         # 标准化频道名称
         normalized_name = normalize_channel_name(name)
         if normalized_name:
             processed_channels.append((normalized_name, url))
-    
+
     return processed_channels
 
 def sort_and_limit_lines(lines):
@@ -537,15 +536,15 @@ def sort_and_limit_lines(lines):
     def sort_key(line):
         name, url = line
         combined = (name + ' ' + url).lower()
-        
+
         # 4K及以上 (最高优先级)
         if any(keyword in combined for keyword in ['4k', '2160p', '2160i', 'uhd', '超高清']):
             return (0, len(combined))  # 长度作为次要排序条件，更简洁的URL可能更好
-        
+
         # 2K (第二优先级)
         elif any(keyword in combined for keyword in ['1440p', 'qhd', '2k']):
             return (1, len(combined))
-        
+
         # 1080p/i (第三优先级)
         elif any(keyword in combined for keyword in ['1080p', '1080i', '1080d', 'fhd']):
             # 进一步细分：1080p优先于1080i
@@ -553,21 +552,21 @@ def sort_and_limit_lines(lines):
                 return (2, 0, len(combined))
             else:
                 return (2, 1, len(combined))
-        
+
         # 高清 (第四优先级)
         elif any(keyword in combined for keyword in ['高清', 'hd', 'high definition']):
             return (3, len(combined))
-        
+
         # 其他高清标识 (第五优先级)
         elif any(keyword in combined for keyword in ['超清', '蓝光', 'blue-ray']):
             return (4, len(combined))
-        
+
         # 普通线路 (最低优先级)
         return (5, len(combined))
-    
+
     # 排序
     sorted_lines = sorted(lines, key=sort_key)
-    
+
     # 限制数量 - 确保在范围内
     if len(sorted_lines) < MIN_LINES_PER_CHANNEL:
         # 线路不足时，保留所有线路
@@ -582,15 +581,15 @@ def sort_and_limit_lines(lines):
 def write_output_file(category_channels):
     """写入输出文件"""
     output_lines = []
-    
+
     # 按照指定的顺序遍历类别
     for category in CATEGORY_ORDER:
         if category not in category_channels:
             continue
-        
+
         # 添加类别标记
         output_lines.append(f"#{category},#genre#")
-        
+
         # 添加该类别的频道
         for channel_name, lines in category_channels[category].items():
             output_lines.append(f"##{channel_name}")
@@ -598,14 +597,14 @@ def write_output_file(category_channels):
                 # 验证URL
                 if url and url.startswith(('http://', 'https://')):
                     output_lines.append(f"{name},{url}")
-        
+
         # 在类别之间添加空行
         output_lines.append("")
-    
+
     # 写入文件
     with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
         f.write('\n'.join(output_lines))
-    
+
     return True
 
 def main():
@@ -617,18 +616,18 @@ def main():
         for future in concurrent.futures.as_completed(future_to_source):
             channels = future.result()
             all_channels.extend(channels)
-    
+
     # 按频道名称分组
     channel_map = {}
     for name, url in all_channels:
         if name not in channel_map:
             channel_map[name] = []
         channel_map[name].append((name, url))
-    
+
     # 排序并限制每个频道的线路数量
     for name in channel_map:
         channel_map[name] = sort_and_limit_lines(channel_map[name])
-    
+
     # 按类别分组
     category_channels = {}
     for channel_name, lines in channel_map.items():
@@ -637,7 +636,7 @@ def main():
             if category not in category_channels:
                 category_channels[category] = {}
             category_channels[category][channel_name] = lines
-    
+
     # 写入输出文件
     write_output_file(category_channels)
 
@@ -650,9 +649,9 @@ def parse_args():
 if __name__ == "__main__":
     # 解析命令行参数
     args = parse_args()
-    
+
     # 如果指定了输出文件名，更新全局变量
     if args.output:
         OUTPUT_FILE = args.output
-    
+
     main()

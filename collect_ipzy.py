@@ -16,10 +16,12 @@ SOURCES = [
     {"name": "moonkeyhoo", "url": "https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u"},
     {"name": "kakaxi-ipv6", "url": "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u"},
     {"name": "kakaxi-ipv4", "url": "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv4.txt"},
-    {"name": "2025", "url": "http://106.53.99.30/2025.txt"},
     {"name": "9390107", "url": "http://tv.html-5.me/i/9390107.txt"},
     {"name": "Supprise0901", "url": "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt"},
     {"name": "ffmking", "url": "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt"},
+    {"name": "zxj", "url": "https://codeberg.org/zxj/mao/raw/branch/main/live.txt"},  
+    {"name": "Guovin", "url": "https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt"},  
+    {"name": "xiao-ping2", "url": "https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt"},  
     {"name": "qingtingjjjjjjj", "url": "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt"},
     {"name": "Heiwk", "url": "https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u"},
     ]
@@ -79,8 +81,7 @@ def download_m3u(url, retries=2):
             response.encoding = 'utf-8'
             if response.status_code == 200:
                 return response.text
-        except Exception as e:
-            print(f"下载失败 {url} (尝试 {attempt+1}/{retries}): {e}")
+        except Exception:
             if attempt < retries - 1:
                 time.sleep(1)
     return None
@@ -292,26 +293,6 @@ def merge_all_channels(all_channels_dicts):
 
 def ensure_min_urls_per_channel(channels, min_urls=10, max_urls=30):
     """确保每个频道有最少线路数量"""
-    print(f"确保每个频道至少有 {min_urls} 条线路...")
-    
-    # 统计线路分布
-    url_counts = defaultdict(int)
-    for channel_info in channels.values():
-        url_count = len(channel_info['urls'])
-        url_counts[url_count] += 1
-    
-    print("线路分布统计:")
-    for count in sorted(url_counts.keys()):
-        print(f"  {count}条线路: {url_counts[count]}个频道")
-    
-    # 找出线路不足的频道
-    channels_with_few_urls = {name: info for name, info in channels.items() if len(info['urls']) < min_urls}
-    
-    if channels_with_few_urls:
-        print(f"有 {len(channels_with_few_urls)} 个频道线路不足 {min_urls} 条")
-    else:
-        print("所有频道都已满足最小线路要求")
-    
     # 限制最大线路数
     for channel_name, channel_info in channels.items():
         urls = channel_info['urls']
@@ -367,39 +348,22 @@ def write_output_file(channels_by_category):
 
 def main():
     """主函数"""
-    print("开始收集IPZY高清直播线路...")
-    print("清晰度要求: 仅保留1080p高清及以上线路")
-    print("线路要求: 每个频道至少10条线路")
-    
     all_channels_dicts = []
     successful_sources = 0
     
     for source in SOURCES:
-        print(f"处理源: {source['name']}")
         content = download_m3u(source['url'])
         if content:
             channels = parse_m3u_content(content, source['name'])
-            channel_count = len(channels)
-            url_count = sum(len(c['urls']) for c in channels.values())
             all_channels_dicts.append(channels)
-            print(f"  从 {source['name']} 获取了 {channel_count} 个频道，{url_count} 条线路")
             successful_sources += 1
-        else:
-            print(f"  无法从 {source['name']} 获取数据")
-        
         time.sleep(0.5)
     
-    print(f"成功从 {successful_sources}/{len(SOURCES)} 个数据源获取数据")
-    
     if not all_channels_dicts:
-        print("错误: 无法从任何数据源获取数据")
         return
     
-    print("合并所有频道数据...")
+    # 合并所有频道数据
     merged_channels = merge_all_channels(all_channels_dicts)
-    
-    total_urls = sum(len(c['urls']) for c in merged_channels.values())
-    print(f"合并后共有 {len(merged_channels)} 个频道，{total_urls} 条线路")
     
     # 确保每个频道有足够线路
     merged_channels = ensure_min_urls_per_channel(merged_channels, min_urls=10, max_urls=30)
@@ -407,25 +371,8 @@ def main():
     # 按分类组织频道
     categorized_channels = organize_channels_by_category(merged_channels)
     
-    print("高清频道收集完成，开始写入文件...")
-    
     # 写入输出文件
     write_output_file(categorized_channels)
-    
-    # 最终统计
-    total_channels = sum(len(channels) for channels in categorized_channels.values())
-    total_urls = sum(sum(len(channel['urls']) for channel in channels) for channels in categorized_channels.values())
-    
-    print(f"\n任务完成！最终统计:")
-    print(f"频道总数: {total_channels}")
-    print(f"线路总数: {total_urls}")
-    print(f"平均每个频道线路数: {total_urls/total_channels:.1f}")
-    
-    # 显示各分类统计
-    for category, channels in categorized_channels.items():
-        category_url_count = sum(len(channel['urls']) for channel in channels)
-        avg_urls = category_url_count / len(channels) if channels else 0
-        print(f"{category}: {len(channels)} 个频道，{category_url_count} 条线路 (平均{avg_urls:.1f}条/频道)")
 
 if __name__ == "__main__":
     main()
