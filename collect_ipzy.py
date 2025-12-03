@@ -93,6 +93,15 @@ def normalize_channel_name(name):
     name = re.sub(r'\[[^\]]*\]', '', name)
     name = re.sub(r'\([^\)]*\)', '', name)
     
+    # 检查是否为时间戳（如 2025-11-26 18:53:51）
+    timestamp_pattern = r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$'
+    if re.match(timestamp_pattern, name):
+        return "未知频道"
+    
+    # 检查是否为纯数字
+    if name.isdigit():
+        return "未知频道"
+    
     # 常见频道名称标准化
     replacements = {
         r'CCTV-1\s*综合': 'CCTV-1',
@@ -279,7 +288,7 @@ def merge_all_channels(all_channels_dicts):
                 merged_channels[channel_name] = channel_info.copy()
                 merged_channels[channel_name]['sources'] = set(channel_info['sources'])
             else:
-                # 合并URLs，同时排除不需要的URL
+                # 合并URLs，同时排除不需要的URL和重复URL
                 for url in channel_info['urls']:
                     if not should_exclude_url(url) and url not in merged_channels[channel_name]['urls']:
                         merged_channels[channel_name]['urls'].append(url)
@@ -344,31 +353,81 @@ def write_output_file(channels_by_category):
 
 def main():
     """主函数"""
+    print("开始收集高清直播源...")
     all_channels_dicts = []
     successful_sources = 0
+    failed_sources = 0
     
-    for source in SOURCES:
-        content = download_m3u(source['url'])
-        if content:
-            channels = parse_m3u_content(content, source['name'])
-            all_channels_dicts.append(channels)
-            successful_sources += 1
-        time.sleep(0.5)
+    print(f"共发现 {len(SOURCES)} 个数据源")
+    
+    for i, source in enumerate(SOURCES, 1):
+        try:
+            # SOURCES_WITH_NAMES是一个元组列表：(name, url)
+            source_name, source_url = source
+            print(f"\n{i}/{len(SOURCES)}: 正在处理 {source_name}")
+            print(f"  URL: {source_url}")
+            
+            content = download_m3u(source_url)
+            if content:
+                print(f"  ✅ 下载成功，内容长度: {len(content)} 字符")
+                channels = parse_m3u_content(content, source_name)
+                print(f"  ✅ 解析成功，发现 {len(channels)} 个频道")
+                all_channels_dicts.append(channels)
+                successful_sources += 1
+            else:
+                print(f"  ❌ 下载失败或内容为空")
+                failed_sources += 1
+            
+            time.sleep(0.5)
+        except Exception as e:
+            print(f"  ❌ 错误: {type(e).__name__}: {e}")
+            failed_sources += 1
+    
+    print(f"\n数据源处理完成:")
+    print(f"  成功: {successful_sources}")
+    print(f"  失败: {failed_sources}")
     
     if not all_channels_dicts:
+        print("❌ 没有成功解析任何频道数据")
         return
     
     # 合并所有频道数据
-    merged_channels = merge_all_channels(all_channels_dicts)
+    print("\n正在合并所有频道数据...")
+    try:
+        merged_channels = merge_all_channels(all_channels_dicts)
+        print(f"  ✅ 合并完成，共 {len(merged_channels)} 个频道")
+    except Exception as e:
+        print(f"  ❌ 合并错误: {type(e).__name__}: {e}")
+        return
     
     # 确保每个频道有足够线路
-    merged_channels = ensure_min_urls_per_channel(merged_channels, min_urls=10, max_urls=30)
+    print("\n正在优化频道线路数量...")
+    try:
+        merged_channels = ensure_min_urls_per_channel(merged_channels, min_urls=10, max_urls=30)
+        print(f"  ✅ 优化完成")
+    except Exception as e:
+        print(f"  ❌ 优化错误: {type(e).__name__}: {e}")
+        return
     
     # 按分类组织频道
-    categorized_channels = organize_channels_by_category(merged_channels)
+    print("\n正在分类频道...")
+    try:
+        categorized_channels = organize_channels_by_category(merged_channels)
+        print(f"  ✅ 分类完成")
+    except Exception as e:
+        print(f"  ❌ 分类错误: {type(e).__name__}: {e}")
+        return
     
     # 写入输出文件
-    write_output_file(categorized_channels)
+    print("\n正在生成输出文件...")
+    try:
+        write_output_file(categorized_channels)
+        print("  ✅ 输出文件生成完成")
+    except Exception as e:
+        print(f"  ❌ 输出文件错误: {type(e).__name__}: {e}")
+        return
+    
+    print("\n✅ 所有任务完成！")
 
 if __name__ == "__main__":
     main()
