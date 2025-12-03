@@ -4,6 +4,7 @@
 
 # 播放源URL列表
 UNIFIED_SOURCES = [
+    "http://tv.html-5.me/i/9390107.txt",
     "https://example.com/test_source.txt",
     "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
     "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
@@ -29,12 +30,12 @@ UNIFIED_SOURCES = [
     "https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u",
     "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u",
     "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv4.txt",
-    "http://106.53.99.30/2025.txt",
     "https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u"
 ]
 
 # 带名称的播放源列表（用于collect_ipzy.py）
 SOURCES_WITH_NAMES = [
+    ("9390107", "http://tv.html-5.me/i/9390107.txt"),
     ("test_new_source", "https://example.com/test_source.txt"),
     ("Supprise0901", "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt"),
     ("ffmking", "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt"),
@@ -60,6 +61,5 @@ SOURCES_WITH_NAMES = [
     ("moonkeyhoo", "https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u"),
     ("kakaxi-ipv6", "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u"),
     ("kakaxi-ipv4", "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv4.txt"),
-    ("106.53.99.30", "http://106.53.99.30/2025.txt"),
     ("Heiwk", "https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u")
 ]
