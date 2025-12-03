@@ -30,12 +30,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests
 
-    - name: Run script to generate m3u and convert to txt
+    - name: Run script to generate m3u and txt files
       run: |
-        # 首先运行原始脚本生成m3u文件
+        # 运行脚本生成文件
         python ipzyauto.py
-        # 然后转换为txt格式（生成ipzyauto.txt）
-        python convert_to_txt.py
 
     - name: Debug - List generated files
       run: ls -la
@@ -74,7 +72,6 @@ jobs:
         # 重新执行脚本确保生成最新文件
         echo "重新执行脚本生成最新文件..."
         python ipzyauto.py
-        python convert_to_txt.py
         
         # 检查文件是否存在
         if [ ! -f "ipzyauto.txt" ]; then
