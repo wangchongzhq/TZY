@@ -5,7 +5,7 @@
     {
       "name": "9390107",
       "url": "http://tv.html-5.me/i/9390107.txt",
-      "enabled": false
+      "enabled": true
     },
     {
       "name": "test_new_source",
@@ -130,11 +130,6 @@
     {
       "name": "kakaxi-ipv4",
       "url": "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv4.txt",
-      "enabled": true
-    },
-    {
-      "name": "106.53.99.30",
-      "url": "http://106.53.99.30/2025.txt",
       "enabled": true
     },
     {
