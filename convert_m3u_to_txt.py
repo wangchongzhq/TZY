@@ -61,12 +61,12 @@ class M3UConverter:
                     elif len(match) == 3:
                         # 简化格式：tvg_name, channel_name, urls_text
                         tvg_name, channel_name, urls_text = match
-                        group_title = "默认分组"
+                        group_title = ""
                     else:
                         # 极简格式：channel_name, urls_text
                         channel_name, urls_text = match
                         tvg_name = channel_name
-                        group_title = "默认分组"
+                        group_title = ""
                     
                     # 提取所有URL
                     urls = re.findall(r'(http[^\s\n]+)', urls_text)
@@ -80,9 +80,11 @@ class M3UConverter:
                     if not channel_name:
                         channel_name = tvg_name
                     
-                    # 确保分组名称存在
+                    # 保持原有的分组信息，不添加额外分组
+                    group_title = group_title.strip()
+                    # 如果没有分组信息，保持为空字符串
                     if not group_title:
-                        group_title = "默认分组"
+                        group_title = ""
                     
                     # 添加到分组
                     if group_title not in group_channels:
@@ -138,8 +140,8 @@ class M3UConverter:
         # 添加频道信息
         for group, channels in sorted(group_channels.items()):
             if channels:  # 只写入有频道的分组
-                # 写入分组标题
-                output_lines.append(f"{group},#genre#")
+                if group:  # 只有当分组名称非空时才写入分组标题
+                    output_lines.append(f"{group},#genre#")
                 # 写入该分组下的所有频道URL
                 for channel_line in channels:
                     output_lines.append(channel_line)
