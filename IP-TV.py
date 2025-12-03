@@ -197,7 +197,6 @@ default_sources = [
 # 本地直播源文件
 default_local_sources = [
     "ipzyauto.txt",
-    "4K_uhd_channels.txt",
 ]
 
 # 用户自定义直播源URL（可在本地添加）
