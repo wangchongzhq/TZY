@@ -421,12 +421,9 @@ CCTV4K,http://183.220.107.138:4022/rtp/239.10.0.108:5140
 
 
 
-<<<<<<< HEAD
 南国都市4K,https://tencentplay.gztv.com/live/nanguodushi.m3u8?txSecret=550af55c0ea34ce492748481415b6dfa&txTime=1903e7b17de
 # 速度: 0.4 KB/s, 稳定性: 1.00
 # 速度: 0.3 KB/s, 稳定性: 1.00
-=======
->>>>>>> be655426133b2625fc2abc4fec6402e7c82a241d
 
 ##百事通电影4K
 
