@@ -2,6 +2,7 @@ import re
 import requests
 import concurrent.futures
 import argparse
+import time
 
 # 配置参数
 MAX_WORKERS = 10
@@ -18,29 +19,11 @@ HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 }
 
-# 数据源列表
-GITHUB_SOURCES = [
-    # 有效的中国电视频道源
-    "http://tv.html-5.me/i/9390107.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
-    "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
-    "https://freetv.fun/test_channels_new.txt",
-    "https://ghfast.top/https://github.com/kimwang1978/collect-txt/blob/main/bbxx.txt",
-    "https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt",
-    "https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt",
-    "https://codeberg.org/zxj/mao/raw/branch/main/live.txt",
-    # 其他稳定的IPTV源
-    "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u",
-    "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u",
-    "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u",
-    # 优质高清源
-    "https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u",
-    "https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u"
-]
+# 导入统一数据源列表
+from unified_sources import UNIFIED_SOURCES
+
+# 数据源列表 - 使用统一的数据源
+GITHUB_SOURCES = UNIFIED_SOURCES
 
 # 频道分类 - 注意：顺序必须严格按照要求的顺序
 CHANNEL_CATEGORIES = {
@@ -371,8 +354,8 @@ def should_exclude_url(url):
     """检查是否应该排除特定URL"""
     if not url:
         return True
-    # 只允许http://example或https://example开头的URL
-    return not (url.startswith('http://example') or url.startswith('https://example'))
+    # 允许所有HTTP和HTTPS的URL，但排除以http://example或https://example开头的URL，以及包含"demo"字符的URL
+    return not (url.startswith('http://') or url.startswith('https://')) or url.startswith('http://example') or url.startswith('https://example') or "demo" in url.lower()
 
 def fetch_content(url, timeout=10, max_retries=3):
     """获取URL内容，支持超时和重试"""
@@ -579,20 +562,29 @@ def sort_and_limit_lines(lines):
         # 数量在合理范围内，全部保留
         return sorted_lines
 
-def write_output_file(category_channels):
+def write_output_file(category_channels, debug_mode=False):
     """写入输出文件"""
     output_lines = []
+    
+    if debug_mode:
+        print(f"处理 {len(category_channels)} 个类别")
     
     # 按照指定的顺序遍历类别
     for category in CATEGORY_ORDER:
         if category not in category_channels:
             continue
         
+        if debug_mode:
+            print(f"处理类别: {category}")
+        
         # 添加类别标记
         output_lines.append(f"#{category},#genre#")
         
         # 添加该类别的频道
         for channel_name, lines in category_channels[category].items():
+            if debug_mode:
+                print(f"  处理频道: {channel_name}, {len(lines)} 个线路")
+            
             output_lines.append(f"##{channel_name}")
             for name, url in lines:
                 # 验证URL
@@ -602,6 +594,10 @@ def write_output_file(category_channels):
         # 在类别之间添加空行
         output_lines.append("")
     
+    if debug_mode:
+        print(f"总共生成 {len(output_lines)} 行内容")
+        print(f"写入文件: {OUTPUT_FILE}")
+    
     # 写入文件
     with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
         f.write('\n'.join(output_lines))
@@ -610,13 +606,25 @@ def write_output_file(category_channels):
 
 def main():
     """主函数"""
+    args = parse_args()
+    debug_mode = args.debug
+    
+    if debug_mode:
+        print(f"开始处理 {len(GITHUB_SOURCES)} 个数据源")
+    
     # 并发处理所有数据源
     all_channels = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         future_to_source = {executor.submit(process_source, source): source for source in GITHUB_SOURCES}
         for future in concurrent.futures.as_completed(future_to_source):
-            channels = future.result()
-            all_channels.extend(channels)
+            try:
+                channels = future.result()
+                if debug_mode:
+                    print(f"获取到 {len(channels)} 个频道")
+                all_channels.extend(channels)
+            except Exception as e:
+                if debug_mode:
+                    print(f"处理数据源时出错: {e}")
     
     # 按频道名称分组
     channel_map = {}
@@ -639,12 +647,13 @@ def main():
             category_channels[category][channel_name] = lines
     
     # 写入输出文件
-    write_output_file(category_channels)
+    write_output_file(category_channels, debug_mode=debug_mode)
 
 def parse_args():
     """解析命令行参数"""
     parser = argparse.ArgumentParser(description='TV Channel Processor')
     parser.add_argument('-o', '--output', type=str, default=OUTPUT_FILE, help='Output file name')
+    parser.add_argument('--debug', action='store_true', help='Enable debug mode')
     return parser.parse_args()
 
 if __name__ == "__main__":

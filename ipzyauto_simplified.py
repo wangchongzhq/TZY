@@ -335,16 +335,18 @@ def is_preferred_url(url: str) -> bool:
 
 def should_exclude_url(url):
     """检查是否应该排除某个URL"""
+    if not url:
+        return True
     # 排除特定域名的URL
     exclude_patterns = [
-        # 这里可以添加需要排除的域名模式
+        'http://example',
+        'https://example'
     ]
-
     for pattern in exclude_patterns:
-        if re.match(pattern, url):
+        if url.startswith(pattern):
             return True
-
-    return False
+    # 排除包含"demo"字符的URL
+    return "demo" in url.lower()
 
 # 移除URL模糊处理函数，简化代码
 
@@ -592,24 +594,11 @@ def main():
     # 获取测速配置
     speed_config = speed_test_config()
 
-    # 直播源URL列表
-    default_sources = [
-        "https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u",
-        "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u",
-        "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv4.txt",
-        "http://106.53.99.30/2025.txt",
-    ]
+    # 导入统一数据源列表
+    from unified_sources import UNIFIED_SOURCES
 
-    user_sources = [
-        "http://tv.html-5.me/i/9390107.txt",
-        "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
-        "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
-        "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
-        "https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt",
-        "https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u",
-    ]
-
-    urls = default_sources + user_sources
+    # 直播源URL列表 - 使用统一的数据源
+    urls = UNIFIED_SOURCES
 
     all_channels = defaultdict(list)
 

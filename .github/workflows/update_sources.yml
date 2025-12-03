@@ -1,0 +1,134 @@
+name: 播放源自动更新
+
+on:
+  # 当sources.json文件被修改时触发
+  push:
+    paths:
+      - 'sources.json'
+  # 手动触发
+  workflow_dispatch:
+    inputs:
+      update_reason:
+        description: '更新原因（可选）'
+        required: false
+        default: '手动触发播放源更新'
+
+jobs:
+  update-sources:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: 检出代码仓库
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      
+      - name: 设置Python环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+      
+      - name: 运行播放源更新脚本
+        run: |
+          chmod +x ./update_sources.py
+          python ./update_sources.py
+      
+      - name: 检查是否有更改
+        id: check_changes
+        run: |
+          # 检查是否有文件被修改
+          if git diff --quiet; then
+            echo "changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "changes=true" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: 提交和推送更新
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          # 配置git身份和行为
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "GitHub Actions Bot"
+          git config --global pull.rebase false  # 使用merge而不是rebase
+          git config --global core.autocrlf false  # 防止行尾字符转换问题
+          
+          echo "=== 开始Git操作 ==="
+          echo "当前分支: $(git branch --show-current)"
+          
+          # 直接使用origin远程仓库
+          echo "同步本地与远程仓库..."
+          git remote -v
+          git fetch origin ${{ github.ref_name }}
+          git checkout ${{ github.ref_name }} || git checkout -b ${{ github.ref_name }}
+          git reset --hard origin/${{ github.ref_name }}
+          
+          echo "本地仓库已重置为远程最新状态"
+          
+          # 重新执行更新脚本确保生成最新文件
+          echo "重新执行更新脚本生成最新文件..."
+          python ./update_sources.py
+          
+          # 检查文件是否存在
+          if [ ! -f "./unified_sources.py" ]; then
+            echo "::error::错误：unified_sources.py文件未生成"
+            exit 1
+          fi
+          
+          # 添加所有更改的文件
+          echo "添加更改的文件..."
+          git add ./unified_sources.py
+          git add ./*.py  # 添加所有Python脚本文件
+          git add ./*.txt || true  # 添加输出文件（如果有）
+          
+          # 检查是否有更改
+          if git diff --staged --quiet; then
+            echo "没有检测到更改，跳过提交"
+            exit 0
+          fi
+          
+          # 获取当前日期（北京时间）
+          TODAY=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M:%S')
+          # 使用手动触发的原因或默认消息
+          if [ -n "${{ github.event.inputs.update_reason }}" ]; then
+            REASON="${{ github.event.inputs.update_reason }}"
+          else
+            REASON="自动更新播放源 $TODAY"
+          fi
+          
+          # 提交更改
+          echo "提交更改..."
+          git commit -m "${REASON}"
+          
+          # 推送更改
+          echo "尝试推送更改到远程仓库..."
+          # 直接推送到origin
+          git push origin ${{ github.ref_name }} || {
+            echo "推送失败，尝试使用--force-with-lease推送..."
+            git push --force-with-lease origin ${{ github.ref_name }} || {
+              echo "--force-with-lease推送失败，最后尝试使用--force推送..."
+              git push --force origin ${{ github.ref_name }} || {
+                echo "::error::所有推送方式均失败，请检查GitHub权限配置"
+                exit 1
+              }
+            }
+          }
+          
+          echo "更新已提交并推送"
+      
+      - name: 输出成功消息
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          echo "🎉 播放源更新完成！"
+          echo "📁 更新的文件: unified_sources.py 及相关脚本"
+      
+      - name: 输出无更改消息
+        if: steps.check_changes.outputs.changes == 'false'
+        run: |
+          echo "ℹ️  未检测到需要更新的内容"

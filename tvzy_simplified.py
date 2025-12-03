@@ -18,28 +18,11 @@ HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 }
 
-# 数据源列表
-GITHUB_SOURCES = [
-    # 有效的中国电视频道源
-    "http://tv.html-5.me/i/9390107.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
-    "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
-    "https://freetv.fun/test_channels_new.txt",
-    "https://ghfast.top/https://github.com/kimwang1978/collect-txt/blob/main/bbxx.txt",
-    "https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt",
-    "https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt",
-    # 其他稳定的IPTV源
-    "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u",
-    "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u",
-    "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u",
-    # 优质高清源
-    "https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u",
-    "https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u"
-]
+# 导入统一数据源列表
+from unified_sources import UNIFIED_SOURCES
+
+# 数据源列表 - 使用统一的数据源
+GITHUB_SOURCES = UNIFIED_SOURCES
 
 # 频道分类 - 注意：顺序必须严格按照要求的顺序
 CHANNEL_CATEGORIES = {
@@ -370,8 +353,8 @@ def should_exclude_url(url):
     """检查是否应该排除特定URL"""
     if not url:
         return True
-    # 只允许http://example或https://example开头的URL
-    return not (url.startswith('http://example') or url.startswith('https://example'))
+    # 允许所有HTTP和HTTPS的URL，但排除以http://example或https://example开头的URL，以及包含"demo"字符的URL
+    return not (url.startswith('http://') or url.startswith('https://')) or url.startswith('http://example') or url.startswith('https://example') or "demo" in url.lower()
 
 def fetch_content(url, timeout=10, max_retries=3):
     """获取URL内容，支持超时和重试"""

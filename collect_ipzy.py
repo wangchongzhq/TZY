@@ -5,28 +5,11 @@ import time
 from collections import defaultdict
 
 # 数据源列表
-SOURCES = [
-    {"name": "iptv-org-cn", "url": "https://iptv-org.github.io/iptv/countries/cn.m3u"},
-    {"name": "iptv-org-hk", "url": "https://iptv-org.github.io/iptv/countries/hk.m3u"},
-    {"name": "iptv-org-mo", "url": "https://iptv-org.github.io/iptv/countries/mo.m3u"},
-    {"name": "iptv-org-tw", "url": "https://iptv-org.github.io/iptv/countries/tw.m3u"},
-    {"name": "iptv-org-all", "url": "https://iptv-org.github.io/iptv/index.m3u"},
-    {"name": "fanmingming", "url": "https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/global.m3u"},
-    {"name": "free-iptv", "url": "https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u"},
-    {"name": "moonkeyhoo", "url": "https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u"},
-    {"name": "kakaxi-ipv6", "url": "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u"},
-    {"name": "kakaxi-ipv4", "url": "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv4.txt"},
-    {"name": "9390107", "url": "http://tv.html-5.me/i/9390107.txt"},
-    {"name": "Supprise0901", "url": "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt"},
-    {"name": "ffmking", "url": "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt"},
-    {"name": "zxj", "url": "https://codeberg.org/zxj/mao/raw/branch/main/live.txt"},  
-    {"name": "kimwang1978", "url": "https://ghfast.top/https://github.com/kimwang1978/collect-txt/blob/main/bbxx.txt"},   
-    {"name": "Guovin", "url": "https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt"},  
-    {"name": "Guovin2", "url": "https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.m3u"},  
-    {"name": "xiao-ping2", "url": "https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt"},  
-    {"name": "qingtingjjjjjjj", "url": "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt"},
-    {"name": "Heiwk", "url": "https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u"},
-    ]
+# 导入统一数据源列表
+from unified_sources import SOURCES_WITH_NAMES
+
+# 数据源列表 - 使用统一的数据源
+SOURCES = SOURCES_WITH_NAMES
 
 # 分类规则
 CATEGORY_RULES = {
@@ -68,9 +51,20 @@ HD_KEYWORDS = [
 def should_exclude_url(url):
     """
     判断是否应该排除该URL
-    排除规则：URL中包含"example"或"demo"字符
+    排除规则：URL以"http://example"或"https://example"开头，或包含"demo"字符
     """
-    return "example" in url.lower() or "demo" in url.lower()
+    if not url:
+        return True
+    # 排除特定域名的URL
+    exclude_patterns = [
+        'http://example',
+        'https://example'
+    ]
+    for pattern in exclude_patterns:
+        if url.startswith(pattern):
+            return True
+    # 保留对"demo"的排除
+    return "demo" in url.lower()
 
 def download_m3u(url, retries=2):
     """下载M3U文件"""
