@@ -113,11 +113,6 @@
       "enabled": true
     },
     {
-      "name": "Guovin2",
-      "url": "https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.m3u",
-      "enabled": true
-    },
-    {
       "name": "moonkeyhoo",
       "url": "https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u",
       "enabled": true
