@@ -178,19 +178,9 @@ CHANNEL_MAPPING = {
 }
 
 # 默认直播源URL
-default_sources = [
-    "https://iptv-org.github.io/iptv/countries/cn.m3u",
-    "https://iptv-org.github.io/iptv/index.m3u",
-    "https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/global.m3u",
-    "https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u",
-    "https://codeberg.org/zxj/mao/raw/branch/main/live.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u",
-    "https://ghfast.top/https://github.com/kimwang1978/collect-txt/blob/main/bbxx.txt",
-    "https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt",
-    "https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.m3u",
-    "https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u",
-]
+# 从统一播放源文件导入
+from unified_sources import UNIFIED_SOURCES
+default_sources = UNIFIED_SOURCES
 
 # 本地直播源文件
 default_local_sources = [

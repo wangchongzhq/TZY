@@ -112,23 +112,30 @@ SOURCES = SOURCES_WITH_NAMES'''
 from unified_sources import UNIFIED_SOURCES
 GITHUB_SOURCES = UNIFIED_SOURCES'''
             elif 'default_sources' in content and 'user_sources' in content:
-                # 处理ipzyauto.py类型的脚本
-                pattern = r'default_sources\s*=\s*\[.*?\]\s*user_sources\s*=\s*\[.*?\]'
-                replacement = '''# 从统一播放源文件导入
+                # 处理IP-TV.py类型的脚本
+                # 分别匹配default_sources和user_sources，不要求它们紧挨着
+                default_sources_pattern = r'default_sources\s*=\s*\[.*?\]'
+                user_sources_pattern = r'user_sources\s*=\s*\[.*?\]'
+                
+                # 先替换default_sources
+                content = re.sub(default_sources_pattern, '''# 从统一播放源文件导入
 from unified_sources import UNIFIED_SOURCES
-urls = UNIFIED_SOURCES'''
+default_sources = UNIFIED_SOURCES''', content, flags=re.DOTALL)
+                
+                # 然后替换user_sources
+                content = re.sub(user_sources_pattern, '''user_sources = []''', content, flags=re.DOTALL)
             elif 'urls' in content:
                 # 处理其他直接使用urls变量的脚本
                 pattern = r'urls\s*=\s*\[.*?\]'
                 replacement = '''# 从统一播放源文件导入
 from unified_sources import UNIFIED_SOURCES
 urls = UNIFIED_SOURCES'''
+                
+                # 使用多行匹配进行替换
+                content = re.sub(pattern, replacement, content, flags=re.DOTALL)
             else:
                 print(f"⚠️  未知的数据源格式，跳过 {script_path}")
                 return
-        
-        # 使用多行匹配进行替换
-        content = re.sub(pattern, replacement, content, flags=re.DOTALL)
     
     # 写入更新后的内容
     with open(script_path, 'w', encoding='utf-8') as f:
