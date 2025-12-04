@@ -62,8 +62,7 @@ python update_sources.py
 ├── collect_ipzy.py        # IP直播源收集脚本
 ├── convert_m3u_to_txt.py  # M3U转TXT格式转换脚本
 ├── check_all_syntax.py    # 语法检查脚本
-├── check_ip_tv_syntax.py  # IP-TV语法检查脚本
-├── fix_ip_tv_chars.py     # IP-TV字符修复脚本
+├── validate_workflows.py  # 工作流验证脚本
 ├── .gitignore             # Git忽略文件配置
 └── README.md              # 项目说明文档
 ```
@@ -148,7 +147,33 @@ python collect_ipzy.py
 python convert_m3u_to_txt.py input.m3u output.txt
 ```
 
-#### 5. update_sources.py - 播放源自动更新脚本
+**输出**：生成指定名称的TXT格式直播源文件
+
+#### 5. check_all_syntax.py - 语法检查脚本
+
+**功能**：检查所有Python脚本的语法正确性
+
+**使用方法**：
+
+```bash
+python check_all_syntax.py
+```
+
+**输出**：显示所有脚本的语法检查结果
+
+#### 6. validate_workflows.py - 工作流验证脚本
+
+**功能**：验证GitHub Actions工作流配置的正确性
+
+**使用方法**：
+
+```bash
+python validate_workflows.py
+```
+
+**输出**：显示工作流配置的验证结果
+
+#### 7. update_sources.py - 播放源自动更新脚本
 
 **功能**：统一更新所有脚本的播放源配置
 
@@ -226,8 +251,9 @@ python update_sources.py
 ## 📝 更新日志
 
 ### 最新更新
-- 修复了`collect_ipzy.py`中的正则表达式转义问题
+- 修复了`collect_ipzy.py`、`convert_m3u_to_txt.py`和`update_sources.py`中的导入错误问题
 - 更新了README.md文档，使其与当前项目结构保持一致
+- 修复了tvzy.py和collect_ipzy.py中的语法错误
 - 优化了自动化工作流配置，支持更多触发方式
 - 增强了IP直播源收集功能，提高了线路筛选质量
 

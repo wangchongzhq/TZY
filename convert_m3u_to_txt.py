@@ -12,7 +12,7 @@ import sys
 from datetime import datetime
 
 # 导入核心模块
-from core.config_manager import get_config
+from core.config import get_config
 from core.logging_config import setup_logging, get_logger, log_exception
 from core.file_utils import read_file, write_file
 from core.parser import parse_m3u_content

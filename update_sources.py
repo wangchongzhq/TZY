@@ -17,7 +17,7 @@ import os
 import re
 
 # 导入核心模块
-from core.config_manager import get_config
+from core.config import get_config
 from core.logging_config import setup_logging, get_logger, log_exception
 
 # 设置日志
