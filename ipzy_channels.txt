@@ -1,8 +1,8 @@
 # 中国境内电视直播线路 (仅限1080p高清以上)
-# 更新时间: 2025-12-01 03:46:18
+# 更新时间: 2025-12-04 04:36:07
 # 数据来源: 多个GitHub IPTV项目
-# 频道总数: 2861
-# 线路总数: 3780
+# 频道总数: 2871
+# 线路总数: 3786
 # 清晰度要求: 仅保留1080p高清及以上线路
 ############################################################
 
@@ -24,7 +24,7 @@ CCTV-1,https://www.freetv.top/migu/608807420.m3u8?migutoken=5b04cf0d91179ab2d3d7
 CCTV-1,https://smart.pendy.dpdns.org/Smart.php?id=cctv1
 CCTV-1,http://[2409:8087:1:20:20::29]/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226895/1.m3u8?servicetype=1&accountinfo=%7E%7EV2.0%7EI0Rkc6neBYgfpoJ1yud8Fw%7EPepnxHHB2d6Hk2dZWM77MyFlBN5q1KnYLvimM9pqT7Epd7QgO4HFWH0z34SUb2Vs%7EExtInfo9bj61dxzlMXrsixrqcFYPg%3A20240420192714%2C%2C%2C20240420192714%2C%2C10001000275495%2C-1%2C0%2C1%2C-1%2C%2C2%2C2201300%2C%2C%2C2%2C%2C%2CEND&GuardEncType=2
 CCTV-1,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226163/1.m3u8
-CCTV-1,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226432/.m3u8
+CCTV-1,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226933/1.m3u8
 CCTV-10,http://123.175.209.52:9003/hls/11/index.m3u8
 CCTV-10,http://221.198.198.213:8888/udp/225.1.1.140:5002
 CCTV-10,http://180.157.233.109:4022/udp/239.45.3.8:5140
@@ -54,7 +54,7 @@ CCTV-11,https://smart.pendy.dpdns.org/Smart.php?id=cctv11
 CCTV-11,http://[2409:8087:1a01:df::4077]:80/ottrrs.hl.chinamobile.com/yinhe/88888888/224/3221225597/index.m3u8
 CCTV-11,http://[2409:8087:1a0a:df::404b]/ottrrs.hl.chinamobile.com/TVOD/88888888/224/3221225597/index.m3u8
 CCTV-11,http://[2409:8087:1e02:20::1a]/PLTV/11/224/3221226145/1.m3u8
-CCTV-11,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226463/.m3u8
+CCTV-11,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226914/1.m3u8
 CCTV-12,http://123.175.209.52:9003/hls/13/index.m3u8
 CCTV-12,http://223.240.163.85:8100/udp/238.1.78.242:7808
 CCTV-12,http://113.101.245.153:9988/udp/239.77.1.109:5146
@@ -84,7 +84,7 @@ CCTV-13,http://z.b.bkpcp.top/m.php?id=cctv13
 CCTV-13,http://j.x.bkpcp.top/jx/CCTV13HD
 CCTV-13,http://ali-m-l.cztv.com/channels/lantian/channel21/1080p.m3u8
 CCTV-13,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226128/1.m3u8
-CCTV-13,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226316/.m3u8
+CCTV-13,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226568/1.m3u8
 CCTV-14,http://123.175.209.52:9003/hls/15/index.m3u8
 CCTV-14,http://124.238.251.36:2380/hw1live.rxip.sc96655.com.huan.tv/live/CCTV-14H265_4000.m3u8
 CCTV-14,http://221.198.198.213:8888/udp/225.1.1.144:5002
@@ -99,7 +99,7 @@ CCTV-14,https://event.pull.hebtv.com/jishi/cp2.m3u8#rtsp://103.251.96.71/PLTV/88
 CCTV-14,http://php.jdshipin.com/TVOD/hljyd.php?id=3221225732
 CCTV-14,http://iptv.huuc.edu.cn/hls/cctv14hd.m3u8
 CCTV-14,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226150/1.m3u8
-CCTV-14,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226904/.m3u8
+CCTV-14,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226947/1.m3u8
 CCTV-15,http://123.175.209.52:9003/hls/16/index.m3u8
 CCTV-15,http://113.101.245.153:9988/udp/239.77.1.239:5146
 CCTV-15,http://222.95.175.5:58888/udp/239.49.0.128:8000
@@ -150,7 +150,6 @@ CCTV-17,http://php.jdshipin.com/TVOD/hljyd.php?id=3221225765
 CCTV-17,http://[2409:8087:1a01:df::4025]:80/TVOD/88888888/224/3221225708/main.m3u8
 CCTV-17,http://[2409:8087:1a01:df::4077]/ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221225765/index.m3u8
 CCTV-17,http://[2409:8087:1a01:df::4077]/ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221225765/1.m3u8?icpid=88888888&from=1&hms_devid=1012&vqe=3
-CCTV-17,http://[2402:4e00:c052:1000:6d8:79ae:eac2:0]:32258/edge-cache02.live3.omd.sc96655.com/live/CCTV-17_4000.m3u8
 CCTV-17,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226318/1.m3u8
 CCTV-2,http://123.175.209.52:9003/hls/2/index.m3u8
 CCTV-2,http://223.240.163.85:8100/udp/238.1.78.235:7752
@@ -181,7 +180,7 @@ CCTV-3,http://[2409:8087:1a01:df::4077]/ottrrs.hl.chinamobile.com/PLTV/88888888/
 CCTV-3,http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226456/1.m3u8
 CCTV-3,http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226471/1.m3u8
 CCTV-3,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226165/1.m3u8
-CCTV-3,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226456/.m3u8
+CCTV-3,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226456/1.m3u8
 CCTV-4,http://123.175.209.52:9003/hls/4/index.m3u8
 CCTV-4,http://124.238.251.36:2380/hw1live.rxip.sc96655.com.huan.tv/live/CCTV-4H265_4000.m3u8
 CCTV-4,http://bigy.timwin.top:5400/udp/239.3.1.105:8092
@@ -196,9 +195,8 @@ CCTV-4,http://php.jdshipin.com/TVOD/hljyd.php?id=3221226428
 CCTV-4,http://z.b.bkpcp.top/m.php?id=CCTV-4国际
 CCTV-4,http://iptv.huuc.edu.cn/hls/cctv4hd.m3u8
 CCTV-4,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226124/1.m3u8
-CCTV-4,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226455/.m3u8
+CCTV-4,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226470/1.m3u8
 CCTV-4 America,https://global.cgtn.cicc.media.caton.cloud/master/cgtn-america.m3u8
-CCTV-4K,http://[2402:4e00:c052:1000:6d8:79ae:eac2:0]:32258/edge-cache02.live3.omd.sc96655.com/live/ys4Kcq_2000.m3u8
 CCTV-4欧洲,http://106.53.99.30/tv/hot.php?id=cctv4o
 CCTV-4美洲,http://106.53.99.30/tv/hot.php?id=cctv4m
 CCTV-5,http://123.175.209.52:9003/hls/5/index.m3u8
@@ -241,8 +239,7 @@ CCTV-5+,http://[2409:8087:1a01:df::4077]/ottrrs.hl.chinamobile.com/yinhe/8888888
 CCTV-5+,http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226349/1.m3u8
 CCTV-5+,http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221227348/index.m3u8
 CCTV-5+,https://www.freetv.top/migu/641886773.m3u8?migutoken=d7396c05a877872a7519b5df4582a7a4bdf13c82d09889e561f50d0035f006d199741b00d465e4e41b0f706bccfe3420f5d427961e7698ad2a8b8d82d9d320a827310f6c8a7d1c8f203c91b392
-CCTV-5+,http://[2402:4e00:c052:1000:6d8:79ae:eac2:0]:32258/edge-cache02.live3.omd.sc96655.com/live/CCTV-5plusH265_4000.m3u8
-CCTV-5+,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226894/.m3u8
+CCTV-5+,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226929/1.m3u8
 CCTV-6,http://123.175.209.52:9003/hls/7/index.m3u8
 CCTV-6,http://180.157.233.109:4022/udp/239.45.1.70:5140
 CCTV-6,http://222.95.175.5:58888/udp/239.49.8.76:8000
@@ -257,7 +254,7 @@ CCTV-6,http://[2409:8087:1a01:df::4077]:80/ottrrs.hl.chinamobile.com/TVOD/888888
 CCTV-6,http://[2409:8087:1a01:df::4077]/ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221226010/1.m3u8?icpid=88888888&from=1&hms_devid=1012&vqe=3
 CCTV-6,http://[2409:8087:1a01:df::4077]/ottrrs.hl.chinamobile.com/PLTV/88888888/8/3221226010/index.m3u8
 CCTV-6,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226148/1.m3u8
-CCTV-6,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226453/.m3u8
+CCTV-6,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226468/1.m3u8
 CCTV-7,http://123.175.209.52:9003/hls/8/index.m3u8
 CCTV-7,http://221.198.198.213:8888/udp/225.1.1.138:5002
 CCTV-7,http://180.157.233.109:4022/udp/239.45.3.56:5140
@@ -272,7 +269,7 @@ CCTV-7,http://goo.bkpcp.top/mg/CCTV7
 CCTV-7,http://iptv.huuc.edu.cn/hls/cctv7hd.m3u8
 CCTV-7,https://smart.pendy.dpdns.org/Smart.php?id=cctv7
 CCTV-7,http://[2409:8087:1e02:20::1a]/PLTV/11/224/3221226143/1.m3u8
-CCTV-7,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226946/.m3u8
+CCTV-7,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226946/1.m3u8
 CCTV-8,http://123.175.209.52:9003/hls/9/index.m3u8
 CCTV-8,http://221.198.198.213:8888/udp/225.1.1.196:5002
 CCTV-8,http://113.101.245.153:9988/udp/239.77.0.172:5146
@@ -287,7 +284,7 @@ CCTV-8,http://goo.bkpcp.top/mg/cctv8
 CCTV-8,http://iptv.huuc.edu.cn/hls/cctv8hd.m3u8
 CCTV-8,https://www.freetv.top/migu/624878356.m3u8?migutoken=170b73b07e0cf0d307afea3545da5b9609d7c15461a2f4ac0f43634101df9baf391a446b91e5f84446b6a3b0934bb4730e2f3c4a32a565f904f22c8ff745a094d45dfd49c54f31b0b78156a080
 CCTV-8,http://[2409:8087:1e02:20::1a]/PLTV/11/224/3221226167/1.m3u8
-CCTV-8,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226451/.m3u8
+CCTV-8,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226485/1.m3u8
 CCTV-9,http://123.175.209.52:9003/hls/10/index.m3u8
 CCTV-9,http://221.198.198.213:8888/udp/225.1.1.119:5002
 CCTV-9,http://bigy.timwin.top:5400/udp/239.3.1.62:8112
@@ -301,7 +298,6 @@ CCTV-9,http://uo202.1985001.xyz:66/udp/239.93.1.24:5140
 CCTV-9,http://php.jdshipin.com/TVOD/hljyd.php?id=3221225734
 CCTV-9,http://iptv.huuc.edu.cn/hls/cctv9hd.m3u8
 CCTV-9,https://www.freetv.top/migu/673168140.m3u8?migutoken=749c49cdc31bb395e0349adc81010adc8707f80e51e9d3491ad67bfa71388ad768f7b52c8064338a7ef45eb7ddb192fb4937b21681c82499a0c16653ad9a9bec98ff5ce6ab183e4029bbdf269e
-CCTV-9,http://[2402:4e00:c052:1000:6d8:79ae:eac2:0]:32258/edge-cache02.live3.omd.sc96655.com/live/CCTV-9H265_4000.m3u8
 CCTV-9,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221227037/1.m3u8
 CGTN,https://amg00405-rakutentv-cgtn-rakuten-i9tar.amagi.tv/master.m3u8
 CGTN Arabic,https://arabic-livews.cgtn.com/hls/LSveq57bErWLinBnxosqjisZ220802LSTefTAS9zc9mpU08y3np9TH220802cd/playlist.m3u8
@@ -311,7 +307,7 @@ CGTN Français,https://francais-livews.cgtn.com/hls/LSvev95OuFZtKLc6CeKEFYXj2208
 CGTN Русский,https://russian-livews.cgtn.com/hls/LSvexABhNipibK5KRuUkvHZ7220802LSTeze9o8tdFXMHsb1VosgoT220802cd/playlist.m3u8
 KICCTV,https://live.mdc.akamaized.net/hls/livestream/kicctv/playlist.m3u8
 Red CCTV,https://solo.disfrutaenlared.com:1936/redcctv/redcctv/playlist.m3u8
-# 共 33 个频道，304 条线路 (平均9.2条/频道)
+# 共 32 个频道，300 条线路 (平均9.4条/频道)
 
 卫视,#genre#
 BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
@@ -342,7 +338,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 东南卫视,http://iptv.huuc.edu.cn/hls/dnhd.m3u8
 东南卫视,http://live.zohi.tv/video/s10001-fztv-3/index.m3u8
 东南卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221225745/1.m3u8
-东南卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226991/.m3u8
+东南卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226991/1.m3u8
 东方卫视,http://118.81.195.79:9003/hls/23/index.m3u8
 东方卫视,http://221.198.198.213:8888/udp/225.1.2.31:5002
 东方卫视,http://223.240.163.85:8100/udp/238.1.78.163:7176
@@ -357,7 +353,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 东方卫视,http://iptv.huuc.edu.cn/hls/dfhd.m3u8
 东方卫视,https://www.freetv.top/migu/651632648.m3u8?migutoken=67b4219a3e6acdcf288118ed6bf84d3197052966f0bc854079b6038b3fca6437744ca78bb0ea1fad6f61b4c73d0df57bd8b539ec247fd28ce16d1375716bbf774ea19c99e4585bb828fa3851c0
 东方卫视,http://[2409:8087:1e02:20::1a]/PLTV/11/224/3221226106/1.m3u8
-东方卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226951/.m3u8
+东方卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226983/1.m3u8
 云南卫视,https://hwapi.yunshicloud.com/8xughf/e0bx15.m3u8
 云南卫视,http://222.95.175.5:58888/udp/239.49.0.177:8000
 云南卫视,http://220.176.219.18:9000/udp/239.252.219.185:5140
@@ -374,7 +370,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 云南卫视,http://[2409:8087:1e02:20::1a]/PLTV/11/224/3221226151/1.m3u8
 云南卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226928/1.m3u8
 兵团卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226111/1.m3u8
-兵团卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226541/.m3u8
+兵团卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226541/1.m3u8
 内蒙古卫视,http://39.134.115.163:8080/PLTV/88888910/224/3221225667/index.m3u8
 内蒙古卫视,http://117.169.120.140:8080/live/neimenggustv/.m3u8
 内蒙古卫视,http://183.207.248.71/gitv/live1/G_NEIMENGGU/G_NEIMENGGU
@@ -392,7 +388,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 内蒙古卫视,http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226919/1.m3u8
 内蒙古卫视,http://[2409:8087:1e03:21::2]:6060/cms001/ch00000090990000001068/index.m3u8
 内蒙古卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226011/1.m3u8
-内蒙古卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226530/.m3u8
+内蒙古卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226919/1.m3u8
 农林卫视,http://218.86.187.74:4022/rtp/238.255.2.120:5999
 凤凰卫视,http://cdn.132.us.kg/live/fhzw/stream.m3u8
 凤凰卫视,http://php.jdshipin.com/TVOD/iptv.php?id=fhzw
@@ -419,7 +415,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 北京卫视,http://bigy.timwin.top:5400/udp/239.3.1.241:8000
 北京卫视,http://php.jdshipin.com/TVOD/hnyd.php?id=200000001898/460000089800010143
 北京卫视,http://[2409:8087:1e02:20::1a]/PLTV/11/224/3221225724/1.m3u8
-北京卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226900/.m3u8
+北京卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226436/1.m3u8
 厦门卫视,http://112.25.48.68/live/program/live/xmws/1300000/mnf.m3u8
 厦门卫视,http://223.110.245.159/ott.js.chinamobile.com/PLTV/3/224/3221226996/index.m3u8
 厦门卫视,http://dsj.motem.top:8880/bptv/10000100000000050000000003887454.m3u8
@@ -450,7 +446,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 吉林卫视,http://[2409:8087:1a0a:df::404b]/ottrrs.hl.chinamobile.com/TVOD/88888888/224/3221226397/index.m3u8
 吉林卫视,http://[2409:8087:1a01:df::4077]/ottrrs.hl.chinamobile.com/PLTV/88888888/8/3221226397/index.m3u8
 吉林卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226149/1.m3u8
-吉林卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226912/.m3u8
+吉林卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226886/1.m3u8
 四川卫视,http://39.134.115.163:8080/PLTV/88888910/224/3221225733/index.m3u8
 四川卫视,http://222.95.175.5:58888/udp/239.49.8.110:8000
 四川卫视,http://220.176.219.18:9000/udp/239.252.220.93:5140
@@ -465,7 +461,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 四川卫视,http://zqh2333.top:2222/rtp/239.94.0.115:5140
 四川卫视,http://uo202.1985001.xyz:66/udp/239.93.0.20:1235
 四川卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226152/1.m3u8
-四川卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226924/.m3u8
+四川卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226995/1.m3u8
 大湾区卫视,http://php.jdshipin.com/TVOD/hnyd.php?id=200000001898/460000089800010108
 大湾区卫视,http://z.b.bkpcp.top/m.php?id=dwqws
 大湾区卫视,http://goo.bkpcp.top/mg/dwqws
@@ -499,7 +495,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 天津卫视,http://[2409:8087:1e03:21::2]:6060/cms001/ch00000090990000001036/index.m3u8
 天津卫视,http://[2409:8087:2001:20:2800:0:df6e:eb11]:80/ott.mobaibox.com/PLTV/4/224/3221227488/index.m3u8
 天津卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221225742/1.m3u8
-天津卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226246/.m3u8
+天津卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226954/1.m3u8
 宁夏卫视,http://183.207.248.71/gitv/live1/G_NINGXIA/G_NINGXIA
 宁夏卫视,http://php.jdshipin.com/TVOD/hnyd.php?id=200000001898/460000089800010110
 宁夏卫视,http://z.b.bkpcp.top/m.php?id=nxws
@@ -535,7 +531,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 安徽卫视,http://dsj.motem.top:8880/bptv/10000100000000050000000003873469.m3u8
 安徽卫视,http://z.b.bkpcp.top/m.php?id=ahws
 安徽卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221225739/1.m3u8
-安徽卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226499/.m3u8
+安徽卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226499/1.m3u8
 山东卫视,http://125.210.152.18:9090/live/SDWSHD_H265.m3u8
 山东卫视,http://39.134.115.163:8080/PLTV/88888910/224/3221225697/index.m3u8
 山东卫视,http://222.95.175.5:58888/udp/239.49.8.7:9306
@@ -566,7 +562,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 山西卫视,http://[2409:8087:1a01:df::7005]:80/ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221225624/index.m3u8
 山西卫视,http://[2409:8087:3869:8021:1001::e5]:6610/PLTV/88888888/224/3221225730/2/index.m3u8
 山西卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226113/1.m3u8
-山西卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226531/.m3u8
+山西卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226920/1.m3u8
 广东卫视,http://118.81.195.79:9003/hls/26/index.m3u8
 广东卫视,http://222.95.175.5:58888/udp/239.49.8.13:9422
 广东卫视,http://223.240.163.85:8100/udp/238.1.78.161:7160
@@ -587,7 +583,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 广东卫视,http://[2409:8087:2001:20:2800:0:df6e:eb03]:80/ott.mobaibox.com/PLTV/4/224/3221227476/index.m3u8
 广东卫视,https://www.freetv.top/migu/608831231.m3u8?migutoken=78af5371d66a723fc72d7a69c8a18ade502c19d2cf715aa502730a2b197148f3ac859ba4dfc8177df928c7b17e4f7e50e73fa17782751d96ca1224dc27c62d3025503e7b80de41b09560f78ee1
 广东卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221225731/1.m3u8
-广东卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226508/.m3u8
+广东卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226961/1.m3u8
 广西卫视,http://118.81.195.79:9003/hls/27/index.m3u8
 广西卫视,http://221.198.198.213:8888/udp/225.1.2.81:5002
 广西卫视,http://113.101.245.153:9988/udp/239.77.0.139:5146
@@ -602,7 +598,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 广西卫视,https://hlscdn.liangtv.cn/live/de0f97348eb84f62aa6b7d8cf0430770/dd505d87880c478f901f38560ca4d4e6.m3u8
 广西卫视,https://hlscdn.liangtv.cn/live/0c4ef3a44b934cacb8b47121dfada66c/d7e04258157b480dae53883cc6f8123b.m3u8
 广西卫视,http://[2409:8087:1e02:20::1a]/PLTV/11/224/3221226130/1.m3u8
-广西卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226534/.m3u8
+广西卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226915/1.m3u8
 康巴卫视,http://scgctvshow.sctv.com/hdlive/kangba/1.m3u8
 康巴卫视,http://php.jdshipin.com/TVOD/hljyd.php?id=3221225660
 康巴卫视,http://[2409:8087:3428:20:500::100f]:6610/PLTV/88888888/224/3221225856/index.m3u8?servicetype=1&IASHttpSessionId=RR423820220409134714119178
@@ -645,7 +641,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 新疆卫视,http://[2409:8087:1e03:21::2]:6060/cms001/ch00000090990000001065/index.m3u8
 新疆卫视,http://[2409:8087:3428:20:500::100f]:6610/PLTV/88888888/224/3221227248/index.m3u8?servicetype=1&IASHttpSessionId=RR423820220409134714119178
 新疆卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226088/1.m3u8
-新疆卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226546/.m3u8
+新疆卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226923/1.m3u8
 星空卫视,https://cdn.iptv8k.top/dl/jrys.php?id=21&time=20240926215313&ip=111.229.253.40
 星空卫视,https://stream1.freetv.fun/xing-kong-wei-shi-12.m3u8
 星空卫视,https://stream1.freetv.fun/xing-kong-wei-shi-4.ctv
@@ -670,7 +666,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 江苏卫视,http://iptv.huuc.edu.cn/hls/jshd.m3u8
 江苏卫视,http://dsj.motem.top:8880/bptv/10000100000000050000000003873461.m3u8
 江苏卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221225720/1.m3u8
-江苏卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226242/.m3u8
+江苏卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226953/1.m3u8
 江西卫视,http://39.134.115.163:8080/PLTV/88888910/224/3221225705/index.m3u8
 江西卫视,http://222.95.175.5:58888/udp/239.49.8.111:8000
 江西卫视,http://bigy.timwin.top:5400/udp/239.3.1.123:8164
@@ -715,7 +711,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 河南卫视,http://z.b.bkpcp.top/m.php?id=hnws
 河南卫视,http://j.x.bkpcp.top/jx/HENHD
 河南卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226132/1.m3u8
-河南卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226525/.m3u8
+河南卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226525/1.m3u8
 浙江卫视,http://223.240.163.85:8100/udp/238.1.78.164:7184
 浙江卫视,http://bigy.timwin.top:5400/udp/239.3.1.137:8036
 浙江卫视,http://180.157.233.109:4022/udp/239.45.3.178:5140
@@ -744,7 +740,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 海南卫视,http://dsj.motem.top:8880/bptv/10000100000000050000000004796877.m3u8
 海南卫视,http://[2409:8087:1a0a:df::404b]/ottrrs.hl.chinamobile.com/TVOD/88888888/224/3221226465/index.m3u8
 海南卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226154/1.m3u8
-海南卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226922/.m3u8
+海南卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221227029/1.m3u8
 深圳卫视,http://222.95.175.5:58888/udp/239.49.8.15:9430
 深圳卫视,http://220.176.219.18:9000/udp/239.252.219.212:5140
 深圳卫视,http://bigy.timwin.top:5400/udp/239.3.1.134:8020
@@ -767,7 +763,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 深圳卫视,http://[2409:8087:2001:20:2800:0:df6e:eb11]:80/ott.mobaibox.com/PLTV/4/224/3221227555/index.m3u8
 深圳卫视,http://yc.myds.me:35455/itv/5000000004000007410.m3u8?cdn=bestzb
 深圳卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221225728/1.m3u8
-深圳卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226245/.m3u8
+深圳卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226245/1.m3u8
 湖北卫视,http://118.81.195.79:9003/hls/32/index.m3u8
 湖北卫视,http://221.198.198.213:8888/udp/225.1.1.147:5002
 湖北卫视,http://180.157.233.109:4022/udp/239.45.3.239:5140
@@ -782,7 +778,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 湖北卫视,https://smart.pendy.dpdns.org/Smart.php?id=hubei
 湖北卫视,http://dsj.motem.top:8880/bptv/10000100000000050000000003873465.m3u8
 湖北卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221225729/1.m3u8
-湖北卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226503/.m3u8
+湖北卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226503/1.m3u8
 湖南卫视,http://satellitepull.cnr.cn/live/wx32hunws/playlist.m3u8
 湖南卫视,http://223.240.163.85:8100/udp/238.1.79.38:4416
 湖南卫视,http://222.95.175.5:58888/udp/239.49.1.68:8000
@@ -811,7 +807,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 甘肃卫视,http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226545/1.m3u8
 甘肃卫视,http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226913/1.m3u8
 甘肃卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226090/1.m3u8
-甘肃卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226913/.m3u8
+甘肃卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221227020/1.m3u8
 西藏卫视,http://39.134.115.163:8080/PLTV/88888910/224/3221225723/index.m3u8
 西藏卫视,http://117.169.120.140:8080/live/xizangstv/.m3u8
 西藏卫视,http://183.207.249.16/PLTV/3/224/3221225523/index.m3u8
@@ -844,7 +840,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 贵州卫视,http://j.x.bkpcp.top/jx/GUIZHD
 贵州卫视,http://goo.bkpcp.top/mg/gzws
 贵州卫视,http://[2409:8087:1e02:20::1a]/PLTV/11/224/3221226173/1.m3u8
-贵州卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226908/.m3u8
+贵州卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226497/1.m3u8
 辽宁卫视,http://39.134.39.37/PLTV/88888888/224/3221226209/index.m3u8
 辽宁卫视,http://222.95.175.5:58888/udp/239.49.8.48:8000
 辽宁卫视,http://220.176.219.18:9000/udp/239.252.220.62:5140
@@ -874,7 +870,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 重庆卫视,http://z.b.bkpcp.top/m.php?id=cqws
 重庆卫视,http://j.x.bkpcp.top/jx/CHONGQHD
 重庆卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226171/1.m3u8
-重庆卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226518/.m3u8
+重庆卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226569/1.m3u8
 陕西卫视,http://112.25.48.68/live/program/live/sxws/1300000/mnf.m3u8
 陕西卫视,http://39.134.115.163:8080/PLTV/88888910/224/3221225729/index.m3u8
 陕西卫视,http://223.110.245.139/PLTV/4/224/3221227022/index.m3u8
@@ -906,7 +902,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 青海卫视,http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226916/1.m3u8
 青海卫视,http://[2409:8087:1e03:21::2]:6060/cms001/ch00000090990000001082/index.m3u8
 青海卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221226105/1.m3u8
-青海卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226916/.m3u8
+青海卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221227017/1.m3u8
 香港卫视,http://cctvtxyh5c.liveplay.myqcloud.com/cstv/xianggangweishi_2/index.m3u8
 香港卫视,https://stream1.freetv.fun/5335c88a9a7d8b74173b491f480d4f94e8d3bd596af54478106aa2399e6c7917.ctv
 香港卫视,https://stream1.freetv.fun/c751876ae5ceaa0d82b5cf2badc152342aa92a4b45bf504d12ee45966b2fc644.ctv
@@ -936,7 +932,7 @@ BRTV 北京卫视,http://ivi.bupt.edu.cn/hls/btv1.m3u8
 黑龙江卫视,http://dsj.motem.top:8880/bptv/10000100000000050000000003873470.m3u8
 黑龙江卫视,http://z.b.bkpcp.top/m.php?id=hljws
 黑龙江卫视,http://[2409:8087:1e02:20::10]/000000001000PLTV/11/224/3221225722/1.m3u8
-黑龙江卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226965/.m3u8
+黑龙江卫视,http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226965/1.m3u8
 # 共 45 个频道，623 条线路 (平均13.8条/频道)
 
 港澳台,#genre#
@@ -949,12 +945,13 @@ TVBS Asia,http://38.64.72.148/hls/modn/list/4005/playlist.m3u8
 影视剧,#genre#
 &TV,https://amg01117-amg01117c1-amgplt0165.playout.now3.amagi.tv/playlist.m3u8
 &prive HD,http://87.255.35.150:18494
-&xplor HD,https://playyonogames.in/z5/stream.m3u8?id=0-9-209
+&xplor HD,http://66.102.120.18:8000/play/a012/index.m3u8
 AMC East,https://fl1.moveonjoy.com/AMC_NETWORK/index.m3u8
 AXN Vietnam,https://tv.ddns.vn/tv/axnhd/index.m3u8
 Action 24,http://actionlive.siliconweb.com/actionabr/actiontv/playlist.m3u8
 Action Hollywood Movies,https://amg01076-lightningintern-actionhollywood-samsungau-rs69y.amagi.tv/playlist/amg01076-lightningintern-actionhollywood-samsungau/playlist.m3u8
 Aflam,https://shls-live-enc.edgenextcdn.net/out/v1/0044dd4b001a466c941ad77b04a574a2/index.m3u8
+Anandham TV,https://stream.galaxyott.live/live/anandhamtv/index.m3u8
 B4U Bhojpuri,https://cdnb4u.wiseplayout.com/B4U_Bhojpuri/master.m3u8
 B4U Kadak,https://cdnb4u.wiseplayout.com/B4U_Kadak/master.m3u8
 B4U Movies India,https://cdnb4u.wiseplayout.com/B4U_Movies/master.m3u8
@@ -991,6 +988,7 @@ MBC+ Drama,https://shd-gcp-live.edgenextcdn.net/live/bitmovin-mbc-plus-drama/e37
 MGM HD,https://v2.catcast.tv/content/44051/index.m3u8
 MNX,http://87.255.35.150:18936
 Maverick Black Cinema,https://maverick-maverick-black-cinema-3-us.roku.wurl.tv/playlist.m3u8
+Mix Hollywood,https://ml-pull-hwc.myco.io/MixTV/hls/index.m3u8
 MovieSphere,https://amg00353-lionsgatefilmsi-moviesphereaus-samsungau-7qzhf.amagi.tv/playlist/amg00353-lionsgatefilmsi-moviesphereaus-samsungau/playlist.m3u8
 MovieSphere,https://amg00353-amg00353c32-samsung-nz-3588.playouts.now.amagi.tv/playlist.m3u8
 MovieSphere,https://moviesphereuk-samsunguk.amagi.tv/playlist.m3u8
@@ -1055,9 +1053,11 @@ ServusTV HD,https://viamotionhsi.netplus.ch/live/eds/servustvhd/browser-HLS8/ser
 Sky Cinema Family HD,https://d17lsiabqrlwa2.cloudfront.net/pl_138/207480-6535776-1/playlist.m3u8
 Squirrel,http://176.65.146.237:8401/play/a09h/index.m3u8
 Star Channel Latin America South,http://181.188.216.5:18000/play/a0pm/index.m3u8
+Star Gold HD,http://87.255.35.150:18859/
 Star Gold Select HD,http://87.255.35.150:18429
 Star Movies HD,http://87.255.35.150:18301
 Star Movies Select HD,http://87.255.35.150:18548
+Suriyan TV,https://stream.galaxyott.live/live/suriyantv/index.m3u8
 TF1 Series Films,https://viamotionhsi.netplus.ch/live/eds/hd1/browser-HLS8/hd1.m3u8
 Veo7,http://176.65.146.237:8401/play/a09k/index.m3u8
 Victor Valley Movies,https://2-fss-2.streamhoster.com/pl_138/201950-5317556-1/playlist.m3u8
@@ -1073,7 +1073,7 @@ alpha Moretime,https://dvr3.vokkavideo.xyz/ALPHAMORETIMEHD/index.m3u8
 新昌休闲影视,https://l.cztvcloud.com/channels/lantian/SXxinchang2/720p.m3u8
 精品电影,http://183.207.248.71/cntv/live1/jdianying/jdianying
 高清电影,http://39.134.19.76/dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221226463/index.m3u8
-# 共 123 个频道，126 条线路 (平均1.0条/频道)
+# 共 127 个频道，130 条线路 (平均1.0条/频道)
 
 4K,#genre#
 24KZ,https://tvcdn01.oktv.kz/tv/24kz/index.m3u8
@@ -1110,6 +1110,7 @@ Shenzhen Satellite TV,https://livepull-tcms.sztv.com.cn/live/sz4Kpgm.m3u8
 9X Jalwa,https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/9x-jalwa/master.m3u8
 AMC,https://amchls.wns.live/hls/stream.m3u8
 ARY Musik,https://arymusik.aryzap.com/3fd38b2c62d0c3bbd74aedabb533c03a/6459fa78/v1/01847ac7a4930b8ed5aa6ed04aba/01847ac8f5f70b8ed5aa6ed04abd/main.m3u8
+Aaryaa TV,http://103.140.254.2:3500/live/3395.m3u8
 Abdulmajeed Abdullah,https://d2hng5r56zpsbw.cloudfront.net/out/v1/9c4c990f44bb4767bb46271f326dd574/index.m3u8
 Afrobeats,https://stream.ecable.tv/afrobeats/index.m3u8
 Aghani Aghani TV,https://streaming-a-1035.cdn.nextologies.com/6zj8y5nemi8a32vyjjbkv0oqx/77pcakd8reik3g8qdqnexlkmq/playlist.m3u8
@@ -1193,7 +1194,6 @@ MNTV Music,https://mntv.livebox.co.in/musichls/live.m3u8
 MTV,https://viamotionhsi.netplus.ch/live/eds/mtvfrance/browser-HLS8/mtvfrance.m3u8
 MTV,https://hms.pfs.gdn/v1/broadcast/mtv/playlist.m3u8
 MTV Guyana,https://stream.mtvgy.com/mtvguyana/index.fmp4.m3u8
-MTV HD,http://144.217.70.181:9587/hin2/MTVINDIA/index.m3u8
 Madras FM TV,https://edge12.vedge.infomaniak.com/livecast/ik:madrasfmtv/manifest.m3u8
 Magenta Musik 360,https://streaming.magentamusik.de/csm/573870/magentamusik1/index.m3u8
 Majid Al Mohandis,https://shls-live-mood-ak.akamaized.net/out/v1/8e2419c6c7494dbba478be025af490ee/index.m3u8
@@ -1203,7 +1203,7 @@ Mastiii,https://sablive-ddpb.akamaized.net/mastii/playlist.m3u8
 Med Muzik,http://54.36.110.140/live3/live3.m3u8
 Mezzo,https://viamotionhsi.netplus.ch/live/eds/mezzo/browser-HLS8/mezzo.m3u8
 Mohammed Abdo,https://d2ow8h651gs7dx.cloudfront.net/out/v1/371fb663da604e659a2fb99bf89d92d4/index.m3u8
-Mosaique FM,https://cdn.live.easybroadcast.io/abr_corp/63_mosaique-fm_rn56tgl/playlist_dvr.m3u8
+Mosaique FM,https://webcam.mosaiquefm.net/mosatv/_definst_/studio/playlist.m3u8?DVR
 Music Box Polska,https://vs2131.vcdn.biz/7c9ec24eb8edee7c3d3b96d9f3135f48_megogo/live/hls/b/700_2490_4000/u_sid/0/o/156751011/rsid/75909724-61e8-406f-9c58-f0491247f2a6/u_uid/0/u_vod/0/u_device/cms_html5/u_devicekey/_site/lip/91.226.196.37*asn/u_srvc/81255/u_did/web_duMuKipCoyWU9tWH3VWiK9eX5ZPorcR6/type.live/chunklist-sid750262562196381400-b4000000.m3u8
 Muzangala TV,https://5cf4a2c2512a2.streamlock.net/tvmuzangala/tvmuzangala/playlist.m3u8
 NEW K-POP,https://newidco-newkid-1-eu.xiaomi.wurl.tv/playlist.m3u8
@@ -1307,6 +1307,7 @@ Traditional TV,http://83.103.149.75:8085/udp/239.30.0.9:4000
 Tropi Q 99.7 FM,https://www.streaming507.net:19360/videotropiq/videotropiq.m3u8
 Tu Musica HD,https://mlb.essastream.com:8081/tumusicahd/tracks-v1a1/mono.m3u8
 UMTV,https://60417ddeaf0d9.streamlock.net/montemorelos/videomontemorelos/playlist.m3u8
+Ultimate TV,https://stream.galaxyott.live/live/utv/index.m3u8
 VH1 Italia,https://content.uplynk.com/channel/36953f5b6546464590d2fcd954bc89cf.m3u8
 Vevo 2K,https://d1s6jz7jeei17.cloudfront.net/playlist/amg00056-vevotv-vevo2kau-samsungau/playlist.m3u8
 Vevo 70s,https://amg00056-vevotv-vevo70saunz-samsungau-xzszd.amagi.tv/playlist/amg00056-vevotv-vevo70saunz-samsungau/playlist.m3u8
@@ -1328,7 +1329,7 @@ ZWEI2 Music,https://cdne.folxplay.tv/folx-trz/streams/ch-2/master.m3u8
 Zona Music TV,https://acceso.radiosportstv.online:3022/stream/play.m3u8
 m2o TV,https://4c4b867c89244861ac216426883d1ad0.msvdn.net/live/S62628868/uhdWBlkC1AoO/playlist.m3u8
 Матур ТВ,https://public.streaming.matur-tv.ru/hls/h264_aac/stream.m3u8
-# 共 226 个频道，224 条线路 (平均1.0条/频道)
+# 共 227 个频道，225 条线路 (平均1.0条/频道)
 
 其他,#genre#
 10 Bold Adelaide,https://dce3793146fef017.mediapackage.us-west-2.amazonaws.com/out/v1/55cdf73af7894775ba6de8f57482b66a/CMAF_HLS/index.m3u8
@@ -1403,10 +1404,10 @@ ATVSat,https://stream.atvsat.com/atvsatlive/smil:atvsatlive.smil/playlist.m3u8
 AWTV,https://acesso.ecast.site:3070/live/awtvlive.m3u8
 AZA TV HD,https://mediacp.us:8081/azatvhd/index.m3u8
 Aaj Tak,https://livehub-voidnet.onrender.com/cluster/streamcore/in/AAJTAK_REDIS.m3u8
-Abu Dhabi Emirates,https://vo-live-media.cdb.cdn.orange.com/Content/Channel/EmiratesChannel/HLS/index.m3u8
-Abu Dhabi Sports 1,https://vo-live-media.cdb.cdn.orange.com/Content/Channel/AbuDhabiSportsChannel1/HLS/index.m3u8
-Abu Dhabi Sports 2,https://vo-live-media.cdb.cdn.orange.com/Content/Channel/AbuDhabiSportsChannel2/HLS/index.m3u8
-Abu Dhabi TV,https://vo-live-media.cdb.cdn.orange.com/Content/Channel/AbuDhabiChannel/HLS/index.m3u8
+Abu Dhabi Emirates,https://admn-live-cdn-lb.starzplayarabia.com/out/v1/admn_tv_enc/emarat_tv/emarat_tv_hls_nd/index.m3u8
+Abu Dhabi Sports 1,https://admn-live-cdn-lb.starzplayarabia.com/out/v1/admn_tv_enc/abudhabi_sports_1/abudhabi_sports_1_hls_nd/index.m3u8
+Abu Dhabi Sports 2,https://admn-live-cdn-lb.starzplayarabia.com/out/v1/admn_tv_enc/abudhabi_sports_2/abudhabi_sports_2_hls_nd/index.m3u8
+Abu Dhabi TV,https://admn-live-cdn-lb.starzplayarabia.com/out/v1/admn_tv_enc/abudhabi_tv/abudhabi_tv_hls_nd/index.m3u8
 Access Humboldt,https://rtmp-live-ingest-ap-northeast-2-universe-dacast-com.akamaized.net/transmuxv1/streams/f08fcd45-1d04-9a8c-39ca-f56091820e5c.m3u8
 AccuWeather Now,https://cdn-ue1-prod.tsv2.amagi.tv/linear/amg00684-accuweather-accuweather-plex/playlist.m3u8
 Adinkra TV,https://59d39900ebfb8.streamlock.net/adinkratvny/adinkratvny/playlist.m3u8
@@ -1439,7 +1440,6 @@ Al Ghad TV,https://eazyvwqssi.erbvr.com/alghadtv/alghadtv.m3u8
 Al Horreya TV,http://media.smc-host.com:1935/alhorreya.tv/mp4:alhorreya3/playlist.m3u8
 Al Jadeed,http://185.9.2.18/chid_391/mono.m3u8
 Al Jazeera,https://live-hls-apps-aja-fa.getaj.net/AJA/index.m3u8
-Al Jazeera Documentary,http://213.57.91.138:8000/play/a06h
 Al Jazeera Documentary,https://live-hls-apps-ajd-fa.getaj.net/AJD/index.m3u8
 Al Jazeera English,https://live-hls-apps-aje-fa.getaj.net/AJE/index.m3u8
 Al Jazeera Mubasher,https://live-hls-apps-ajm-fa.getaj.net/AJM/index.m3u8
@@ -1497,7 +1497,6 @@ Althania,https://live.kwikmotion.com/syriatv02live/syriatv02.smil/playlist.m3u8
 Althingi,https://althingi-live.secure.footprint.net/althingi/live/index.m3u8
 Amani TV,https://goccn.cloud/hls/amanitv/index.m3u8
 Amazon Sat,https://amazonsat.brasilstream.com.br/hls/amazonsat/index.m3u8
-America Television,http://38.183.182.166:8000/play/a0rb/index.m3u8
 American Pickers Channel,https://livetv-fa.tubi.video/american-pickers/playlist.m3u8
 Ameritrade,https://tdameritrade-vizio.amagi.tv/playlist.m3u8
 América Estéreo Quito,https://video.makrodigital.com/americaestereoquito/americaestereoquito/playlist.m3u8
@@ -1519,7 +1518,6 @@ Antofagasta TV,https://unlimited6-cl.dps.live/atv/atv.smil/playlist.m3u8
 Anytime TV,https://tv.anytimemedia.co.za:3673/hybrid/play.m3u8
 Apulia Web TV,https://cp1.server89.com:19360/apuliawebtv/apuliawebtv.m3u8
 Arabí TV,https://streamtv2.elitecomunicacion.cloud:3628/live/arabitv2025live.m3u8
-Argus News,https://live.argusnews.in/hls/argustv.m3u8
 Arirang TV,http://amdlive-ch01.ctnd.com.edgesuite.net/arirang_1ch/smil:arirang_1ch.smil/playlist.m3u8
 Arirang TV UN,https://amdlive-ch02-ctnd-com.akamaized.net/arirang_2ch/smil:arirang_2ch.smil/playlist.m3u8
 Ark TV,https://stream.hydeinnovations.com/arktv-international/index.fmp4.m3u8
@@ -1631,7 +1629,7 @@ Baden TV,http://badentv-stream2.siebnich.info/rtplive/btv.stream/live.m3u8
 Bahry,https://live.kwikmotion.com/bahry1live/bahry1.smil/playlist.m3u8
 Bajo Techo TV,https://rdn.essastream.com:3042/live/bajotechotvlive.m3u8
 Banning CityTV,https://vbfast-c.viebit.com/072e341f-100d-4da1-9c18-65370ebf35c6/playlist.m3u8
-Baynounah TV,https://vo-live-media.cdb.cdn.orange.com/Content/Channel/Baynounah/HLS/index.m3u8
+Baynounah TV,https://admn-live-cdn-lb.starzplayarabia.com/out/v1/admn_tv_enc/baynounah/baynounah_hls_nd/index.m3u8
 Baywatch,https://amg00145-fremantlemedian-baywatch-samsungau-gtsd6.amagi.tv/playlist/amg00145-fremantlemedian-baywatch-samsungau/playlist.m3u8
 Be Mad,http://176.65.146.237:8401/play/a0aj/index.m3u8
 BeIN SPORTS XTRA,https://amg01334-beinsportsllc-beinxtra-samsungau-eiyvc.amagi.tv/playlist/amg01334-beinsportsllc-beinxtra-samsungau/playlist.m3u8
@@ -1839,6 +1837,7 @@ Cúla4,https://d3eq0jseza7fm5.cloudfront.net/tg4_vod_3.m3u8
 DC Council Channel,https://video.oct.dc.gov/out/u/15_12.m3u8
 DC.gov Council Hearing Room 120,https://video.oct.dc.gov/out/u/97_12.m3u8
 DC.gov DKN,https://video.oct.dc.gov/out/u/DKN.m3u8
+DD India,https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/ceda14583477426aa162a65392d8ea07/index.m3u8
 DD National HD,https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/40492a64c1db4a1385ba1a397d357d3a/index.m3u8
 DD News,https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/0811cd8c37ca4c409d5385a6cd2fa18b/index.m3u8
 DD Tamil,https://d2lk5u59tns74c.cloudfront.net/out/v1/abf46b14847e45499f4a47f3a9afe93d/index.m3u8
@@ -1893,6 +1892,7 @@ Discover Pakistan,https://livecdn.live247stream.com/discoverpakistan/web/playlis
 Disney Channel HD,http://66.102.120.18:8000/play/a013/index.m3u8
 Disney Channel Latin America,http://201.230.121.186:8000/play/a0fb/index.m3u8
 Disney Channel Latin America Panregional HD,http://201.217.246.177:8000/play/a02r/index.m3u8
+Disney International HD,http://66.102.120.18:8000/play/a078/index.m3u8
 Disney Jr.,https://saran-live.ercdn.net/disneyjunior/index.m3u8
 District of Columbia Network,https://video.oct.dc.gov/out/u/DCN.m3u8
 Distrito TV,https://nlb2-live.emitstream.com/hls/3mn7wpcv7hbmxmdzaxap/master.m3u8
@@ -2093,6 +2093,7 @@ Guardian Talk Radio,https://cdn-edge1.streamcomedia.com/abr_tngr969fm/abr-tngr96
 Guaro TV,https://streamtv.intervenhosting.net:3592/live/guarotvbqtolive.m3u8
 Gubbare,https://epiconvh.akamaized.net/live/gubbare/master.m3u8
 Gugbang TV,http://mediaworks.dema.mil.kr:1935/live_edge/cudo.sdp/playlist.m3u8
+Gujarat First,https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/gujarat-first/index.m3u8
 Gusto TV,https://e75fc053c0d2406fb74cdd71d77e1a7f.mediatailor.us-east-1.amazonaws.com/v1/master/f4e8c53a8367a5b58e20ce054ea3ce25a3e904d3/RakutenTV-eu_GustoTV/playlist.m3u8
 GuyBai TV,https://livechannel.mdc.akamaized.net/stitch/livechannel/1342/master1400000.m3u8;session=live_stream_1342
 HBTV TicaVisión,https://62fc643fbf1aa.streamlock.net/HBTV/HBTV/playlist.m3u8
@@ -2153,7 +2154,6 @@ Homeful,https://aegis-cloudfront-1.tubi.video/9f31e187-3d43-4ed0-81ba-63bd3bc560
 Hope Channel Africa,https://jstre.am/live/jsl:i1onRBELcGV.m3u8
 Hope Channel Australia,https://videodelivery.net/9fb3596948ddf463fde0ec4b85625b24/manifest/video.m3u8
 Hope Channel German,https://customer-x8zydurm357k8j9p.cloudflarestream.com/5b46490d20cdd87fcac238b0027813e0/manifest/video.m3u8
-Hope Channel India,https://videodelivery.net/98334a974d26e45759c6baa8bceabbcf/manifest/video.m3u8
 Hope Channel Inter-America English,https://jstre.am/live/jsl:UP9KAdlVrm8.m3u8
 Hope Channel International,https://jstre.am/live/jsl:cZXINbwrFj6.m3u8
 Hope Channel North America,https://jstre.am/live/jsl:0sUSK6VA7GT.m3u8
@@ -2432,7 +2432,7 @@ Maestrat TV,https://stream.maestrat.tv/hls/stream.m3u8
 MagellanTV Now,https://amg00376-magellan-amg00376c5-samsung-au-1708.playouts.now.amagi.tv/playlist/amg00376-magellantv-magellantvnowww-samsungau/playlist.m3u8
 Magna Channel,https://edge.medcom.id/live-edge/smil:magna.smil/playlist.m3u8
 Magna Vision,https://j78dpa3edq5r-hls-live.5centscdn.com/abr/0864028584026e6ad9cdf922473177a4/playlist.m3u8
-Majid,https://vo-live-media.cdb.cdn.orange.com/Content/Channel/MajidChildrenChannel/HLS/index.m3u8
+Majid,https://admn-live-cdn-lb.starzplayarabia.com/out/v1/admn_tv_enc/majid/majid_hls_nd/index.m3u8
 Makan 33,https://makan.media.kan.org.il/hls/live/2024680/2024680/master.m3u8
 Makedonsko Sonce,https://media2.streambrothers.com:1936/8128/8128/playlist.m3u8
 MakroDigital Television,https://makrodigitaltv.makrodigital.com/makrodigitaltelevision/iptv/playlist.m3u8
@@ -2567,8 +2567,7 @@ Nascar,https://aegis-cloudfront-1.tubi.video/a8586229-0ea0-4eb4-bb23-09674c2a94d
 National Geographic,http://78.130.250.2:8023/play/a02e/index.m3u8
 National Geographic,http://62.210.211.188:2095/play/a00d
 National Geographic,https://saran-live.ercdn.net/natgeohd/index.m3u8
-National Geographic Abu Dhabi,https://vo-live.cdb.cdn.orange.com/Content/Channel/NationalGeographicHDChannel/HLS/index.m3u8
-National Geographic Abu Dhabi HD,http://213.57.91.138:8000/play/a05a
+National Geographic Abu Dhabi HD,https://admn-live-cdn-lb.starzplayarabia.com/out/v1/admn_tv_enc/national_geo/national_geo_hls_nd/index.m3u8
 National Geographic HD East,https://tvpass.org/live/NationalGeographicEast/hd
 National Geographic Latin America South,http://38.183.182.166:8000/play/a0vd/index.m3u8
 National Geographic Wild,http://78.130.250.2:8023/play/a02c/index.m3u8
@@ -2692,7 +2691,6 @@ PTV Sevilla,https://streamer.zapitv.com/PTV_sevilla/index.m3u8
 PUNKTum Fernsehen,http://58bd5b7a98e04.streamlock.net/medienasa-live/punktum_high/playlist.m3u8
 Padre Pio TV,https://600f07e114306.streamlock.net/PadrePioTV/livestream/playlist.m3u8
 Palestine Edu,https://pbc.furrera.ps/PalestineEDU/index.m3u8
-Panamericana TV,http://38.183.182.166:8000/play/a0ii/index.m3u8
 Panavisión,https://vcp.myplaytv.com/panavision/panavision/playlist.m3u8
 Panc TV Peru,https://panel.host-live.com:19360/20000/20000.m3u8
 Paralelo 20 650 AM,https://stream.oursnetworktv.com/latin/paralelo20/playlist.m3u8
@@ -2715,6 +2713,7 @@ Pet Club TV,https://petclub-samsungaus.amagi.tv/playlist.m3u8
 Phenomenal Life TV,https://5be80bd118c27.streamlock.net:433/phenomenaltv/phenomenal/playlist.m3u8
 Pichilemu TV,https://5ff3d9babae13.streamlock.net/8028/8028/playlist.m3u8
 PilisTV,https://stream.streaming4u.hu/PilisTV/index.m3u8
+PinoTV,https://app.viloud.tv/hls/channel/e32c100fc7304040b61e6cc98b041f93.m3u8
 Pirineus TV,https://s153.ipcamlive.com/streams/99pic5fsknh2gnvhx/stream.m3u8
 Planete+,https://viamotionhsi.netplus.ch/live/eds/planeteplus/browser-HLS8/planeteplus.m3u8
 Platzi TV,https://mdstrm.com/live-stream-playlist/629a63ae8df27c082901f78b.m3u8
@@ -2749,6 +2748,7 @@ Pravasi Channel,https://m6gdavepdn93-hls-live.5centscdn.com/pravasi/d0dbe915091d
 Prensa Latina TV,https://eu1.servers10.com:8081/8192/index.m3u8
 Press TV French,https://live4.presstv.ir/live/smil:presstvfr.smil/playlist.m3u8
 Prime Asia TV,http://primeasia.selfip.net/Samsung/index.m3u8
+Prime9 News,https://mumbai-edge.smartplaytv.in/Prime9News/index.m3u8
 Primer TV,http://200.194.238.229:8383/live/primer/playlist.m3u8
 Primocanale,https://msh0203.stream.seeweb.it/live/flv:stream2.sdp/playlist.m3u8
 Pro TV News,https://cmero-ott-live.ssl.cdn.cra.cz/channels/cme-ro-voyo-news/playlist.m3u8?offsetSeconds=0&url=0
@@ -2872,7 +2872,6 @@ Raj Digital Plus,http://livestream.rajtv.tv/cluster1/Content/Channel/RajDigitalP
 Raj Musix Tamil,http://livestream.rajtv.tv/cluster1/Content/Channel/RajMusix/HLS/master.m3u8
 Raj News,http://livestream.rajtv.tv/cluster1/Content/Channel/RajNews/HLS/master.m3u8
 Raj Pariwar,https://livestream.rajtvnet.in/hlslive/Admin/px08241089/live/Raj_Pariwar/master_1.m3u8
-Raj TV,http://livestream.rajtv.tv/cluster1/Content/Channel/RajTV/HLS/master.m3u8
 Rajeen TV,https://mn-nl.mncdn.com/palabroad/live/playlist.m3u8
 Rakuten TV Asian Cinema Italy,https://asian-cinema-rakuten-tv-it.fast.rakuten.tv/v1/master/0547f18649bd788bec7b67b746e47670f558b6b2/production-LiveChannel-6431/master.m3u8
 Rakuten TV Cine Español,https://3ed8837c27bf41dabe8e2627be2e57e6.mediatailor.eu-west-1.amazonaws.com/v1/master/0547f18649bd788bec7b67b746e47670f558b6b2/production-LiveChannel-6196/master.m3u8
@@ -3060,6 +3059,7 @@ Sonnenklar TV,http://euvia.cdn.ses-ps.com/HLS-Live/index.m3u8
 Sonus FM TV,http://www.sonus.fm:1935/public/stream_source/playlist.m3u8
 Sony Canal Competencias,https://spt-competencias-2-us.roku.wurl.tv/playlist.m3u8
 Sony Channel,http://38.183.182.166:8000/play/a0vg/index.m3u8
+Sony Entertainment Television,http://87.255.35.150:18546
 Sony Kal,https://spt-sonykal-1-us.lg.wurl.tv/playlist.m3u8
 Sony Marathi,https://nxtlive.net/sliv/stream.php?e=.m3u8&id=985980256
 Sony Pix,http://87.255.35.150:18495
@@ -3082,13 +3082,18 @@ Star Bharat HD,http://87.255.35.150:18555
 Star Jalsha HD,http://87.255.35.150:18237
 Star Maa HD,http://87.255.35.150:18846
 Star Pravah HD,http://87.255.35.150:18447
+Star Sports 1 HD,http://87.255.35.150:18891/
+Star Sports 1 Hindi HD,http://87.255.35.150:18302
 Star Sports 1 Tamil HD,http://87.255.35.150:18844
 Star Sports 1 Telugu HD,http://87.255.35.150:18881
 Star Sports 2 HD,http://87.255.35.150:18828
+Star Sports 2 Hindi,http://87.255.35.150:18882
+Star Sports Select 1 HD,http://87.255.35.150:18893/
+Star Sports Select 2 HD,http://87.255.35.150:18952/
 Star Suvarna HD,http://87.255.35.150:18545
 Star TV,https://cdn4.skygo.mn/live/disk1/Star/DASH-FTA/Star.mpd
 Star Vijay HD,http://87.255.35.150:18955
-StarPlus HD,https://tvsen7.aynaott.com/sphdbd/index.m3u8
+StarPlus HD,http://87.255.35.150:18880/
 Stara TV Bandung,https://bandung.staratv.id/hls/0/stream.m3u8
 Stara TV Malang,https://malang.staratv.id/hls/0/stream.m3u8
 Starke Frauen,https://mainstreamstarkefrauen-rakuten.amagi.tv/playlist.m3u8
@@ -3100,6 +3105,7 @@ Stories by AMC,http://fl1.moveonjoy.com/AMC_NETWORK/index.m3u8
 Streekstad Alkmaar Centraal,https://videostreams.streekstadcentraal.nl/hls/streekstad_alkmaar/streekstad_alkmaar.m3u8
 Studio Rheden,https://stream.studiorhedenlive.nl/hlstv/stream.m3u8
 Su Mundo TV,https://175036.global.ssl.fastly.net/6217e980d5bee0e090792fdf/live_75f5635097ba11ecb9f1255c8fe65a34/index.m3u8
+Subin TV,https://stream.galaxyott.live/live/subintv/index.m3u8
 Sudarshan News,https://ott.livelegitpro.in/sudarshannews/sudarshannews/tracks-v1/index.fmp4.m3u8
 Sun Marathi,https://live.dinesh29.com.np/stream/jiotvplus/sunmarathi/master.m3u8
 Sun TV,https://livestream10.sunnxt.com/DolbyVision/SunTV_HDR/SunTV_HDR_Endpoints/SunTV-HDR10-IN-index.m3u8
@@ -3116,6 +3122,7 @@ Suram TV,https://livetv.305streamhd.com:3111/live/suramtvlive.m3u8
 Surf Cinema,https://amg13231-actve-amg13231c4-samsung-au-2990.playouts.now.amagi.tv/playlist/amg13231-actvefast-surfer-samsungau/playlist.m3u8
 Surf Cinema,https://amg13231-actve-amg13231c4-samsung-nz-3093.playouts.now.amagi.tv/playlist/amg13231-actvefast-surfer-samsungnz/playlist.m3u8
 Surfing+,https://dr4jwhk0sty71.cloudfront.net/scheduler/scheduleMaster/444.m3u8
+Suriya TV,http://103.140.254.2:3500/live/3394.m3u8
 Survivor,https://amg00627-amg00627c16-samsung-nz-2811.playouts.now.amagi.tv/playlist/amg00627-banijayfast-survivor-samsungnz/playlist.m3u8
 Surya TV,https://livestream10.sunnxt.com/DolbyVision/SuryaTV_HDR/SuryaTV_HDR_Endpoints/SuryaTV-HDR10-IN-index.m3u8
 Swamiji TV American,https://stream.swamiji.tv/YogaIPTV/smil:YogaStreamUS.smil/playlist.m3u8
@@ -3293,6 +3300,7 @@ TVN3,https://mdstrm.com/live-stream-playlist/5653641561b4eba30a7e4929.m3u8
 TVP Info,https://turbotv.tv/play/link/8e4dcd78-bdc3-4d41-b361-13c8e8ae0efc/eyJpdiI6IlJmaEs3c2orL2JvblhSeU9oNTh6QlE9PSIsInZhbHVlIjoiMm5JOWNzYll1MXc3Mk1PNnFsTk5MR3VrRUlPQXZNWDJaT3BKcTY3UThkVWZTQjdBZm03NklVVjhpS1lLN3E2VjBoT25MYzhPL09kdnRJUGRNR3EzWVpubHlDNXNGOWh2Mlk3Rzd2TGhLbVE9IiwibWFjIjoiZmY1MTNiYzc1MDkxOWIwYWM4NWU4Y2U4YTFiZmM1MzMwMDhhMDcwYmRhMWEwYWIwNDM5YjEwNGQ3ZmE1YTgyYyIsInRhZyI6IiJ9.m3u8
 TVP Rozrywka,https://turbotv.tv/play/link/9fa40d4c-2056-435b-9cfd-a3f8a6557776/eyJpdiI6Imx3cWVqNjcvMlR6aWs0WEdLeGROc1E9PSIsInZhbHVlIjoiei8zcm12aW45YUpwWGx3Q21aZHRKYkN4RzZRenFHT000YmRMOXZyK0V6NVp0M2s1ajdNZ0lpc3hWSmlGUi80TlJLYml5Y3g1ekk1RnJDakVVOFNoL3k5TXdFcTA5dHQxbzVHQTdWSnFsZ2M9IiwibWFjIjoiYzFjMTNkYzA2NTQ4ZjhkNzZjNTQyMzVmN2E4YzkzMmI3YzM4YTQ0ZWFiMjg1ZWIxY2U0NzFiMzI2YTE2NzZmZSIsInRhZyI6IiJ9.m3u8
 TVP Seriale,https://turbotv.tv/play/link/f1314272-bb13-4b53-bdee-d265a3627a8e/eyJpdiI6InZNakpxclQyeXNIaG9XWmg2b3RjZlE9PSIsInZhbHVlIjoiNmUvMitoYlYydm40VVNCaS82Mmlub08zazQ0d3FXakE0aWp6YWdXTHpIaDFGZEQycW45RkJKR2pXeHVkZEJYUXgyWkM3em5wTUJLaHU3QTJTMUNIWlR3blFaUm1VNm5WaENzNnN4WTZGOUE9IiwibWFjIjoiNTM2ZTdiZWE4MDcwNjhkNWM0NWExZmI3NWZiMjBhYzIxOTY5NGVjYjI5OGU1OGQwZDMzMDk2OGU1NmMyOGEyMiIsInRhZyI6IiJ9.m3u8
+TVP Sport,https://turbotv.tv/play/link/c28f5f5d-8830-4768-9452-733a1d80646f/eyJpdiI6Ik02dExRMUpoVThnUUFDYXZnSm5QbXc9PSIsInZhbHVlIjoiR2E3cysyRTJnQXVUanhsR3hxdXdHUGlkSzZsZFJiSkZ5b00xdjVTckIwTDV5cW53OE03WW9tRmg2RGxDZWZtTm9BSXZsVnVwSHpRK0Y1UnlnK3hOZGUxSVN6azlBNzI2N2FvdHBUQnlXUFk9IiwibWFjIjoiYzRhOTZhY2Y1ZjBmMzFkMWQzODJlNGY0ZjIzYWFmMjVlNDBmNjhjYmM1YzJhODQxNGY4ZjNmZTJmOTFhZTU1MiIsInRhZyI6IiJ9.m3u8
 TVP World,https://vs2142.vcdn.biz/2958f855a43f669a4282e5134a882554_megogo/live/hls/b/700_2490_4000/u_sid/0/o/150446381/rsid/7aae92a2-4034-476f-8fff-33bfc431e127/u_uid/0/u_vod/0/u_device/cms_html5/u_devicekey/_site/lip/91.226.196.37*asn/u_srvc/81255/u_did/web_duMuKipCoyWU9tWH3VWiK9eX5ZPorcR6/type.live/chunklist-sid8883796453807134950-b4000000.m3u8
 TVP1,https://cdndai.pl/tvp1hd/index.m3u8
 TVP2,https://cdndai.pl/tvp2hd/index.m3u8
@@ -3317,7 +3325,6 @@ TVSN Beauty,https://live-tvsn.simplestreamcdn.com/live12/tvsnbeauty/bitrate1.ism
 TVSN Jewellery,https://live-tvsn.simplestreamcdn.com/live13/tvsnjewellery/bitrate1.isml/.m3u8
 TVU Concepción,https://unlimited1-cl-isp.dps.live/tvu/tvu.smil/playlist.m3u8
 TVcom,https://tvlocales-live.freecaster.com/tvcom/95d2f656-ba85-4e13-affc-f1936be1a86d/95d2f656-ba85-4e13-affc-f1936be1a86d.isml/master.m3u8
-Taaza TV,https://stream.playbox.co.in:19360/taaza/taaza.m3u8
 Taber TV,https://5fc584f3f19c9.streamlock.net/tabertv/videotabertv/playlist.m3u8
 Taiwan Plus TV,https://bcovlive-a.akamaihd.net/rce33d845cb9e42dfa302c7ac345f7858/ap-northeast-1/6282251407001/playlist.m3u8
 Tajikistan,https://live.teleradiocom.tj/1/3m.m3u8
@@ -3592,7 +3599,7 @@ YLE TV 2,https://yletv.akamaized.net/hls/live/622366/yletv2fin/playlist.m3u8
 YLE TV Teema & Fem,https://yletv.akamaized.net/hls/live/622367/yletvteemafemfin/playlist.m3u8
 Yahoo! Finance,https://d1ewctnvcwvvvu.cloudfront.net/playlist.m3u8
 Yakaar TV,https://strhls.streamakaci.tv/yakaartv/yakaartv-multi/playlist.m3u8
-Yas TV,https://vo-live-media.cdb.cdn.orange.com/Content/Channel/YASSportsChannel/HLS/index.m3u8
+Yas TV,https://admn-live-cdn-lb.starzplayarabia.com/out/v1/admn_tv_enc/yas_1/yas_1_hls_nd/index.m3u8
 Yeglé TV,https://endour.net/hls/Yegle-tv/index.m3u8
 Yemen Shabab Channel,https://starmenajo.com/hls/yemenshabab/index.m3u8
 Yoshlar,https://stream8.cinerama.uz/1002/tracks-v1a1/playlist.m3u8
@@ -3609,7 +3616,6 @@ Zee Keralam,http://87.255.35.150:18502
 Zee Marathi,http://87.255.35.150:18234
 Zee News,https://dknttpxmr0dwf.cloudfront.net/index_57.m3u8
 Zee One,https://amg17931-zee-amg17931c6-samsung-au-8872.playouts.now.amagi.tv/playlist/amg17931-asiatvusaltdfast-zeeworld-samsungau/playlist.m3u8
-Zee Picchar,https://playyonogames.in/z5/stream.m3u8?id=0-9-241
 Zee TV,http://87.255.35.150:18849
 Zee Tamil,http://87.255.35.150:18553
 Zee Telugu,http://87.255.35.150:18222
@@ -3805,7 +3811,7 @@ teltOwkanal,https://h056.video-stream-hosting.de/easycast8-live/_definst_/mp4:li
 高台电视台,http://117.156.28.119/270000001111/1110000146/index.m3u8
 黑龙江,http://223.110.245.161/ott.js.chinamobile.com/PLTV/3/224/3221227492/index.m3u8
 黑龙江卫,http://183.207.248.71/cntv/live1/HD-2500k-1080P-heilongjiangstv/HD-2500k-1080P-heilongjiangstv
-# 共 2408 个频道，2474 条线路 (平均1.0条/频道)
+# 共 2414 个频道，2479 条线路 (平均1.0条/频道)
 
 # 自动生成 - 每日北京时间为2点更新
 # 仅保留1080p高清及以上清晰度线路
