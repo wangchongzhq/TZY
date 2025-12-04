@@ -1,0 +1,63 @@
+{
+  "app": {
+    "name": "IP-TV Channel Manager",
+    "version": "1.0.0",
+    "author": "TZY"
+  },
+  "network": {
+    "timeout": 10,
+    "max_retries": 3,
+    "retry_delay": 1,
+    "max_workers": 20,
+    "request_headers": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36"
+    }
+  },
+  "logging": {
+    "level": "INFO",
+    "file_path": "logs/app.log",
+    "max_bytes": 10485760,
+    "backup_count": 5
+  },
+  "deduplication": {
+    "by_name": true,
+    "by_url": true,
+    "by_group": false,
+    "by_tvg_id": true,
+    "keep_higher_quality": true
+  },
+  "quality": {
+    "timeout": 5,
+    "max_workers": 10
+  },
+  "output": {
+    "m3u_file": "output/iptv.m3u",
+    "txt_file": "output/channels.txt"
+  },
+  "channels": {
+    "categories": {
+      "CCTV": ["CCTV1", "CCTV2", "CCTV3", "CCTV4", "CCTV5", "CCTV5+", "CCTV6", "CCTV7", "CCTV8", "CCTV9", "CCTV10", "CCTV11", "CCTV12", "CCTV13", "CCTV14", "CCTV15", "CCTV16", "CCTV17"],
+      "卫视": ["北京卫视", "东方卫视", "浙江卫视", "江苏卫视", "湖南卫视", "广东卫视", "山东卫视", "四川卫视", "河南卫视", "安徽卫视", "辽宁卫视", "黑龙江卫视", "天津卫视", "深圳卫视"]
+    },
+    "name_mappings": {
+      "CCTV1": ["CCTV-1", "CCTV-1 HD", "CCTV1 综合", "CCTV-1 综合"],
+      "CCTV2": ["CCTV-2", "CCTV-2 HD", "CCTV2 财经", "CCTV-2 财经"],
+      "CCTV3": ["CCTV-3", "CCTV-3 HD", "CCTV3 综艺", "CCTV-3 综艺"],
+      "CCTV4": ["CCTV-4", "CCTV-4 HD", "CCTV4 中文国际", "CCTV-4 中文国际"],
+      "CCTV5": ["CCTV-5", "CCTV-5 HD", "CCTV5 体育", "CCTV-5 体育"],
+      "CCTV5+": ["CCTV-5+", "CCTV-5+ HD", "CCTV5+ 体育赛事", "CCTV-5+ 体育赛事"],
+      "CCTV6": ["CCTV-6", "CCTV-6 HD", "CCTV6 电影", "CCTV-6 电影"],
+      "CCTV7": ["CCTV-7", "CCTV-7 HD", "CCTV7 国防军事", "CCTV-7 国防军事"],
+      "CCTV8": ["CCTV-8", "CCTV-8 HD", "CCTV8 电视剧", "CCTV-8 电视剧"],
+      "CCTV9": ["CCTV-9", "CCTV-9 HD", "CCTV9 纪录", "CCTV-9 纪录"],
+      "CCTV10": ["CCTV-10", "CCTV-10 HD", "CCTV10 科教", "CCTV-10 科教"],
+      "CCTV11": ["CCTV-11", "CCTV-11 HD", "CCTV11 戏曲", "CCTV-11 戏曲"],
+      "CCTV12": ["CCTV-12", "CCTV-12 HD", "CCTV12 社会与法", "CCTV-12 社会与法"],
+      "CCTV13": ["CCTV-13", "CCTV-13 HD", "CCTV13 新闻", "CCTV-13 新闻"],
+      "CCTV14": ["CCTV-14", "CCTV-14 HD", "CCTV14 少儿", "CCTV-14 少儿"],
+      "CCTV15": ["CCTV-15", "CCTV-15 HD", "CCTV15 音乐", "CCTV-15 音乐"],
+      "CCTV16": ["CCTV-16", "CCTV-16 HD", "CCTV-16 奥林匹克", "CCTV16 奥林匹克"],
+      "CCTV17": ["CCTV-17", "CCTV-17 HD", "CCTV17 农业农村", "CCTV-17 农业农村"]
+    }
+  }
+}

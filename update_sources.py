@@ -16,6 +16,14 @@ import json
 import os
 import re
 
+# 导入核心模块
+from core.config_manager import get_config
+from core.logging_config import setup_logging, get_logger, log_exception
+
+# 设置日志
+setup_logging()
+logger = get_logger(__name__)
+
 # 定义文件路径
 SOURCES_JSON = 'sources.json'
 UNIFIED_SOURCES_PY = 'unified_sources.py'
@@ -85,7 +93,7 @@ SOURCES_WITH_NAMES = [
     with open(UNIFIED_SOURCES_PY, 'w', encoding='utf-8') as f:
         f.write(content)
     
-    print(f"✅ 已生成 {UNIFIED_SOURCES_PY}")
+    logger.info(f"✅ 已生成 {UNIFIED_SOURCES_PY}")
 
 
 def update_script(script_path):
@@ -132,44 +140,44 @@ urls = UNIFIED_SOURCES'''
                 # 使用多行匹配进行替换
                 content = re.sub(pattern, replacement, content, flags=re.DOTALL)
             else:
-                print(f"⚠️  未知的数据源格式，跳过 {script_path}")
+                logger.warning(f"⚠️  未知的数据源格式，跳过 {script_path}")
                 return
     
     # 写入更新后的内容
     with open(script_path, 'w', encoding='utf-8') as f:
         f.write(content)
     
-    print(f"✅ 已更新 {script_path}")
+    logger.info(f"✅ 已更新 {script_path}")
 
 
 def main():
     """主函数"""
-    print("=== 播放源自动更新脚本 ===")
+    logger.info("=== 播放源自动更新脚本 ===")
     
     # 检查sources.json是否存在
     if not os.path.exists(SOURCES_JSON):
-        print(f"❌ 找不到 {SOURCES_JSON} 文件")
+        logger.error(f"❌ 找不到 {SOURCES_JSON} 文件")
         return
     
     # 读取播放源
-    print("📖 读取播放源列表...")
+    logger.info("📖 读取播放源列表...")
     urls, sources_with_names = read_sources_from_json()
-    print(f"📊 共读取到 {len(urls)} 个启用的播放源")
+    logger.info(f"📊 共读取到 {len(urls)} 个启用的播放源")
     
     # 生成unified_sources.py
-    print("🔧 生成统一播放源文件...")
+    logger.info("🔧 生成统一播放源文件...")
     generate_unified_sources(urls, sources_with_names)
     
     # 更新所有脚本
-    print("🔄 更新所有脚本...")
+    logger.info("🔄 更新所有脚本...")
     for script in SCRIPTS_TO_UPDATE:
         if os.path.exists(script):
             update_script(script)
         else:
-            print(f"❌ 找不到 {script} 文件")
+            logger.error(f"❌ 找不到 {script} 文件")
     
-    print("\n🎉 所有更新已完成！")
-    print(f"📝 更新了 {len([s for s in SCRIPTS_TO_UPDATE if os.path.exists(s)])} 个脚本")
+    logger.info("\n🎉 所有更新已完成！")
+    logger.info(f"📝 更新了 {len([s for s in SCRIPTS_TO_UPDATE if os.path.exists(s)])} 个脚本")
 
 
 if __name__ == "__main__":

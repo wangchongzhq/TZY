@@ -1,0 +1,87 @@
+# 配置文件示例
+# 将此文件复制为 config.yaml 并根据需要修改配置
+
+# 日志配置
+logging:
+  level: "INFO"  # 日志级别: DEBUG, INFO, WARNING, ERROR
+  max_bytes: 10485760  # 日志文件大小限制: 10MB
+  backup_count: 5  # 保留的备份日志文件数量
+
+# 网络配置
+network:
+  max_workers: 10  # 并发工作线程数
+  timeout: 10  # 请求超时时间(秒)
+  allowed_domains:  # 允许的直播源域名列表
+    - "http://tv.html-5.me"
+    - "https://ghfast.top"
+    - "https://freetv.fun"
+    - "https://cdn.jsdelivr.net"
+    - "https://gitee.com"
+
+# 输出配置
+output:
+  m3u_filename: "jieguo.m3u"  # M3U输出文件名
+  txt_filename: "jieguo.txt"  # TXT输出文件名
+  min_lines_per_channel: 10  # 每个频道的最小线路数
+  max_lines_per_channel: 90  # 每个频道的最大线路数
+
+# 频道配置
+channel:
+  categories:  # 频道分类
+    "央视":
+      - "CCTV1"
+      - "CCTV2"
+      - "CCTV3"
+      # ... 其他央视频道
+    "卫视":
+      - "湖南卫视"
+      - "浙江卫视"
+      - "东方卫视"
+      # ... 其他卫视频道
+    "4K":
+      - "CCTV1 4K"
+      - "CCTV5 4K"
+      - "CCTV16 4K"
+      # ... 其他4K频道
+  mapping:  # 频道别名映射
+    "CCTV1": ["央视一套", "中央一台", "CCTV-1"]
+    "CCTV2": ["央视二套", "中央二台", "CCTV-2"]
+    "CCTV3": ["央视三套", "中央三台", "CCTV-3"]
+    # ... 其他频道映射
+
+# 分类规则
+category:
+  rules:  # 频道分类规则（正则表达式）
+    "央视":
+      - "CCTV"
+      - "中央电视台"
+      - "CGTN"
+    "卫视":
+      - "卫视"
+      - "湖南卫视"
+      - "浙江卫视"
+      - "东方卫视"
+      # ... 其他分类规则
+    "港澳台":
+      - "凤凰"
+      - "TVB"
+      - "翡翠"
+      # ... 其他分类规则
+    "4K":
+      - "4K"
+      - "UHD"
+      - "超高清"
+      - "2160P"
+
+# 数据源配置
+sources:
+  github_sources:  # GitHub数据源列表（用于tvzy.py）
+    - "http://tv.html-5.me/i/9390107.txt"
+    - "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt"
+    - "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt"
+    # ... 其他数据源
+  collect_sources:  # 收集数据源列表（用于collect_ipzy.py）
+    - {"name": "iptv-org-cn", "url": "https://iptv-org.github.io/iptv/countries/cn.m3u"}
+    - {"name": "iptv-org-hk", "url": "https://iptv-org.github.io/iptv/countries/hk.m3u"}
+    - {"name": "iptv-org-tw", "url": "https://iptv-org.github.io/iptv/countries/tw.m3u"}
+    # ... 其他数据源

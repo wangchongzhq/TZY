@@ -4,8 +4,16 @@ from datetime import datetime
 import time
 from collections import defaultdict
 
+# 导入核心模块
+from core.config import get_config
+from core.logging_config import setup_logging, get_logger, log_exception
+
+# 设置日志
+setup_logging()
+logger = get_logger(__name__)
+
 # 数据源列表
-SOURCES = [
+SOURCES = get_config('sources', {}).get('collect_sources', [
     {"name": "iptv-org-cn", "url": "https://iptv-org.github.io/iptv/countries/cn.m3u"},
     {"name": "iptv-org-hk", "url": "https://iptv-org.github.io/iptv/countries/hk.m3u"},
     {"name": "iptv-org-mo", "url": "https://iptv-org.github.io/iptv/countries/mo.m3u"},
@@ -22,10 +30,10 @@ SOURCES = [
     {"name": "ffmking", "url": "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt"},
     {"name": "qingtingjjjjjjj", "url": "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt"},
     {"name": "Heiwk", "url": "https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u"},
-    ]
+    ])
 
 # 分类规则
-CATEGORY_RULES = {
+CATEGORY_RULES = get_config('category', {}).get('rules', {
     "央视": [
         r'CCTV', r'中央电视台', r'CGTN', r'央视'
     ],
@@ -41,391 +49,550 @@ CATEGORY_RULES = {
         r'华视', r'中视', r'台视', r'民视', r'三立', r'东森', r'星空', r'香港',
         r'澳門', r'台灣', r'台湾'
     ],
-    "影视剧": [
-        r'电影', r'剧场', r'影院', r'影视', r'剧集', r'MOVIE', r'DRAMA',
-        r'CHC', r'黑莓', r'好莱坞', r'华语电影', r'家庭影院'
+    "电影": [
+        r'电影', r'电影频道'
     ],
-    "4K": [
-        r'4K', r'4k', r'UHD', r'超高清', r'2160P', r'2160p'
+    "综艺": [
+        r'综艺', r'综艺频道'
+    ],
+    "体育": [
+        r'体育', r'体育频道', r'CCTV5', r'CCTV5+', r'风云足球', r'高尔夫', r'网球'
+    ],
+    "少儿": [
+        r'少儿', r'卡通', r'动漫', r'CCTV少儿', r'金鹰卡通', r'卡酷少儿'
+    ],
+    "新闻": [
+        r'新闻', r'资讯', r'财经', r'CCTV新闻'
+    ],
+    "教育": [
+        r'教育', r'学习', r'教学', r'考试'
     ],
     "音乐": [
-        r'音乐', r'MUSIC', r'MTV', r'流行音乐', r'经典音乐', r'音乐台',
-        r'风云音乐', r'卡拉OK'
+        r'音乐', r'音乐频道', r'MTV', r'MTV音乐', r'风云音乐'
+    ],
+    "戏曲": [
+        r'戏曲', r'京剧', r'越剧', r'黄梅戏', r'豫剧', r'评剧', r'昆曲'
+    ],
+    "购物": [
+        r'购物', r'导购', r'电视购物'
+    ],
+    "其他": [
+        r'其他', r'综合', r'影视', r'高清'
     ]
-}
+})
 
-# 高清关键词
-HD_KEYWORDS = [
-    r'1080', r'1080p', r'1080P', r'高清', r'HD', r'High Definition', 
-    r'FHD', r'Full HD', r'超清', r'4K', r'4k', r'UHD', r'2160'
-]
+# 过滤规则
+FILTER_RULES = get_config('filter', {}).get('rules', {
+    "exclude_patterns": [
+        r'测试', r'广告', r'购物', r'付费', r'加密',
+        r'4K', r'8K', r'超清', r'高清',  # 可以根据需要保留或移除
+        r'备用', r'备用线路', r'备用源'
+    ],
+    "include_patterns": [
+        r'CCTV', r'卫视', r'央视', r'凤凰', r'TVB'
+    ],
+    "exclude_suffixes": [
+        r'\.ts$', r'\.m3u8$', r'\.flv$'  # 可以根据需要保留或移除
+    ],
+    "include_suffixes": [
+        r'\.m3u$', r'\.txt$'
+    ]
+})
 
-# 排除规则 - 排除包含特定字符的URL
-def should_exclude_url(url):
-    """
-    判断是否应该排除该URL
-    排除规则：URL中包含"example"或"demo"字符
-    """
-    return "example" in url.lower() or "demo" in url.lower()
+# 输出文件
+OUTPUT_FILE = get_config('output', {}).get('file', 'ipzyauto.txt')
 
-def download_m3u(url, retries=2):
-    """下载M3U文件"""
-    for attempt in range(retries):
-        try:
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-            }
-            response = requests.get(url, timeout=10, headers=headers)
-            response.encoding = 'utf-8'
-            if response.status_code == 200:
-                return response.text
-        except Exception as e:
-            print(f"下载失败 {url} (尝试 {attempt+1}/{retries}): {e}")
-            if attempt < retries - 1:
-                time.sleep(1)
-    return None
+# 网络设置
+NETWORK_CONFIG = get_config('network', {}).get('config', {
+    "timeout": 10,
+    "max_retries": 3,
+    "retry_delay": 1
+})
 
-def normalize_channel_name(name):
-    """标准化频道名称"""
-    if not name or name == "未知频道":
-        return "未知频道"
-        
-    name = re.sub(r'\s+', ' ', name.strip())
-    
-    # 移除清晰度标记
-    name = re.sub(r'\[[^\]]*\]', '', name)
-    name = re.sub(r'\([^\)]*\)', '', name)
-    
-    # 常见频道名称标准化
-    replacements = {
-        r'CCTV-1\s*综合': 'CCTV-1',
-        r'CCTV-1HD': 'CCTV-1',
-        r'CCTV1': 'CCTV-1',
-        r'CCTV-2\s*财经': 'CCTV-2',
-        r'CCTV2': 'CCTV-2',
-        r'CCTV-3\s*综艺': 'CCTV-3',
-        r'CCTV3': 'CCTV-3',
-        r'CCTV-4\s*中文国际': 'CCTV-4',
-        r'CCTV4': 'CCTV-4',
-        r'CCTV-5\s*体育': 'CCTV-5',
-        r'CCTV5': 'CCTV-5',
-        r'CCTV-5\+': 'CCTV-5+',
-        r'CCTV-6\s*电影': 'CCTV-6',
-        r'CCTV6': 'CCTV-6',
-        r'CCTV-7\s*国防军事': 'CCTV-7',
-        r'CCTV7': 'CCTV-7',
-        r'CCTV-8\s*电视剧': 'CCTV-8',
-        r'CCTV8': 'CCTV-8',
-        r'CCTV-9\s*纪录': 'CCTV-9',
-        r'CCTV9': 'CCTV-9',
-        r'CCTV-10\s*科教': 'CCTV-10',
-        r'CCTV10': 'CCTV-10',
-        r'CCTV-11\s*戏曲': 'CCTV-11',
-        r'CCTV11': 'CCTV-11',
-        r'CCTV-12\s*社会与法': 'CCTV-12',
-        r'CCTV12': 'CCTV-12',
-        r'CCTV-13\s*新闻': 'CCTV-13',
-        r'CCTV13': 'CCTV-13',
-        r'CCTV-14\s*少儿': 'CCTV-14',
-        r'CCTV14': 'CCTV-14',
-        r'CCTV-15\s*音乐': 'CCTV-15',
-        r'CCTV15': 'CCTV-15',
-        r'湖南卫视HD': '湖南卫视',
-        r'浙江卫视HD': '浙江卫视',
-        r'江苏卫视HD': '江苏卫视',
-        r'北京卫视HD': '北京卫视',
-        r'东方卫视HD': '东方卫视',
-    }
-    
-    for pattern, replacement in replacements.items():
-        name = re.sub(pattern, replacement, name)
-    
-    return name.strip()
+# 日志设置
+LOG_CONFIG = get_config('logging', {}).get('config', {
+    "level": "INFO",
+    "log_file": "logs/collect_ipzy.log",
+    "log_format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+})
 
-def is_hd_channel(channel_info):
-    """判断是否为高清频道"""
-    name = channel_info.get('name', '').lower()
-    tvg_name = channel_info.get('tvg_name', '').lower()
-    group = channel_info.get('group', '').lower()
-    
-    # 检查是否包含高清关键词
-    for keyword in HD_KEYWORDS:
-        if (keyword.lower() in name or 
-            keyword.lower() in tvg_name or 
-            keyword.lower() in group):
-            return True
-    
-    # 对于央视和卫视，默认认为是高清
-    cctv_pattern = r'cctv'
-    satellite_pattern = r'卫视'
-    if (re.search(cctv_pattern, name) or 
-        re.search(cctv_pattern, tvg_name) or
-        re.search(satellite_pattern, name) or
-        re.search(satellite_pattern, tvg_name)):
-        return True
-    
-    return False
+# 其他配置
+OTHER_CONFIG = get_config('other', {}).get('config', {
+    "max_channels": 1000,
+    "sort_by_category": True,
+    "remove_duplicates": True,
+    "output_encoding": "utf-8"
+})
 
-def parse_m3u_content(content, source_name):
-    """解析M3U内容"""
-    if not content:
-        return {}
-    
-    lines = content.split('\n')
-    channels = {}
-    current_channel = {}
-    
-    for line in lines:
-        line = line.strip()
-        if line.startswith('#EXTINF:'):
-            current_channel = parse_extinf_line(line, source_name)
-        elif line.startswith('http'):
-            if current_channel:
-                current_channel['url'] = line
-                
-                # 初步筛选高清频道
-                if is_hd_channel(current_channel):
-                    channel_name = normalize_channel_name(current_channel['name'])
-                    
-                    if channel_name not in channels:
-                        channels[channel_name] = {
-                            'name': channel_name,
-                            'tvg_name': current_channel.get('tvg_name', channel_name),
-                            'group': current_channel.get('group', '默认分组'),
-                            'logo': current_channel.get('logo', ''),
-                            'urls': [],
-                            'sources': set()
-                        }
-                    
-                    # 检查URL是否应该被排除
-                    if not should_exclude_url(line) and line not in channels[channel_name]['urls']:
-                        channels[channel_name]['urls'].append(line)
-                        channels[channel_name]['sources'].add(source_name)
-                
-                current_channel = {}
-    
-    return channels
+# 加载所有配置
+logger.info("配置加载完成")
+logger.debug(f"数据源列表: {len(SOURCES)} 个源")
+logger.debug(f"分类规则: {list(CATEGORY_RULES.keys())}")
+logger.debug(f"输出文件: {OUTPUT_FILE}")
 
-def parse_extinf_line(line, source_name):
-    """解析EXTINF行"""
-    channel = {'source': source_name}
-    
-    name_match = re.search(r',(?P<name>.+)$', line)
-    if name_match:
-        channel['name'] = name_match.group('name').strip()
-    else:
-        channel['name'] = "未知频道"
-    
-    tvg_name_match = re.search(r'tvg-name="([^"]*)"', line)
-    if tvg_name_match:
-        channel['tvg_name'] = tvg_name_match.group(1)
-    else:
-        channel['tvg_name'] = channel['name']
-    
-    group_match = re.search(r'group-title="([^"]*)"', line)
-    if group_match:
-        channel['group'] = group_match.group(1)
-    else:
-        channel['group'] = "默认分组"
-    
-    logo_match = re.search(r'tvg-logo="([^"]*)"', line)
-    if logo_match:
-        channel['logo'] = logo_match.group(1)
-    else:
-        channel['logo'] = ""
-    
-    return channel
-
-def categorize_channel(channel):
-    """对频道进行分类"""
-    name = channel['name'].lower()
-    tvg_name = channel['tvg_name'].lower()
-    group = channel['group'].lower()
-    
-    # 首先根据来源判断港澳台
-    source = channel.get('source', '')
-    if any(region in source for region in ['hk', 'mo', 'tw']):
-        # 检查是否已经被其他分类规则匹配
-        for category, patterns in CATEGORY_RULES.items():
-            if category == "港澳台":
-                continue
-            for pattern in patterns:
-                pattern_lower = pattern.lower()
-                if (re.search(pattern_lower, name) or 
-                    re.search(pattern_lower, tvg_name) or 
-                    re.search(pattern_lower, group)):
-                    return category
-        return "港澳台"
-    
-    # 根据分类规则匹配
-    for category, patterns in CATEGORY_RULES.items():
-        for pattern in patterns:
-            pattern_lower = pattern.lower()
-            if (re.search(pattern_lower, name) or 
-                re.search(pattern_lower, tvg_name) or 
-                re.search(pattern_lower, group)):
-                return category
-    
-    # 未分类的频道
-    return "其他"
-
-def merge_all_channels(all_channels_dicts):
-    """合并所有频道"""
-    merged_channels = {}
-    
-    for channels_dict in all_channels_dicts:
-        for channel_name, channel_info in channels_dict.items():
-            if channel_name == "未知频道":
-                continue
-                
-            if channel_name not in merged_channels:
-                merged_channels[channel_name] = channel_info.copy()
-                merged_channels[channel_name]['sources'] = set(channel_info['sources'])
-            else:
-                # 合并URLs，同时排除不需要的URL
-                for url in channel_info['urls']:
-                    if not should_exclude_url(url) and url not in merged_channels[channel_name]['urls']:
-                        merged_channels[channel_name]['urls'].append(url)
-                merged_channels[channel_name]['sources'].update(channel_info['sources'])
-    
-    return merged_channels
-
-def ensure_min_urls_per_channel(channels, min_urls=10, max_urls=30):
-    """确保每个频道有最少线路数量"""
-    print(f"确保每个频道至少有 {min_urls} 条线路...")
-    
-    # 统计线路分布
-    url_counts = defaultdict(int)
-    for channel_info in channels.values():
-        url_count = len(channel_info['urls'])
-        url_counts[url_count] += 1
-    
-    print("线路分布统计:")
-    for count in sorted(url_counts.keys()):
-        print(f"  {count}条线路: {url_counts[count]}个频道")
-    
-    # 找出线路不足的频道
-    channels_with_few_urls = {name: info for name, info in channels.items() if len(info['urls']) < min_urls}
-    
-    if channels_with_few_urls:
-        print(f"有 {len(channels_with_few_urls)} 个频道线路不足 {min_urls} 条")
-    else:
-        print("所有频道都已满足最小线路要求")
-    
-    # 限制最大线路数
-    for channel_name, channel_info in channels.items():
-        urls = channel_info['urls']
-        if len(urls) > max_urls:
-            channel_info['urls'] = urls[:max_urls]
-    
-    return channels
-
-def organize_channels_by_category(channels):
-    """按分类组织频道"""
-    categorized = defaultdict(list)
-    
-    for channel_name, channel_info in channels.items():
-        category = categorize_channel(channel_info)
-        categorized[category].append(channel_info)
-    
-    return categorized
-
-def write_output_file(channels_by_category):
-    """写入输出TXT文件"""
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    total_channels = sum(len(channels) for channels in channels_by_category.values())
-    total_urls = sum(sum(len(channel['urls']) for channel in channels) for channels in channels_by_category.values())
-    
-    with open('ipzy_channels.txt', 'w', encoding='utf-8') as f:
-        f.write(f"# 中国境内电视直播线路 (仅限1080p高清以上)\n")
-        f.write(f"# 更新时间: {timestamp}\n")
-        f.write(f"# 数据来源: 多个GitHub IPTV项目\n")
-        f.write(f"# 频道总数: {total_channels}\n")
-        f.write(f"# 线路总数: {total_urls}\n")
-        f.write(f"# 清晰度要求: 仅保留1080p高清及以上线路\n")
-        f.write("#" * 60 + "\n\n")
-        
-        category_order = ["央视", "卫视", "港澳台", "影视剧", "4K", "音乐", "其他"]
-        
-        for category in category_order:
-            if category in channels_by_category and channels_by_category[category]:
-                f.write(f"{category},#genre#\n")
-                
-                sorted_channels = sorted(channels_by_category[category], key=lambda x: x['name'])
-                
-                for channel in sorted_channels:
-                    for url in channel['urls']:
-                        f.write(f"{channel['name']},{url}\n")
-                
-                category_url_count = sum(len(channel['urls']) for channel in sorted_channels)
-                avg_urls = category_url_count / len(sorted_channels) if sorted_channels else 0
-                f.write(f"# 共 {len(sorted_channels)} 个频道，{category_url_count} 条线路 (平均{avg_urls:.1f}条/频道)\n\n")
-        
-        f.write("# 自动生成 - 每日北京时间为2点更新\n")
-        f.write("# 仅保留1080p高清及以上清晰度线路\n")
-        f.write("# 每个频道至少10条线路，最多30条线路\n")
+# 主要执行函数
 
 def main():
     """主函数"""
-    print("开始收集IPZY高清直播线路...")
-    print("清晰度要求: 仅保留1080p高清及以上线路")
-    print("线路要求: 每个频道至少10条线路")
+    try:
+        logger.info("开始执行IPTV频道收集脚本")
+        
+        # 记录开始时间
+        start_time = time.time()
+        
+        # 收集所有频道
+        channels = collect_all_channels()
+        
+        # 过滤频道
+        filtered_channels = filter_channels(channels)
+        
+        # 分类频道
+        categorized_channels = categorize_channels(filtered_channels)
+        
+        # 去重
+        if OTHER_CONFIG.get('remove_duplicates', True):
+            categorized_channels = remove_duplicates(categorized_channels)
+        
+        # 排序
+        if OTHER_CONFIG.get('sort_by_category', True):
+            categorized_channels = sort_channels(categorized_channels)
+        
+        # 限制数量
+        max_channels = OTHER_CONFIG.get('max_channels', 1000)
+        if max_channels > 0:
+            categorized_channels = limit_channels(categorized_channels, max_channels)
+        
+        # 输出到文件
+        output_channels(categorized_channels, OUTPUT_FILE)
+        
+        # 记录结束时间
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        
+        logger.info(f"IPTV频道收集完成")
+        logger.info(f"收集频道数: {len(channels)}")
+        logger.info(f"过滤后频道数: {len(filtered_channels)}")
+        logger.info(f"分类后频道数: {sum(len(channels) for channels in categorized_channels.values())}")
+        logger.info(f"输出到文件: {OUTPUT_FILE}")
+        logger.info(f"总耗时: {elapsed_time:.2f} 秒")
+        
+    except Exception as e:
+        logger.error(f"执行脚本时发生错误: {e}")
+        log_exception(logger, "执行脚本失败", e)
+        return False
     
-    all_channels_dicts = []
-    successful_sources = 0
+    return True
+
+# 收集所有频道
+
+def collect_all_channels():
+    """从所有数据源收集频道"""
+    channels = []
     
     for source in SOURCES:
-        print(f"处理源: {source['name']}")
-        content = download_m3u(source['url'])
-        if content:
-            channels = parse_m3u_content(content, source['name'])
-            channel_count = len(channels)
-            url_count = sum(len(c['urls']) for c in channels.values())
-            all_channels_dicts.append(channels)
-            print(f"  从 {source['name']} 获取了 {channel_count} 个频道，{url_count} 条线路")
-            successful_sources += 1
-        else:
-            print(f"  无法从 {source['name']} 获取数据")
-        
-        time.sleep(0.5)
+        try:
+            logger.info(f"开始收集数据源: {source['name']}")
+            
+            # 收集单个数据源的频道
+            source_channels = collect_from_source(source)
+            
+            # 添加到总列表
+            channels.extend(source_channels)
+            
+            logger.info(f"数据源 {source['name']} 收集完成，新增 {len(source_channels)} 个频道")
+            
+            # 休息一下，避免请求过于频繁
+            time.sleep(NETWORK_CONFIG.get('retry_delay', 1))
+            
+        except Exception as e:
+            logger.error(f"收集数据源 {source['name']} 时发生错误: {e}")
+            log_exception(logger, f"收集数据源 {source['name']} 失败", e)
     
-    print(f"成功从 {successful_sources}/{len(SOURCES)} 个数据源获取数据")
-    
-    if not all_channels_dicts:
-        print("错误: 无法从任何数据源获取数据")
-        return
-    
-    print("合并所有频道数据...")
-    merged_channels = merge_all_channels(all_channels_dicts)
-    
-    total_urls = sum(len(c['urls']) for c in merged_channels.values())
-    print(f"合并后共有 {len(merged_channels)} 个频道，{total_urls} 条线路")
-    
-    # 确保每个频道有足够线路
-    merged_channels = ensure_min_urls_per_channel(merged_channels, min_urls=10, max_urls=30)
-    
-    # 按分类组织频道
-    categorized_channels = organize_channels_by_category(merged_channels)
-    
-    print("高清频道收集完成，开始写入文件...")
-    
-    # 写入输出文件
-    write_output_file(categorized_channels)
-    
-    # 最终统计
-    total_channels = sum(len(channels) for channels in categorized_channels.values())
-    total_urls = sum(sum(len(channel['urls']) for channel in channels) for channels in categorized_channels.values())
-    
-    print(f"\n任务完成！最终统计:")
-    print(f"频道总数: {total_channels}")
-    print(f"线路总数: {total_urls}")
-    print(f"平均每个频道线路数: {total_urls/total_channels:.1f}")
-    
-    # 显示各分类统计
-    for category, channels in categorized_channels.items():
-        category_url_count = sum(len(channel['urls']) for channel in channels)
-        avg_urls = category_url_count / len(channels) if channels else 0
-        print(f"{category}: {len(channels)} 个频道，{category_url_count} 条线路 (平均{avg_urls:.1f}条/频道)")
+    return channels
 
-if __name__ == "__main__":
+# 从单个数据源收集频道
+
+def collect_from_source(source):
+    """从单个数据源收集频道"""
+    channels = []
+    
+    try:
+        # 发送请求获取内容
+        response = requests.get(source['url'], timeout=NETWORK_CONFIG.get('timeout', 10))
+        response.raise_for_status()
+        content = response.text
+        
+        # 根据数据源类型解析内容
+        if source['url'].endswith('.m3u'):
+            # M3U格式
+            channels = parse_m3u(content, source)
+        elif source['url'].endswith('.txt'):
+            # TXT格式
+            channels = parse_txt(content, source)
+        else:
+            # 默认尝试两种格式
+            try:
+                channels = parse_m3u(content, source)
+            except Exception as e:
+                logger.debug(f"尝试M3U解析失败，尝试TXT解析: {e}")
+                channels = parse_txt(content, source)
+        
+    except requests.RequestException as e:
+        logger.error(f"请求数据源 {source['name']} 时发生错误: {e}")
+        log_exception(logger, f"请求数据源 {source['name']} 失败", e)
+    except Exception as e:
+        logger.error(f"解析数据源 {source['name']} 时发生错误: {e}")
+        log_exception(logger, f"解析数据源 {source['name']} 失败", e)
+    
+    return channels
+
+# 解析M3U格式
+
+def parse_m3u(content, source):
+    """解析M3U格式的频道列表"""
+    channels = []
+    
+    try:
+        # 分割内容为行
+        lines = content.split('\n')
+        
+        # 解析M3U内容
+        for i in range(len(lines)):
+            line = lines[i].strip()
+            if line.startswith('#EXTINF:-1'):
+                # 频道信息行
+                channel_info = line
+                # 下一行应该是频道URL
+                if i + 1 < len(lines):
+                    channel_url = lines[i + 1].strip()
+                    if channel_url:
+                        # 提取频道名称
+                        channel_name = extract_channel_name(channel_info)
+                        # 创建频道对象
+                        channel = {
+                            'name': channel_name,
+                            'url': channel_url,
+                            'source': source['name'],
+                            'format': 'm3u',
+                            'category': '未分类',
+                            'added_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        }
+                        channels.append(channel)
+        
+    except Exception as e:
+        logger.error(f"解析M3U内容时发生错误: {e}")
+        log_exception(logger, "解析M3U内容失败", e)
+    
+    return channels
+
+# 解析TXT格式
+
+def parse_txt(content, source):
+    """解析TXT格式的频道列表"""
+    channels = []
+    
+    try:
+        # 分割内容为行
+        lines = content.split('\n')
+        
+        # 解析TXT内容
+        for line in lines:
+            line = line.strip()
+            if line and not line.startswith('#'):
+                # 尝试分割频道名称和URL
+                if ',,,' in line:
+                    # 格式: 频道名称,,网址
+                    parts = line.split(',,,', 1)
+                    if len(parts) == 2:
+                        channel_name = parts[0].strip()
+                        channel_url = parts[1].strip()
+                        if channel_url:
+                            # 创建频道对象
+                            channel = {
+                                'name': channel_name,
+                                'url': channel_url,
+                                'source': source['name'],
+                                'format': 'txt',
+                                'category': '未分类',
+                                'added_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            }
+                            channels.append(channel)
+                elif '|' in line:
+                    # 格式: 频道名称|网址
+                    parts = line.split('|', 1)
+                    if len(parts) == 2:
+                        channel_name = parts[0].strip()
+                        channel_url = parts[1].strip()
+                        if channel_url:
+                            # 创建频道对象
+                            channel = {
+                                'name': channel_name,
+                                'url': channel_url,
+                                'source': source['name'],
+                                'format': 'txt',
+                                'category': '未分类',
+                                'added_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            }
+                            channels.append(channel)
+                elif ' ' in line:
+                    # 格式: 频道名称 网址
+                    parts = line.split(' ', 1)
+                    if len(parts) == 2:
+                        channel_name = parts[0].strip()
+                        channel_url = parts[1].strip()
+                        if channel_url:
+                            # 创建频道对象
+                            channel = {
+                                'name': channel_name,
+                                'url': channel_url,
+                                'source': source['name'],
+                                'format': 'txt',
+                                'category': '未分类',
+                                'added_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            }
+                            channels.append(channel)
+        
+    except Exception as e:
+        logger.error(f"解析TXT内容时发生错误: {e}")
+        log_exception(logger, "解析TXT内容失败", e)
+    
+    return channels
+
+# 提取频道名称
+
+def extract_channel_name(extinf_line):
+    """从#EXTINF行提取频道名称"""
+    try:
+        # 移除#EXTINF:-1部分
+        if '#EXTINF:-1' in extinf_line:
+            extinf_line = extinf_line.replace('#EXTINF:-1', '')
+        
+        # 移除其他扩展信息
+        if 'tvg-name=' in extinf_line:
+            # 格式: #EXTINF:-1 tvg-name="频道名称" tvg-id="" tvg-logo="" group-title="",频道名称
+            match = re.search(r'tvg-name="([^"]+)"', extinf_line)
+            if match:
+                return match.group(1)
+        
+        # 尝试从行末提取
+        if ',' in extinf_line:
+            return extinf_line.split(',', 1)[1].strip()
+        
+        # 默认返回整行
+        return extinf_line.strip()
+        
+    except Exception as e:
+        logger.error(f"提取频道名称时发生错误: {e}")
+        log_exception(logger, "提取频道名称失败", e)
+        return "未知频道"
+
+# 过滤频道
+
+def filter_channels(channels):
+    """根据过滤规则过滤频道"""
+    filtered_channels = []
+    
+    for channel in channels:
+        try:
+            # 检查排除模式
+            exclude = False
+            for pattern in FILTER_RULES.get('exclude_patterns', []):
+                if re.search(pattern, channel['name'], re.IGNORECASE):
+                    exclude = True
+                    break
+            
+            if exclude:
+                continue
+            
+            # 检查包含模式
+            include = True
+            if FILTER_RULES.get('include_patterns', []):
+                include = False
+                for pattern in FILTER_RULES.get('include_patterns', []):
+                    if re.search(pattern, channel['name'], re.IGNORECASE):
+                        include = True
+                        break
+            
+            if not include:
+                continue
+            
+            # 检查URL后缀排除
+            url = channel['url']
+            exclude_suffix = False
+            for suffix in FILTER_RULES.get('exclude_suffixes', []):
+                if url.endswith(suffix):
+                    exclude_suffix = True
+                    break
+            
+            if exclude_suffix:
+                continue
+            
+            # 检查URL后缀包含
+            include_suffix = True
+            if FILTER_RULES.get('include_suffixes', []):
+                include_suffix = False
+                for suffix in FILTER_RULES.get('include_suffixes', []):
+                    if url.endswith(suffix):
+                        include_suffix = True
+                        break
+            
+            if not include_suffix:
+                continue
+            
+            # 检查URL是否有效
+            if not is_valid_url(url):
+                continue
+            
+            # 通过所有过滤规则
+            filtered_channels.append(channel)
+            
+        except Exception as e:
+            logger.error(f"过滤频道 {channel.get('name', '未知')} 时发生错误: {e}")
+            log_exception(logger, "过滤频道失败", e)
+    
+    return filtered_channels
+
+# 分类频道
+
+def categorize_channels(channels):
+    """根据分类规则分类频道"""
+    categorized_channels = defaultdict(list)
+    
+    for channel in channels:
+        try:
+            # 查找匹配的分类
+            category = "其他"
+            for cat, patterns in CATEGORY_RULES.items():
+                for pattern in patterns:
+                    if re.search(pattern, channel['name'], re.IGNORECASE):
+                        category = cat
+                        break
+                if category != "其他":
+                    break
+            
+            # 添加到分类
+            channel['category'] = category
+            categorized_channels[category].append(channel)
+            
+        except Exception as e:
+            logger.error(f"分类频道 {channel.get('name', '未知')} 时发生错误: {e}")
+            log_exception(logger, "分类频道失败", e)
+            # 默认分类为其他
+            channel['category'] = "其他"
+            categorized_channels["其他"].append(channel)
+    
+    return dict(categorized_channels)
+
+# 去重
+
+def remove_duplicates(categorized_channels):
+    """去除重复频道"""
+    unique_channels = defaultdict(list)
+    seen = set()
+    
+    for category, channels in categorized_channels.items():
+        for channel in channels:
+            try:
+                # 使用频道名称和URL的组合作为唯一标识
+                key = (channel['name'], channel['url'])
+                if key not in seen:
+                    seen.add(key)
+                    unique_channels[category].append(channel)
+                    
+            except Exception as e:
+                logger.error(f"去重频道 {channel.get('name', '未知')} 时发生错误: {e}")
+                log_exception(logger, "去重频道失败", e)
+                # 保留出错的频道
+                unique_channels[category].append(channel)
+    
+    return dict(unique_channels)
+
+# 排序
+
+def sort_channels(categorized_channels):
+    """对频道进行排序"""
+    sorted_channels = defaultdict(list)
+    
+    # 按分类名称排序
+    sorted_categories = sorted(categorized_channels.keys())
+    
+    for category in sorted_categories:
+        channels = categorized_channels[category]
+        # 按频道名称排序
+        sorted_channels_list = sorted(channels, key=lambda x: x['name'])
+        sorted_channels[category] = sorted_channels_list
+    
+    return dict(sorted_channels)
+
+# 限制数量
+
+def limit_channels(categorized_channels, max_channels):
+    """限制频道总数"""
+    limited_channels = defaultdict(list)
+    total = 0
+    
+    for category, channels in categorized_channels.items():
+        for channel in channels:
+            if total >= max_channels:
+                break
+            limited_channels[category].append(channel)
+            total += 1
+        
+        if total >= max_channels:
+            break
+    
+    return dict(limited_channels)
+
+# 输出到文件
+
+def output_channels(categorized_channels, output_file):
+    """将频道输出到文件"""
+    try:
+        with open(output_file, 'w', encoding=OTHER_CONFIG.get('output_encoding', 'utf-8')) as f:
+            # 写入标题
+            f.write(f"# IPTV频道列表\n")
+            f.write(f"# 更新时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write(f"# 总频道数: {sum(len(channels) for channels in categorized_channels.values())}\n")
+            f.write(f"# 分类数: {len(categorized_channels)}\n")
+            f.write("\n")
+            
+            # 写入每个分类的频道
+            for category, channels in categorized_channels.items():
+                f.write(f"# {category}({len(channels)})\n")
+                for channel in channels:
+                    f.write(f"{channel['name']},,,{channel['url']}\n")
+                f.write("\n")
+        
+        logger.info(f"频道成功输出到文件: {output_file}")
+        
+    except Exception as e:
+        logger.error(f"输出频道到文件时发生错误: {e}")
+        log_exception(logger, "输出频道到文件失败", e)
+        raise
+
+# 检查URL是否有效
+
+def is_valid_url(url):
+    """检查URL是否有效"""
+    try:
+        if not url or not isinstance(url, str):
+            return False
+            
+        # 检查协议
+        if not (url.startswith('http://') or url.startswith('https://') or url.startswith('rtmp://') or url.startswith('rtsp://') or url.startswith('m3u8://')):
+            return False
+            
+        # 简单检查格式
+        if '.' not in url:
+            return False
+            
+        return True
+        
+    except Exception as e:
+        logger.error(f"检查URL有效性时发生错误: {e}")
+        log_exception(logger, "检查URL有效性失败", e)
+        return False
+
+# 主函数入口
+if __name__ == '__main__':
     main()

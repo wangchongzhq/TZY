@@ -12,20 +12,16 @@ import time
 import requests
 import datetime
 import threading
-import logging
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 
-# 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('iptv_update.log', encoding='utf-8'),
-        logging.StreamHandler()
-    ]
-)
-logger = logging.getLogger(__name__)
+# 导入核心模块
+from core.logging_config import get_logger, log_exception, log_performance, setup_logging
+from core.config import get_config
+
+# 设置日志
+setup_logging()
+logger = get_logger(__name__)
 
 # 频道分类
 CHANNEL_CATEGORIES = {
@@ -59,7 +55,7 @@ CHANNEL_CATEGORIES = {
                  '爱情喜剧', '超级电视剧', '超级综艺', '金牌综艺', '武搏世界', '农业致富', '炫舞未来',
                  '精品体育', '精品大剧', '精品纪录', '精品萌宠', '怡伴健康'],
     
-    "音乐频道": ['音乐频道', 'CCTV音乐', '音乐Tai', '音乐台', 'MTV', 'MTV中文', '华语音乐', '流行音乐', '古典音乐'],
+    "音乐频道": ['CCTV音乐', '音乐Tai', '音乐台', 'MTV', 'MTV中文', '华语音乐', '流行音乐', '古典音乐'],
 }
 
 # 频道映射（别名 -> 规范名）
@@ -175,10 +171,9 @@ CHANNEL_MAPPING = {
     "山东教育": ["山东教育台", "山东教育卫视"],
     
     # 音乐频道
-    "音乐频道": ["音乐频道", "音乐"],
-    "CCTV音乐": ["CCTV音乐", "音乐"],
+    "CCTV音乐": ["CCTV-音乐", "CCTV 音乐"],
     "音乐Tai": ["音乐Tai", "音乐台"],
-    "音乐台": ["音乐台", "音乐"],
+    "音乐台": ["音乐台 HD", "音乐台HD"],
     "MTV": ["MTV", "音乐电视"],
     "MTV中文": ["MTV中文", "中文MTV"],
     "华语音乐": ["华语音乐", "华语"],
@@ -193,6 +188,7 @@ default_sources = UNIFIED_SOURCES
 
 # 本地直播源文件
 default_local_sources = [
+    "ipzy_channels.txt",
     "ipzyauto.txt",
     "4K_uhd_channels.txt",
 ]
@@ -357,47 +353,55 @@ def generate_m3u_file(channels, output_path):
 # 生成TXT文件
 def generate_txt_file(channels, output_path):
     """生成TXT文件"""
-    print(f"正在生成 {output_path}...")
+    logger.info(f"正在生成 {output_path}...")
     
-    with open(output_path, 'w', encoding='utf-8') as f:
-        # 写入文件头注释
-        f.write(f"# IPTV直播源列表\n")
-        f.write(f"# 生成时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-        f.write("# 格式: 频道名称,播放URL\n")
-        f.write("# 按分组排列\n")
-        f.write("\n")
-        
-        # 写入频道分类说明
-        f.write("# 频道分类: 4K频道,央视频道,卫视频道,北京专属频道,山东专属频道,港澳频道,电影频道,儿童频道,iHOT频道,综合频道,体育频道,剧场频道,其他频道\n")
-        f.write("\n")
-        
-        # 按CHANNEL_CATEGORIES中定义的顺序写入分类
-        for category in CHANNEL_CATEGORIES:
-            if category in channels and channels[category]:
-                # 写入分组标题，添加,#genre#后缀
-                f.write(f"#{category}#,genre#\n")
-                
-                # 写入该分组下的所有频道
-                for channel_name, url in channels[category]:
-                    f.write(f"{channel_name},{url}\n")
-                
-                # 分组之间添加空行
-                f.write("\n")
-        
-        # 最后写入其他频道
-        if "其他频道" in channels and channels["其他频道"]:
-            # 写入分组标题，添加,#genre#后缀
-            f.write("#其他频道#,#genre#\n")
+    # 生成文件内容
+    content_lines = []
+    
+    # 写入文件头注释
+    content_lines.append("# IPTV直播源列表")
+    content_lines.append(f"# 生成时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    content_lines.append("# 格式: 频道名称,播放URL")
+    content_lines.append("# 按分组排列")
+    content_lines.append("")
+    
+    # 写入频道分类说明
+    content_lines.append("# 频道分类: 4K频道,央视频道,卫视频道,北京专属频道,山东专属频道,港澳频道,电影频道,儿童频道,iHOT频道,综合频道,体育频道,剧场频道,其他频道")
+    content_lines.append("")
+    
+    # 按CHANNEL_CATEGORIES中定义的顺序写入分类
+    for category in CHANNEL_CATEGORIES:
+        if category in channels and channels[category]:
+            # 写入分组标题，添加,genre#后缀
+            content_lines.append(f"#{category}#,genre#")
             
             # 写入该分组下的所有频道
-            for channel_name, url in channels["其他频道"]:
-                f.write(f"{channel_name},{url}\n")
+            for channel_name, url in channels[category]:
+                content_lines.append(f"{channel_name},{url}")
             
             # 分组之间添加空行
-            f.write("\n")
+            content_lines.append("")
     
-    print(f"✅ 成功生成 {output_path}")
-    return True
+    # 最后写入其他频道
+    if "其他频道" in channels and channels["其他频道"]:
+        # 写入分组标题，添加,#genre#后缀
+        content_lines.append("#其他频道#,#genre#")
+        
+        # 写入该分组下的所有频道
+        for channel_name, url in channels["其他频道"]:
+            content_lines.append(f"{channel_name},{url}")
+        
+        # 分组之间添加空行
+        content_lines.append("")
+    
+    # 使用核心模块写入文件
+    content = '\n'.join(content_lines)
+    if write_file(output_path, content):
+        logger.info(f"✅ 成功生成 {output_path}")
+        return True
+    else:
+        logger.error(f"❌ 生成 {output_path} 失败")
+        return False
 
 # 从本地TXT文件提取频道信息
 def extract_channels_from_txt(file_path):
@@ -443,32 +447,37 @@ def extract_channels_from_txt(file_path):
 def merge_sources(sources, local_files):
     """合并多个直播源"""
     all_channels = defaultdict(list)
-    seen = set()
     
-    # 处理远程直播源
-    for source_url in sources:
-        content = fetch_m3u_content(source_url)
+    # 使用核心模块的fetch_multiple实现并发获取远程直播源
+    logger.info(f"📡 正在并发获取{len(sources)}个远程直播源...")
+    results = fetch_multiple(sources, timeout=30, verify=False)
+    
+    # 处理远程直播源结果
+    for url, content in results.items():
         if content:
             channels = extract_channels_from_m3u(content)
             for group_title, channel_list in channels.items():
-                for channel_name, url in channel_list:
-                    # 去重
-                    if (channel_name, url) not in seen:
-                        all_channels[group_title].append((channel_name, url))
-                        seen.add((channel_name, url))
+                all_channels[group_title].extend(channel_list)
     
     # 处理本地直播源文件
+    logger.info(f"💻 正在读取{len(local_files)}个本地直播源文件...")
     for file_path in local_files:
         if os.path.exists(file_path):
             local_channels = extract_channels_from_txt(file_path)
             for group_title, channel_list in local_channels.items():
-                for channel_name, url in channel_list:
-                    # 去重
-                    if (channel_name, url) not in seen:
-                        all_channels[group_title].append((channel_name, url))
-                        seen.add((channel_name, url))
+                all_channels[group_title].extend(channel_list)
     
-    return all_channels
+    # 对所有频道进行去重处理
+    deduplicated_channels = defaultdict(list)
+    seen = set()
+    
+    for group_title, channel_list in all_channels.items():
+        for channel_name, url in channel_list:
+            if (channel_name, url) not in seen:
+                deduplicated_channels[group_title].append((channel_name, url))
+                seen.add((channel_name, url))
+    
+    return deduplicated_channels
 
 
 # 忽略requests的SSL警告
@@ -507,9 +516,10 @@ def update_iptv_sources():
         logger.info(f"   {group_title}: {len(channel_list)}个频道")
     
     # 生成M3U文件
-    output_file_m3u = "jieguo.m3u"  # 将输出文件改为jieguo.m3u
+    output_config = get_config('output', {})
+    output_file_m3u = output_config.get('m3u_filename', "jieguo.m3u")  # 将输出文件改为jieguo.m3u
     # 生成TXT文件
-    output_file_txt = "jieguo.txt"  # 新增TXT格式输出文件
+    output_file_txt = output_config.get('txt_filename', "jieguo.txt")  # 新增TXT格式输出文件
     
     if generate_m3u_file(all_channels, output_file_m3u) and generate_txt_file(all_channels, output_file_txt):
         logger.info(f"🎉 任务完成！")
