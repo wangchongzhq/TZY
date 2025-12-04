@@ -102,7 +102,7 @@ class M3UConverter:
         """将M3U文件转换为TXT格式"""
         try:
             # 检查文件是否存在
-            with open(m3u_file_path, 'r') as f:
+            with open(m3u_file_path, 'r', encoding='utf-8') as f:
                 pass
         except FileNotFoundError:
             return False

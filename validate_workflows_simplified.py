@@ -25,7 +25,7 @@ def validate_workflow(file_path):
     # 检查权限配置
     permissions = workflow.get('permissions', {})
     if permissions.get('contents') != 'write':
-    else:
+        return False
 
     # 获取作业名称
     jobs = workflow.get('jobs', {})

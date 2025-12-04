@@ -50,8 +50,7 @@ python update_sources.py
 ├── unified_sources.py     # 生成的统一播放源文件（请勿手动修改）
 ├── tvzy.py                # 主要直播源处理脚本
 ├── tvzy_simplified.py     # 简化版直播源处理脚本
-├── ipzyauto.py            # IP直播源自动处理脚本
-├── ipzyauto_simplified.py # 简化版IP直播源自动处理脚本
+├── # ipzyauto.py 和 ipzyauto_simplified.py 已被删除
 ├── collect_ipzy.py        # IP直播源收集脚本
 ├── convert_m3u_to_txt.py  # M3U转TXT格式转换脚本
 └── README.md              # 项目说明文档
@@ -104,17 +103,9 @@ python tvzy_simplified.py -o output.txt
 **参数**：
 - `-o, --output`: 输出文件名（可选，默认：tzydauto.txt）
 
-#### 2. ipzyauto_simplified.py - 简化版IP直播源处理
+#### 2. ipzyauto_simplified.py - 简化版IP直播源处理 (已删除)
 
-**功能**：自动收集和处理IP直播源
-
-**使用方法**：
-
-```bash
-python ipzyauto_simplified.py
-```
-
-**输出**：自动生成ipzy.txt文件
+该脚本已被删除。
 
 #### 3. collect_ipzy.py - IP直播源收集器
 

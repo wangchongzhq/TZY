@@ -34,8 +34,6 @@ else:
 SCRIPTS_TO_UPDATE = [
     'tvzy.py',
     'tvzy_simplified.py',
-    'ipzyauto.py',
-    'ipzyauto_simplified.py',
     'IP-TV.py',
     'IP-TV_simplified.py',
     'collect_ipzy.py'
