@@ -1,0 +1,12 @@
+2025-12-05 21:54:46,218 - __main__ - INFO - update_sources.py:153 - main - === 播放源自动更新脚本 ===
+2025-12-05 21:54:46,219 - __main__ - INFO - update_sources.py:161 - main - 📖 读取播放源列表...
+2025-12-05 21:54:46,220 - __main__ - INFO - update_sources.py:163 - main - 📊 共读取到 22 个启用的播放源
+2025-12-05 21:54:46,220 - __main__ - INFO - update_sources.py:166 - main - 🔧 生成统一播放源文件...
+2025-12-05 21:54:46,222 - __main__ - INFO - update_sources.py:94 - generate_unified_sources - ✅ 已生成 unified_sources.py
+2025-12-05 21:54:46,223 - __main__ - INFO - update_sources.py:170 - main - 🔄 更新所有脚本...
+2025-12-05 21:54:46,225 - __main__ - INFO - update_sources.py:148 - update_script - ✅ 已更新 tvzy.py
+2025-12-05 21:54:46,231 - __main__ - INFO - update_sources.py:148 - update_script - ✅ 已更新 IP-TV.py
+2025-12-05 21:54:46,236 - __main__ - INFO - update_sources.py:148 - update_script - ✅ 已更新 collect_ipzy.py
+2025-12-05 21:54:46,237 - __main__ - INFO - update_sources.py:177 - main - 
+🎉 所有更新已完成！
+2025-12-05 21:54:46,239 - __main__ - INFO - update_sources.py:178 - main - 📝 更新了 3 个脚本

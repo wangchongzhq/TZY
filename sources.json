@@ -8,11 +8,6 @@
       "enabled": true
     },
     {
-      "name": "test_new_source",
-      "url": "https://example.com/test_source.txt",
-      "enabled": true
-    },
-    {
       "name": "Supprise0901",
       "url": "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
       "enabled": true
@@ -30,7 +25,7 @@
     {
       "name": "freetv",
       "url": "https://freetv.fun/test_channels_new.txt",
-      "enabled": true
+      "enabled": false
     },
     {
       "name": "kimwang1978",
@@ -55,12 +50,12 @@
     {
       "name": "iptv-org-cn",
       "url": "https://iptv-org.github.io/iptv/countries/cn.m3u",
-      "enabled": true
+      "enabled": false
     },
     {
       "name": "iptv-org-all",
       "url": "https://iptv-org.github.io/iptv/index.m3u",
-      "enabled": true
+      "enabled": false
     },
     {
       "name": "iptv-org-streams-cn",
