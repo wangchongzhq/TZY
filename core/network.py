@@ -86,8 +86,7 @@ def fetch_content(url: str, retries: Optional[int] = None, timeout: Optional[int
         'headers': headers,
         'timeout': timeout,
         'verify': verify_ssl,
-        'allow_redirects': True,
-        'max_redirects': 5
+        'allow_redirects': True
     }
     
     for attempt in range(retries):

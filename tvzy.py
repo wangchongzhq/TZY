@@ -22,7 +22,7 @@ MAX_LINES_PER_CHANNEL = get_config('output', {}).get('max_lines_per_channel', 90
 # 默认输出文件名
 OUTPUT_FILE = get_config('output', {}).get('output_file_tvzy', 'tzydauto.txt')
 # 允许的直播源域名列表
-ALLOWED_DOMAINS = get_config('network', {}).get('allowed_domains', ['http://example.com/'])
+ALLOWED_DOMAINS = get_config('network', {}).get('allowed_domains', [])
 
 # 请求头
 HEADERS = {
@@ -193,49 +193,87 @@ def get_channels_from_source(source):
     
     try:
         # 获取数据源内容
-        content = fetch_content(source, HEADERS, TIMEOUT)
+        content = fetch_content(source, timeout=TIMEOUT, headers=HEADERS)
         if not content:
             logger.warning(f"无法获取数据源内容: {source}")
             return channels
         
+        logger.info(f"从数据源 {source} 获取到内容，长度: {len(content)} 字符")
         # 按行处理内容
         lines = content.split('\n')
+        logger.info(f"数据源 {source} 共有 {len(lines)} 行内容")
+        
+        # 打印前20行用于调试
+        for i, line in enumerate(lines[:20]):
+            if i < 10 or i > len(lines[:20]) - 5:
+                logger.debug(f"数据源 {source} 第 {i+1} 行: {repr(line)}")
+        
         prev_line = None
         
-        for line in lines:
+        for i, line in enumerate(lines):
             line = line.strip()
             
+            # 跳过空行和分类行
+            if not line or line.endswith(',#genre#'):
+                continue
+            
             if line.startswith('#EXTINF:'):
+                logger.debug(f"第 {i+1} 行 - 找到EXTINF行: {repr(line)}")
                 # 保存EXTINF行，用于后续提取频道信息
                 prev_line = line
             elif line.startswith(('http://', 'https://', 'rtmp://', 'rtsp://')):
+                logger.debug(f"第 {i+1} 行 - 找到流地址行: {repr(line)}")
                 # 提取频道信息
                 channel = None
                 
                 if prev_line:
+                    logger.debug(f"第 {i+1} 行 - 使用前一行EXTINF: {repr(prev_line)}")
                     # 从EXTINF行和流地址行中提取频道信息
                     name = extract_channel_name_from_extinf(prev_line)
                     if name:
+                        logger.debug(f"第 {i+1} 行 - 从EXTINF提取到名称: {name}")
                         channel = ChannelInfo(name, line, source=source)
+                    else:
+                        logger.debug(f"第 {i+1} 行 - 无法从EXTINF行提取名称")
                     prev_line = None
                 else:
                     # 只有流地址行，没有频道名称
+                    logger.debug(f"第 {i+1} 行 - 没有前一行EXTINF，使用默认名称")
                     channel = ChannelInfo('未知频道', line, source=source)
                 
-                if channel and is_allowed_domain(channel.url):
-                    channels.append(channel)
-            elif ',' in line or '|' in line:
+                if channel:
+                    if is_allowed_domain(channel.url):
+                        channels.append(channel)
+                        logger.debug(f"第 {i+1} 行 - 添加频道: {channel.name} -> {channel.url}")
+                    else:
+                        logger.debug(f"第 {i+1} 行 - 频道URL {channel.url} 不在允许的域名列表中")
+            elif ',' in line:
+                logger.debug(f"第 {i+1} 行 - 处理逗号分隔格式行: {repr(line)}")
                 # 处理其他格式的频道信息
                 channel = extract_channel_info(line)
-                if channel and is_allowed_domain(channel.url):
-                    channels.append(channel)
-                    prev_line = None
+                if channel:
+                    logger.debug(f"第 {i+1} 行 - 提取到频道: {channel.name} -> {channel.url}")
+                    if is_allowed_domain(channel.url):
+                        channels.append(channel)
+                        logger.debug(f"第 {i+1} 行 - 添加频道: {channel.name} -> {channel.url}")
+                    else:
+                        logger.debug(f"第 {i+1} 行 - 频道URL {channel.url} 不在允许的域名列表中")
+                else:
+                    logger.debug(f"第 {i+1} 行 - 无法提取频道信息")
+                    # 手动测试分割逻辑
+                    parts = line.split(',', 1)
+                    if len(parts) == 2:
+                        name = parts[0].strip()
+                        url = parts[1].strip()
+                        logger.debug(f"第 {i+1} 行 - 手动分割: 名称='{name}', URL='{url}'")
+                        logger.debug(f"第 {i+1} 行 - URL是否以http开头: {url.startswith(('http://', 'https://'))}")
             else:
                 prev_line = None
     except Exception as e:
         logger.error(f"处理数据源时出错: {source}, 错误: {e}")
-        log_exception(f"处理数据源时出错: {source}")
+        log_exception(logger, f"处理数据源时出错: {source}")
     
+    logger.info(f"从数据源 {source} 成功提取 {len(channels)} 个频道")
     return channels
 
 # 从EXTINF行中提取频道名称
@@ -371,7 +409,7 @@ def main():
                 all_channels.extend(channels)
             except Exception as e:
                 logger.error(f"从数据源 {source} 获取频道时出错: {e}")
-                log_exception(f"从数据源 {source} 获取频道时出错")
+                log_exception(logger, f"从数据源 {source} 获取频道时出错")
     
     logger.info(f"总共获取到 {len(all_channels)} 个频道")
     
