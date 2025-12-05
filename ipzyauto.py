@@ -553,6 +553,49 @@ def parse_lines(lines):
     
     return channels_dict
 
+def create_m3u_file(all_channels, filename="ipzyauto.m3u", speed_results=None):
+    """生成 M3U 格式文件"""
+    print(f"\n开始生成 M3U 文件 {filename}...")
+    print(f"总频道数: {len(all_channels)}")
+    
+    # 构建文件内容
+    content = []
+    content.append("#EXTM3U")
+    
+    # 先处理央视频道
+    common_cctv_channels = ['CCTV1', 'CCTV2', 'CCTV3', 'CCTV4', 'CCTV5', 'CCTV6', 'CCTV7', 'CCTV8', 'CCTV9', 'CCTV10',
+                           'CCTV11', 'CCTV12', 'CCTV13', 'CCTV14', 'CCTV15', 'CCTV16', 'CCTV17', 'CCTV4K', 'CCTV8K']
+    
+    # 先处理特定的央视频道
+    for channel in common_cctv_channels:
+        if channel in all_channels and all_channels[channel]:
+            url = all_channels[channel][0]  # 只取第一个URL
+            # M3U格式：#EXTINF:-1,频道名称
+            content.append(f"#EXTINF:-1,{channel}")
+            content.append(url)
+    
+    # 再处理其他CCTV频道
+    for channel, urls in list(all_channels.items()):
+        if channel.startswith('CCTV') and channel not in common_cctv_channels and urls:
+            url = urls[0]  # 只取第一个URL
+            content.append(f"#EXTINF:-1,{channel}")
+            content.append(url)
+    
+    # 写入其他频道
+    for channel, urls in list(all_channels.items()):
+        if not channel.startswith('CCTV') and urls:
+            url = urls[0]  # 只取第一个URL
+            content.append(f"#EXTINF:-1,{channel}")
+            content.append(url)
+    
+    # 使用core.file_utils中的write_file函数写入文件
+    file_content = "\n".join(content)
+    write_file(filename, file_content)
+    
+    print(f"\nM3U 文件生成完成！")
+    print(f"总计写入: {len(all_channels)} 个频道")
+    return filename
+
 def create_txt_file(all_channels, filename="ipzyauto.txt", speed_results=None):
     """生成带分类的 TXT 文件，每个频道和URL各占一行，并添加测速结果"""
     print(f"\n开始生成文件 {filename}...")
@@ -714,14 +757,21 @@ def main():
     if speed_config['enabled'] and all_urls_for_testing:
         speed_results = batch_test_urls(all_urls_for_testing, speed_config)
     
-    # 生成TXT文件
-    print("\n调用create_txt_file函数生成文件...")
-    print(f"  传递的all_channels长度: {len(all_channels)}")
-    print(f"  传递的speed_results长度: {len(speed_results) if speed_results else 0}")
-    filename = create_txt_file(all_channels, "ipzyauto_full.txt", speed_results)
+    # 生成M3U和TXT文件
+    print("\n调用create_m3u_file函数生成M3U文件...")
+    m3u_filename = create_m3u_file(all_channels, "ipzyauto.m3u", speed_results)
+    
+    print("\n调用create_txt_file函数生成TXT文件...")
+    txt_filename = create_txt_file(all_channels, "ipzyauto.txt", speed_results)
+    
+    # 生成完整版本（保留原有功能）
+    full_filename = create_txt_file(all_channels, "ipzyauto_full.txt", speed_results)
     
     # 显示生成结果
-    print(f"\n文件生成完成: {filename}")
+    print(f"\n文件生成完成:")
+    print(f"  M3U文件: {m3u_filename}")
+    print(f"  TXT文件: {txt_filename}")
+    print(f"  完整TXT文件: {full_filename}")
     
     # 验证文件内容
     print(f"\n验证文件内容:")
@@ -772,13 +822,28 @@ def test_fixed_channels():
         if urls:
             print(f"      第一个URL: {urls[0]}")
     
-    # 生成文件
-    filename = create_txt_file(fixed_channels, "fixed_test.txt")
+    # 生成TXT文件
+    txt_filename = create_txt_file(fixed_channels, "fixed_test.txt")
     
-    # 验证文件内容
-    print(f"\n验证文件内容 ({filename}):")
+    # 生成M3U文件
+    m3u_filename = create_m3u_file(fixed_channels, "fixed_test.m3u")
+    
+    # 验证TXT文件内容
+    print(f"\n验证TXT文件内容 ({txt_filename}):")
     try:
-        with open(filename, "r", encoding="utf-8") as f:
+        with open(txt_filename, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+            print(f"  文件总行数: {len(lines)}")
+            print(f"  文件内容:")
+            for i, line in enumerate(lines):
+                print(f"    {i+1}: {line.rstrip()}")
+    except Exception as e:
+        print(f"  读取文件时出错: {e}")
+    
+    # 验证M3U文件内容
+    print(f"\n验证M3U文件内容 ({m3u_filename}):")
+    try:
+        with open(m3u_filename, "r", encoding="utf-8") as f:
             lines = f.readlines()
             print(f"  文件总行数: {len(lines)}")
             print(f"  文件内容:")

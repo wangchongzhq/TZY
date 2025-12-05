@@ -93,7 +93,7 @@ def main():
     converter = M3UConverter()
     
     # 尝试找到M3U文件
-    possible_m3u_files = ["iptv.m3u", "cn.m3u", "4K.m3u", "jieguo.m3u"]
+    possible_m3u_files = ["iptv.m3u", "cn.m3u", "4K.m3u", "ipzyauto.m3u"]
     m3u_file = None
     txt_file = "m3utotxt output.txt"
     
