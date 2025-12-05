@@ -102,8 +102,8 @@ def main():
         m3u_file = sys.argv[1]
         txt_file = sys.argv[2]
     else:
-        # 获取当前目录下所有M3U文件
-        all_m3u_files = [f for f in os.listdir('.') if f.lower().endswith(('.m3u', '.m3a'))]
+        # 获取当前目录下所有M3U文件（包括.m3u、.m3a和无扩展名的文件）
+        all_m3u_files = [f for f in os.listdir('.') if f.lower().endswith(('.m3u', '.m3a')) or f in possible_m3u_files]
         
         if all_m3u_files:
             # 检查每个文件是否为空
