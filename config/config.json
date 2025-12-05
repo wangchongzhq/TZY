@@ -36,10 +36,14 @@
   },
   "channels": {
     "categories": {
-      "CCTV": ["CCTV1", "CCTV2", "CCTV3", "CCTV4", "CCTV5", "CCTV5+", "CCTV6", "CCTV7", "CCTV8", "CCTV9", "CCTV10", "CCTV11", "CCTV12", "CCTV13", "CCTV14", "CCTV15", "CCTV16", "CCTV17"],
-      "卫视": ["北京卫视", "东方卫视", "浙江卫视", "江苏卫视", "湖南卫视", "广东卫视", "山东卫视", "四川卫视", "河南卫视", "安徽卫视", "辽宁卫视", "黑龙江卫视", "天津卫视", "深圳卫视"]
+      "4K频道": ["CCTV4K", "CCTV16 4K", "北京卫视4K", "北京IPTV4K", "湖南卫视4K", "山东卫视4K", "广东卫视4K", "四川卫视4K", "浙江卫视4K", "江苏卫视4K", "东方卫视4K", "深圳卫视4K", "河北卫视4K", "峨眉电影4K", "求索4K", "咪视界4K", "欢笑剧场4K", "苏州4K", "至臻视界4K", "南国都市4K", "翡翠台4K", "百事通电影4K", "百事通少儿4K", "百事通纪实4K", "华数爱上4K"],
+      "央视频道": ["CCTV1", "CCTV2", "CCTV3", "CCTV4", "CCTV4欧洲", "CCTV4美洲", "CCTV5", "CCTV5+", "CCTV6", "CCTV7", "CCTV8", "CCTV9", "CCTV10", "CCTV11", "CCTV12", "CCTV13", "CCTV14", "CCTV15", "CCTV16", "CCTV17", "兵器科技", "风云音乐", "风云足球", "风云剧场", "怀旧剧场", "第一剧场", "女性时尚", "世界地理", "央视台球", "高尔夫网球", "央视文化精品", "北京纪实科教", "卫生健康", "电视指南"],
+      "卫视频道": ["北京卫视", "东方卫视", "浙江卫视", "江苏卫视", "湖南卫视", "广东卫视", "山东卫视", "四川卫视", "河南卫视", "安徽卫视", "辽宁卫视", "黑龙江卫视", "天津卫视", "深圳卫视"],
+      "CCTV": ["CCTV1", "CCTV2", "CCTV3", "CCTV4", "CCTV5", "CCTV5+", "CCTV6", "CCTV7", "CCTV8", "CCTV9", "CCTV10", "CCTV11", "CCTV12", "CCTV13", "CCTV14", "CCTV15", "CCTV16", "CCTV17"]
     },
     "name_mappings": {
+      "CCTV4K": ["CCTV 4K", "CCTV-4K"],
+      "CCTV16 4K": ["CCTV16 4K", "CCTV16-4K", "CCTV16 奥林匹克 4K", "CCTV16奥林匹克 4K"],
       "CCTV1": ["CCTV-1", "CCTV-1 HD", "CCTV1 综合", "CCTV-1 综合"],
       "CCTV2": ["CCTV-2", "CCTV-2 HD", "CCTV2 财经", "CCTV-2 财经"],
       "CCTV3": ["CCTV-3", "CCTV-3 HD", "CCTV3 综艺", "CCTV-3 综艺"],
@@ -58,6 +62,60 @@
       "CCTV15": ["CCTV-15", "CCTV-15 HD", "CCTV15 音乐", "CCTV-15 音乐"],
       "CCTV16": ["CCTV-16", "CCTV-16 HD", "CCTV-16 奥林匹克", "CCTV16 奥林匹克"],
       "CCTV17": ["CCTV-17", "CCTV-17 HD", "CCTV17 农业农村", "CCTV-17 农业农村"]
+    }
+  },
+  "tvzy": {
+    "sources": [
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/guangdong.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/guangzhou.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/guangxi.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/heilongjiang.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/hubei.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/hunan.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/jiangsu.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/jiangxi.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/jilin.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/liaoning.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/neimenggu.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/ningxia.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/qinghai.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/shandong.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/shanghai.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/shanxi.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/shanxixian.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/sichuan.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/tianjin.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/xinjiang.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/jiangxi.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/jiangsu.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/chongqing.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/anhui.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/beijing.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/fujian.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/gansu.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/henan.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/shanghai.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/cctv.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/star.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/4k.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/leju.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/iptv.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/youku.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/aiqiyi.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/tencent.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/miguvideo.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/huanjushitv.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/douyutv.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/kuaishou.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/twitch.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/youtube.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/bilibili.txt",
+      "https://raw.githubusercontent.com/Guovin/IPTV/main/txt/other.txt"
+    ],
+    "output": {
+      "m3u_file": "output/tvzy.m3u",
+      "txt_file": "output/tvzy.txt",
+      "category_file": "output/tvzy_category.txt"
     }
   }
 }

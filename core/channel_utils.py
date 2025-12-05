@@ -34,8 +34,8 @@ def generate_channel_hash(channel: ChannelInfo, use_name: bool = True, use_url: 
     """
     hash_input = []
     
-    if use_tvg_id and channel.tvg and channel.tvg.get('id'):
-        hash_input.append(channel.tvg.get('id').lower())
+    if use_tvg_id and channel.tvg_id:
+        hash_input.append(channel.tvg_id.lower())
     
     if use_name and channel.name:
         # 标准化频道名称（去除特殊字符、空格，转换为小写）
@@ -85,7 +85,7 @@ def deduplicate_channels(channels: List[ChannelInfo], by_name: bool = True, by_u
     # 按哈希值分组
     hash_groups = {}
     for channel in channels:
-        channel_hash = generate_channel_hash(channel, by_name, by_url, by_group, by_tvg_id)
+        channel_hash = generate_channel_hash(channel, use_name=by_name, use_url=by_url, use_group=by_group, use_tvg_id=by_tvg_id)
         
         if channel_hash not in hash_groups:
             hash_groups[channel_hash] = []
@@ -115,7 +115,7 @@ def deduplicate_channels(channels: List[ChannelInfo], by_name: bool = True, by_u
                         score += 30
                     
                     # 完整的tvg信息加分
-                    if channel.tvg and channel.tvg.get('id') and channel.tvg.get('logo'):
+                    if channel.tvg_id and channel.tvg_logo:
                         score += 20
                     
                     # 响应时间短的加分（如果有）

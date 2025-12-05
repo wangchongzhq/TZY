@@ -66,19 +66,6 @@ def fetch_content(url: str, retries: Optional[int] = None, timeout: Optional[int
         retries = NETWORK_CONFIG.get('max_retries', 3)
     if timeout is None:
         timeout = NETWORK_CONFIG.get('timeout', 10)
-    """
-    统一的网络请求函数，包含重试机制
-    
-    参数:
-        url: 要请求的URL
-        retries: 重试次数
-        timeout: 超时时间（秒）
-        headers: 自定义请求头
-        verify_ssl: 是否验证SSL证书
-        
-    返回:
-        请求成功返回内容，失败返回None
-    """
     if headers is None:
         headers = DEFAULT_HEADERS.copy()
     
@@ -303,16 +290,6 @@ def check_url_availability(url: str, timeout: Optional[int] = None) -> Dict[str,
     # 从配置获取默认超时时间
     if timeout is None:
         timeout = NETWORK_CONFIG.get('timeout', 5)
-    """
-    检查URL的可用性
-    
-    参数:
-        url: 要检查的URL
-        timeout: 超时时间（秒）
-        
-    返回:
-        包含可用性信息的字典
-    """
     result = {
         'url': url,
         'available': False,
