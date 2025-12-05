@@ -33,7 +33,7 @@ jobs:
     - name: Run script to generate m3u and txt files
       run: |
         # 运行脚本生成文件
-        echo "ipzyauto.py已被删除，跳过此步骤"
+        python ipzyauto.py
 
     - name: Debug - List generated files
       run: ls -la
@@ -70,17 +70,17 @@ jobs:
         echo "本地仓库已重置为远程最新状态"
         
         # 重新执行脚本确保生成最新文件
-        echo "ipzyauto.py已被删除，跳过此步骤"
+        python ipzyauto.py
         
         # 检查文件是否存在
-        if [ ! -f "ipzyauto.txt" ]; then
-          echo "ipzyauto.txt文件未生成，跳过提交"
+        if [ ! -f "ipzyauto.txt" ] && [ ! -f "ipzyauto.m3u" ]; then
+          echo "ipzyauto.txt和ipzyauto.m3u文件均未生成，跳过提交"
           exit 0
         fi
         
         # 添加文件
           echo "添加更改的文件..."
-          git add ipzyauto.txt
+          git add ipzyauto.txt ipzyauto.m3u
           
           # 检查是否有更改
         if git diff --staged --quiet; then
