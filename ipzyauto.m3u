@@ -49313,7 +49313,7 @@ http://dtrmlive.qhdtrm.cn/testpush/playlist.m3u8
 http://113.101.245.153:9988/udp/239.77.1.128:5146
 #EXTINF:-1,天津音乐
 http://221.198.198.213:8888/udp/225.1.1.179:5002
-#EXTINF:-1,2025-12-05 18:13:43
+#EXTINF:-1,2025-12-05 20:24:50
 https://kakaxi-1.asia/LOGO/Disclaimer.mp4
 #EXTINF:-1,中国教育1台
 http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226494/1.m3u8
@@ -49429,6 +49429,8 @@ https://live.ottiptv.cc/douyu/6911044
 https://live.ottiptv.cc/douyu/10084875
 #EXTINF:-1,聚聚聚一个月4105989
 https://live.ottiptv.cc/douyu/4105989
+#EXTINF:-1,豆腐芭比6478650
+https://live.ottiptv.cc/douyu/6478650
 #EXTINF:-1,万事通熊猫7812810
 https://live.ottiptv.cc/douyu/7812810
 #EXTINF:-1,米尼影院7642724
@@ -49447,8 +49449,12 @@ https://live.ottiptv.cc/douyu/12560807
 https://live.ottiptv.cc/douyu/2758565
 #EXTINF:-1,悠悠爱电影
 https://live.ottiptv.cc/huya/30611864
+#EXTINF:-1,萌萌小桃子
+https://live.ottiptv.cc/huya/29807256
 #EXTINF:-1,7喜先生
 https://live.ottiptv.cc/huya/11342421
+#EXTINF:-1,沐希兔子
+https://live.ottiptv.cc/huya/29835225
 #EXTINF:-1,古惑仔
 https://yylunbo.ottiptv.cc/yy/1458015189
 #EXTINF:-1,港片 喜剧 动作
