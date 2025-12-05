@@ -251,6 +251,11 @@ python update_sources.py
 ## 📝 更新日志
 
 ### 最新更新
+- 删除了M3U和TXT文件中的EPG相关功能（tvg-id、tvg-name、tvg-logo、tvg-url等属性）
+- 实现了频道分类内按名称升序排序功能，提高了频道列表的可读性
+- 修复了M3U文件中group-title属性后面多余空格的问题
+- 删除了测试文件test_sort.py
+- 清理了logs目录下的app.log日志文件
 - 修复了`collect_ipzy.py`、`convert_m3u_to_txt.py`和`update_sources.py`中的导入错误问题
 - 更新了README.md文档，使其与当前项目结构保持一致
 - 修复了tvzy.py和collect_ipzy.py中的语法错误
