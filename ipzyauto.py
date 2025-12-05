@@ -360,11 +360,19 @@ def should_exclude_url(url):
     
     # 检查分辨率是否满足要求
     from core.channel_utils import should_exclude_resolution
-    from core.config import get_config
-    config = get_config()
-    min_resolution = config.get('quality.min_resolution', '1920x1080')
-    if should_exclude_resolution(url, min_resolution):
-        return True
+    from core.config import get_config, config_manager
+    
+    # 获取所有配置
+    config = config_manager.get_all()
+    # 从配置中获取最小分辨率要求
+    min_resolution = config.get('quality', {}).get('min_resolution', '1920x1080')
+    
+    # 检查是否开启分辨率过滤
+    open_filter_resolution = config.get('quality', {}).get('open_filter_resolution', True)
+    
+    if open_filter_resolution:
+        if should_exclude_resolution(url, min_resolution):
+            return True
     
     return False
 
