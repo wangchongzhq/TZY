@@ -278,19 +278,7 @@ def generate_m3u_content(channels: List[ChannelInfo]) -> str:
         # 构建EXTINF行
         extinf_parts = ['#EXTINF:-1']
         
-        # 添加tvg属性
-        tvg_attrs = []
-        if channel.tvg_id:
-            tvg_attrs.append(f'tvg-id="{channel.tvg_id}"')
-        if channel.tvg_name:
-            tvg_attrs.append(f'tvg-name="{channel.tvg_name}"')
-        if channel.tvg_logo:
-            tvg_attrs.append(f'tvg-logo="{channel.tvg_logo}"')
-        if channel.tvg_url:
-            tvg_attrs.append(f'tvg-url="{channel.tvg_url}"')
-        
-        if tvg_attrs:
-            extinf_parts.append(' '.join(tvg_attrs))
+        # 不添加EPG相关属性
         
         # 添加group-title
         if channel.group:

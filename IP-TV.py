@@ -428,21 +428,21 @@ def generate_m3u_file(channels, output_path):
     
     with open(output_path, 'w', encoding='utf-8') as f:
         # 写入文件头
-        f.write("#EXTM3U x-tvg-url=\"https://kakaxi-1.github.io/IPTV/epg.xml\"\n")
+        f.write("#EXTM3U\n")
         
         # 按CHANNEL_CATEGORIES中定义的顺序写入分类
         for category in CHANNEL_CATEGORIES:
             if category in channels:
                 for channel_name, url in channels[category]:
                     # 写入频道信息
-                    f.write(f"#EXTINF:-1 tvg-name=\"{channel_name}\" group-title=\"{category}\",{channel_name}\n")
+                    f.write(f"#EXTINF:-1 group-title=\"{category}\",{channel_name}\n")
                     f.write(f"{url}\n")
         
         # 最后写入其他频道
         if "其他频道" in channels:
             for channel_name, url in channels["其他频道"]:
                 # 写入频道信息
-                f.write(f"#EXTINF:-1 tvg-name=\"{channel_name}\" group-title=\"其他频道\",{channel_name}\n")
+                f.write(f"#EXTINF:-1 group-title=\"其他频道\",{channel_name}\n")
                 f.write(f"{url}\n")
     
     print(f"✅ 成功生成 {output_path}")
