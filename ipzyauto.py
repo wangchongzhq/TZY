@@ -4,6 +4,7 @@ import time
 import requests
 import statistics
 import concurrent.futures
+import json
 from collections import defaultdict
 from core.file_utils import write_file
 from unified_sources import UNIFIED_SOURCES
@@ -707,13 +708,28 @@ def create_txt_file(all_channels, filename="ipzyauto.txt", speed_results=None):
 # 主函数
 # =============================================
 
+def load_sources_from_json():
+    """从sources.json文件中加载启用的直播源URL"""
+    sources_file = "c:\\Users\\Administrator\\Documents\\GitHub\\TZY\\sources.json"
+    try:
+        with open(sources_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        # 提取所有启用的直播源URL
+        urls = [source['url'] for source in data['sources'] if source['enabled']]
+        print(f"从sources.json加载了 {len(urls)} 个启用的直播源")
+        return urls
+    except Exception as e:
+        print(f"读取sources.json失败: {e}")
+        print("将使用默认的UNIFIED_SOURCES")
+        return UNIFIED_SOURCES
+
 def main():
     # 获取测速配置
     speed_config = speed_test_config()
     print(f"测速功能: {'已启用' if speed_config['enabled'] else '已禁用'}")
     
-    # 使用统一的播放源配置文件
-    urls = UNIFIED_SOURCES
+    # 从sources.json加载直播源
+    urls = load_sources_from_json()
 
     all_channels = defaultdict(list)
 
@@ -732,13 +748,6 @@ def main():
     print(f"\n获取完成，开始数据处理...")
     print(f"总频道数: {len(all_channels)}")
     print(f"总URL数: {sum(len(urls) for urls in all_channels.values())}")
-    
-    # 添加调试信息：打印all_channels的前10个频道
-    print("\n前10个频道详情：")
-    for i, (channel, urls) in enumerate(list(all_channels.items())[:10]):
-        print(f"  {i+1}. 频道: '{channel}', URL数量: {len(urls)}")
-        if urls:  # 如果该频道有URL，打印第一个URL
-            print(f"      第一个URL: {urls[0]}")
     
     # 收集所有需要测速的URL（限制数量，避免测试时间过长）
     all_urls_for_testing = []
@@ -773,25 +782,6 @@ def main():
     print(f"  TXT文件: {txt_filename}")
     print(f"  完整TXT文件: {full_filename}")
     
-    # 验证文件内容
-    print(f"\n验证文件内容:")
-    try:
-        with open(filename, "r", encoding="utf-8") as f:
-            lines = f.readlines()
-            print(f"  文件总行数: {len(lines)}")
-            print(f"  文件前20行:")
-            for i, line in enumerate(lines[:20]):
-                print(f"    {i+1}: {line.rstrip()}")
-            # 查找包含频道数据的行
-            data_lines = [line for line in lines if ',' in line and not line.startswith('#') and not line.strip().endswith('#genre#')]
-            print(f"  包含频道数据的行数: {len(data_lines)}")
-            if data_lines:
-                print(f"  前5行频道数据:")
-                for i, line in enumerate(data_lines[:5]):
-                    print(f"    {i+1}: {line.rstrip()}")
-    except Exception as e:
-        print(f"  读取文件时出错: {e}")
-    
     # 统计频道信息
     total_channels = len(all_channels)
     total_urls = sum(len(urls) for urls in all_channels.values())
@@ -803,61 +793,5 @@ def main():
         working_with_speed = sum(1 for r in speed_results.values() if r['status'] == 'available' and r['speed_kbps'] > 0)
         print(f"测速统计: 有效URL {available_urls}个，可测速URL {working_with_speed}个")
 
-def test_fixed_channels():
-    """测试函数：使用固定的频道数据生成文件"""
-    print("\n=== 开始测试固定频道数据生成 ===")
-    
-    # 创建固定的频道数据
-    fixed_channels = {
-        'CCTV1': ['http://example.com/cctv1'],
-        'CCTV2': ['http://example.com/cctv2'],
-        'CCTV3': ['http://example.com/cctv3'],
-        '湖南卫视': ['http://example.com/hntv'],
-        '江苏卫视': ['http://example.com/jstv'],
-    }
-    
-    print("固定频道数据:")
-    for ch, urls in fixed_channels.items():
-        print(f"  频道: '{ch}', URL数量: {len(urls)}")
-        if urls:
-            print(f"      第一个URL: {urls[0]}")
-    
-    # 生成TXT文件
-    txt_filename = create_txt_file(fixed_channels, "fixed_test.txt")
-    
-    # 生成M3U文件
-    m3u_filename = create_m3u_file(fixed_channels, "fixed_test.m3u")
-    
-    # 验证TXT文件内容
-    print(f"\n验证TXT文件内容 ({txt_filename}):")
-    try:
-        with open(txt_filename, "r", encoding="utf-8") as f:
-            lines = f.readlines()
-            print(f"  文件总行数: {len(lines)}")
-            print(f"  文件内容:")
-            for i, line in enumerate(lines):
-                print(f"    {i+1}: {line.rstrip()}")
-    except Exception as e:
-        print(f"  读取文件时出错: {e}")
-    
-    # 验证M3U文件内容
-    print(f"\n验证M3U文件内容 ({m3u_filename}):")
-    try:
-        with open(m3u_filename, "r", encoding="utf-8") as f:
-            lines = f.readlines()
-            print(f"  文件总行数: {len(lines)}")
-            print(f"  文件内容:")
-            for i, line in enumerate(lines):
-                print(f"    {i+1}: {line.rstrip()}")
-    except Exception as e:
-        print(f"  读取文件时出错: {e}")
-    
-    print("=== 测试固定频道数据生成完成 ===")
-
 if __name__ == "__main__":
-    # 先运行测试函数
-    test_fixed_channels()
-    
-    # 然后运行主函数
-    print("\n\n=== 开始运行主函数 ===")
     main()
