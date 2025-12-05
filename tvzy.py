@@ -291,10 +291,60 @@ def extract_channel_name_from_extinf(extinf_line):
     except Exception:
         return None
 
+# 检查是否应该排除购物频道
+def should_exclude_channel(name):
+    """检查是否应该排除购物频道"""
+    try:
+        # 排除购物相关频道
+        shopping_keywords = ['购物', '导购', '电视购物']
+        
+        for keyword in shopping_keywords:
+            if keyword in name:
+                return True
+        
+        return False
+        
+    except Exception as e:
+        logger.error(f"检查频道是否应该排除时发生错误: {e}")
+        log_exception(logger, "检查频道排除失败", e)
+        return False
+
+# 检查是否应该排除该URL
+def should_exclude_url(url):
+    """检查是否应该排除该URL
+    排除规则：
+    1. 包含example.com的URL
+    2. 包含demo、sample、samples的URL
+    """
+    try:
+        if not url or not isinstance(url, str):
+            return True
+            
+        # 定义需要排除的模式
+        exclude_patterns = [
+            r'http://example\.',
+            r'https://example\.',
+            r'demo',
+            r'sample',
+            r'samples'
+        ]
+        
+        # 检查是否匹配任何排除模式
+        for pattern in exclude_patterns:
+            if re.search(pattern, url, re.IGNORECASE):
+                return True
+        
+        return False
+        
+    except Exception as e:
+        logger.error(f"检查URL是否应该排除时发生错误: {e}")
+        log_exception(logger, "检查URL排除失败", e)
+        return True
+
 # 过滤频道名称
 def filter_channel_name(name):
     # 去除频道名称中的特殊字符
-    name = re.sub(r'[^\u4e00-\u9fa5a-zA-Z0-9\s\-\_]+', '', name)
+    name = re.sub(r'[^一-龥a-zA-Z0-9\s\-\_]+', '', name)
     
     # 去除前后空格
     name = name.strip()
@@ -327,12 +377,25 @@ def merge_channels(all_channels):
     # 使用字典来存储频道信息，键为频道名称，值为频道列表
     channel_dict = {}
     
+    excluded_channels = 0
+    excluded_urls = 0
+    
     for channel in all_channels:
         # 过滤频道名称
         filtered_name = filter_channel_name(channel.name)
         
         # 跳过空名称
         if not filtered_name:
+            continue
+        
+        # 检查是否应该排除购物频道
+        if should_exclude_channel(filtered_name):
+            excluded_channels += 1
+            continue
+        
+        # 检查是否应该排除该URL
+        if should_exclude_url(channel.url):
+            excluded_urls += 1
             continue
         
         # 添加到字典中

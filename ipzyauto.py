@@ -340,13 +340,17 @@ def is_preferred_url(url: str) -> bool:
 
 def should_exclude_url(url):
     """检查是否应该排除某个URL"""
-    # 排除特定域名的URL
+    # 排除测试频道URL
     exclude_patterns = [
-        # 这里可以添加需要排除的域名模式
+        r'^http://example',
+        r'^https://example',
+        r'demo',
+        r'sample',
+        r'samples'
     ]
     
     for pattern in exclude_patterns:
-        if re.match(pattern, url):
+        if re.search(pattern, url, re.IGNORECASE):
             return True
     
     return False
@@ -496,6 +500,15 @@ def fetch_lines_with_retry(url: str, max_retries=3):
     
     return []
 
+def should_exclude_channel(name):
+    """检查是否应该排除某个频道"""
+    # 排除购物相关频道
+    shopping_keywords = ['购物', '导购', '电视购物']
+    for keyword in shopping_keywords:
+        if keyword in name:
+            return True
+    return False
+
 def parse_lines(lines):
     """解析 M3U 或 TXT 内容，返回 {频道名: [url列表]}"""
     channels_dict = defaultdict(list)
@@ -504,8 +517,24 @@ def parse_lines(lines):
     processed_lines = 0
     m3u_count = 0
     txt_count = 0
+    excluded_channels = 0
+    excluded_urls = 0
 
     print(f"解析开始，共{total_lines}行数据")
+
+    # 添加测试购物频道的日志
+    test_channel = "CCTV中视购物"
+    if should_exclude_channel(test_channel):
+        print(f"测试购物频道过滤: {test_channel} -> 应该被排除")
+    else:
+        print(f"测试购物频道过滤: {test_channel} -> 应该被保留")
+
+    # 添加测试URL过滤的日志
+    test_url = "http://example.com/test.m3u8"
+    if should_exclude_url(test_url):
+        print(f"测试URL过滤: {test_url} -> 应该被排除")
+    else:
+        print(f"测试URL过滤: {test_url} -> 应该被保留")
 
     for i, line in enumerate(lines):
         line = line.strip()
@@ -513,21 +542,35 @@ def parse_lines(lines):
             continue
 
         processed_lines += 1
-        print(f"处理行 {i+1}: {line[:100]}{'...' if len(line) > 100 else ''}")
+        # 只打印第1-50行和包含购物的行，减少输出量
+        if i < 50 or any(keyword in line for keyword in ['购物', 'example', 'demo', 'sample']):
+            print(f"处理行 {i+1}: {line[:100]}{'...' if len(line) > 100 else ''}")
 
         # M3U #EXTINF 格式
         if line.startswith("#EXTINF"):
             m3u_count += 1
             if "," in line:
                 current_name = line.split(",")[-1].strip()
-                print(f"  找到M3U频道: {current_name}")
+                if i < 50 or any(keyword in current_name for keyword in ['购物']):
+                    print(f"  找到M3U频道: {current_name}")
             if i + 1 < len(lines):
                 url = lines[i + 1].strip()
-                print(f"  找到URL: {url}")
+                if i < 50 or any(keyword in url for keyword in ['example', 'demo', 'sample']):
+                    print(f"  找到URL: {url}")
                 if url.startswith("http://") or url.startswith("https://"):
-                    norm_name = normalize_channel_name(current_name)
-                    channels_dict[norm_name].append(url)
-                    print(f"  添加到字典: {norm_name} -> {url}")
+                    # 过滤购物频道
+                    if should_exclude_channel(current_name):
+                        print(f"  排除购物频道: {current_name}")
+                        excluded_channels += 1
+                    # 过滤测试URL
+                    elif should_exclude_url(url):
+                        print(f"  排除测试URL: {url}")
+                        excluded_urls += 1
+                    else:
+                        norm_name = normalize_channel_name(current_name)
+                        channels_dict[norm_name].append(url)
+                        if i < 50 or any(keyword in current_name for keyword in ['购物']):
+                            print(f"  添加到字典: {norm_name} -> {url}")
             current_name = None
 
         # TXT 频道名,URL 格式
@@ -536,11 +579,22 @@ def parse_lines(lines):
             parts = line.split(",", 1)
             if len(parts) == 2:
                 ch_name, url = parts[0].strip(), parts[1].strip()
-                print(f"  找到TXT频道: {ch_name}, URL: {url}")
+                if i < 50 or any(keyword in ch_name for keyword in ['购物']) or any(keyword in url for keyword in ['example', 'demo', 'sample']):
+                    print(f"  找到TXT频道: {ch_name}, URL: {url}")
                 if url.startswith("http://") or url.startswith("https://"):
-                    norm_name = normalize_channel_name(ch_name)
-                    channels_dict[norm_name].append(url)
-                    print(f"  添加到字典: {norm_name} -> {url}")
+                    # 过滤购物频道
+                    if should_exclude_channel(ch_name):
+                        print(f"  排除购物频道: {ch_name}")
+                        excluded_channels += 1
+                    # 过滤测试URL
+                    elif should_exclude_url(url):
+                        print(f"  排除测试URL: {url}")
+                        excluded_urls += 1
+                    else:
+                        norm_name = normalize_channel_name(ch_name)
+                        channels_dict[norm_name].append(url)
+                        if i < 50 or any(keyword in ch_name for keyword in ['购物']):
+                            print(f"  添加到字典: {norm_name} -> {url}")
     
     # 添加调试信息
     print(f"解析结果: 共{total_lines}行，处理{processed_lines}行，M3U格式{str(m3u_count)}行，TXT格式{str(txt_count)}行")

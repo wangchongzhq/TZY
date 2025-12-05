@@ -323,6 +323,87 @@ def fetch_local_m3u_content(file_path):
         print(f"读取本地文件 {file_path} 时出错: {e}")
         return None
 
+# 检查是否应该排除购物频道
+def should_exclude_channel(name):
+    """检查是否应该排除购物频道"""
+    try:
+        # 排除购物相关频道
+        shopping_keywords = ['购物', '导购', '电视购物']
+        
+        for keyword in shopping_keywords:
+            if keyword in name:
+                return True
+        
+        return False
+        
+    except Exception as e:
+        logger.error(f"检查频道是否应该排除时发生错误: {e}")
+        return False
+
+# 检查是否应该排除该URL
+def should_exclude_url(url):
+    """检查是否应该排除该URL
+    排除规则：
+    1. 包含example.com的URL
+    2. 包含demo、sample、samples的URL
+    """
+    try:
+        if not url or not isinstance(url, str):
+            return True
+            
+        # 定义需要排除的模式
+        exclude_patterns = [
+            r'http://example\.',
+            r'https://example\.',
+            r'demo',
+            r'sample',
+            r'samples'
+        ]
+        
+        # 检查是否匹配任何排除模式
+        for pattern in exclude_patterns:
+            if re.search(pattern, url, re.IGNORECASE):
+                return True
+        
+        return False
+        
+    except Exception as e:
+        logger.error(f"检查URL是否应该排除时发生错误: {e}")
+        return True
+
+# 过滤频道
+def filter_channels(channels):
+    """过滤频道列表
+    1. 排除购物频道
+    2. 排除测试URL
+    """
+    try:
+        filtered_channels = defaultdict(list)
+        excluded_channels = 0
+        excluded_urls = 0
+        
+        for category, channel_list in channels.items():
+            for channel_name, url in channel_list:
+                # 检查是否应该排除购物频道
+                if should_exclude_channel(channel_name):
+                    excluded_channels += 1
+                    continue
+                    
+                # 检查是否应该排除该URL
+                if should_exclude_url(url):
+                    excluded_urls += 1
+                    continue
+                    
+                # 保留该频道
+                filtered_channels[category].append((channel_name, url))
+        
+        logger.info(f"过滤统计: 排除购物频道 {excluded_channels} 个，排除测试URL {excluded_urls} 个")
+        return filtered_channels
+        
+    except Exception as e:
+        logger.error(f"过滤频道时发生错误: {e}")
+        return channels
+
 # 生成M3U文件
 def generate_m3u_file(channels, output_path):
     """生成M3U文件"""
@@ -515,13 +596,16 @@ def update_iptv_sources():
     for group_title, channel_list in all_channels.items():
         logger.info(f"   {group_title}: {len(channel_list)}个频道")
     
+    # 过滤频道
+    filtered_channels = filter_channels(all_channels)
+    
     # 生成M3U文件
     output_config = get_config('output', {})
     output_file_m3u = output_config.get('m3u_filename', "jieguo.m3u")  # 将输出文件改为jieguo.m3u
     # 生成TXT文件
     output_file_txt = output_config.get('txt_filename', "jieguo.txt")  # 新增TXT格式输出文件
     
-    if generate_m3u_file(all_channels, output_file_m3u) and generate_txt_file(all_channels, output_file_txt):
+    if generate_m3u_file(filtered_channels, output_file_m3u) and generate_txt_file(filtered_channels, output_file_txt):
         logger.info(f"🎉 任务完成！")
         return True
     else:

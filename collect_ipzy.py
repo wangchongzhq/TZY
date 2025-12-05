@@ -84,7 +84,7 @@ CATEGORY_RULES = get_config('category', {}).get('rules', {
 # 过滤规则
 FILTER_RULES = get_config('filter', {}).get('rules', {
     "exclude_patterns": [
-        r'测试', r'广告', r'购物', r'付费', r'加密',
+        r'测试', r'广告', r'购物', r'导购', r'电视购物', r'付费', r'加密',
         r'4K', r'8K', r'超清', r'高清',  # 可以根据需要保留或移除
         r'备用', r'备用线路', r'备用源'
     ],
@@ -442,6 +442,10 @@ def filter_channels(channels):
             # 检查URL是否有效
             if not is_valid_url(url):
                 continue
+                
+            # 检查是否应该排除该URL
+            if should_exclude_url(url):
+                continue
             
             # 通过所有过滤规则
             filtered_channels.append(channel)
@@ -571,6 +575,37 @@ def output_channels(categorized_channels, output_file):
         raise
 
 # 检查URL是否有效
+
+def should_exclude_url(url):
+    """检查是否应该排除该URL
+    排除规则：
+    1. 包含example.com的URL
+    2. 包含demo、sample、samples的URL
+    """
+    try:
+        if not url or not isinstance(url, str):
+            return True
+            
+        # 定义需要排除的模式
+        exclude_patterns = [
+            r'http://example\.',
+            r'https://example\.',
+            r'demo',
+            r'sample',
+            r'samples'
+        ]
+        
+        # 检查是否匹配任何排除模式
+        for pattern in exclude_patterns:
+            if re.search(pattern, url, re.IGNORECASE):
+                return True
+        
+        return False
+        
+    except Exception as e:
+        logger.error(f"检查URL是否应该排除时发生错误: {e}")
+        log_exception(logger, "检查URL排除失败", e)
+        return True
 
 def is_valid_url(url):
     """检查URL是否有效"""
