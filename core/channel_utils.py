@@ -8,9 +8,11 @@
 import re
 import hashlib
 import time
+import subprocess
 from typing import List, Dict, Tuple, Optional, Callable, Any
 from core.parser import ChannelInfo
 from core.network import check_url_availability, is_streaming_url
+from core.config import get_config
 
 # 导入日志配置
 from .logging_config import get_logger, log_exception, log_performance
@@ -509,6 +511,113 @@ def search_channels(channels: List[ChannelInfo], keyword: str, search_in_name: b
     
     logger.info(f"频道搜索完成，关键词: '{keyword}'，找到 {len(matched_channels)} 个匹配结果")
     return matched_channels
+
+def get_video_resolution_ffmpeg(url: str, timeout: int = 5) -> Optional[Tuple[int, int]]:
+    """
+    使用FFmpeg获取视频流的分辨率
+    
+    参数:
+        url: 视频流URL
+        timeout: 超时时间（秒）
+        
+    返回:
+        Tuple[int, int]: (宽度, 高度)，如果获取失败返回None
+    """
+    try:
+        # 构建FFmpeg命令
+        cmd = [
+            'ffprobe',
+            '-v', 'error',
+            '-select_streams', 'v:0',
+            '-show_entries', 'stream=width,height',
+            '-of', 'csv=p=0',
+            url
+        ]
+        
+        # 执行命令
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            check=True
+        )
+        
+        # 解析输出
+        output = result.stdout.strip()
+        if output:
+            width, height = map(int, output.split(','))
+            return (width, height)
+        
+        return None
+    except subprocess.TimeoutExpired:
+        logger.warning(f"获取分辨率超时: {url}")
+        return None
+    except subprocess.CalledProcessError as e:
+        logger.warning(f"FFmpeg获取分辨率失败: {url} - {e.stderr.strip()}")
+        return None
+    except Exception as e:
+        logger.error(f"获取视频分辨率失败: {url} - {e}")
+        return None
+
+def get_video_resolution(url: str, timeout: int = 5) -> Optional[Tuple[int, int]]:
+    """
+    获取视频流的分辨率
+    根据配置使用不同的方法
+    
+    参数:
+        url: 视频流URL
+        timeout: 超时时间（秒）
+        
+    返回:
+        Tuple[int, int]: (宽度, 高度)，如果获取失败返回None
+    """
+    method = get_config('quality.method', 'ffmpeg')
+    
+    if method == 'ffmpeg':
+        return get_video_resolution_ffmpeg(url, timeout)
+    # 可以添加其他方法
+    else:
+        logger.error(f"不支持的分辨率获取方法: {method}")
+        return None
+
+def should_exclude_resolution(url: str, min_resolution: str = '1920x1080') -> bool:
+    """
+    判断是否应该根据分辨率排除URL
+    1. 获取视频流分辨率
+    2. 与最小分辨率比较
+    
+    参数:
+        url: 视频流URL
+        min_resolution: 最小分辨率，格式为 'widthxheight'
+        
+    返回:
+        bool: 应该排除返回True，否则返回False
+    """
+    # 检查是否开启分辨率过滤
+    if not get_config('quality.open_filter_resolution', False):
+        return False
+    
+    try:
+        # 解析最小分辨率
+        min_width, min_height = map(int, min_resolution.split('x'))
+        
+        # 获取视频流分辨率
+        resolution = get_video_resolution(url, timeout=get_config('quality.timeout', 5))
+        
+        if resolution:
+            width, height = resolution
+            logger.debug(f"URL: {url}, 分辨率: {width}x{height}, 最小要求: {min_width}x{min_height}")
+            
+            # 检查是否低于最小分辨率
+            if width < min_width or height < min_height:
+                logger.info(f"排除低分辨率URL: {url} (分辨率: {width}x{height})")
+                return True
+        
+        return False
+    except Exception as e:
+        logger.error(f"检查分辨率是否应该排除时发生错误: {e}")
+        return False
 
 def normalize_channel_name(name: str) -> str:
     """

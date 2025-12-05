@@ -339,7 +339,12 @@ def is_preferred_url(url: str) -> bool:
     return False
 
 def should_exclude_url(url):
-    """检查是否应该排除某个URL"""
+    """检查是否应该排除某个URL
+    排除规则：
+    1. 包含example.com的URL
+    2. 包含demo、sample、samples的URL
+    3. 分辨率低于最小要求的URL
+    """
     # 排除测试频道URL
     exclude_patterns = [
         r'^http://example',
@@ -352,6 +357,14 @@ def should_exclude_url(url):
     for pattern in exclude_patterns:
         if re.search(pattern, url, re.IGNORECASE):
             return True
+    
+    # 检查分辨率是否满足要求
+    from core.channel_utils import should_exclude_resolution
+    from core.config import get_config
+    config = get_config()
+    min_resolution = config.get('quality.min_resolution', '1920x1080')
+    if should_exclude_resolution(url, min_resolution):
+        return True
     
     return False
 

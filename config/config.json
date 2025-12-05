@@ -28,7 +28,10 @@
   },
   "quality": {
     "timeout": 5,
-    "max_workers": 10
+    "max_workers": 10,
+    "open_filter_resolution": true,
+    "min_resolution": "1920x1080",
+    "method": "ffmpeg"
   },
   "output": {
     "m3u_file": "output/iptv.m3u",

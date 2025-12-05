@@ -315,6 +315,7 @@ def should_exclude_url(url):
     排除规则：
     1. 包含example.com的URL
     2. 包含demo、sample、samples的URL
+    3. 分辨率低于最小要求的URL
     """
     try:
         if not url or not isinstance(url, str):
@@ -333,6 +334,13 @@ def should_exclude_url(url):
         for pattern in exclude_patterns:
             if re.search(pattern, url, re.IGNORECASE):
                 return True
+        
+        # 检查分辨率是否满足要求
+        from core.channel_utils import should_exclude_resolution
+        config = get_config()
+        min_resolution = config.get('quality.min_resolution', '1920x1080')
+        if should_exclude_resolution(url, min_resolution):
+            return True
         
         return False
         
