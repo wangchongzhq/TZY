@@ -1,0 +1,15 @@
+#EXTM3U
+#EXTINF:-1,CCTV1
+http://example.com/cctv1
+#EXTINF:-1,CCTV2
+http://example.com/cctv2
+#EXTINF:-1,CCTV3
+http://example.com/cctv3
+#EXTINF:-1,湖南卫视
+http://example.com/hntv
+#EXTINF:-1,江苏卫视
+http://example.com/jstv
+#EXTINF:-1,东方卫视
+http://example.com/dftv
+#EXTINF:-1,北京卫视
+http://example.com/bjtv
