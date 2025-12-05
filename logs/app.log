@@ -1871,3 +1871,12 @@ AttributeError: 'ChannelInfo' object has no attribute 'channel_name'
 2025-12-05 08:21:05,741 - core.file_utils - INFO - file_utils.py:109 - write_file - 成功写入文件: ipvym3a.txt，大小: 311字符，耗时: 0.00秒
 2025-12-05 08:21:05,741 - core.file_utils - INFO - logging_config.py:136 - log_performance - 性能统计 - 写入文件 耗时: 0.0032秒 file_path=ipvym3a.txt, size=311
 2025-12-05 08:21:05,742 - __main__ - INFO - convert_m3u_to_txt.py:133 - main - 转换成功: ipvym3a -> ipvym3a.txt
+2025-12-05 14:04:29,677 - core.file_utils - INFO - logging_config.py:136 - log_performance - 性能统计 - 读取文件 耗时: 0.0002秒 file_path=ipzyauto.m3u, size=293
+2025-12-05 14:04:29,680 - core.parser - INFO - logging_config.py:136 - log_performance - 性能统计 - 解析M3U内容 耗时: 0.0012秒 channel_count=7
+2025-12-05 14:04:29,680 - core.parser - INFO - parser.py:156 - parse_m3u_content - 解析M3U内容，找到 7 个频道
+2025-12-05 14:04:29,681 - core.channel_utils - INFO - channel_utils.py:239 - group_channels - 频道分组完成，共 1 个分组
+2025-12-05 14:04:29,681 - core.channel_utils - INFO - channel_utils.py:239 - group_channels - 频道分组完成，共 1 个分组
+2025-12-05 14:04:29,681 - core.channel_utils - INFO - channel_utils.py:476 - get_channel_statistics - 获取频道统计信息完成
+2025-12-05 14:04:29,685 - core.file_utils - INFO - file_utils.py:109 - write_file - 成功写入文件: ipzyauto.txt，大小: 337字符，耗时: 0.00秒
+2025-12-05 14:04:29,686 - core.file_utils - INFO - logging_config.py:136 - log_performance - 性能统计 - 写入文件 耗时: 0.0036秒 file_path=ipzyauto.txt, size=337
+2025-12-05 14:04:29,687 - __main__ - INFO - convert_m3u_to_txt.py:133 - main - 转换成功: ipzyauto.m3u -> ipzyauto.txt
