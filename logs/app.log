@@ -1831,3 +1831,34 @@ TypeError: Session.request() got an unexpected keyword argument 'max_redirects'.
 2025-12-05 07:47:03,807 - __main__ - INFO - tvzy.py:414 - main - 总共获取到 79764 个频道
 2025-12-05 07:47:04,368 - __main__ - INFO - tvzy.py:418 - main - 合并后有 41417 个频道
 2025-12-05 07:47:04,437 - __main__ - INFO - tvzy.py:427 - main - 频道信息已写入文件: tzydauto.txt
+2025-12-05 08:08:36,273 - __main__ - ERROR - convert_m3u_to_txt.py:117 - main - 未找到有效的M3U文件
+2025-12-05 08:09:35,436 - core.file_utils - INFO - logging_config.py:136 - log_performance - 性能统计 - 读取文件 耗时: 0.0001秒 file_path=test.m3u, size=685
+2025-12-05 08:09:35,437 - core.parser - INFO - logging_config.py:136 - log_performance - 性能统计 - 解析M3U内容 耗时: 0.0008秒 channel_count=5
+2025-12-05 08:09:35,438 - core.parser - INFO - parser.py:156 - parse_m3u_content - 解析M3U内容，找到 5 个频道
+2025-12-05 08:09:35,438 - core.channel_utils - INFO - channel_utils.py:239 - group_channels - 频道分组完成，共 2 个分组
+2025-12-05 08:09:35,438 - core.channel_utils - INFO - channel_utils.py:239 - group_channels - 频道分组完成，共 2 个分组
+2025-12-05 08:09:35,438 - core.channel_utils - INFO - channel_utils.py:476 - get_channel_statistics - 获取频道统计信息完成
+2025-12-05 08:09:35,439 - __main__ - ERROR - convert_m3u_to_txt.py:84 - convert_m3u_to_txt - 转换失败: 'total'
+2025-12-05 08:10:46,133 - core.file_utils - INFO - logging_config.py:136 - log_performance - 性能统计 - 读取文件 耗时: 0.0002秒 file_path=test.m3u, size=685
+2025-12-05 08:10:46,135 - core.parser - INFO - logging_config.py:136 - log_performance - 性能统计 - 解析M3U内容 耗时: 0.0006秒 channel_count=5
+2025-12-05 08:10:46,135 - core.parser - INFO - parser.py:156 - parse_m3u_content - 解析M3U内容，找到 5 个频道
+2025-12-05 08:10:46,135 - core.channel_utils - INFO - channel_utils.py:239 - group_channels - 频道分组完成，共 2 个分组
+2025-12-05 08:10:46,135 - core.channel_utils - INFO - channel_utils.py:239 - group_channels - 频道分组完成，共 2 个分组
+2025-12-05 08:10:46,135 - core.channel_utils - INFO - channel_utils.py:476 - get_channel_statistics - 获取频道统计信息完成
+2025-12-05 08:10:46,136 - __main__ - ERROR - convert_m3u_to_txt.py:84 - convert_m3u_to_txt - 转换失败: 'ChannelInfo' object has no attribute 'channel_name'
+2025-12-05 08:10:46,136 - __main__ - ERROR - logging_config.py:123 - log_exception - 转换失败
+Traceback (most recent call last):
+  File "C:\Users\Administrator\Documents\GitHub\TZY\convert_m3u_to_txt.py", line 74, in convert_m3u_to_txt
+    line = f"{channel.channel_name},{channel.url}"
+              ^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ChannelInfo' object has no attribute 'channel_name'
+2025-12-05 08:10:46,139 - __main__ - ERROR - convert_m3u_to_txt.py:130 - main - 转换失败: test.m3u -> test.txt
+2025-12-05 08:11:26,396 - core.file_utils - INFO - logging_config.py:136 - log_performance - 性能统计 - 读取文件 耗时: 0.0001秒 file_path=test.m3u, size=685
+2025-12-05 08:11:26,398 - core.parser - INFO - logging_config.py:136 - log_performance - 性能统计 - 解析M3U内容 耗时: 0.0006秒 channel_count=5
+2025-12-05 08:11:26,398 - core.parser - INFO - parser.py:156 - parse_m3u_content - 解析M3U内容，找到 5 个频道
+2025-12-05 08:11:26,398 - core.channel_utils - INFO - channel_utils.py:239 - group_channels - 频道分组完成，共 2 个分组
+2025-12-05 08:11:26,398 - core.channel_utils - INFO - channel_utils.py:239 - group_channels - 频道分组完成，共 2 个分组
+2025-12-05 08:11:26,399 - core.channel_utils - INFO - channel_utils.py:476 - get_channel_statistics - 获取频道统计信息完成
+2025-12-05 08:11:26,403 - core.file_utils - INFO - file_utils.py:109 - write_file - 成功写入文件: test.txt，大小: 312字符，耗时: 0.00秒
+2025-12-05 08:11:26,404 - core.file_utils - INFO - logging_config.py:136 - log_performance - 性能统计 - 写入文件 耗时: 0.0037秒 file_path=test.txt, size=312
+2025-12-05 08:11:26,405 - __main__ - INFO - convert_m3u_to_txt.py:133 - main - 转换成功: test.m3u -> test.txt

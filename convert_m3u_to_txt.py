@@ -53,7 +53,7 @@ class M3UConverter:
             # 统计信息
             stats = get_channel_statistics(channels)
             total_groups = len([g for g in grouped_channels if grouped_channels[g]])
-            total_sources = stats['total']
+            total_sources = stats['total_channels']
             
             # 生成输出内容
             output_lines = []
@@ -71,7 +71,7 @@ class M3UConverter:
                         output_lines.append(f"{group},#genre#")
                     # 写入该分组下的所有频道URL
                     for channel in group_channels_list:
-                        line = f"{channel.channel_name},{channel.url}"
+                        line = f"{channel.name},{channel.url}"
                         output_lines.append(line)
                     # 分组之间空一行
                     output_lines.append("")
@@ -82,7 +82,7 @@ class M3UConverter:
                 
         except Exception as e:
             logger.error(f"转换失败: {str(e)}")
-            log_exception(e)
+            log_exception(logger, "转换失败")
             return False
     
 

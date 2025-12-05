@@ -8,7 +8,7 @@
 import re
 import hashlib
 import time
-from typing import List, Dict, Tuple, Optional, Callable
+from typing import List, Dict, Tuple, Optional, Callable, Any
 from core.parser import ChannelInfo
 from core.network import check_url_availability, is_streaming_url
 
