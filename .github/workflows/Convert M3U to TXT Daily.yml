@@ -6,8 +6,7 @@ on:
   workflow_dispatch:      # 允许手动触发
   push:
     paths:
-      - 'ipvym3a'
-      - 'iptv.m3a'
+      - 'ipzyauto.m3u'
       - 'convert_m3u_to_txt.py'
 
 jobs:
