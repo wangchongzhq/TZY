@@ -7,6 +7,7 @@
 
 import os
 import json
+import time
 from typing import Dict, Any, Optional
 
 from .logging_config import get_logger, log_exception, log_performance
@@ -171,9 +172,6 @@ class ConfigManager:
             Dict[str, Any]: 所有配置
         """
         return self._config
-
-# 导入time模块（在使用前导入）
-import time
 
 # 创建全局配置管理器实例
 config_manager = ConfigManager()

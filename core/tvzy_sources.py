@@ -20,9 +20,9 @@ logger = get_logger(__name__)
 
 # 从配置获取参数
 NETWORK_CONFIG = get_config('network', {})
-MAX_WORKERS = get_config('network', {}).get('max_workers', 10)
-TIMEOUT = get_config('network', {}).get('timeout', 10)
-ALLOWED_DOMAINS = get_config('network', {}).get('allowed_domains', [])
+MAX_WORKERS = get_config('network.max_workers', 10)
+TIMEOUT = get_config('network.timeout', 10)
+ALLOWED_DOMAINS = get_config('network.allowed_domains', [])
 
 # 请求头
 HEADERS = {
@@ -37,7 +37,7 @@ def get_github_sources() -> List[str]:
     返回:
         List[str]: 数据源URL列表
     """
-    return get_config('sources', {}).get('github_sources', [
+    return get_config('sources.github_sources', [
         # 有效的中国电视频道源
         "http://tv.html-5.me/i/9390107.txt",
         "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",

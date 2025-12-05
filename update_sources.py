@@ -41,9 +41,7 @@ else:
 # 需要更新的脚本列表
 SCRIPTS_TO_UPDATE = [
     'tvzy.py',
-    'tvzy_simplified.py',
     'IP-TV.py',
-    'IP-TV_simplified.py',
     'collect_ipzy.py'
 ]
 

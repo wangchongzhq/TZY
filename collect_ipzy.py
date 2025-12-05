@@ -13,7 +13,7 @@ setup_logging()
 logger = get_logger(__name__)
 
 # 数据源列表
-SOURCES = get_config('sources', {}).get('collect_sources', [
+SOURCES = get_config('sources.collect_sources', [
     {"name": "iptv-org-cn", "url": "https://iptv-org.github.io/iptv/countries/cn.m3u"},
     {"name": "iptv-org-hk", "url": "https://iptv-org.github.io/iptv/countries/hk.m3u"},
     {"name": "iptv-org-mo", "url": "https://iptv-org.github.io/iptv/countries/mo.m3u"},
@@ -33,7 +33,7 @@ SOURCES = get_config('sources', {}).get('collect_sources', [
     ])
 
 # 分类规则
-CATEGORY_RULES = get_config('category', {}).get('rules', {
+CATEGORY_RULES = get_config('category.rules', {
     "央视": [
         r'CCTV', r'中央电视台', r'CGTN', r'央视'
     ],
@@ -82,7 +82,7 @@ CATEGORY_RULES = get_config('category', {}).get('rules', {
 })
 
 # 过滤规则
-FILTER_RULES = get_config('filter', {}).get('rules', {
+FILTER_RULES = get_config('filter.rules', {
     "exclude_patterns": [
         r'测试', r'广告', r'购物', r'导购', r'电视购物', r'付费', r'加密',
         r'4K', r'8K', r'超清', r'高清',  # 可以根据需要保留或移除
@@ -100,28 +100,27 @@ FILTER_RULES = get_config('filter', {}).get('rules', {
 })
 
 # 输出文件
-OUTPUT_FILE = get_config('output', {}).get('file', 'ipzyauto.txt')
+OUTPUT_FILE = get_config('output.file', 'ipzyauto.txt')
 
 # 网络设置
-NETWORK_CONFIG = get_config('network', {}).get('config', {
+NETWORK_CONFIG = get_config('network.config', {
     "timeout": 10,
     "max_retries": 3,
-    "retry_delay": 1
+    "verify_ssl": False
 })
 
 # 日志设置
-LOG_CONFIG = get_config('logging', {}).get('config', {
+LOG_CONFIG = get_config('logging.config', {
     "level": "INFO",
     "log_file": "logs/collect_ipzy.log",
-    "log_format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    "log_rotation": "daily"
 })
 
 # 其他配置
-OTHER_CONFIG = get_config('other', {}).get('config', {
+OTHER_CONFIG = get_config('other.config', {
     "max_channels": 1000,
     "sort_by_category": True,
-    "remove_duplicates": True,
-    "output_encoding": "utf-8"
+    "remove_duplicates": True
 })
 
 # 加载所有配置

@@ -15,14 +15,15 @@ logger = get_logger(__name__)
 # 从配置获取参数
 NETWORK_CONFIG = get_config('network', {})
 OUTPUT_CONFIG = get_config('output', {})
-MAX_WORKERS = get_config('network', {}).get('max_workers', 10)
-TIMEOUT = get_config('network', {}).get('timeout', 10)
-MIN_LINES_PER_CHANNEL = get_config('output', {}).get('min_lines_per_channel', 10)
-MAX_LINES_PER_CHANNEL = get_config('output', {}).get('max_lines_per_channel', 90)
+MAX_WORKERS = get_config('network.max_workers', 10)
+TIMEOUT = get_config('network.timeout', 10)
+MIN_LINES_PER_CHANNEL = get_config('output.min_lines_per_channel', 10)
+MAX_LINES_PER_CHANNEL = get_config('output.max_lines_per_channel', 90)
 # 默认输出文件名
-OUTPUT_FILE = get_config('output', {}).get('output_file_tvzy', 'tzydauto.txt')
-# 允许的直播源域名列表
-ALLOWED_DOMAINS = get_config('network', {}).get('allowed_domains', [])
+OUTPUT_FILE = get_config('output.output_file_tvzy', 'tzydauto.txt')
+
+# 网络配置
+ALLOWED_DOMAINS = get_config('network.allowed_domains', [])
 
 # 请求头
 HEADERS = {
@@ -30,7 +31,7 @@ HEADERS = {
 }
 
 # 数据源列表
-GITHUB_SOURCES = get_config('sources', {}).get('github_sources', [
+GITHUB_SOURCES = get_config('sources.github_sources', [
     # 有效的中国电视频道源
     "http://tv.html-5.me/i/9390107.txt",
     "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
