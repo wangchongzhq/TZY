@@ -9828,13 +9828,13 @@ dj舞曲女人版,https://vd3.bdstatic.com/mda-mkp88kxv6r8y73k9/sc/cae_h264/1637
 第四十五集,https://yzzy.play-cdn7.com/20221013/22729_2d951857/index.m3u8
 第四十六集,https://yzzy.play-cdn7.com/20221013/22730_6d039e6d/index.m3u8
 番外篇,https://yzzy.play-cdn7.com/20221013/22732_018e6020/index.m3u8
-2025-12-05 06:26:29,http://a.402089.xyz:4022/rtp/233.50.200.143:5140
+2025-12-04 18:28:40,http://a.402089.xyz:4022/rtp/233.50.200.143:5140
 风云音乐,https://hls-gateway.vpstv.net/streams/708858.m3u8
 第一剧场,http://116.179.130.16:6001/rtp/226.0.2.221:9680
-风云剧场,http://116.179.130.16:6001/rtp/226.0.2.227:9728
-怀旧剧场,http://171.125.90.120:6001/rtp/226.0.2.224:9704
+风云剧场,http://171.125.90.120:6001/rtp/226.0.2.227:9728
+怀旧剧场,http://221.205.180.120:8004/rtp/226.0.2.224:9704
 女性时尚,https://cc06.tv12.xyz/95.m3u8
-高尔夫网球,http://116.179.130.16:6001/rtp/226.0.2.217:9648
+高尔夫网球,http://171.125.90.120:6001/rtp/226.0.2.217:9648
 电视指南,http://171.125.90.120:6001/rtp/226.0.2.218:9656
 浙江钱江都市,http://zwebl02.cztv.com/live/channel021080P.m3u8?auth_key=2524708799-0-0-43f14b8147c890428975655007afb4cc
 浙江钱江台,https://ali-m-l.cztv.com/channels/lantian/channel002/1080p.m3u8
@@ -9860,7 +9860,7 @@ dj舞曲女人版,https://vd3.bdstatic.com/mda-mkp88kxv6r8y73k9/sc/cae_h264/1637
 徐州新聞綜合,http://z.b.bkpcp.top/m.php?id=xzxwzh
 新沂新闻,http://live.xysrmt.cn/xwzh/sd/live.m3u8?zjiangsd"
 新沂生活,http://live.xysrmt.cn/shpd/sd/live.m3u8?zjiangsd
-武进新闻,http://live.wjyanghu.com/live/CH1.m3u8?%E5%85%B3%E6%B3%A8%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7[%E6%99%B4%E5%9B%AD]
+武进新闻,https://live.wjyanghu.com/live/CH1.m3u8
 武进生活,http://live.wjyanghu.com/live/CH2.m3u8
 江宁新闻,https://migu.188766.xyz/?migutoken=77969fb082a75b798578427f3570edd2&id=%E4%BD%93%E8%82%B2%E4%BC%91%E9%97%B2%E9%A2%91%E9%81%93&type=yy
 江苏体育,https://migu.188766.xyz/?migutoken=77969fb082a75b798578427f3570edd2&id=%E4%BD%93%E8%82%B2%E4%BC%91%E9%97%B2%E9%A2%91%E9%81%93&type=yy
@@ -9921,6 +9921,7 @@ dj舞曲女人版,https://vd3.bdstatic.com/mda-mkp88kxv6r8y73k9/sc/cae_h264/1637
 清河经济综艺,https://jwcdnqx.hebyun.com.cn/live/qinghe1/1500k/tzwj_video.m3u8
 甘肃少儿,https://hls.gstv.com.cn/49048r/922k96.m3u8
 可克达拉综合,http://file.loulannews.cn/nmip-media/channellive/channel103824/playlist.m3u8
+菏泽一套新闻综合,http://live.hznet.tv:1935/live/live1/500K/tzwj_video.m3u8
 阳曲综合,https://83awgyp5.live.sxmty.com/live/hls/6f6f4b36f9bd42628b718b595ba507ed/724b7e8907a8414d873eb2a2f69bfa18.m3u8?zshanxd
 安徽国际,https://stream1.freetv.fun/an-hui-guo-ji-16.m3u8
 安徽影视,https://stream1.freetv.fun/an-hui-ying-shi-14.m3u8
@@ -24659,7 +24660,6 @@ HOY International Business Channel [Geo-blocked],https://hoytv-live-stream.hoy.t
 RTHK TV 31 (港台電視31) (360p) [Geo-blocked],https://rthklive1-lh.akamaihd.net/i/rthk31_1@167495/master.m3u8
 RTHK TV 32 (港台電視32) (360p) [Geo-blocked],https://rthklive2-lh.akamaihd.net/i/rthk32_1@168450/master.m3u8
 2025-11-26 18:53:51,http://221.198.198.213:8888/udp/225.1.1.120:5002
-菏泽一套新闻综合,http://live.hznet.tv:1935/live/live1/500K/tzwj_video.m3u8
 闻喜综合,https://www.wxhcgbds.com:8081/channelTv/WXTV_1.m3u8?zshanxd
 大通电视台,http://dtrmlive.qhdtrm.cn/testpush/playlist.m3u8
 深圳体育,http://113.101.245.153:9988/udp/239.77.1.128:5146

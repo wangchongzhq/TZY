@@ -19641,20 +19641,20 @@ https://yzzy.play-cdn7.com/20221013/22729_2d951857/index.m3u8
 https://yzzy.play-cdn7.com/20221013/22730_6d039e6d/index.m3u8
 #EXTINF:-1,番外篇
 https://yzzy.play-cdn7.com/20221013/22732_018e6020/index.m3u8
-#EXTINF:-1,2025-12-05 06:26:29
+#EXTINF:-1,2025-12-04 18:28:40
 http://a.402089.xyz:4022/rtp/233.50.200.143:5140
 #EXTINF:-1,风云音乐
 https://hls-gateway.vpstv.net/streams/708858.m3u8
 #EXTINF:-1,第一剧场
 http://116.179.130.16:6001/rtp/226.0.2.221:9680
 #EXTINF:-1,风云剧场
-http://116.179.130.16:6001/rtp/226.0.2.227:9728
+http://171.125.90.120:6001/rtp/226.0.2.227:9728
 #EXTINF:-1,怀旧剧场
-http://171.125.90.120:6001/rtp/226.0.2.224:9704
+http://221.205.180.120:8004/rtp/226.0.2.224:9704
 #EXTINF:-1,女性时尚
 https://cc06.tv12.xyz/95.m3u8
 #EXTINF:-1,高尔夫网球
-http://116.179.130.16:6001/rtp/226.0.2.217:9648
+http://171.125.90.120:6001/rtp/226.0.2.217:9648
 #EXTINF:-1,电视指南
 http://171.125.90.120:6001/rtp/226.0.2.218:9656
 #EXTINF:-1,浙江钱江都市
@@ -19706,7 +19706,7 @@ http://live.xysrmt.cn/xwzh/sd/live.m3u8?zjiangsd"
 #EXTINF:-1,新沂生活
 http://live.xysrmt.cn/shpd/sd/live.m3u8?zjiangsd
 #EXTINF:-1,武进新闻
-http://live.wjyanghu.com/live/CH1.m3u8?%E5%85%B3%E6%B3%A8%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7[%E6%99%B4%E5%9B%AD]
+https://live.wjyanghu.com/live/CH1.m3u8
 #EXTINF:-1,武进生活
 http://live.wjyanghu.com/live/CH2.m3u8
 #EXTINF:-1,江宁新闻
@@ -19827,6 +19827,8 @@ https://jwcdnqx.hebyun.com.cn/live/qinghe1/1500k/tzwj_video.m3u8
 https://hls.gstv.com.cn/49048r/922k96.m3u8
 #EXTINF:-1,可克达拉综合
 http://file.loulannews.cn/nmip-media/channellive/channel103824/playlist.m3u8
+#EXTINF:-1,菏泽一套新闻综合
+http://live.hznet.tv:1935/live/live1/500K/tzwj_video.m3u8
 #EXTINF:-1,阳曲综合
 https://83awgyp5.live.sxmty.com/live/hls/6f6f4b36f9bd42628b718b595ba507ed/724b7e8907a8414d873eb2a2f69bfa18.m3u8?zshanxd
 #EXTINF:-1,安徽国际
@@ -49303,8 +49305,6 @@ https://rthklive1-lh.akamaihd.net/i/rthk31_1@167495/master.m3u8
 https://rthklive2-lh.akamaihd.net/i/rthk32_1@168450/master.m3u8
 #EXTINF:-1,2025-11-26 18:53:51
 http://221.198.198.213:8888/udp/225.1.1.120:5002
-#EXTINF:-1,菏泽一套新闻综合
-http://live.hznet.tv:1935/live/live1/500K/tzwj_video.m3u8
 #EXTINF:-1,闻喜综合
 https://www.wxhcgbds.com:8081/channelTv/WXTV_1.m3u8?zshanxd
 #EXTINF:-1,大通电视台
