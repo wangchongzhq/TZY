@@ -272,23 +272,40 @@ def generate_m3u_content(channels: List[ChannelInfo]) -> str:
     返回:
         M3U格式的文本内容
     """
+    from collections import defaultdict
+    
+    # 按分类分组频道
+    channels_by_group = defaultdict(list)
+    for channel in channels:
+        group = channel.group or "未分类"
+        channels_by_group[group].append(channel)
+    
+    # 对每个分类内的频道按名称升序排序
+    for group in channels_by_group:
+        channels_by_group[group].sort(key=lambda x: x.name)
+    
+    # 按分类名称升序排序
+    sorted_groups = sorted(channels_by_group.keys())
+    
     lines = ['#EXTM3U']
     
-    for channel in channels:
-        # 构建EXTINF行
-        extinf_parts = ['#EXTINF:-1']
-        
-        # 不添加EPG相关属性
-        
-        # 添加group-title
-        if channel.group:
-            extinf_parts.append(f'group-title="{channel.group}"')
-        
-        # 添加频道名称
-        extinf_parts.append(f',{channel.name}')
-        
-        lines.append(' '.join(extinf_parts))
-        lines.append(channel.url)
+    # 生成M3U内容
+    for group in sorted_groups:
+        for channel in channels_by_group[group]:
+            # 构建EXTINF行
+            extinf_line = '#EXTINF:-1'
+            
+            # 不添加EPG相关属性
+            
+            # 添加group-title
+            if channel.group:
+                extinf_line += f' group-title="{channel.group}"'
+            
+            # 添加频道名称
+            extinf_line += f',{channel.name}'
+            
+            lines.append(extinf_line)
+            lines.append(channel.url)
     
     return '\n'.join(lines)
 
@@ -303,13 +320,30 @@ def generate_txt_content(channels: List[ChannelInfo], delimiter: str = '|') -> s
     返回:
         TXT格式的文本内容
     """
+    from collections import defaultdict
+    
+    # 按分类分组频道
+    channels_by_group = defaultdict(list)
+    for channel in channels:
+        group = channel.group or "未分类"
+        channels_by_group[group].append(channel)
+    
+    # 对每个分类内的频道按名称升序排序
+    for group in channels_by_group:
+        channels_by_group[group].sort(key=lambda x: x.name)
+    
+    # 按分类名称升序排序
+    sorted_groups = sorted(channels_by_group.keys())
+    
     lines = []
     
-    for channel in channels:
-        if channel.group:
-            lines.append(f'{channel.name}{delimiter}{channel.url}{delimiter}{channel.group}')
-        else:
-            lines.append(f'{channel.name}{delimiter}{channel.url}')
+    # 生成TXT内容
+    for group in sorted_groups:
+        for channel in channels_by_group[group]:
+            if channel.group:
+                lines.append(f'{channel.name}{delimiter}{channel.url}{delimiter}{channel.group}')
+            else:
+                lines.append(f'{channel.name}{delimiter}{channel.url}')
     
     return '\n'.join(lines)
 
