@@ -10,3 +10,351 @@
 2025-12-05 21:54:46,237 - __main__ - INFO - update_sources.py:177 - main - 
 🎉 所有更新已完成！
 2025-12-05 21:54:46,239 - __main__ - INFO - update_sources.py:178 - main - 📝 更新了 3 个脚本
+2025-12-06 16:34:07,679 - __main__ - INFO - tvzy.py:474 - main - 开始获取电视频道信息...
+2025-12-06 16:34:09,185 - core.network - INFO - logging_config.py:136 - log_performance - 性能统计 - 网络请求 耗时: 1.4866秒 url=https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt, attempt=1, status_code=200
+2025-12-06 16:34:09,299 - __main__ - INFO - tvzy.py:202 - get_channels_from_source - 从数据源 https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt 获取到内容，长度: 51111 字符
+2025-12-06 16:34:09,507 - __main__ - INFO - tvzy.py:205 - get_channels_from_source - 数据源 https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt 共有 737 行内容
+2025-12-06 16:34:09,711 - __main__ - INFO - tvzy.py:277 - get_channels_from_source - 从数据源 https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt 成功提取 722 个频道
+2025-12-06 16:34:09,767 - __main__ - INFO - tvzy.py:489 - main - 从数据源 https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt 获取到 722 个频道
+2025-12-06 16:34:10,554 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt (尝试 1/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-06 16:34:10,689 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u (尝试 1/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u
+2025-12-06 16:34:10,852 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt (尝试 1/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt
+2025-12-06 16:34:11,183 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u (尝试 1/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u
+2025-12-06 16:34:11,296 - core.network - INFO - logging_config.py:136 - log_performance - 性能统计 - 网络请求 耗时: 3.6126秒 url=https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt, attempt=1, status_code=200
+2025-12-06 16:34:11,299 - __main__ - INFO - tvzy.py:202 - get_channels_from_source - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt 获取到内容，长度: 112545 字符
+2025-12-06 16:34:11,299 - __main__ - INFO - tvzy.py:205 - get_channels_from_source - 数据源 https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt 共有 687 行内容
+2025-12-06 16:34:11,302 - __main__ - INFO - tvzy.py:277 - get_channels_from_source - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt 成功提取 679 个频道
+2025-12-06 16:34:11,303 - __main__ - INFO - tvzy.py:489 - main - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt 获取到 679 个频道
+2025-12-06 16:34:11,337 - core.network - INFO - logging_config.py:136 - log_performance - 性能统计 - 网络请求 耗时: 3.6283秒 url=https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u, attempt=1, status_code=200
+2025-12-06 16:34:11,339 - __main__ - INFO - tvzy.py:202 - get_channels_from_source - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u 获取到内容，长度: 2287 字符
+2025-12-06 16:34:11,340 - __main__ - INFO - tvzy.py:205 - get_channels_from_source - 数据源 https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u 共有 36 行内容
+2025-12-06 16:34:11,340 - __main__ - INFO - tvzy.py:277 - get_channels_from_source - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u 成功提取 17 个频道
+2025-12-06 16:34:11,340 - __main__ - INFO - tvzy.py:489 - main - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u 获取到 17 个频道
+2025-12-06 16:34:11,349 - core.network - INFO - logging_config.py:136 - log_performance - 性能统计 - 网络请求 耗时: 3.6517秒 url=https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt, attempt=1, status_code=200
+2025-12-06 16:34:11,356 - __main__ - INFO - tvzy.py:202 - get_channels_from_source - 从数据源 https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt 获取到内容，长度: 276608 字符
+2025-12-06 16:34:11,358 - __main__ - INFO - tvzy.py:205 - get_channels_from_source - 数据源 https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt 共有 3138 行内容
+2025-12-06 16:34:11,369 - __main__ - INFO - tvzy.py:277 - get_channels_from_source - 从数据源 https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt 成功提取 3057 个频道
+2025-12-06 16:34:11,370 - __main__ - INFO - tvzy.py:489 - main - 从数据源 https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt 获取到 3057 个频道
+2025-12-06 16:34:11,502 - core.network - INFO - logging_config.py:136 - log_performance - 性能统计 - 网络请求 耗时: 3.7868秒 url=https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt, attempt=1, status_code=200
+2025-12-06 16:34:11,504 - __main__ - INFO - tvzy.py:202 - get_channels_from_source - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt 获取到内容，长度: 410 字符
+2025-12-06 16:34:11,507 - __main__ - INFO - tvzy.py:205 - get_channels_from_source - 数据源 https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt 共有 25 行内容
+2025-12-06 16:34:11,508 - __main__ - INFO - tvzy.py:277 - get_channels_from_source - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt 成功提取 0 个频道
+2025-12-06 16:34:11,510 - __main__ - INFO - tvzy.py:489 - main - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt 获取到 0 个频道
+2025-12-06 16:34:11,923 - core.network - INFO - logging_config.py:136 - log_performance - 性能统计 - 网络请求 耗时: 4.2113秒 url=https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u, attempt=1, status_code=200
+2025-12-06 16:34:11,925 - __main__ - INFO - tvzy.py:202 - get_channels_from_source - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u 获取到内容，长度: 7530 字符
+2025-12-06 16:34:11,925 - __main__ - INFO - tvzy.py:205 - get_channels_from_source - 数据源 https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u 共有 132 行内容
+2025-12-06 16:34:11,926 - __main__ - INFO - tvzy.py:277 - get_channels_from_source - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u 成功提取 65 个频道
+2025-12-06 16:34:11,927 - __main__ - INFO - tvzy.py:489 - main - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u 获取到 65 个频道
+2025-12-06 16:34:12,081 - core.network - INFO - logging_config.py:136 - log_performance - 性能统计 - 网络请求 耗时: 4.3725秒 url=https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u, attempt=1, status_code=200
+2025-12-06 16:34:12,083 - __main__ - INFO - tvzy.py:202 - get_channels_from_source - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u 获取到内容，长度: 66692 字符
+2025-12-06 16:34:12,084 - __main__ - INFO - tvzy.py:205 - get_channels_from_source - 数据源 https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u 共有 1218 行内容
+2025-12-06 16:34:12,087 - __main__ - INFO - tvzy.py:277 - get_channels_from_source - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u 成功提取 608 个频道
+2025-12-06 16:34:12,088 - __main__ - INFO - tvzy.py:489 - main - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u 获取到 608 个频道
+2025-12-06 16:34:12,093 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt (尝试 2/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-06 16:34:12,129 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u (尝试 2/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u
+2025-12-06 16:34:12,284 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt (尝试 2/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt
+2025-12-06 16:34:12,687 - core.network - INFO - logging_config.py:136 - log_performance - 性能统计 - 网络请求 耗时: 4.9933秒 url=https://freetv.fun/test_channels_new.txt, attempt=1, status_code=200
+2025-12-06 16:34:12,693 - __main__ - INFO - tvzy.py:202 - get_channels_from_source - 从数据源 https://freetv.fun/test_channels_new.txt 获取到内容，长度: 278934 字符
+2025-12-06 16:34:12,694 - __main__ - INFO - tvzy.py:205 - get_channels_from_source - 数据源 https://freetv.fun/test_channels_new.txt 共有 4914 行内容
+2025-12-06 16:34:12,715 - __main__ - INFO - tvzy.py:277 - get_channels_from_source - 从数据源 https://freetv.fun/test_channels_new.txt 成功提取 4800 个频道
+2025-12-06 16:34:12,720 - __main__ - INFO - tvzy.py:489 - main - 从数据源 https://freetv.fun/test_channels_new.txt 获取到 4800 个频道
+2025-12-06 16:34:13,069 - core.network - INFO - logging_config.py:136 - log_performance - 性能统计 - 网络请求 耗时: 5.3825秒 url=https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt, attempt=1, status_code=200
+2025-12-06 16:34:13,073 - __main__ - INFO - tvzy.py:202 - get_channels_from_source - 从数据源 https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt 获取到内容，长度: 898854 字符
+2025-12-06 16:34:13,076 - __main__ - INFO - tvzy.py:205 - get_channels_from_source - 数据源 https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt 共有 12769 行内容
+2025-12-06 16:34:13,115 - __main__ - INFO - tvzy.py:277 - get_channels_from_source - 从数据源 https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt 成功提取 9816 个频道
+2025-12-06 16:34:13,117 - __main__ - INFO - tvzy.py:489 - main - 从数据源 https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt 获取到 9816 个频道
+2025-12-06 16:34:13,138 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u (尝试 2/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u
+2025-12-06 16:34:13,773 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt (尝试 3/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt
+2025-12-06 16:34:13,774 - core.network - ERROR - network.py:141 - fetch_content - 所有重试都失败了 https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt
+2025-12-06 16:34:13,776 - __main__ - WARNING - tvzy.py:199 - get_channels_from_source - 无法获取数据源内容: https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt
+2025-12-06 16:34:13,776 - __main__ - INFO - tvzy.py:489 - main - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt 获取到 0 个频道
+2025-12-06 16:34:14,202 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt (尝试 3/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-06 16:34:14,202 - core.network - ERROR - network.py:141 - fetch_content - 所有重试都失败了 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-06 16:34:14,204 - __main__ - WARNING - tvzy.py:199 - get_channels_from_source - 无法获取数据源内容: https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-06 16:34:14,205 - __main__ - INFO - tvzy.py:489 - main - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt 获取到 0 个频道
+2025-12-06 16:34:14,341 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u (尝试 3/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u
+2025-12-06 16:34:14,342 - core.network - ERROR - network.py:141 - fetch_content - 所有重试都失败了 https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u
+2025-12-06 16:34:14,344 - __main__ - WARNING - tvzy.py:199 - get_channels_from_source - 无法获取数据源内容: https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u
+2025-12-06 16:34:14,344 - __main__ - INFO - tvzy.py:489 - main - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u 获取到 0 个频道
+2025-12-06 16:34:14,502 - core.network - INFO - logging_config.py:136 - log_performance - 性能统计 - 网络请求 耗时: 6.8060秒 url=https://ghfast.top/https://github.com/kimwang1978/collect-txt/blob/main/bbxx.txt, attempt=1, status_code=200
+2025-12-06 16:34:14,507 - __main__ - INFO - tvzy.py:202 - get_channels_from_source - 从数据源 https://ghfast.top/https://github.com/kimwang1978/collect-txt/blob/main/bbxx.txt 获取到内容，长度: 1524004 字符
+2025-12-06 16:34:14,512 - __main__ - INFO - tvzy.py:205 - get_channels_from_source - 数据源 https://ghfast.top/https://github.com/kimwang1978/collect-txt/blob/main/bbxx.txt 共有 20283 行内容
+2025-12-06 16:34:14,563 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u (尝试 3/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u
+2025-12-06 16:34:14,587 - __main__ - INFO - tvzy.py:277 - get_channels_from_source - 从数据源 https://ghfast.top/https://github.com/kimwang1978/collect-txt/blob/main/bbxx.txt 成功提取 19760 个频道
+2025-12-06 16:34:14,588 - core.network - ERROR - network.py:141 - fetch_content - 所有重试都失败了 https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u
+2025-12-06 16:34:14,589 - __main__ - INFO - tvzy.py:489 - main - 从数据源 https://ghfast.top/https://github.com/kimwang1978/collect-txt/blob/main/bbxx.txt 获取到 19760 个频道
+2025-12-06 16:34:14,591 - __main__ - WARNING - tvzy.py:199 - get_channels_from_source - 无法获取数据源内容: https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u
+2025-12-06 16:34:14,592 - __main__ - INFO - tvzy.py:489 - main - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u 获取到 0 个频道
+2025-12-06 16:34:16,744 - core.network - INFO - logging_config.py:136 - log_performance - 性能统计 - 网络请求 耗时: 9.0524秒 url=https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt, attempt=1, status_code=200
+2025-12-06 16:34:16,752 - __main__ - INFO - tvzy.py:202 - get_channels_from_source - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt 获取到内容，长度: 2163344 字符
+2025-12-06 16:34:16,758 - __main__ - INFO - tvzy.py:205 - get_channels_from_source - 数据源 https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt 共有 26551 行内容
+2025-12-06 16:34:16,852 - __main__ - INFO - tvzy.py:277 - get_channels_from_source - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt 成功提取 26372 个频道
+2025-12-06 16:34:16,854 - __main__ - INFO - tvzy.py:489 - main - 从数据源 https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt 获取到 26372 个频道
+2025-12-06 16:34:31,917 - core.network - INFO - logging_config.py:136 - log_performance - 性能统计 - 网络请求 耗时: 24.2351秒 url=http://tv.html-5.me/i/9390107.txt, attempt=1, status_code=200
+2025-12-06 16:34:31,919 - __main__ - INFO - tvzy.py:202 - get_channels_from_source - 从数据源 http://tv.html-5.me/i/9390107.txt 获取到内容，长度: 752208 字符
+2025-12-06 16:34:31,921 - __main__ - INFO - tvzy.py:205 - get_channels_from_source - 数据源 http://tv.html-5.me/i/9390107.txt 共有 13393 行内容
+2025-12-06 16:34:31,963 - __main__ - INFO - tvzy.py:277 - get_channels_from_source - 从数据源 http://tv.html-5.me/i/9390107.txt 成功提取 13230 个频道
+2025-12-06 16:34:31,964 - __main__ - INFO - tvzy.py:489 - main - 从数据源 http://tv.html-5.me/i/9390107.txt 获取到 13230 个频道
+2025-12-06 16:34:31,967 - __main__ - INFO - tvzy.py:495 - main - 总共获取到 79126 个频道
+2025-12-06 16:34:37,684 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://112.123.206.32:808/hls/1/index.m3u8
+2025-12-06 16:34:42,798 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://112.123.206.32:808/hls/1/index.m3u8
+2025-12-06 16:34:45,290 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://120.40.39.246:352/newlive/live/hls/1/live.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:34:50,358 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://223.241.247.214:9901/tsfile/live/0001_1.m3u8
+2025-12-06 16:34:55,447 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://59.39.89.130:60901/tsfile/live/0001_1.m3u8?key=txiptv&playlive=1&authid=0
+2025-12-06 16:34:58,379 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://112.46.85.60:8009/hls/501/index.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:35:01,957 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://124.116.183.146:9901/tsfile/live/0001_1.m3u8 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:35:03,646 - core.channel_utils - WARNING - channel_utils.py:557 - get_video_resolution_ffmpeg - FFmpeg获取分辨率失败: http://kkk.jjjj.jiduo.me/api.php?n=tttt&id=2328&tk=a0c4f6cfaba3 - http://kkk.jjjj.jiduo.me/api.php?n=tttt&id=2328&tk=a0c4f6cfaba3: Invalid data found when processing input
+2025-12-06 16:35:08,696 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://61.156.228.12:8154/tsfile/live/0001_1.m3u8
+2025-12-06 16:35:09,262 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://112.99.193.34:9901/tsfile/live/1017_1.m3u8?key=txiptv&amp;playlive=1&amp;authid=0 - too many values to unpack (expected 2)
+2025-12-06 16:35:14,315 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://221.226.51.220:50081/newlive/live/hls/1/live.m3u8
+2025-12-06 16:35:17,184 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://36.32.174.67:60080/newlive/live/hls/2/live.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:35:22,246 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://60.16.0.216:5757/hls/2/index.m3u8
+2025-12-06 16:35:27,342 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://112.123.206.32:808/hls/2/index.m3u8
+2025-12-06 16:35:29,317 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://223.241.247.214:9901/tsfile/live/0002_1.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:35:29,932 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://sh.lnott.top:880/dx02.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:35:32,670 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://112.46.85.60:8009/hls/502/index.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:35:33,768 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226911/.m3u8 - invalid literal for int() with base 10: '720\n\n1280'
+2025-12-06 16:35:34,468 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: https://ldocctvwbcdtxy.liveplay.myqcloud.com/ldocctvwbcd/cdrmldcctv2_1_ud.m3u8 - invalid literal for int() with base 10: '576\n\n1024'
+2025-12-06 16:35:36,283 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://60.13.52.236:65500/newlive/live/hls/2/live.m3u8 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:35:37,455 - core.channel_utils - WARNING - channel_utils.py:557 - get_video_resolution_ffmpeg - FFmpeg获取分辨率失败: http://kkk.jjjj.jiduo.me/api.php?n=tttt&id=7498&tk=a0c4f6cfaba3 - http://kkk.jjjj.jiduo.me/api.php?n=tttt&id=7498&tk=a0c4f6cfaba3: Invalid data found when processing input
+2025-12-06 16:35:42,508 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://60.16.0.216:5757/hls/3/index.m3u8
+2025-12-06 16:35:45,808 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://223.241.247.214:9901/tsfile/live/0003_1.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:35:50,864 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://59.39.89.130:60901/tsfile/live/0003_1.m3u8?key=txiptv&playlive=1&authid=0
+2025-12-06 16:35:55,952 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://ak6668768.zicp.io:8802/live1003.m3u8
+2025-12-06 16:35:56,754 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://sh.lnott.top:880/dx03.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:35:59,940 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://112.46.85.60:8009/hls/3/index.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:36:04,988 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226456/1.m3u8
+2025-12-06 16:36:06,320 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: https://ldocctvwbcdtxy.liveplay.myqcloud.com/ldocctvwbcd/cdrmldcctv3_1/index.m3u8?b=200-1200 - invalid literal for int() with base 10: '540\n\n\n960'
+2025-12-06 16:36:11,371 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://124.116.183.146:9901/tsfile/live/0003_1.m3u8
+2025-12-06 16:36:16,465 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://60.13.52.236:65500/newlive/live/hls/3/live.m3u8
+2025-12-06 16:36:21,556 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://36.32.174.67:60080/newlive/live/hls/4/live.m3u8
+2025-12-06 16:36:26,680 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://60.16.0.216:5757/hls/4/index.m3u8
+2025-12-06 16:36:30,521 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://223.241.247.214:9901/tsfile/live/0004_1.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:36:31,238 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://sh.lnott.top:880/dx04.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:36:35,392 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://112.46.85.60:8009/hls/4/index.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:36:35,566 - core.channel_utils - WARNING - channel_utils.py:557 - get_video_resolution_ffmpeg - FFmpeg获取分辨率失败: http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226455/.m3u8 - http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226455/.m3u8: Server returned 404 Not Found
+2025-12-06 16:36:37,256 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://124.116.183.146:9901/tsfile/live/0004_1.m3u8 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:36:42,306 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://60.13.52.236:65500/newlive/live/hls/4/live.m3u8
+2025-12-06 16:36:42,855 - core.channel_utils - INFO - channel_utils.py:614 - should_exclude_resolution - 排除低分辨率URL: http://player.cntv.cn/standard/live_HLSDRM20180524.swf?v=180.171.5.8.9.6.3.9&ChannelID=cctveurope&videoTVChannel=cctveurope&P2PChannelID=pd://cctv_p2p_cctveurope&tai=cctv1&VideoName=cctv1&channelID=cctveurope (分辨率: 19x24)
+2025-12-06 16:36:43,600 - core.channel_utils - INFO - channel_utils.py:614 - should_exclude_resolution - 排除低分辨率URL: https://player.cntv.cn/standard/live_HLSDRM20180524.swf?tai=cctveurope&ChannelID=cctveurope&videoTVChannel=cctveurope&P2PChannelID=pd://cctv_p2p_cctveurope (分辨率: 19x24)
+2025-12-06 16:36:48,650 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://60.16.0.216:5757/hls/5/index.m3u8
+2025-12-06 16:36:53,235 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://42.225.117.174:11199/tsfile/live/0005_1.m3u8?key=txiptv&playlive=1&authid=0 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:36:56,493 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://223.241.247.214:9901/tsfile/live/0005_1.m3u8?key=txiptv&playlive=1&authid=0 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:37:01,551 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://218.15.183.23:9901/tsfile/live/23022_1.m3u8
+2025-12-06 16:37:06,650 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://ak6668768.zicp.io:8804/live1005.m3u8
+2025-12-06 16:37:07,433 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://sh.lnott.top:880/dx05.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:37:12,494 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://112.46.85.60:8009/hls/503/index.m3u8
+2025-12-06 16:37:17,594 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://124.116.183.146:9901/tsfile/live/0005_1.m3u8
+2025-12-06 16:37:19,780 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://60.13.52.236:65500/newlive/live/hls/5/live.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:37:20,322 - core.channel_utils - WARNING - channel_utils.py:557 - get_video_resolution_ffmpeg - FFmpeg获取分辨率失败: http://kkk.jjjj.jiduo.me/api.php?n=tttt&id=4861&tk=a0c4f6cfaba3 - http://kkk.jjjj.jiduo.me/api.php?n=tttt&id=4861&tk=a0c4f6cfaba3: Invalid data found when processing input
+2025-12-06 16:37:25,377 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://cssbyd.imwork.net:8082/hls/6/index.m3u8
+2025-12-06 16:37:25,965 - core.channel_utils - WARNING - channel_utils.py:557 - get_video_resolution_ffmpeg - FFmpeg获取分辨率失败: http://kkk.jjjj.jiduo.me/api.php?n=tttt&id=5855&tk=a0c4f6cfaba3 - http://kkk.jjjj.jiduo.me/api.php?n=tttt&id=5855&tk=a0c4f6cfaba3: Invalid data found when processing input
+2025-12-06 16:37:31,018 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://61.156.228.12:8154/tsfile/live/0016_1.m3u8?key=txiptv&playlive=1&authid=0
+2025-12-06 16:37:36,109 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://120.238.94.10:9901/tsfile/live/1023_1.m3u8
+2025-12-06 16:37:41,905 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://61.136.172.236:9901/tsfile/live/0016_1.m3u8?key=txiptv&playlive=1&authid=0
+2025-12-06 16:37:46,991 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://182.150.23.74:808/hls/16/index.m3u8
+2025-12-06 16:37:48,649 - core.channel_utils - WARNING - channel_utils.py:557 - get_video_resolution_ffmpeg - FFmpeg获取分辨率失败: https://api.olelive.com/dis/live/CCTV5PHD/hls.m3u8 - https://api.olelive.com/dis/live/CCTV5PHD/hls.m3u8: Server returned 403 Forbidden (access denied)
+2025-12-06 16:37:53,706 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: rtsp://180.95.143.19/PLTV/88888910/224/3221225570/10000100000000060000000000107350_0.smil
+2025-12-06 16:37:58,816 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: rtsp://115.153.254.81/PLTV/88888888/224/3221226976/85722488.smil
+2025-12-06 16:38:03,909 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://60.16.0.216:5757/hls/7/index.m3u8
+2025-12-06 16:38:08,994 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://120.40.39.246:352/newlive/live/hls/7/live.m3u8
+2025-12-06 16:38:14,084 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://223.241.247.214:9901/tsfile/live/0006_1.m3u8
+2025-12-06 16:38:17,469 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://59.39.89.130:60901/tsfile/live/0006_1.m3u8?key=txiptv&playlive=1&authid=0 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:38:22,525 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://ak6668768.zicp.io:8805/live1006.m3u8
+2025-12-06 16:38:23,415 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://sh.lnott.top:880/dx06.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:38:28,486 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://124.116.183.146:9901/tsfile/live/0006_1.m3u8
+2025-12-06 16:38:31,082 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://183.237.95.108:9901/tsfile/live/1018_1.m3u8?key=txiptv&playlive=0&authid=0 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:38:31,629 - core.channel_utils - WARNING - channel_utils.py:557 - get_video_resolution_ffmpeg - FFmpeg获取分辨率失败: http://kkk.jjjj.jiduo.me/api.php?n=tttt&id=6540&tk=a0c4f6cfaba3 - http://kkk.jjjj.jiduo.me/api.php?n=tttt&id=6540&tk=a0c4f6cfaba3: Invalid data found when processing input
+2025-12-06 16:38:36,684 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://61.156.228.12:8154/tsfile/live/0006_1.m3u8?key=txiptv&playlive=1&authid=0
+2025-12-06 16:38:41,786 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://60.16.0.216:5757/hls/8/index.m3u8
+2025-12-06 16:38:46,146 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://42.225.117.174:11199/tsfile/live/0007_1.m3u8?key=txiptv&playlive=1&authid=0 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:38:51,200 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://120.40.39.246:352/newlive/live/hls/8/live.m3u8
+2025-12-06 16:38:54,172 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://223.241.247.214:9901/tsfile/live/0007_1.m3u8?key=txiptv&playlive=1&authid=0 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:38:54,887 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://sh.lnott.top:880/dx07.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:38:59,071 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://112.46.85.60:8009/hls/504/index.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:38:59,910 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226906/.m3u8 - invalid literal for int() with base 10: '720\n\n1280'
+2025-12-06 16:39:00,608 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: https://ldocctvwbcdtxy.liveplay.myqcloud.com/ldocctvwbcd/cdrmldcctv7_1_td.m3u8 - invalid literal for int() with base 10: '720\n\n1280'
+2025-12-06 16:39:03,208 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://124.116.183.146:9901/tsfile/live/0007_1.m3u8 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:39:05,784 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://60.13.52.236:65500/newlive/live/hls/7/live.m3u8 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:39:10,836 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://60.16.0.216:5757/hls/9/index.m3u8
+2025-12-06 16:39:15,936 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://120.40.39.246:352/newlive/live/hls/9/live.m3u8
+2025-12-06 16:39:19,086 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://223.241.247.214:9901/tsfile/live/0008_1.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:39:23,336 - core.channel_utils - WARNING - channel_utils.py:557 - get_video_resolution_ffmpeg - FFmpeg获取分辨率失败: http://ak6668768.zicp.io:8807/live1008.m3u8 - http://ak6668768.zicp.io:8807/live1008.m3u8: Invalid data found when processing input
+2025-12-06 16:39:24,211 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://sh.lnott.top:880/dx08.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:39:24,964 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://112.46.85.60:8009/hls/8/index.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:39:28,177 - core.channel_utils - WARNING - channel_utils.py:557 - get_video_resolution_ffmpeg - FFmpeg获取分辨率失败: http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226451/.m3u8 - http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226451/.m3u8: Server returned 404 Not Found
+2025-12-06 16:39:28,849 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: https://ldocctvwbcdtxy.liveplay.myqcloud.com/ldocctvwbcd/cdrmldcctv8_1_hd.m3u8 - invalid literal for int() with base 10: '540\n\n960'
+2025-12-06 16:39:29,446 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: https://ldocctvwbcdbd.a.bdydns.com/ldocctvwbcd/cdrmldcctv8_1/index.m3u8?BR=hd - invalid literal for int() with base 10: '540\n\n960'
+2025-12-06 16:39:34,506 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://124.116.183.146:9901/tsfile/live/0008_1.m3u8
+2025-12-06 16:39:39,609 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://60.16.0.216:5757/hls/10/index.m3u8
+2025-12-06 16:39:44,695 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://42.225.117.174:11199/tsfile/live/0009_1.m3u8?key=txiptv&playlive=1&authid=0
+2025-12-06 16:39:49,794 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://120.40.39.246:352/newlive/live/hls/10/live.m3u8
+2025-12-06 16:39:53,506 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://223.241.247.214:9901/tsfile/live/0009_1.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:39:54,087 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://sh.lnott.top:880/dx09.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:39:56,057 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://112.46.85.60:8009/hls/509/index.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:39:56,252 - core.channel_utils - WARNING - channel_utils.py:557 - get_video_resolution_ffmpeg - FFmpeg获取分辨率失败: http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226450/.m3u8 - http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226450/.m3u8: Server returned 404 Not Found
+2025-12-06 16:39:58,716 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://124.116.183.146:9901/tsfile/live/0009_1.m3u8?key=tvbox6_com&playlive=1&authid=0 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:40:03,542 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://60.13.52.236:65500/newlive/live/hls/9/live.m3u8 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:40:03,933 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://t.live.cntv.cn/m3u8/cctv400.m3u8 - invalid literal for int() with base 10: '360\n\n480'
+2025-12-06 16:40:08,989 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://42.225.117.174:11199/tsfile/live/0010_1.m3u8?key=txiptv&playlive=1&authid=0
+2025-12-06 16:40:12,016 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://183.223.157.123:85/tsfile/live/0010_1.m3u8?key=txiptv - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:40:17,075 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://223.241.247.214:9901/tsfile/live/0010_1.m3u8
+2025-12-06 16:40:22,172 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://59.39.89.130:60901/tsfile/live/0010_1.m3u8?key=txiptv&playlive=1&authid=0
+2025-12-06 16:40:22,875 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://sh.lnott.top:880/dx10.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:40:23,236 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226937/1.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:40:24,549 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://124.116.183.146:9901/tsfile/live/0010_1.m3u8 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:40:27,189 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://60.13.52.236:65500/newlive/live/hls/10/live.m3u8 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:40:27,761 - core.channel_utils - INFO - channel_utils.py:614 - should_exclude_resolution - 排除低分辨率URL: http://player.cntv.cn/standard/live_HLSDRM20180919.swf?v=180.171.5.8.9.6.3.9&ChannelID=cctv10&videoTVChannel=cctv10&P2PChannelID=pd://cctv_p2p_cctv10&tai=cctv10&VideoName=cctv10&channelID=cctv10 (分辨率: 19x24)
+2025-12-06 16:40:30,724 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://183.237.95.108:9901/tsfile/live/1022_1.m3u8?key=txiptv&playlive=0&authid=0 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:40:34,904 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://36.32.174.67:60080/newlive/live/hls/14/live.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:40:39,967 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://60.16.0.216:5757/hls/12/index.m3u8
+2025-12-06 16:40:42,912 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://223.241.247.214:9901/tsfile/live/0011_1.m3u8?key=txiptv&playlive=1&authid=0 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:40:47,971 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://ak6668768.zicp.io:8810/live1011.m3u8#sop://api/migu.php?id=667987558#vjms://23.237.115.18:8500:3502/live/cid=463
+2025-12-06 16:40:49,769 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://111.61.236.247:9081/hls/11/index.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:40:50,403 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://sh.lnott.top:880/dx11.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:40:51,395 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226914/1.m3u8 - invalid literal for int() with base 10: '720\n\n1280'
+2025-12-06 16:40:52,077 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://cd-live-stream.news.cctvplus.com/live/smil:CHANNEL1.smil/chunklist_w744036192_b1000000.m3u8 - invalid literal for int() with base 10: '600\n\n1066'
+2025-12-06 16:40:57,132 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://124.116.183.146:9901/tsfile/live/0011_1.m3u8?key=tvbox6_com&playlive=1&authid=0
+2025-12-06 16:40:59,449 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://60.13.52.236:65500/newlive/live/hls/11/live.m3u8 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:41:04,502 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://60.16.0.216:5757/hls/13/index.m3u8
+2025-12-06 16:41:09,588 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://42.225.117.174:11199/tsfile/live/0012_1.m3u8?key=txiptv&playlive=1&authid=0
+2025-12-06 16:41:14,687 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://120.40.39.246:352/newlive/live/hls/13/live.m3u8
+2025-12-06 16:41:17,196 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://183.223.157.123:85/tsfile/live/0012_1.m3u8?key=txiptv - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:41:22,251 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://223.241.247.214:9901/tsfile/live/0012_1.m3u8
+2025-12-06 16:41:27,585 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://59.39.89.130:60901/tsfile/live/0012_1.m3u8?key=txiptv&playlive=1&authid=0
+2025-12-06 16:41:28,590 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://sh.lnott.top:880/dx12.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:41:30,838 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://112.46.85.60:8009/hls/507/index.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:41:31,279 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226942/.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:41:33,758 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://60.13.52.236:65500/newlive/live/hls/12/live.m3u8 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:41:34,828 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: https://event.pull.hebtv.com/jishi/cp1.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:41:39,887 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://60.16.0.216:5757/hls/14/index.m3u8
+2025-12-06 16:41:40,371 - core.channel_utils - WARNING - channel_utils.py:557 - get_video_resolution_ffmpeg - FFmpeg获取分辨率失败: http://223.241.247.214:9901/tsfile/live/0013_1.m3u8 - http://223.241.247.214:9901/tsfile/live/0013_1.m3u8: Server returned 404 Not Found
+2025-12-06 16:41:45,448 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://59.39.89.130:60901/tsfile/live/0013_1.m3u8?key=txiptv&playlive=1&authid=0
+2025-12-06 16:41:50,551 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://ak6668768.zicp.io:8812/live1013.m3u8
+2025-12-06 16:41:51,387 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://sh.lnott.top:880/dx13.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:41:51,659 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://ali-m-l.cztv.com/channels/lantian/channel21/1080p.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:41:56,732 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226339/.m3u8
+2025-12-06 16:41:59,814 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://124.116.183.146:9901/tsfile/live/0013_1.m3u8 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:42:04,886 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://tvtj.jxwltx.com:8003/cctv13.m3u8
+2025-12-06 16:42:10,046 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://60.16.0.216:5757/hls/15/index.m3u8
+2025-12-06 16:42:13,470 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://42.225.117.174:11199/tsfile/live/0014_1.m3u8?key=txiptv&playlive=1&authid=0 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:42:13,985 - core.channel_utils - WARNING - channel_utils.py:557 - get_video_resolution_ffmpeg - FFmpeg获取分辨率失败: http://223.241.247.214:9901/tsfile/live/0014_1.m3u8?key=txiptv&playlive=1&authid=0 - http://223.241.247.214:9901/tsfile/live/0014_1.m3u8?key=txiptv&playlive=1&authid=0: Server returned 404 Not Found
+2025-12-06 16:42:14,591 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://sh.lnott.top:880/dx14.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:42:15,517 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226904/.m3u8 - invalid literal for int() with base 10: '720\n\n1280'
+2025-12-06 16:42:18,965 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://124.116.183.146:9901/tsfile/live/0014_1.m3u8 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:42:21,098 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://60.13.52.236:65500/newlive/live/hls/14/live.m3u8 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:42:22,524 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://183.237.95.108:9901/tsfile/live/1096_1.m3u8?key=txiptv&playlive=0&authid=0 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:42:27,589 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://61.156.228.12:8154/tsfile/live/0014_1.m3u8
+2025-12-06 16:42:29,045 - core.channel_utils - WARNING - channel_utils.py:557 - get_video_resolution_ffmpeg - FFmpeg获取分辨率失败: http://223.241.247.214:9901/tsfile/live/0015_1.m3u8?key=txiptv&playlive=1&authid=0 - http://223.241.247.214:9901/tsfile/live/0015_1.m3u8?key=txiptv&playlive=1&authid=0: Server returned 404 Not Found
+2025-12-06 16:42:34,095 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://ak6668768.zicp.io:8814/live1015.m3u8#sop://api/migu.php?id=608807408#vjms://23.237.115.18:8500:3502/live/cid=465
+2025-12-06 16:42:35,742 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://sh.lnott.top:880/dx15.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:42:36,706 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226910/.m3u8 - invalid literal for int() with base 10: '720\n\n1280'
+2025-12-06 16:42:39,707 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://60.13.52.236:65500/newlive/live/hls/15/live.m3u8 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:42:44,765 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://61.156.228.12:8154/tsfile/live/0015_1.m3u8
+2025-12-06 16:42:46,985 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://112.99.193.34:9901/tsfile/live/1020_1.m3u8?key=txiptv&playlive=1&authid=0 - too many values to unpack (expected 2)
+2025-12-06 16:42:52,062 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://222.134.245.16:9901/tsfile/live/0015_1.m3u8?key=txiptv&playlive=1&authid=0
+2025-12-06 16:42:57,201 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://183.11.239.36:808/hls/102/index.m3u8
+2025-12-06 16:43:03,266 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://60.16.0.216:5757/hls/17/index.m3u8
+2025-12-06 16:43:08,399 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://42.225.117.174:11199/tsfile/live/0015_2.m3u8?key=txiptv&playlive=1&authid=0
+2025-12-06 16:43:09,288 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://sh.lnott.top:880/dx16.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:43:09,859 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226888/1.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:43:15,065 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://183.11.239.36:808/hls/169/index.m3u8
+2025-12-06 16:43:21,046 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://gmxw.7766.org:808/hls/169/index.m3u8
+2025-12-06 16:43:26,151 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: https://api.olelive.com/dis/live/CCTV16HD/hls.m3u8
+2025-12-06 16:43:31,327 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: rtsp://180.95.143.19/PLTV/88888910/224/3221225605/10000100000000060000000000566169_0.smil
+2025-12-06 16:43:36,425 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: rtsp://116.176.26.18/PLTV/88888910/224/3221225605/10000100000000060000000000566169_0.smil
+2025-12-06 16:43:41,517 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://60.16.0.216:5757/hls/18/index.m3u8
+2025-12-06 16:43:42,260 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://sh.lnott.top:880/dx17.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:43:42,904 - core.channel_utils - INFO - channel_utils.py:614 - should_exclude_resolution - 排除低分辨率URL: http://player.cntv.cn/standard/live_HLSDRM20180524.swf?v=180.171.5.8.9.6.3.9&ChannelID=cctv17&videoTVChannel=cctv17&P2PChannelID=pd://cctv_p2p_cctv17&tai=cctv1&VideoName=cctv1&channelID=cctv17 (分辨率: 19x24)
+2025-12-06 16:43:47,969 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://61.156.228.12:8154/tsfile/live/0019_1.m3u8?key=txiptv&playlive=1&authid=0
+2025-12-06 16:43:53,067 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://218.13.170.98:9901/tsfile/live/0016_1.m3u8?key=txiptv
+2025-12-06 16:43:58,171 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://183.11.239.36:808/hls/35/index.m3u8
+2025-12-06 16:44:03,277 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://120.238.94.10:9901/tsfile/live/1048_1.m3u8
+2025-12-06 16:44:05,761 - core.channel_utils - WARNING - channel_utils.py:557 - get_video_resolution_ffmpeg - FFmpeg获取分辨率失败: https://api.olelive.com/dis/live/CCTV17HD/hls.m3u8 - https://api.olelive.com/dis/live/CCTV17HD/hls.m3u8: Server returned 403 Forbidden (access denied)
+2025-12-06 16:44:10,821 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: rtsp://115.85.205.19/PLTV/88888910/224/3221225612/10000100000000060000000000804195_0.smil
+2025-12-06 16:44:12,447 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226925/.m3u8 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:44:13,036 - core.channel_utils - INFO - channel_utils.py:614 - should_exclude_resolution - 排除低分辨率URL: http://player.cntv.cn/standard/live_HLSDRM20180524.swf?ChannelID=cetv1&videoTVChannel=cetv1&P2PChannelID=pd://cctv_p2p_hdcetv1&tai=cetv1&VideoName=cetv1&channelID=cetv1 (分辨率: 19x24)
+2025-12-06 16:44:18,907 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: rtsp://115.153.254.81/PLTV/88888888/224/3221226858/63768493.smil
+2025-12-06 16:44:24,015 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: rtsp://115.153.240.228:554/PLTV/88888888/224/3221226858/63768493.smil
+2025-12-06 16:44:29,107 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: rtsp://115.153.212.72/PLTV/88888888/224/3221226858/63768493.smil
+2025-12-06 16:44:34,216 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: rtsp://115.153.233.154/PLTV/88888888/224/3221226858/63768493.smil
+2025-12-06 16:44:34,627 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226537/.m3u8 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:44:35,245 - core.channel_utils - INFO - channel_utils.py:614 - should_exclude_resolution - 排除低分辨率URL: http://player.cntv.cn/standard/live_HLSDRM20180524.swf?ChannelID=cetv2&videoTVChannel=cetv2&P2PChannelID=pd://cctv_p2p_hdcetv2&tai=cetv2&VideoName=cetv2&channelID=cetv2 (分辨率: 19x24)
+2025-12-06 16:44:41,096 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: rtsp://115.153.254.81/PLTV/88888888/224/3221226978/85722625.smil
+2025-12-06 16:44:46,194 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: rtsp://115.153.240.228:554/PLTV/88888888/224/3221226978/85722625.smil
+2025-12-06 16:44:51,290 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: rtsp://115.153.212.72/PLTV/88888888/224/3221226978/85722625.smil
+2025-12-06 16:44:56,380 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: rtsp://115.153.233.154/PLTV/88888888/224/3221226978/85722625.smil
+2025-12-06 16:44:57,336 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: https://gcalic.v.myalicdn.com/gc/wgw05_1/index.m3u8?contentid=2820180516001 - invalid literal for int() with base 10: '720\n\n1280'
+2025-12-06 16:44:58,198 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226997/.m3u8 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:44:58,744 - core.channel_utils - INFO - channel_utils.py:614 - should_exclude_resolution - 排除低分辨率URL: http://player.cntv.cn/standard/live_HLSDRM20180524.swf?ChannelID=cetv4&videoTVChannel=cetv4&P2PChannelID=pd://cctv_p2p_hdcetv4&tai=cetv4&VideoName=cetv4&channelID=cetv4 (分辨率: 19x24)
+2025-12-06 16:45:04,618 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: rtsp://116.176.26.18/PLTV/88888910/224/3221225594/10000100000000060000000000270887_0.smil
+2025-12-06 16:45:09,722 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: rtsp://180.95.143.19/PLTV/88888910/224/3221225594/10000100000000060000000000270887_0.smil
+2025-12-06 16:45:14,807 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: rtsp://115.85.232.19/PLTV/88888910/224/3221225594/10000100000000060000000000270887_0.smil
+2025-12-06 16:45:19,898 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: rtsp://60.13.39.19/PLTV/88888910/224/3221225594/10000100000000060000000000270887_0.smil
+2025-12-06 16:45:24,995 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: rtsp://60.13.23.179/PLTV/88888910/224/3221225594/10000100000000060000000000270887_0.smil
+2025-12-06 16:45:30,099 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: rtsp://221.7.61.147/PLTV/88888910/224/3221225594/10000100000000060000000000270887_0.smil
+2025-12-06 16:45:32,429 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://183.215.134.239:19901/tsfile/live/0125_1.m3u8?key=txiptv&playlive=1&authid=0 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:45:37,491 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://60.16.0.216:5757/hls/20/index.m3u8
+2025-12-06 16:45:42,586 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://223.241.247.214:9901/tsfile/live/1011_1.m3u8?key=txiptv&playlive=1&authid=0
+2025-12-06 16:45:45,751 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://218.15.183.23:9901/tsfile/live/23008_1.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:45:50,805 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://59.39.89.130:60901/tsfile/live/0125_1.m3u8?key=txiptv&playlive=1&authid=0#rtsp://116.176.26.18/PLTV/88888910/224/3221225527/10000100000000060000000000107307_0.smil
+2025-12-06 16:45:51,697 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://sh.lnott.top:880/dx40.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:45:52,353 - core.channel_utils - INFO - channel_utils.py:614 - should_exclude_resolution - 排除低分辨率URL: https://txmov2.a.kwimgs.com/upic/2023/01/26/09/BMjAyMzAxMjYwOTE3NDVfNzM5MzQzNzIyXzk0NjI1OTUwNTA3XzBfMw==_b_B81ddda927d33445d544befd008e60109.mp4 (分辨率: 1280x720)
+2025-12-06 16:45:52,711 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226961/1.m3u8 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:45:57,767 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://124.116.183.146:9901/tsfile/live/0125_1.m3u8?key=txiptv&playlive=1&authid=0
+2025-12-06 16:46:02,390 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://60.13.52.236:65500/newlive/live/hls/23/live.m3u8 - invalid literal for int() with base 10: '576\n\n720'
+2025-12-06 16:46:02,835 - core.channel_utils - INFO - channel_utils.py:614 - should_exclude_resolution - 排除低分辨率URL: http://player.cntv.cn/standard/live_HLSDRM20180606.swf?ChannelID=xianggangweishi&P2PChannelID=pd://cctv_p2p_hdxianggangweishi (分辨率: 19x24)
+2025-12-06 16:46:03,780 - core.channel_utils - WARNING - channel_utils.py:557 - get_video_resolution_ffmpeg - FFmpeg获取分辨率失败: rtmp://zhibo.hkstv.tv/livestream/mutfysrq - [tcp @ 00000240f4b87300] Failed to resolve hostname zhibo.hkstv.tv: The name does not resolve for the supplied parameters
+[rtmp @ 00000240f4b86dc0] Cannot open connection tcp://zhibo.hkstv.tv:1935?tcp_nodelay=0
+rtmp://zhibo.hkstv.tv/livestream/mutfysrq: I/O error
+2025-12-06 16:46:06,190 - core.channel_utils - ERROR - channel_utils.py:560 - get_video_resolution_ffmpeg - 获取视频分辨率失败: http://183.215.134.239:19901/tsfile/live/0124_1.m3u8?key=txiptv&playlive=1&authid=0 - invalid literal for int() with base 10: '1080\n\n1920'
+2025-12-06 16:46:11,345 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://60.16.0.216:5757/hls/22/index.m3u8
+2025-12-06 16:46:16,794 - core.channel_utils - WARNING - channel_utils.py:554 - get_video_resolution_ffmpeg - 获取分辨率超时: http://223.241.247.214:9901/tsfile/live/1010_1.m3u8?key=txiptv&playlive=1&authid=0
+2025-12-06 16:46:21,594 - __main__ - INFO - update_sources.py:153 - main - === 播放源自动更新脚本 ===
+2025-12-06 16:46:21,595 - __main__ - INFO - update_sources.py:161 - main - 📖 读取播放源列表...
+2025-12-06 16:46:21,595 - __main__ - INFO - update_sources.py:163 - main - 📊 共读取到 22 个启用的播放源
+2025-12-06 16:46:21,596 - __main__ - INFO - update_sources.py:166 - main - 🔧 生成统一播放源文件...
+2025-12-06 16:46:21,598 - __main__ - INFO - update_sources.py:94 - generate_unified_sources - ✅ 已生成 unified_sources.py
+2025-12-06 16:46:21,599 - __main__ - INFO - update_sources.py:170 - main - 🔄 更新所有脚本...
+2025-12-06 16:46:21,601 - __main__ - INFO - update_sources.py:148 - update_script - ✅ 已更新 tvzy.py
+2025-12-06 16:46:21,604 - __main__ - INFO - update_sources.py:148 - update_script - ✅ 已更新 IP-TV.py
+2025-12-06 16:46:21,611 - __main__ - INFO - update_sources.py:148 - update_script - ✅ 已更新 collect_ipzy.py
+2025-12-06 16:46:21,618 - __main__ - INFO - update_sources.py:177 - main - 
+🎉 所有更新已完成！
+2025-12-06 16:46:21,620 - __main__ - INFO - update_sources.py:178 - main - 📝 更新了 3 个脚本
+2025-12-06 16:46:50,367 - __main__ - INFO - update_sources.py:153 - main - === 播放源自动更新脚本 ===
+2025-12-06 16:46:50,368 - __main__ - INFO - update_sources.py:161 - main - 📖 读取播放源列表...
+2025-12-06 16:46:50,368 - __main__ - INFO - update_sources.py:163 - main - 📊 共读取到 22 个启用的播放源
+2025-12-06 16:46:50,368 - __main__ - INFO - update_sources.py:166 - main - 🔧 生成统一播放源文件...
+2025-12-06 16:46:50,370 - __main__ - INFO - update_sources.py:94 - generate_unified_sources - ✅ 已生成 unified_sources.py
+2025-12-06 16:46:50,370 - __main__ - INFO - update_sources.py:170 - main - 🔄 更新所有脚本...
+2025-12-06 16:46:50,372 - __main__ - INFO - update_sources.py:148 - update_script - ✅ 已更新 tvzy.py
+2025-12-06 16:46:50,375 - __main__ - INFO - update_sources.py:148 - update_script - ✅ 已更新 IP-TV.py
+2025-12-06 16:46:50,381 - __main__ - INFO - update_sources.py:148 - update_script - ✅ 已更新 collect_ipzy.py
+2025-12-06 16:46:50,382 - __main__ - INFO - update_sources.py:177 - main - 
+🎉 所有更新已完成！
+2025-12-06 16:46:50,382 - __main__ - INFO - update_sources.py:178 - main - 📝 更新了 3 个脚本
+2025-12-06 16:47:12,701 - __main__ - INFO - update_sources.py:154 - main - === 播放源自动更新脚本 ===
+2025-12-06 16:47:12,702 - __main__ - INFO - update_sources.py:162 - main - 📖 读取播放源列表...
+2025-12-06 16:47:12,702 - __main__ - INFO - update_sources.py:164 - main - 📊 共读取到 22 个启用的播放源
+2025-12-06 16:47:12,703 - __main__ - INFO - update_sources.py:167 - main - 🔧 生成统一播放源文件...
+2025-12-06 16:47:12,705 - __main__ - INFO - update_sources.py:94 - generate_unified_sources - ✅ 已生成 unified_sources.py
+2025-12-06 16:47:12,706 - __main__ - INFO - update_sources.py:171 - main - 🔄 更新所有脚本...
+2025-12-06 16:47:12,711 - __main__ - INFO - update_sources.py:149 - update_script - ✅ 已更新 tvzy.py
+2025-12-06 16:47:12,716 - __main__ - INFO - update_sources.py:149 - update_script - ✅ 已更新 IP-TV.py
+2025-12-06 16:47:12,722 - __main__ - INFO - update_sources.py:149 - update_script - ✅ 已更新 collect_ipzy.py
+2025-12-06 16:47:12,724 - __main__ - INFO - update_sources.py:178 - main - 
+🎉 所有更新已完成！
+2025-12-06 16:47:12,725 - __main__ - INFO - update_sources.py:179 - main - 📝 更新了 3 个脚本
+2025-12-06 16:47:37,637 - __main__ - INFO - update_sources.py:155 - main - === 播放源自动更新脚本 ===
+2025-12-06 16:47:37,640 - __main__ - INFO - update_sources.py:163 - main - 📖 读取播放源列表...
+2025-12-06 16:47:37,641 - __main__ - INFO - update_sources.py:165 - main - 📊 共读取到 22 个启用的播放源
+2025-12-06 16:47:37,644 - __main__ - INFO - update_sources.py:168 - main - 🔧 生成统一播放源文件...
+2025-12-06 16:47:37,647 - __main__ - INFO - update_sources.py:94 - generate_unified_sources - ✅ 已生成 unified_sources.py
+2025-12-06 16:47:37,650 - __main__ - INFO - update_sources.py:172 - main - 🔄 更新所有脚本...
+2025-12-06 16:47:37,654 - __main__ - INFO - update_sources.py:150 - update_script - ✅ 已更新 tvzy.py
+2025-12-06 16:47:37,659 - __main__ - INFO - update_sources.py:150 - update_script - ✅ 已更新 IP-TV.py
+2025-12-06 16:47:37,663 - __main__ - INFO - update_sources.py:150 - update_script - ✅ 已更新 collect_ipzy.py
+2025-12-06 16:47:37,665 - __main__ - INFO - update_sources.py:179 - main - 
+🎉 所有更新已完成！
+2025-12-06 16:47:37,666 - __main__ - INFO - update_sources.py:180 - main - 📝 更新了 3 个脚本

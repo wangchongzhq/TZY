@@ -65,6 +65,39 @@ def get_channel_mapping() -> Dict[str, List[str]]:
     
     return mapping
 
+# 检测频道清晰度
+def detect_resolution(channel: ChannelInfo) -> int:
+    """
+    检测频道的清晰度等级
+    
+    参数:
+        channel: 频道信息对象
+    
+    返回:
+        int: 清晰度等级，数值越大清晰度越高
+             - 0: 未知清晰度
+             - 1: 标清 (≤720p)
+             - 2: 高清 (1080p)
+             - 3: 超清 (4K)
+    """
+    # 组合频道名称和URL进行检测
+    text = f"{channel.name} {channel.url}".lower()
+    
+    # 检查是否包含4K
+    if '4k' in text:
+        return 3
+    
+    # 检查是否包含1080p
+    if '1080p' in text or 'fullhd' in text or ('hd' in text and '720' not in text):
+        return 2
+    
+    # 检查是否包含720p或更低
+    if '720p' in text or '576p' in text or '480p' in text or '360p' in text or 'sd' in text:
+        return 1
+    
+    # 默认返回未知清晰度
+    return 0
+
 # 过滤频道名称
 def filter_channel_name(name: str) -> str:
     """
@@ -76,6 +109,9 @@ def filter_channel_name(name: str) -> str:
     返回:
         str: 过滤后的频道名称
     """
+    # 移除括号内的清晰度信息，如(576p)、(576)、(1080p)等
+    name = re.sub(r'\s*\([0-9]+p?\)\s*', '', name)
+    
     # 去除频道名称中的特殊字符
     name = re.sub(r'[^\u4e00-\u9fa5a-zA-Z0-9\s\-\_]+', '', name)
     
@@ -136,6 +172,11 @@ def merge_channels(all_channels: List[ChannelInfo], max_lines_per_channel: int =
         
         # 跳过空名称
         if not filtered_name:
+            continue
+        
+        # 检测频道清晰度，只保留1080p及以上的高清线路（清晰度等级2或3）
+        resolution = detect_resolution(channel)
+        if resolution < 2:
             continue
         
         # 添加到字典中

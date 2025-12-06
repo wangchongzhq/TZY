@@ -111,10 +111,12 @@ SOURCES = SOURCES_WITH_NAMES'''
         else:
             # 替换GITHUB_SOURCES或其他数据源列表
             if 'GITHUB_SOURCES' in content:
-                pattern = r'GITHUB_SOURCES\s*=\s*\[.*?\]'  # 匹配GITHUB_SOURCES = [ ... ]
+                # 匹配GITHUB_SOURCES = get_config(...) 的情况，使用多行匹配
+                pattern = r'GITHUB_SOURCES\s*=\s*get_config\(.*?\)'  # 匹配GITHUB_SOURCES = get_config(...) 
                 replacement = '''# 从统一播放源文件导入
 from unified_sources import UNIFIED_SOURCES
 GITHUB_SOURCES = UNIFIED_SOURCES'''
+                content = re.sub(pattern, replacement, content, flags=re.DOTALL)
             elif 'default_sources' in content and 'user_sources' in content:
                 # 处理IP-TV.py类型的脚本
                 # 分别匹配default_sources和user_sources，不要求它们紧挨着

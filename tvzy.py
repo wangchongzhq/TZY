@@ -31,27 +31,9 @@ HEADERS = {
 }
 
 # 数据源列表
-GITHUB_SOURCES = get_config('sources.github_sources', [
-    # 有效的中国电视频道源
-    "http://tv.html-5.me/i/9390107.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
-    "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
-    "https://freetv.fun/test_channels_new.txt",
-    "https://ghfast.top/https://github.com/kimwang1978/collect-txt/blob/main/bbxx.txt",
-    "https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt",
-    "https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt",
-    # 其他稳定的IPTV源
-    "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u",
-    "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u",
-    "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u",
-    # 优质高清源
-    "https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u",
-    "https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u"
-])
+# 从统一播放源文件导入
+from unified_sources import UNIFIED_SOURCES
+GITHUB_SOURCES = UNIFIED_SOURCES
 
 # 从配置获取频道分类和映射
 channel_config = get_config('channel', {})

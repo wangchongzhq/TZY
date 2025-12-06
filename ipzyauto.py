@@ -785,7 +785,7 @@ def create_txt_file(all_channels, filename="ipzyauto.txt", speed_results=None):
 
 def load_sources_from_json():
     """从sources.json文件中加载启用的直播源URL"""
-    sources_file = "c:\\Users\\Administrator\\Documents\\GitHub\\TZY\\sources.json"
+    sources_file = "sources.json"
     try:
         with open(sources_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
