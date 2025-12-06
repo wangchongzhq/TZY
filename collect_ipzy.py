@@ -100,7 +100,7 @@ FILTER_RULES = get_config('filter.rules', {
 })
 
 # 输出文件
-OUTPUT_FILE = get_config('output.file', 'ipzyauto.txt')
+OUTPUT_FILE = get_config('output.file', 'ipzy_channels.txt')
 
 # 网络设置
 NETWORK_CONFIG = get_config('network.config', {
@@ -217,7 +217,7 @@ def collect_from_source(source):
     
     try:
         # 发送请求获取内容
-        response = requests.get(source['url'], timeout=NETWORK_CONFIG.get('timeout', 10))
+        response = requests.get(source['url'], timeout=NETWORK_CONFIG.get('timeout', 10), verify=NETWORK_CONFIG.get('verify_ssl', False))
         response.raise_for_status()
         content = response.text
         

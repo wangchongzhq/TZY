@@ -9,6 +9,7 @@ import re
 import hashlib
 import time
 import subprocess
+import os
 from typing import List, Dict, Tuple, Optional, Callable, Any
 from core.parser import ChannelInfo
 from core.network import check_url_availability, is_streaming_url
@@ -560,10 +561,101 @@ def get_video_resolution_ffmpeg(url: str, timeout: int = 5) -> Optional[Tuple[in
         logger.error(f"获取视频分辨率失败: {url} - {e}")
         return None
 
+def get_video_resolution_from_url(url: str) -> Optional[Tuple[int, int]]:
+    """
+    从URL模式中提取分辨率信息
+    优点: 速度极快
+    缺点: 准确性有限，依赖URL命名规范
+    
+    参数:
+        url: 视频流URL
+        
+    返回:
+        Tuple[int, int]: (宽度, 高度)，如果无法提取返回None
+    """
+    url_lower = url.lower()
+    
+    # 常见的分辨率模式
+    resolution_patterns = [
+        # 如 1080p, 720p, 480p, 2160p(4K)
+        r'(\d{3,4})p',
+        # 如 1920x1080, 1280x720, 3840x2160
+        r'(\d{3,4})[x_](\d{3,4})',
+        # 如 1920*1080, 1280*720
+        r'(\d{3,4})\*(\d{3,4})',
+        # 如 ?width=1920&height=1080
+        r'width=(\d{3,4})[^0-9]*height=(\d{3,4})',
+        # 如 &w=1920&h=1080
+        r'w=(\d{3,4})[^0-9]*h=(\d{3,4})',
+        # 如 /hd/, /high/, /1080/, /720/ 等路径中的高清标识
+        r'/(hd|high|1080|720|2160|4k)/',
+        # 如 -hd-, _hd_, .hd., .high. 等分隔符中的高清标识
+        r'[-_.](hd|high|1080|720|2160|4k)[-_.]'
+    ]
+    
+    for pattern in resolution_patterns:
+        match = re.search(pattern, url_lower)
+        if match:
+            groups = match.groups()
+            if len(groups) == 1:
+                # 只有高度的情况，如 1080p 或高清标识
+                if groups[0].isdigit():
+                    height = int(groups[0])
+                    # 根据常见宽高比计算宽度
+                    if height == 2160:  # 4K
+                        return (3840, 2160)
+                    elif height == 1080:
+                        return (1920, 1080)
+                    elif height == 720:
+                        return (1280, 720)
+                    elif height == 480:
+                        return (854, 480)
+                    elif height == 360:
+                        return (640, 360)
+                else:
+                    # 高清标识，默认返回1080p
+                    return (1920, 1080)
+            elif len(groups) == 2:
+                # 同时有宽度和高度的情况
+                width = int(groups[0])
+                height = int(groups[1])
+                return (width, height)
+    
+    return None
+
+def get_video_resolution_from_stream_type(url: str) -> Optional[Tuple[int, int]]:
+    """
+    根据视频流类型判断分辨率
+    优点: 速度极快
+    缺点: 准确性低，仅作参考
+    
+    参数:
+        url: 视频流URL
+        
+    返回:
+        Tuple[int, int]: (宽度, 高度)，如果无法判断返回None
+    """
+    url_lower = url.lower()
+    
+    # 根据文件扩展名或路径判断
+    hd_extensions = ['.ts', '.m3u8', '.mp4']
+    hd_keywords = ['hd', 'high', 'quality', '1080', '1920', '4k', 'ultra']
+    
+    # 检查是否是高清格式
+    if any(ext in url_lower for ext in hd_extensions):
+        # 检查是否包含高清关键词
+        if any(keyword in url_lower for keyword in hd_keywords):
+            return (1920, 1080)
+    
+    return None
+
 def get_video_resolution(url: str, timeout: int = 5) -> Optional[Tuple[int, int]]:
     """
     获取视频流的分辨率
-    根据配置使用不同的方法
+    采用分层筛选策略：
+    1. URL模式匹配（速度最快）
+    2. 流类型检测（速度快）
+    3. FFmpeg实际检测（最准确但速度慢，在GitHub Actions环境中默认不使用）
     
     参数:
         url: 视频流URL
@@ -572,14 +664,33 @@ def get_video_resolution(url: str, timeout: int = 5) -> Optional[Tuple[int, int]
     返回:
         Tuple[int, int]: (宽度, 高度)，如果获取失败返回None
     """
-    method = get_config('quality.method', 'ffmpeg')
+    # 第一层：URL模式匹配
+    resolution = get_video_resolution_from_url(url)
+    if resolution:
+        logger.debug(f"从URL模式获取分辨率: {url} -> {resolution[0]}x{resolution[1]}")
+        return resolution
     
-    if method == 'ffmpeg':
-        return get_video_resolution_ffmpeg(url, timeout)
-    # 可以添加其他方法
-    else:
-        logger.error(f"不支持的分辨率获取方法: {method}")
+    # 第二层：流类型检测
+    resolution = get_video_resolution_from_stream_type(url)
+    if resolution:
+        logger.debug(f"从流类型获取分辨率: {url} -> {resolution[0]}x{resolution[1]}")
+        return resolution
+    
+    # 第三层：FFmpeg实际检测
+    # 检查是否在GitHub Actions环境中
+    is_github_actions = os.environ.get('GITHUB_ACTIONS') == 'true'
+    
+    if is_github_actions:
+        logger.debug(f"GitHub Actions环境中跳过FFmpeg检测: {url}")
+        # 在GitHub Actions环境中，我们可以更宽松地判断，例如认为某些流类型默认是高清
+        url_lower = url.lower()
+        if any(ext in url_lower for ext in ['.ts', '.m3u8', '.mp4']):
+            logger.debug(f"GitHub Actions环境中默认将 {url} 视为高清")
+            return (1920, 1080)
         return None
+    else:
+        logger.debug(f"使用FFmpeg检测分辨率: {url}")
+        return get_video_resolution_ffmpeg(url, timeout)
 
 def should_exclude_resolution(url: str, min_resolution: str = '1920x1080') -> bool:
     """
