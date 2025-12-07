@@ -15,6 +15,8 @@
 - **IP直播源处理**：专门的IP直播源收集和处理功能
 - **格式转换**：支持M3U到TXT格式的转换
 - **语法检查**：提供脚本语法检查和字符修复功能
+- **频道标准化**：自动处理频道名称的错误别名和格式问题
+- **模块化设计**：核心功能模块化，便于维护和扩展
 
 ## 📋 环境要求
 
@@ -43,6 +45,19 @@ pip install -r requirements.txt
 python update_sources.py
 ```
 
+### 4. 运行主要脚本
+
+```bash
+# 运行主要直播源处理脚本
+python tvzy.py
+
+# 运行IP直播源收集脚本
+python collect_ipzy.py
+
+# 运行IP-TV直播源处理脚本
+python IP-TV.py
+```
+
 ## 📁 项目结构
 
 ```
@@ -54,6 +69,27 @@ python update_sources.py
 │   ├── update_ip-tv.yml
 │   ├── update_ipzy.yml
 │   └── update_sources.yml
+├── config/                # 配置文件目录
+│   ├── config.json        # 主配置文件
+│   └── config_example.yaml # 配置示例文件
+├── core/                  # 核心功能模块
+│   ├── channel_utils.py   # 频道处理工具
+│   ├── chinese_conversion.py # 中文转换工具
+│   ├── config.py          # 配置管理
+│   ├── file_utils.py      # 文件处理工具
+│   ├── logging_config.py  # 日志配置
+│   ├── network.py         # 网络请求工具
+│   ├── parser.py          # 直播源解析器
+│   ├── tvzy_processor.py  # 主要处理逻辑
+│   └── tvzy_sources.py    # 直播源管理
+├── logs/                  # 日志文件目录
+├── tests/                 # 测试文件目录
+│   ├── test_channel_utils.py
+│   ├── test_config_manager.py
+│   ├── test_file_utils.py
+│   ├── test_logging_config.py
+│   ├── test_network.py
+│   └── test_parser.py
 ├── sources.json           # 统一播放源配置文件
 ├── update_sources.py      # 播放源自动更新脚本
 ├── unified_sources.py     # 生成的统一播放源文件（请勿手动修改）
@@ -63,6 +99,14 @@ python update_sources.py
 ├── convert_m3u_to_txt.py  # M3U转TXT格式转换脚本
 ├── check_all_syntax.py    # 语法检查脚本
 ├── validate_workflows.py  # 工作流验证脚本
+├── filter_hd_channels.py  # HD频道过滤脚本
+├── final_verification.py  # 最终验证脚本
+├── ipzy_channels.txt      # IP直播源频道列表
+├── ipzyauto.m3u           # 自动生成的IP直播源M3U文件
+├── ipzyauto.txt           # 自动生成的IP直播源TXT文件
+├── ipzyauto_full.txt      # 完整的IP直播源列表
+├── tzydauto.txt           # 自动生成的直播源TXT文件
+├── channel_aliases_to_add.txt # 待添加的频道别名
 ├── .gitignore             # Git忽略文件配置
 └── README.md              # 项目说明文档
 ```
@@ -135,7 +179,7 @@ python IP-TV.py
 python collect_ipzy.py
 ```
 
-**输出**：自动生成分类的IP直播源文件（默认：ipzy.txt）
+**输出**：自动生成分类的IP直播源文件（默认：ipzyauto.txt、ipzyauto.m3u等）
 
 #### 4. convert_m3u_to_txt.py - M3U转TXT格式转换
 
@@ -173,20 +217,29 @@ python validate_workflows.py
 
 **输出**：显示工作流配置的验证结果
 
-#### 7. update_sources.py - 播放源自动更新脚本
+#### 7. filter_hd_channels.py - HD频道过滤脚本
 
-**功能**：统一更新所有脚本的播放源配置
+**功能**：从直播源中过滤出高清频道
 
 **使用方法**：
 
 ```bash
-python update_sources.py
+python filter_hd_channels.py
 ```
 
-**作用**：
-- 读取`sources.json`中的启用播放源
-- 生成`unified_sources.py`统一播放源文件
-- 更新所有相关脚本中的播放源配置
+**输出**：生成高清频道列表
+
+#### 8. final_verification.py - 最终验证脚本
+
+**功能**：验证生成的直播源文件的完整性和可用性
+
+**使用方法**：
+
+```bash
+python final_verification.py
+```
+
+**输出**：显示验证结果
 
 ## 🤖 自动化工作流
 
@@ -247,21 +300,17 @@ python update_sources.py
 5. 使用GitHub Actions时，请确保仓库有正确的权限设置
 6. 执行脚本前，请确保已安装所有依赖包（`pip install -r requirements.txt`）
 7. 部分脚本可能需要网络访问权限，请确保网络连接正常
+8. 频道名称标准化功能会自动处理错误别名（如CCTV4a、CCTV4o等）
 
 ## 📝 更新日志
 
 ### 最新更新
 - 修复了CCTV频道名称中的错误别名问题（如CCTV4a、CCTV4A、CCTV4o、CCTV4m等），将其转换为标准格式
+- 更新了项目结构，完善了核心模块的文档说明
 - 删除了M3U和TXT文件中的EPG相关功能（tvg-id、tvg-name、tvg-logo、tvg-url等属性）
 - 实现了频道分类内按名称升序排序功能，提高了频道列表的可读性
 - 修复了M3U文件中group-title属性后面多余空格的问题
-- 删除了测试文件test_sort.py
-- 清理了logs目录下的app.log日志文件
-- 修复了`collect_ipzy.py`、`convert_m3u_to_txt.py`和`update_sources.py`中的导入错误问题
-- 更新了README.md文档，使其与当前项目结构保持一致
-- 修复了tvzy.py和collect_ipzy.py中的语法错误
-- 优化了自动化工作流配置，支持更多触发方式
-- 增强了IP直播源收集功能，提高了线路筛选质量
+- 清理了项目结构，优化了模块化设计
 
 ### 主要功能更新
 - 实现统一播放源管理系统(`sources.json`)
@@ -271,6 +320,7 @@ python update_sources.py
 - 实现智能分类和质量筛选功能
 - 提供IP直播源收集和处理功能
 - 开发M3U转TXT格式转换工具
+- 实现频道名称标准化功能
 
 ## 📄 免责声明
 
