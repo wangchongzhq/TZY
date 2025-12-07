@@ -761,6 +761,26 @@ def normalize_channel_name(name: str) -> str:
     # 去除多余的空格
     name = re.sub(r'\s+', ' ', name)
     
+    # 处理CCTV频道名称中的错误别名（如CCTV4a, CCTV4A, CCTV4o等）
+    if re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?\d+[AaOoMm]', name, re.IGNORECASE):
+        match = re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)', name, re.IGNORECASE)
+        if match:
+            # 提取CCTV和数字部分
+            base_name = f"CCTV{match.group(1)}"
+            # 检查是否有欧洲/美洲等后缀
+            if '欧洲' in name or '美洲' in name:
+                region = '欧洲' if '欧洲' in name else '美洲'
+                name = f"{base_name}{region}"
+            else:
+                name = base_name
+    
+    # 处理CCTV-数字格式（如CCTV-1, CCTV -1, CCTV- 1等）
+    elif re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)', name, re.IGNORECASE):
+        match = re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)', name, re.IGNORECASE)
+        if match:
+            # 提取CCTV和数字部分
+            name = f"CCTV{match.group(1)}"
+    
     # 去除常见的前缀后缀
     prefixes = [r'[\s\[\(]*(高清|HD|标清|SD|超清|4K|蓝光)[\s\]\)]*', r'[\s\[\(]*(直播|卫视|电视台|频道)[\s\]\)]*']
     for prefix in prefixes:

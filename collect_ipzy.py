@@ -419,6 +419,20 @@ def extract_channel_name(extinf_line):
             channel_name = extinf_line.strip()
             logger.debug(f"无法提取频道名称，返回整行: {channel_name}")
         
+        # 过滤CCTV频道名称中的错误别名（如CCTV4a, CCTV4A, CCTV4o等）
+        if re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?\d+', channel_name):
+            # 保留CCTV和数字部分，移除其他字符
+            match = re.match(r'^([Cc][Cc][Tt][Vv][\s\-]?\d+)', channel_name)
+            if match:
+                # 转换为标准格式（去掉连字符和空格）
+                base_name = re.sub(r'[\s\-]', '', match.group(1)).upper()
+                # 检查是否有欧洲/美洲等后缀
+                if '欧洲' in channel_name or '美洲' in channel_name:
+                    region = '欧洲' if '欧洲' in channel_name else '美洲'
+                    channel_name = f"{base_name}{region}"
+                else:
+                    channel_name = base_name
+        
         # 保留CCTV频道的完整名称（带数字），以便正确分类
         # 如果需要标准化CCTV频道名称，可以在后续步骤中进行
         
@@ -745,6 +759,12 @@ def standardize_channel_name(channel_name):
         elif re.match(r'^CCTV\s+(\d+)', normalized, re.IGNORECASE):
             number = re.search(r'^CCTV\s+(\d+)', normalized, re.IGNORECASE).group(1)
             normalized = f'CCTV{number}'
+        
+        # 处理CCTV频道名称中的错误别名（如CCTV4a, CCTV4A, CCTV4o等）
+        elif re.match(r'^CCTV\d+[AaOoMm]', normalized, re.IGNORECASE):
+            match = re.match(r'^CCTV(\d+)', normalized, re.IGNORECASE)
+            if match:
+                normalized = f'CCTV{match.group(1)}'
         
         # 处理CCTV-娱乐/娛樂格式（如CCTV-娱乐, CCTV - 娛樂, CCTV- 娛樂等）
         elif re.match(r'^CCTV\s*(-|\s+)\s*[娱乐娛樂]', normalized, re.IGNORECASE):

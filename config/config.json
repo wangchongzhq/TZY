@@ -522,14 +522,11 @@
         "CCTV4-HD",
         "CCTV4 中文國際",
         "CCTV-4",
-        "CCTV4a",
-        "CCTV4高清",
-        "CCTV4A"
+        "CCTV4高清"
       ],
       "CCTV4欧洲": [
         "CCTV4中文欧洲",
         "CCTV-4欧洲 HD",
-        "CCTV4O",
         "CCTV-4歐洲",
         "CCTV4欧洲HD",
         "CCTV4欧洲-HD",
@@ -540,7 +537,6 @@
         "CCTV-4欧洲",
         "CCTV4欧洲 HD",
         "CCTV-4 中文歐洲",
-        "CCTV4o",
         "CCTV-4 歐洲",
         "CCTV4欧洲高清",
         "CCTV4歐洲"
@@ -549,14 +545,12 @@
         "CCTV-4 中文美洲",
         "CCTV4美洲 HD",
         "CCTV-4 美洲",
-        "CCTV4M",
         "CCTV-4美洲 HD",
         "CCTV4美洲高清",
         "CCTV4中文美洲",
         "CCTV4美洲-HD",
         "CCTV-4美洲",
-        "CCTV4美洲HD",
-        "CCTV4m"
+        "CCTV4美洲HD"
       ],
       "CCTV5": [
         "CCTV5 體育",

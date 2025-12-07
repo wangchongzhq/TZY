@@ -180,6 +180,20 @@ def filter_channel_name(name: str) -> str:
     # 去除前后空格
     name = name.strip()
     
+    # 过滤CCTV频道名称中的错误别名（如CCTV4a, CCTV4A, CCTV4o等）
+    if re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?\d+', name):
+        # 保留CCTV和数字部分，移除其他字符
+        match = re.match(r'^([Cc][Cc][Tt][Vv][\s\-]?\d+)', name)
+        if match:
+            # 转换为标准格式（去掉连字符和空格）
+            base_name = re.sub(r'[\s\-]', '', match.group(1)).upper()
+            # 检查是否有欧洲/美洲等后缀
+            if '欧洲' in name or '美洲' in name:
+                region = '欧洲' if '欧洲' in name else '美洲'
+                name = f"{base_name}{region}"
+            else:
+                name = base_name
+    
     # 去除常见的后缀
     suffixes = ['高清', '超清', '标清', 'HD', 'SD', '1080P', '720P', '4K', '直播']
     for suffix in suffixes:
