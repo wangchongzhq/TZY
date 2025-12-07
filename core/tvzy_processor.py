@@ -12,6 +12,61 @@ from typing import List, Dict
 from .parser import ChannelInfo
 from .config import get_config
 from .logging_config import get_logger, log_exception, log_performance
+from .chinese_conversion import add_traditional_aliases
+
+def add_hd_aliases(mapping: Dict[str, List[str]]) -> Dict[str, List[str]]:
+    """
+    为频道别名添加HD格式变体
+    
+    参数:
+        mapping: 频道映射字典，键为频道名称，值为该频道的别名列表
+        
+    返回:
+        Dict[str, List[str]]: 更新后的频道映射字典，包含HD格式的别名
+    """
+    updated_mapping = {}
+    
+    for channel, aliases in mapping.items():
+        # 确保aliases是列表类型
+        if not isinstance(aliases, list):
+            aliases = [aliases]
+        
+        # 检查是否为4K/8K频道，如果是则跳过
+        if '4K' in channel.upper() or '8K' in channel.upper():
+            updated_mapping[channel] = aliases
+            continue
+        
+        # 创建集合以避免重复
+        unique_aliases = set(aliases)
+        
+        # 为每个别名生成HD格式变体
+        for alias in aliases:
+            # 移除可能存在的空格和HD
+            base_alias = alias.replace(' HD', '').replace('-HD', '').replace('HD', '')
+            
+            # 生成多种HD格式的别名
+            hd_aliases = [
+                f"{base_alias}HD",
+                f"{base_alias} HD",
+                f"{base_alias}-HD"
+            ]
+            
+            # 如果别名包含连字符，还需要生成额外的变体
+            if '-' in base_alias:
+                base_alias_no_dash = base_alias.replace('-', '')
+                hd_aliases.extend([
+                    f"{base_alias_no_dash}HD",
+                    f"{base_alias_no_dash} HD",
+                    f"{base_alias_no_dash}-HD"
+                ])
+            
+            # 添加到集合中
+            unique_aliases.update(hd_aliases)
+        
+        # 将集合转换回列表并保存
+        updated_mapping[channel] = list(unique_aliases)
+    
+    return updated_mapping
 
 # 获取日志记录器
 logger = get_logger(__name__)
@@ -31,7 +86,8 @@ def get_channel_categories() -> Dict[str, List[str]]:
         "央视频道": ['CCTV1', 'CCTV2', 'CCTV3', 'CCTV4', 'CCTV4欧洲', 'CCTV4美洲', 'CCTV5', 'CCTV5+', 'CCTV6', 'CCTV7', 'CCTV8', 'CCTV9',
                     'CCTV10', 'CCTV11', 'CCTV12', 'CCTV13', 'CCTV14', 'CCTV15', 'CCTV16', 'CCTV17', '兵器科技', '风云音乐', '风云足球',
                     '风云剧场', '怀旧剧场', '第一剧场', '女性时尚', '世界地理', '央视台球', '高尔夫网球', '央视文化精品', '北京纪实科教',
-                    '卫生健康', '电视指南']
+                    '卫生健康', '电视指南'],
+        "体育频道": ['天元围棋', '魅力足球', '五星体育', '劲爆体育', '超级体育', '精品体育']
     })
 
 # 从配置获取频道映射
@@ -63,7 +119,13 @@ def get_channel_mapping() -> Dict[str, List[str]]:
             if channel in mapping:
                 mapping[channel].extend(aliases)
     
-    return mapping
+    # 自动为所有频道别名添加繁体中文版本
+    mapping_with_traditional = add_traditional_aliases(mapping)
+    
+    # 自动为所有频道别名添加HD格式变体
+    mapping_with_hd = add_hd_aliases(mapping_with_traditional)
+    
+    return mapping_with_hd
 
 # 检测频道清晰度
 def detect_resolution(channel: ChannelInfo) -> int:

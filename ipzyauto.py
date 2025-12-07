@@ -42,10 +42,10 @@ CHANNEL_CATEGORIES = {
     "综合频道": ['重温经典', 'CHANNEL[V]', '求索纪录', '求索科学', '求索生活',
                  '求索动物', '睛彩青少', '睛彩竞技', '睛彩篮球', '睛彩广场舞', '金鹰纪实', '快乐垂钓', '茶频道', '军事评论',
                  '军旅剧场', '乐游', '生活时尚', '都市剧场', '欢笑剧场', '游戏风云', '金色学堂', '法治天地', '哒啵赛事'],
-    "体育频道": ['天元围棋', '魅力足球', '五星体育', '劲爆体育', '超级体育'],
+    "体育频道": ['天元围棋', '魅力足球', '五星体育', '劲爆体育', '超级体育', '精品体育'],
     "剧场频道": ['古装剧场', '家庭剧场', '惊悚悬疑', '明星大片', '欢乐剧场', '海外剧场', '潮妈辣婆',
                  '爱情喜剧', '超级电视剧', '超级综艺', '金牌综艺', '武搏世界', '农业致富', '炫舞未来',
-                 '精品体育', '精品大剧', '精品纪录', '精品萌宠', '怡伴健康'],
+                 '精品大剧', '精品纪录', '精品萌宠', '怡伴健康'],
 }
 
 # 频道映射（别名 -> 规范名）
@@ -338,7 +338,7 @@ def is_preferred_url(url: str) -> bool:
             return True
     return False
 
-def should_exclude_url(url):
+def should_exclude_url(url, channel_name=''):
     """检查是否应该排除某个URL
     排除规则：
     1. 包含example.com的URL
@@ -371,7 +371,7 @@ def should_exclude_url(url):
     open_filter_resolution = config.get('quality', {}).get('open_filter_resolution', True)
     
     if open_filter_resolution:
-        if should_exclude_resolution(url, min_resolution):
+        if should_exclude_resolution(url, channel_name, min_resolution):
             return True
     
     return False
@@ -528,6 +528,14 @@ def should_exclude_channel(name):
     for keyword in shopping_keywords:
         if keyword in name:
             return True
+    
+    # 检查CCTV频道数字是否超过17
+    cctv_match = re.match(r'^CCTV[- ]?(\d+)', name, re.IGNORECASE)
+    if cctv_match:
+        cctv_number = int(cctv_match.group(1))
+        if cctv_number > 17:
+            return True
+    
     return False
 
 def parse_lines(lines):
@@ -552,7 +560,7 @@ def parse_lines(lines):
 
     # 添加测试URL过滤的日志
     test_url = "http://example.com/test.m3u8"
-    if should_exclude_url(test_url):
+    if should_exclude_url(test_url, current_name):
         print(f"测试URL过滤: {test_url} -> 应该被排除")
     else:
         print(f"测试URL过滤: {test_url} -> 应该被保留")
@@ -584,7 +592,7 @@ def parse_lines(lines):
                         print(f"  排除购物频道: {current_name}")
                         excluded_channels += 1
                     # 过滤测试URL
-                    elif should_exclude_url(url):
+                    elif should_exclude_url(url, current_name):
                         print(f"  排除测试URL: {url}")
                         excluded_urls += 1
                     else:
@@ -608,7 +616,7 @@ def parse_lines(lines):
                         print(f"  排除购物频道: {ch_name}")
                         excluded_channels += 1
                     # 过滤测试URL
-                    elif should_exclude_url(url):
+                    elif should_exclude_url(url, ch_name):
                         print(f"  排除测试URL: {url}")
                         excluded_urls += 1
                     else:
@@ -824,13 +832,20 @@ def main():
     print(f"总频道数: {len(all_channels)}")
     print(f"总URL数: {sum(len(urls) for urls in all_channels.values())}")
     
-    # 收集所有需要测速的URL（限制数量，避免测试时间过长）
+    # 过滤并处理所有频道的URL
+    filtered_channels = defaultdict(list)
     all_urls_for_testing = []
+    
     for ch, urls_list in all_channels.items():
         unique_urls = list(dict.fromkeys(urls_list))
-        filtered_urls = [url for url in unique_urls if not should_exclude_url(url)]
-        # 每个频道最多测试3个URL
-        all_urls_for_testing.extend(filtered_urls[:3])
+        # 对所有URL应用过滤
+        filtered_urls = [url for url in unique_urls if not should_exclude_url(url, ch)]
+        
+        if filtered_urls:
+            # 保存过滤后的URL到新的频道列表
+            filtered_channels[ch] = filtered_urls
+            # 收集需要测速的URL（每个频道最多3个）
+            all_urls_for_testing.extend(filtered_urls[:3])
     
     # 去重URL列表并限制总数
     all_urls_for_testing = list(set(all_urls_for_testing))[:200]  # 最多测试200个URL
@@ -841,14 +856,14 @@ def main():
     if speed_config['enabled'] and all_urls_for_testing:
         speed_results = batch_test_urls(all_urls_for_testing, speed_config)
     
-    # 生成M3U和TXT文件
+    # 生成M3U和TXT文件（使用过滤后的频道）
     print("\n调用create_m3u_file函数生成M3U文件...")
-    m3u_filename = create_m3u_file(all_channels, "ipzyauto.m3u", speed_results)
+    m3u_filename = create_m3u_file(filtered_channels, "ipzyauto.m3u", speed_results)
     
     print("\n调用create_txt_file函数生成TXT文件...")
-    txt_filename = create_txt_file(all_channels, "ipzyauto.txt", speed_results)
+    txt_filename = create_txt_file(filtered_channels, "ipzyauto.txt", speed_results)
     
-    # 生成完整版本（保留原有功能）
+    # 生成完整版本（使用原始未过滤的频道，保留原有功能）
     full_filename = create_txt_file(all_channels, "ipzyauto_full.txt", speed_results)
     
     # 显示生成结果
@@ -860,7 +875,10 @@ def main():
     # 统计频道信息
     total_channels = len(all_channels)
     total_urls = sum(len(urls) for urls in all_channels.values())
+    filtered_total_channels = len(filtered_channels)
+    filtered_total_urls = sum(len(urls) for urls in filtered_channels.values())
     print(f"频道统计: {total_channels}个频道，{total_urls}个URL")
+    print(f"过滤后: {filtered_total_channels}个频道，{filtered_total_urls}个URL")
     
     # 如果启用了测速，显示测速统计
     if speed_config['enabled'] and speed_results:

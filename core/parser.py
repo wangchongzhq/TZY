@@ -295,7 +295,13 @@ def generate_m3u_content(channels: List[ChannelInfo]) -> str:
             # 构建EXTINF行
             extinf_line = '#EXTINF:-1'
             
-            # 不添加EPG相关属性
+            # 添加tvg信息
+            if channel.tvg_id:
+                extinf_line += f' tvg-id="{channel.tvg_id}"'
+            if channel.tvg_name:
+                extinf_line += f' tvg-name="{channel.tvg_name}"'
+            if channel.tvg_logo:
+                extinf_line += f' tvg-logo="{channel.tvg_logo}"'
             
             # 添加group-title
             if channel.group:

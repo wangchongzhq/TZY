@@ -134,6 +134,60 @@ CCTV-3|http://example.com/cctv3
         # 验证生成的内容
         self.assertIn("CCTV-1|http://example.com/cctv1", txt_content)
         self.assertIn("CCTV-2|http://example.com/cctv2", txt_content)
+    
+    def test_extract_channel_name(self):
+        """测试频道名称提取逻辑"""
+        import re
+        
+        def extract_channel_name(extinf_line):
+            """提取频道名称的逻辑"""
+            print(f"原始#EXTINF行: {extinf_line}")
+            
+            # 移除#EXTINF:-1部分
+            if '#EXTINF:-1' in extinf_line:
+                extinf_line = extinf_line.replace('#EXTINF:-1', '')
+            
+            # 优先从tvg-name提取频道名称
+            if 'tvg-name=' in extinf_line:
+                match = re.search(r'tvg-name="([^"]+)"', extinf_line)
+                if match:
+                    tvg_name = match.group(1)
+                    print(f"从tvg-name提取到: {tvg_name}")
+                    return tvg_name
+            
+            # 如果没有tvg-name，再从行末提取频道名称
+            if ',' in extinf_line:
+                line_end_name = extinf_line.split(',', 1)[1].strip()
+                if line_end_name:
+                    print(f"从行末提取到: {line_end_name}")
+                    return line_end_name
+            
+            return extinf_line.strip()
+        
+        # 测试用例
+        test_cases = [
+            '#EXTINF:-1 tvg-id="cctv1" tvg-name="CCTV1" tvg-logo="http://example.com/cctv1.png" group-title="央视",CCTV-1',
+            '#EXTINF:-1 tvg-id="cctv2" tvg-name="CCTV2" tvg-logo="http://example.com/cctv2.png" group-title="央视",CCTV-2',
+            '#EXTINF:-1 tvg-name="CCTV3" tvg-logo="http://example.com/cctv3.png",CCTV-3',
+            '#EXTINF:-1,CCTV-4'
+        ]
+        
+        expected_results = ["CCTV1", "CCTV2", "CCTV3", "CCTV-4"]
+        
+        for test_case, expected in zip(test_cases, expected_results):
+            result = extract_channel_name(test_case)
+            self.assertEqual(result, expected)
+    
+    def test_find_cctv_channels(self):
+        """测试查找CCTV相关的#EXTINF行"""
+        # 使用setUp中定义的m3u_content进行测试
+        lines = self.m3u_content.split('\n')
+        cctv_extinf_lines = [line for line in lines if 'CCTV' in line and '#EXTINF' in line]
+        
+        # 验证结果
+        self.assertEqual(len(cctv_extinf_lines), 2)
+        self.assertIn('CCTV1', cctv_extinf_lines[0])
+        self.assertIn('CCTV2', cctv_extinf_lines[1])
 
 
 if __name__ == '__main__':

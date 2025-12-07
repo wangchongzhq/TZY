@@ -7,6 +7,7 @@ import concurrent.futures
 from core.logging_config import get_logger, log_exception, log_performance, setup_logging
 from core.config import get_config
 from core.network import fetch_content
+from core.chinese_conversion import add_traditional_aliases
 
 # 设置日志
 setup_logging()
@@ -67,6 +68,9 @@ if not CHANNEL_MAPPING:
     for channel, aliases in additional_mappings.items():
         if channel in CHANNEL_MAPPING:
             CHANNEL_MAPPING[channel].extend(aliases)
+
+# 自动为所有频道别名添加繁体中文版本
+CHANNEL_MAPPING = add_traditional_aliases(CHANNEL_MAPPING)
 
 # 频道信息类
 class ChannelInfo:
@@ -276,13 +280,20 @@ def extract_channel_name_from_extinf(extinf_line):
 
 # 检查是否应该排除购物频道
 def should_exclude_channel(name):
-    """检查是否应该排除购物频道"""
+    """检查是否应该排除购物频道或CCTV数字超过17的频道"""
     try:
         # 排除购物相关频道
         shopping_keywords = ['购物', '导购', '电视购物']
         
         for keyword in shopping_keywords:
             if keyword in name:
+                return True
+        
+        # 检查CCTV频道数字是否超过17
+        cctv_match = re.match(r'^CCTV[- ]?(\d+)', name, re.IGNORECASE)
+        if cctv_match:
+            cctv_number = int(cctv_match.group(1))
+            if cctv_number > 17:
                 return True
         
         return False
@@ -293,7 +304,7 @@ def should_exclude_channel(name):
         return False
 
 # 检查是否应该排除该URL
-def should_exclude_url(url):
+def should_exclude_url(url, channel_name=''):
     """检查是否应该排除该URL
     排除规则：
     1. 包含example.com的URL
@@ -331,7 +342,7 @@ def should_exclude_url(url):
         open_filter_resolution = config.get('quality', {}).get('open_filter_resolution', True)
         
         if open_filter_resolution:
-            if should_exclude_resolution(url, min_resolution):
+            if should_exclude_resolution(url, channel_name, min_resolution):
                 return True
         
         return False
@@ -362,6 +373,10 @@ def filter_channel_name(name):
 def categorize_channel(channel):
     # 过滤频道名称
     filtered_name = filter_channel_name(channel.name)
+    
+    # 特殊处理春晚频道
+    if '春晚' in filtered_name or '春节联欢晚会' in filtered_name:
+        return "春晚"
     
     # 查找匹配的分类
     for category, channels in CHANNEL_CATEGORIES.items():
@@ -394,7 +409,7 @@ def merge_channels(all_channels):
             continue
         
         # 检查是否应该排除该URL
-        if should_exclude_url(channel.url):
+        if should_exclude_url(channel.url, filtered_name):
             excluded_urls += 1
             continue
         

@@ -76,6 +76,10 @@ def setup_logging(
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setLevel(LOG_LEVEL_MAP.get(log_level.upper(), logging.INFO))
         console_handler.setFormatter(formatter)
+        # 设置控制台输出编码为utf-8，避免Unicode编码错误
+        if hasattr(console_handler, 'setStream'):
+            console_handler.setStream(sys.stdout)
+        console_handler.encoding = 'utf-8'
         root_logger.addHandler(console_handler)
     
     # 添加文件处理器（带轮转功能）

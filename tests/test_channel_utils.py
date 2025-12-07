@@ -106,6 +106,69 @@ class TestChannelUtils(unittest.TestCase):
         self.assertEqual(len(valid), 5)  # 有效频道数
         self.assertEqual(len(invalid), 1)  # 无效频道数
         self.assertEqual(invalid[0].name, "无效频道")
+    
+    def test_should_exclude_resolution(self):
+        """测试分辨率过滤功能"""
+        from core.channel_utils import should_exclude_resolution
+        
+        # 测试央视频道分辨率过滤
+        self.assertFalse(should_exclude_resolution("http://example.com/cctv1", "CCTV1"))  # 未显示分辨率
+        self.assertFalse(should_exclude_resolution("http://example.com/cctv1", "CCTV1 (1080p)"))  # 1080p
+        self.assertTrue(should_exclude_resolution("http://example.com/cctv1", "CCTV1 (720p)"))  # 720p
+        self.assertTrue(should_exclude_resolution("http://example.com/cctv1", "CCTV1 (480p)"))  # 480p
+        
+        # 测试非央视频道分辨率过滤
+        self.assertFalse(should_exclude_resolution("http://example.com/btv1", "北京卫视 (1080p)"))  # 1080p
+        self.assertTrue(should_exclude_resolution("http://example.com/btv1", "北京卫视 (720p)"))  # 720p
+    
+    def test_categorize_channels(self):
+        """测试频道分类功能"""
+        from core.config import get_config
+        import re
+        from collections import defaultdict
+        
+        # 获取分类规则
+        CATEGORY_RULES = get_config('category.rules', {
+            "春晚": [r'春晚', r'春节联欢晚会'],
+            "央视": [r'CCTV', r'中央电视台', r'CGTN', r'央视'],
+            "卫视": [r'北京卫视', r'上海卫视', r'江苏卫视', r'浙江卫视', r'湖南卫视', r'东方卫视', r'广东卫视', r'深圳卫视', r'安徽卫视', r'山东卫视', r'天津卫视', r'四川卫视', r'重庆卫视', r'河南卫视', r'湖北卫视', r'江西卫视', r'云南卫视', r'辽宁卫视', r'黑龙江卫视', r'吉林卫视', r'福建卫视', r'广西卫视', r'河北卫视', r'山西卫视', r'陕西卫视', r'贵州卫视', r'甘肃卫视', r'海南卫视', r'宁夏卫视', r'青海卫视', r'新疆卫视', r'内蒙古卫视', r'西藏卫视', r'兵团卫视'],
+            "电影": [r'电影'],
+            "电视剧": [r'电视剧'],
+            "体育": [r'体育'],
+            "综艺": [r'综艺'],
+            "少儿": [r'少儿', r'动画'],
+            "新闻": [r'新闻'],
+            "音乐": [r'音乐'],
+            "财经": [r'财经'],
+            "科教": [r'科教', r'科学', r'教育'],
+            "生活": [r'生活'],
+            "法制": [r'法制'],
+            "旅游": [r'旅游'],
+            "戏曲": [r'戏曲'],
+            "购物": [r'购物'],
+            "纪实": [r'纪实'],
+            "农业": [r'农业'],
+            "国际": [r'国际'],
+            "其他": []
+        })
+        
+        def categorize_channel(channel_name):
+            """根据分类规则分类单个频道"""
+            for cat, patterns in CATEGORY_RULES.items():
+                for pattern in patterns:
+                    if re.search(pattern, channel_name, re.IGNORECASE):
+                        return cat
+            return "其他"
+        
+        # 测试分类功能
+        self.assertEqual(categorize_channel("CCTV-1 综合"), "央视")
+        self.assertEqual(categorize_channel("CCTV-5 体育"), "央视")
+        self.assertEqual(categorize_channel("北京卫视"), "卫视")
+        self.assertEqual(categorize_channel("江苏卫视"), "卫视")
+        self.assertEqual(categorize_channel("电影频道"), "电影")
+        self.assertEqual(categorize_channel("体育频道"), "体育")
+        self.assertEqual(categorize_channel("新闻频道"), "新闻")
+        self.assertEqual(categorize_channel("未知频道"), "其他")
 
 
 if __name__ == '__main__':

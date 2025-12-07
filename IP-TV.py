@@ -56,6 +56,7 @@ CHANNEL_CATEGORIES = {
                  '精品体育', '精品大剧', '精品纪录', '精品萌宠', '怡伴健康'],
     
     "音乐频道": ['CCTV音乐', '音乐Tai', '音乐台', 'MTV', 'MTV中文', '华语音乐', '流行音乐', '古典音乐'],
+    "春晚": [],
 }
 
 # 频道映射（别名 -> 规范名）
@@ -341,7 +342,7 @@ def should_exclude_channel(name):
         return False
 
 # 检查是否应该排除该URL
-def should_exclude_url(url):
+def should_exclude_url(url, channel_name=''):
     """检查是否应该排除该URL
     排除规则：
     1. 包含example.com的URL
@@ -379,7 +380,7 @@ def should_exclude_url(url):
         open_filter_resolution = config.get('quality', {}).get('open_filter_resolution', True)
         
         if open_filter_resolution:
-            if should_exclude_resolution(url, min_resolution):
+            if should_exclude_resolution(url, channel_name, min_resolution):
                 return True
         
         return False
@@ -406,8 +407,16 @@ def filter_channels(channels):
                     excluded_channels += 1
                     continue
                     
+                # 检查CCTV频道数字是否超过17
+                cctv_match = re.match(r'^CCTV[- ]?(\d+)', channel_name, re.IGNORECASE)
+                if cctv_match:
+                    cctv_number = int(cctv_match.group(1))
+                    if cctv_number > 17:
+                        excluded_channels += 1
+                        continue
+                    
                 # 检查是否应该排除该URL
-                if should_exclude_url(url):
+                if should_exclude_url(url, channel_name):
                     excluded_urls += 1
                     continue
                     

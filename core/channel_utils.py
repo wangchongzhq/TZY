@@ -457,6 +457,8 @@ def get_channel_statistics(channels: List[ChannelInfo]) -> Dict[str, Any]:
             'total_channels': 0,
             'total_groups': 0,
             'groups': {},
+            'cctv_channels': 0,
+            'cctv_ratio': 0,
             'average_name_length': 0,
             'average_url_length': 0
         }
@@ -468,10 +470,20 @@ def get_channel_statistics(channels: List[ChannelInfo]) -> Dict[str, Any]:
     total_name_length = sum(len(channel.name) for channel in channels)
     total_url_length = sum(len(channel.url) for channel in channels)
     
+    # 统计CCTV频道数量
+    cctv_count = 0
+    for channel in channels:
+        if 'CCTV' in channel.name.upper():
+            cctv_count += 1
+    
+    cctv_ratio = cctv_count / len(channels) if len(channels) > 0 else 0
+    
     stats = {
         'total_channels': len(channels),
         'total_groups': len(grouped),
         'groups': {group: len(channels) for group, channels in grouped.items()},
+        'cctv_channels': cctv_count,
+        'cctv_ratio': cctv_ratio,
         'average_name_length': total_name_length / len(channels),
         'average_url_length': total_url_length / len(channels)
     }
@@ -692,39 +704,36 @@ def get_video_resolution(url: str, timeout: int = 5) -> Optional[Tuple[int, int]
         logger.debug(f"使用FFmpeg检测分辨率: {url}")
         return get_video_resolution_ffmpeg(url, timeout)
 
-def should_exclude_resolution(url: str, min_resolution: str = '1920x1080') -> bool:
+def should_exclude_resolution(url: str, channel_name: str = '', min_resolution: str = '1920x1080') -> bool:
     """
     判断是否应该根据分辨率排除URL
-    1. 获取视频流分辨率
-    2. 与最小分辨率比较
+    仅检查频道名称中括号内的分辨率标识，如 (576p), (720p), (1080p)
     
     参数:
         url: 视频流URL
+        channel_name: 频道名称
         min_resolution: 最小分辨率，格式为 'widthxheight'
         
     返回:
         bool: 应该排除返回True，否则返回False
     """
-    # 检查是否开启分辨率过滤
-    if not get_config('quality.open_filter_resolution', False):
-        return False
-    
     try:
-        # 解析最小分辨率
-        min_width, min_height = map(int, min_resolution.split('x'))
+        # 解析最小分辨率高度
+        min_height = int(min_resolution.split('x')[1])
         
-        # 获取视频流分辨率
-        resolution = get_video_resolution(url, timeout=get_config('quality.timeout', 5))
-        
-        if resolution:
-            width, height = resolution
-            logger.debug(f"URL: {url}, 分辨率: {width}x{height}, 最小要求: {min_width}x{min_height}")
-            
-            # 检查是否低于最小分辨率
-            if width < min_width or height < min_height:
-                logger.info(f"排除低分辨率URL: {url} (分辨率: {width}x{height})")
-                return True
-        
+        # 仅检查频道名称中括号内的分辨率标识
+        if channel_name:
+            # 匹配括号中的分辨率信息，如 (576p), (720p), (1080p)
+            name_resolution_match = re.search(r'\((\d{3,4})p\)', channel_name, re.IGNORECASE)
+            if name_resolution_match:
+                height = int(name_resolution_match.group(1))
+                
+                # 检查是否低于最小分辨率
+                if height < min_height:
+                    logger.info(f"排除低分辨率频道: {channel_name} (分辨率: {height}p)")
+                    return True
+    
+        # 不在频道名称中显示低分辨率的，默认不排除
         return False
     except Exception as e:
         logger.error(f"检查分辨率是否应该排除时发生错误: {e}")
@@ -753,7 +762,7 @@ def normalize_channel_name(name: str) -> str:
     name = re.sub(r'\s+', ' ', name)
     
     # 去除常见的前缀后缀
-    prefixes = ['[\s\[\(]*(高清|HD|标清|SD|超清|4K|蓝光)[\s\]\)]*', '[\s\[\(]*(直播|卫视|电视台|频道)[\s\]\)]*']
+    prefixes = [r'[\s\[\(]*(高清|HD|标清|SD|超清|4K|蓝光)[\s\]\)]*', r'[\s\[\(]*(直播|卫视|电视台|频道)[\s\]\)]*']
     for prefix in prefixes:
         name = re.sub(r'^' + prefix, '', name, flags=re.IGNORECASE)
         name = re.sub(r'' + prefix + '$', '', name, flags=re.IGNORECASE)
