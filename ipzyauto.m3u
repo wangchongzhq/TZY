@@ -161,6 +161,7 @@ http://116.2.170.167:4010/rtp/232.0.0.93:1234
 https://migu.188766.xyz/?migutoken=9c657fb4873955581d3d74041bed323e&id=CCTV5p&type=yy
 #EXTINF:-1,CCTV-7
 http://223.241.247.214:9901/tsfile/live/0007_1.m3u8
+<<<<<<< HEAD
 #EXTINF:-1,CCTV文化精品
 http://sh.lnott.top:880/dx104.m3u8
 #EXTINF:-1,CCTV1综合
@@ -199,6 +200,22 @@ http://gslbmgsplive.miguvideo.com/migu/kailu/20200324/cctv17hd/50/index.m3u8?msi
 http://gslbmgsplive.miguvideo.com/migu/kailu/20200324/cctv4ouhd/50/index.m3u8?msisdn=202512071403199190c3345c624dce88a8f69eefcaa96a&mdspid=&spid=699004&netType=0&sid=2200179315&pid=2028597139&timestamp=20251207140319&Channel_ID=0116_2600037000-99000-200300220100002&ProgramID=608807419&ParentNodeID=-99&assertID=2200179315&client_ip=218.28.233.106&SecurityKey=20251207140319&promotionId=&mvid=2200179315&mcid=500020&playurlVersion=WX-A1-8.11.2-RELEASE&userid=&jmhm=&videocodec=h264&appCode=miguvideo_android&bean=mgspad&tid=android&conFee=0&puData=f5a6749f20c343d3737d8e8805266ebd&ddCalcu=dfb5veaa66y67a24590f8280ec83d4733d73&sv=10004&ct=android
 #EXTINF:-1,CCTV4美洲
 http://gslbmgsplive.miguvideo.com/migu/kailu/20200324/cctv4meihd/50/index.m3u8?msisdn=202512071403207ee467123be540a1aae5bc3a3b2da092&mdspid=&spid=699004&netType=0&sid=2200179344&pid=2028597139&timestamp=20251207140320&Channel_ID=0116_2600037000-99000-200300220100002&ProgramID=608807416&ParentNodeID=-99&assertID=2200179344&client_ip=218.28.233.106&SecurityKey=20251207140320&promotionId=&mvid=2200179344&mcid=500020&playurlVersion=WX-A1-8.11.2-RELEASE&userid=&jmhm=&videocodec=h264&appCode=miguvideo_android&bean=mgspad&tid=android&conFee=0&puData=59f1189799233438f559054593493d88&ddCalcu=8589vdfa31y91a48399759495203935453f8&sv=10004&ct=android
+=======
+#EXTINF:-1,CCTV-8
+http://124.116.183.146:9901/tsfile/live/0008_1.m3u8
+#EXTINF:-1,CCTV-9
+http://124.116.183.146:9901/tsfile/live/0009_1.m3u8
+#EXTINF:-1,CCTV-10
+http://124.116.183.146:9901/tsfile/live/0010_1.m3u8
+#EXTINF:-1,CCTV-11
+http://223.241.247.214:9901/tsfile/live/0011_1.m3u8
+#EXTINF:-1,CCTV-13
+https://event.pull.hebtv.com/jishi/cp1.m3u8
+#EXTINF:-1,CCTV-14
+https://event.pull.hebtv.com/jishi/cp2.m3u8
+#EXTINF:-1,CCTV20241
+https://p2.bdstatic.com/rtmp.liveshow.lss-user.baidubce.com/live/stream_bduid_6488563992_8982723413/merged_1707497046297_88536_25144_41936.m3u8
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,CCTV-1綜合頻道
 http://39.134.24.24/PLTV/88888888/224/3221225684/index.m3u8
 #EXTINF:-1,CCTV-2財經頻道
@@ -493,6 +510,10 @@ http://123.138.22.30:9901/tsfile/live/0015_1.m3u8?key=txiptv&playlive=1&authid=0
 http://120.192.226.35:8009/hls/16/index.m3u8
 #EXTINF:-1,CCTV+2
 https://cd-live-stream.news.cctvplus.com/live/smil:CHANNEL2.smil/playlist.m3u8
+#EXTINF:-1,CCTV4欧洲
+http://106.53.99.30/tv/hot.php?id=cctv4o
+#EXTINF:-1,CCTV4美洲
+http://106.53.99.30/tv/hot.php?id=cctv4m
 #EXTINF:-1,泡沫橘颂整理
 http://em.21dtv.com/songs/60143060.mkv
 #EXTINF:-1,追梦人个人自用
@@ -3512,6 +3533,7 @@ http://111.162.205.166:8686/rtp/225.1.1.179:5002
 #EXTINF:-1,天津农村广播
 http://111.162.205.166:8686/rtp/225.1.1.180:5002
 #EXTINF:-1,新闻频道
+<<<<<<< HEAD
 http://tvcdn.stream3.hndt.com/tv/65bb6966017e100059b75a8500000000_transios/playlist.m3u8?wsSecret=355f7b5d52ad74e7c83ef92ffb64bccd&wsTime=1765101640
 #EXTINF:-1,民生频道
 http://tvcdn.stream3.hndt.com/tv/65bef28a017e10009c49d5f900000000_transios/playlist.m3u8?wsSecret=213f57631b61336e9e2078d174a04f66&wsTime=1765101640
@@ -3535,6 +3557,31 @@ https://dxtx.hntv.tv/live/ydxq.m3u8?txSecret=caad41b421fdab7fa0dfbaf96f59f9f0&tx
 http://tvcdn.stream3.hndt.com/tv/d34d1a2b0178100022de972e00000000_transios/playlist.m3u8?wsSecret=bcb2e2c02cd595ad8ef0ede4f00ee6f6&wsTime=1765101640
 #EXTINF:-1,深圳卫视4K
 https://iptv.catvod.com/live.php?id=%E6%B7%B1%E5%9C%B3%E5%8D%AB%E8%A7%864K%E5%8F%B0
+=======
+http://tvcdn.stream3.hndt.com/tv/65bb6966017e100059b75a8500000000_transios/playlist.m3u8?wsSecret=41568cde437575d9e9d21cabd82fafcc&wsTime=1765058407
+#EXTINF:-1,民生频道
+http://tvcdn.stream3.hndt.com/tv/65bef28a017e10009c49d5f900000000_transios/playlist.m3u8?wsSecret=28298947c9dfa614da41483d286f7cf6&wsTime=1765058407
+#EXTINF:-1,法治频道
+http://tvcdn.stream3.hndt.com/tv/65be54a9017e1000af59fb4800000000_transios/playlist.m3u8?wsSecret=1493d7c92c410acb44c7a04c7e11d6ea&wsTime=1765058407
+#EXTINF:-1,公共频道
+http://tvcdn.stream3.hndt.com/tv/65b93894017e10000ae6b07d00000000_transios/playlist.m3u8?wsSecret=480ef65abd52ad8de2eeb3c0c9715c46&wsTime=1765058407
+#EXTINF:-1,电视剧频道
+http://tvcdn.stream3.hndt.com/tv/65bd329b017e1000648cd2ed00000000_transios/playlist.m3u8?wsSecret=65481f31bbd64aedbd8739983a0a2cb8&wsTime=1765058407
+#EXTINF:-1,梨园频道
+https://dxtx.hntv.tv/live/lypd.m3u8?txSecret=10c771842a0be59e8b575d765173ec96&txTime=7B923E0A&wsSecret=30979b927257d717d8ab84e5e0cb2c8a&wsTime=1765058407
+#EXTINF:-1,文物宝库
+http://tvcdn.stream3.hndt.com/tv/65b5a69d017e1000aa645bea00000000_transios/playlist.m3u8?wsSecret=ccbb361879860fe9b02d95a8e98383af&wsTime=1765058407
+#EXTINF:-1,武术频道
+https://dxtx.hntv.tv/live/wssj.m3u8?txSecret=c38b4d31ba4c45c6babb5c47132123e3&txTime=7ABB976A&wsSecret=2db49fe34944870a9a1c1def50c1b76b&wsTime=1765058407
+#EXTINF:-1,睛彩中原
+http://tvcdn.stream3.hndt.com/tv/65b27d4c017e100039bd55c200000000_transios/playlist.m3u8?wsSecret=615bcd308c8c76724cf9f06871233585&wsTime=1765058407
+#EXTINF:-1,移动戏曲频道
+https://dxtx.hntv.tv/live/ydxq.m3u8?txSecret=caad41b421fdab7fa0dfbaf96f59f9f0&txTime=7B2E515F&wsSecret=e272ac62e23fd43d4903b4b43c297597&wsTime=1765058407
+#EXTINF:-1,象视界
+http://tvcdn.stream3.hndt.com/tv/d34d1a2b0178100022de972e00000000_transios/playlist.m3u8?wsSecret=45762ba40ae3dbb6727edc6d37eaa39f&wsTime=1765058407
+#EXTINF:-1,广东卫视4K
+https://iptv.catvod.com/live.php?id=%E5%B9%BF%E4%B8%9C%E5%8D%AB%E8%A7%864K%E5%8F%B0
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,凤凰古城东关门
 https://gcalic.v.myalicdn.com/gc/fhgcdgm_1/index.m3u8
 #EXTINF:-1,凤凰古城南华山
@@ -3549,6 +3596,7 @@ http://play1-qk.nmtv.cn/live/1686560387346365.m3u8
 http://61.216.67.119:1935/bltvhd/bltv1/chunklist_w1266569526.m3u8
 #EXTINF:-1,香港卫视
 http://webcast.hkstv.tv/livestream/mutfysrq/playlist.m3u8
+<<<<<<< HEAD
 #EXTINF:-1,亚洲卫视
 https://fenghuang.tv12.xyz/173.m3u8
 #EXTINF:-1,CGTN外语纪录
@@ -3657,6 +3705,8 @@ http://gslbmgsplive.miguvideo.com/wd_r3/cctv/jingdiandonghua/600/index.m3u8?msis
 http://gslbmgsplive.miguvideo.com/migu/virtuallive2/5900002409/50/20210706/index.m3u8?msisdn=202512071405104371d1b823794c42a78597581090ba4d&mdspid=&spid=800033&netType=0&sid=5910019523&pid=2028597139&timestamp=20251207140510&Channel_ID=0116_2600037000-99000-200300220100002&ProgramID=713589837&ParentNodeID=-99&assertID=5910019523&client_ip=218.28.233.106&SecurityKey=20251207140510&promotionId=&mvid=5900002419&mcid=500020&playurlVersion=WX-A1-8.11.2-RELEASE&userid=&jmhm=&videocodec=h264&appCode=miguvideo_android&bean=mgspad&tid=android&conFee=0&puData=6f205c56d7713e39d9ff01623c953702&ddCalcu=260fv72a30k55a9cc5362d671701f3fe93d9&sv=10004&ct=android
 #EXTINF:-1,环球旅游
 http://gslbmgsplive.miguvideo.com/migu/kailu/hqly/50/20250915/index.m3u8?msisdn=2025120714051280fc66bd842e45a09d34aa09351bb12d&mdspid=&spid=600697&netType=0&sid=5910022200&pid=2028597139&timestamp=20251207140512&Channel_ID=0116_2600037000-99000-200300220100002&ProgramID=958475356&ParentNodeID=-99&assertID=5910022200&client_ip=218.28.233.106&SecurityKey=20251207140512&promotionId=&mvid=5900006723&mcid=500020&playurlVersion=WX-A1-8.11.2-RELEASE&userid=&jmhm=&videocodec=h264&appCode=miguvideo_android&bean=mgspad&tid=android&conFee=0&puData=f9eb4f6baf3a6d26d473b63c18793c19&ddCalcu=9f19vcea3bb94a7f861bca3f63ba367d42d6&sv=10004&ct=android
+=======
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,经典小品
 http://zzy789.xyz/douyu1.php?id=9067836
 #EXTINF:-1,宋小宝经典小品
@@ -4361,6 +4411,8 @@ http://zteres.sn.chinamobile.com:6060/yinhe/2/ch00000090990000002485/index.m3u8?
 http://zteres.sn.chinamobile.com:6060/yinhe/2/ch00000090990000002496/index.m3u8?virtualDomain=yinhe.live_hls.zte.com
 #EXTINF:-1,發現之旅
 http://zteres.sn.chinamobile.com:6060/yinhe/2/ch00000090990000001314/index.m3u8?virtualDomain=yinhe.live_hls.zte.com
+#EXTINF:-1,老故事
+http://zteres.sn.chinamobile.com:6060/yinhe/2/ch00000090990000001315/index.m3u8?virtualDomain=yinhe.live_hls.zte.com
 #EXTINF:-1,山東教育
 http://zteres.sn.chinamobile.com:6060/yinhe/2/ch00000090990000001317/index.m3u8?virtualDomain=yinhe.live_hls.zte.com
 #EXTINF:-1,上海紀實人文
@@ -4717,8 +4769,6 @@ http://121.199.57.64:5000/udp/239.77.1.237:5146
 http://www.v5b7.com.cn:7088/udp/239.45.1.109:5140
 #EXTINF:-1,河北4K
 https://event.pull.hebtv.com:443/live/live101.m3u8
-#EXTINF:-1,廣東4K超高清
-http://2099.tv12.xyz/1351_1752408214496.m3u8
 #EXTINF:-1,廣東衛視4K
 http://xxwx.yoesun.com/xxw/衛視4K.php?id=gd4k
 #EXTINF:-1,深圳衛視4K
@@ -5707,8 +5757,6 @@ https://amdlive-ch02-ctnd-com.akamaized.net/arirang_2ch/smil:arirang_2ch.smil/ch
 https://rt-glb.rttv.com/live/rtnews/playlist_4500Kb.m3u8
 #EXTINF:-1,Al Jazeera(卡塔爾半島新聞台)
 https://live-hls-v3-aje.getaj.net/AJE-V3/01.m3u8
-#EXTINF:-1,FOX News(美國福克斯新聞台)
-http://fox-foxnewsnow-samsungus.amagi.tv/playlist720p.m3u8
 #EXTINF:-1,Live Now FOX（美國福克斯新聞直播頻道）
 https://fox-foxnewsnow-samsungus.amagi.tv/playlist.m3u8
 #EXTINF:-1,Bloomberg(美國彭博財經頻道)
@@ -5743,8 +5791,6 @@ https://live.cnbcindonesia.com/livecnbc/smil:cnbctv.smil/master.m3u8
 https://5be2f59e715dd.streamlock.net/CNBC/smil:CNBCSandton.smil/playlist.m3u8
 #EXTINF:-1,ABC News(澳大利亞全國廣播公司新聞頻道)
 https://content-aapm1.uplynk.com/channel/3324f2467c414329b3b0cc5cd987b6be/b.m3u8?rays=hjigfedcba&ad.flex=15&ad.access_level=0&expand=drmOff&v=3&ad=abcnews_live&ad.pp=datg-live-vdms&ad.v=2&ad.is_lat=0&ad.npa=0&ad.tfcd=0&ad.vast3=1&ad.vid=$program_id&ad.description_url=https://abcnews.go.com/&ad.ppid=eb16dcd47de94e1f8a125ea0b7b43333&ad.us_privacy=&prbd.server=drax&ad.prbd=drax&ad.rdp=0&ad.cust_params=chan%3Dabc%26beacTyp%3Dssai%26stp%3Dvdms%26ait%3Dssai%26vdm%3Dlive%26var%3D16x9%26accesslevel%3D0%26isAuth%3D0%26lang%3Den%26aff%3Dabc%26swid%3Deb16dcd4-7de9-4e1f-8a12-5ea0b7b43333%26tag%3D%26objid%3Dabc_live11%26refDomain%3Dhttps%3A%2F%2Fabcnews.go.com%2FLive%26plt%3Dmobile%20web%26d_us_privacy%3D&ad.adUnit=/abc-news/abcnews.com/web/video&ad.paln=AQzzBGQE3JYCbFvfGjY3eUQ9yZC4Eq_U01L_PMXwSVpaLiMBsm6ANC7pyGTiMzzq2nWwKn1f3QWgntkk2c5xWTO5k3Oa5NftQDhsZUWU8JNJEY2K4ByxlnNHqk4wOPqeu60nxlaPh2yX4bFs37dDN18ZjBJhCFpmBGXX4u7WITpiXKs8C5PHDz1nOIwcvQBa0sSWiMG9ezkdMYhgarJ_eF92vUu4J_Tc7_STHX75I_6dkaSZfQsQlvviKlJeDBaSJJ49LKrhs_8pKqXc5cDZMaJnqa5iSrbIEfYh6O5crzkYxCjSKuqBAwBMw88laom-2M7f4nUtzvMlcAkhHUQgSej4BZjS5kvlDWig24xpyxGYExHH6bB57BeydHsBRG3emNNYbfv-CtsupY7GaGABHMTqimJw7zapbudoqqJ2pHNTKb5qSSdsx7C3kvGlXtoMwbzrrAg3YqwX2Wae_EhYDAN7hazhNUzelHOqtH5ViMaPQ6wKlHyNfm7WzVkTtbM8uU77xFL9EkuzCWbMyLhWAHlesHZ3AZYiifugP0SNgnmKkzqL9_m63mEqq0HKDOkMlRLt3DKtZ4Y4muXgpjdpE1JTEIoVMb7mWrCPMa40nxpcXtcMmIHJIbZ09ka0XeDI2EBALWhBbsUJQ2x4K6zL14p9XhUv-UYbsiApYh9VbH4Wy5wzflmJFYXFFYZof8QVwhBLSK6l4dEyWpuz6_-Tc-j-8wxCU2Sdg2gb3t9qDoYMb9cd-0q-ppbuZvlIVAvkuUKQ5kk0GMeu_suo8-bF364OGOg5qvq52VXF74i_45PADSw-aviMwPgYH8i-o8Yjej5gFYD2Snw3GBv1huvKXi1nJS6QylYlBUIT2-IwT3oQzpPNueWbEPbcrttGFYQzn6Te9VYtJ8qRQmoDs1LnQX0awWby4Jgf_XkrfOwYIQ..&pbs=030dc8670a504de6be57917afdc9a9e4
-#EXTINF:-1,Fox weather(福克斯天氣頻道)
-https://247wlive.foxweather.com/stream/index_1280x720.m3u8
 #EXTINF:-1,UNTV(聯合國頻道)
 https://cflive.kaltura.com/scf/env/d.live.nvp1/live/hls/p/2503451/e/1_gb6tjmle/tl/main/st/0/t/H4tcL3wAr3d1RwgMHpoF8A/index-s32.m3u8?Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9jZmxpdmUua2FsdHVyYS5jb20vc2NmL2Vudi9kLmxpdmUubnZwMS9saXZlL2hscy9wLzI1MDM0NTEvZS8xX2diNnRqbWxlL3RsL21haW4vc3QvMC90L0g0dGNMM3dBcjNkMVJ3Z01IcG9GOEEvKiIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTc1MzUxMDk5OX19fV19&Signature=exNwCofITfNlaPpCJE7-rxUusJ1GftpMdUYIfnrMfRxMHVtTqDsMt0tq~Ki91VIinPy-aXI8x~JbazaVP2tyEiRo6ainmE8g5hQwCY5X8PGHa1-Lzmg1za28~SF93tL6pVb1cNomo4VkPUdSQQsEAh71rTQE2DEMP71rjH6BAZjachB3NsFJmE8NZVKRLI87GjJLhTixjsb3HKoQRPhd2~VxdfKGBhsV90o87x6o~rY4hQaZGqANBKv9SUA8W5HxekF6RkESdkg-W7J2Qm30uLgkfnCf2Cp-25-m739xc5hlpJLWUx0nociw4d5KFjB-3swUwR~ecpRXK4tbX3y2bA__&Key-Pair-Id=K31ANTJBLNVBEC
 #EXTINF:-1,Звезда Zvezda（俄羅斯紅星電視台）
@@ -5907,6 +5953,8 @@ http://dbiptv.sn.chinamobile.com/PLTV/88888893/224/3221226981/index.m3u8
 http://dbiptv.sn.chinamobile.com/PLTV/88888893/224/3221227132/index.m3u8
 #EXTINF:-1,衛生健康
 http://dbiptv.sn.chinamobile.com/PLTV/88888893/224/3221227146/index.m3u8
+#EXTINF:-1,中学生
+http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221227132/index.m3u8
 #EXTINF:-1,卫生健康
 http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221227146/index.m3u8
 #EXTINF:-1,奕坦春秋
@@ -6439,12 +6487,16 @@ http://stream.thmz.com/wxtv4/playlist.m3u8
 http://stream.thmz.com/wxtv5/playlist.m3u8
 #EXTINF:-1,靖江新闻综合
 http://visit.jjbctv.com:1935/live/xwzhpc/playlist.m3u8
+#EXTINF:-1,镇江新闻综合
+http://tv.q1.cm/stream/b71cb8847f56152f3d58e9b91368d1e647088849e09ac441e4ceebab99c75847.m3u8
 #EXTINF:-1,泰州-1
 http://stream1.mytaizhou.net/xwzhnew/playlist.m3u8
 #EXTINF:-1,泰州-2
 http://stream1.mytaizhou.net/jjshnew/playlist.m3u8
 #EXTINF:-1,泰州-3
 http://stream1.mytaizhou.net/ysylnew/playlist.m3u8
+#EXTINF:-1,盐城新闻综合
+https://live1yc.0515yc.cn/ycyt01/sd/live.m3u8
 #EXTINF:-1,盐城城市公共
 https://live1yc.0515yc.cn/ycet02/sd/live.m3u8
 #EXTINF:-1,盐城法制生活
@@ -6481,8 +6533,6 @@ http://www.cjcrcb.top:65500/rtp/238.125.2.177:5140
 http://www.cjcrcb.top:65500/rtp/238.125.2.172:5140
 #EXTINF:-1,環球旅遊
 http://www.cjcrcb.top:65500/rtp/238.125.2.176:5140
-#EXTINF:-1,YMG未來頻道
-http://l.cztvcloud.com/channels/lantian/SXyuhang3/720p.m3u8
 #EXTINF:-1,SITV七彩戲劇
 http://zteres.sn.chinamobile.com:6060/000000001000/2000000002000000010/index.m3u8?channel-id=hnbblive&Contentid=2000000002000000010&livemode=1&stbId=3
 #EXTINF:-1,SITV東方財經
@@ -7443,8 +7493,6 @@ https://www.youtube.com/watch?v=DTNkEm6jaqQ
 http://61.216.67.119:1935/TWHG/E1/chunklist_w7058102.m3u8
 #EXTINF:-1,红豆電視台
 https://hls.hongdou.com.tw/redbeanlife-hongdou/hongdou-001/playlist.m3u8
-#EXTINF:-1,生命電視台
-http://211.73.19.201/live/AB167E56-808C-81D4-6471-76DC400D5192.m3u8?fmt=x264_1200K_ts&cpid=admin&size=1920X1080
 #EXTINF:-1,唯心電視
 http://mobile.ccdntech.com/transcoder/_definst_/vod164_Live/live/playlist.m3u8
 #EXTINF:-1,華藏衛視
@@ -7473,8 +7521,6 @@ https://www.youtube.com/watch?v=9LGskHqfKQA&pp=uAQw
 https://btsu4k5-hisng.cdn.hinet.net/live/pool/btsLive2/hievent-hls/btsLive2.m3u8
 #EXTINF:-1,希望電視台
 https://jstre.am/live/jsl:nGL7123If9H.m3u8
-#EXTINF:-1,Supreme Master TV(無上師電視台)
-https://lbs-us1.suprememastertv.com/720p.m3u8
 #EXTINF:-1,大立電視(維修)
 http://www.dalitv.com.tw:4568/live/dali/index.m3u8
 #EXTINF:-1,富立電視台
@@ -7635,8 +7681,6 @@ https://cdn.deepcore.online/hlsme/ctv_hk.m3u8
 https://mediaserver.abnvideos.com/streams/abnchina.m3u8
 #EXTINF:-1,CCN TV(歐洲中國平台)
 https://cdn.istoikona.com/ccnrtv/live/playlist.m3u8
-#EXTINF:-1,無上師電視台
-https://lbs-us1.suprememastertv.com/720p.m3u8
 #EXTINF:-1,Bloomberg TV Asia
 https://bloomberg.com/media-manifest/streams/asia.m3u8
 #EXTINF:-1,Bloomberg TV Asia Live Event
@@ -8027,16 +8071,12 @@ https://liveplay-srs.voc.com.cn/hls/tv/203_10cdf5.m3u8
 http://live.hnxttv.com:9601/live/xwzh/800K/tzwj_video.m3u8
 #EXTINF:-1,耒阳电视
 https://liveplay-srs.voc.com.cn/hls/tv/27_e9e1e5.m3u8
-#EXTINF:-1,衡阳电视
-https://liveplay-srs.voc.com.cn/hls/tv/183_554704.m3u8
 #EXTINF:-1,新邵综合
 https://liveplay-srs.voc.com.cn/hls/tv/171_daca67.m3u8
 #EXTINF:-1,城步电视
 https://liveplay-srs.voc.com.cn/hls/tv/169_b4d7a4.m3u8
 #EXTINF:-1,汨罗综合
 https://liveplay-srs.voc.com.cn/hls/tv/166_a4ad1b.m3u8
-#EXTINF:-1,桑植综合
-https://liveplay-srs.voc.com.cn/hls/tv/185_938292.m3u8
 #EXTINF:-1,沅江融媒
 https://liveplay-srs.voc.com.cn/hls/tv/163_2c7011.m3u8
 #EXTINF:-1,桂阳综合
@@ -8059,8 +8099,6 @@ https://liveplay-srs.voc.com.cn/hls/tv/20_68acda.m3u8
 https://liveplay-srs.voc.com.cn/hls/tv/34_5156ed.m3u8
 #EXTINF:-1,新化综合
 https://liveplay-srs.voc.com.cn/hls/tv/170_49c556.m3u8
-#EXTINF:-1,吉首综合
-https://liveplay-srs.voc.com.cn/hls/tv/143_70175b.m3u8
 #EXTINF:-1,花垣综合
 https://liveplay-srs.voc.com.cn/hls/tv/134_d590ee.m3u8
 #EXTINF:-1,古丈综合
@@ -8245,10 +8283,6 @@ https://livestream.nsmall.com/IPHONE/nsmallMobile.m3u8
 https://shoppstream.nsmall.com/IPHONE/mobile.m3u8
 #EXTINF:-1,OUN 방송대학TV
 https://live.knou.ac.kr/knou1/live1/playlist.m3u8
-#EXTINF:-1,RUTC TV
-http://d26sxnc75smwvh.cloudfront.net/livehttporigin/rutclive_720p2.stream/playlist.m3u8
-#EXTINF:-1,신세계쇼핑(Shinsegae TV Shopping)
-https://liveout.catenoid.net/live-02-shinsegaetvshopping/shinsegaetvshopping_720p/playlist.m3u8
 #EXTINF:-1,쇼핑엔티(Shopping NT)
 https://live.shoppingntmall.com/live/10011.m3u8
 #EXTINF:-1,W쇼핑(W Shopping)
@@ -8311,12 +8345,8 @@ https://cdntv.tbs.seoul.kr/tbs/tbs_tv_web.smil/playlist.m3u8
 http://ebsonairios.ebs.co.kr/plus1tablet500k/tablet500k/plus1tablet500k.index.m3u8
 #EXTINF:-1,EBS+2（首爾傳媒財團電視頻道）
 http://ebsonairios.ebs.co.kr/plus2tablet500k/tablet500k/plus2tablet500k.index.m3u8
-#EXTINF:-1,NBS（韓國農業廣播電視頻道）
-https://media.joycorp.co.kr:4443/live/live_720p/playlist.m3u8?checkedby:iptvcat.net
 #EXTINF:-1,NHTV（韓國聯合通訊社新聞頻道）
 http://nonghyup.flive.skcdn.com/nonghyup/_definst_/nhlive/playlist.m3u8
-#EXTINF:-1,National Assembly TV（韓國國會電視台）
-https://m.webcast.go.kr/live/_definst_/smil:natv_720p.smil/playlist.m3u8
 #EXTINF:-1,소상공인방송(小型企業市場電視台)
 http://139.150.248.29:1935/smartlive/558/91258ac21591769e21f41b96f26d883e/playlist.m3u8
 #EXTINF:-1,한국가요채널Korean Song
@@ -8359,8 +8389,6 @@ http://serv7.iptv11.com/977/video.m3u8?token=95C80E0B63D1B
 https://shoppstream.nsmall.com/IPHONE/mobile.m3u8
 #EXTINF:-1,Home & Shopping
 https://s28.qtcdn.co.kr/media/liveM3U8/idx/518045142/enc/1860408350/playlist.m3u8
-#EXTINF:-1,Shinsegae TV Shopping
-https://liveout.catenoid.net/live-02-shinsegaetvshopping/shinsegaetvshopping_720p/playlist.m3u8
 #EXTINF:-1,W Shopping
 https://liveout.catenoid.net/live-05-wshopping/wshopping_1500k/playlist.m3u8
 #EXTINF:-1,CJONSTYLE
@@ -8451,16 +8479,12 @@ https://dmnsygceaez9z.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a
 https://d2hbbjdi2lggii.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-sbr4a75paq6du-ssai-prd/080e7b54_ab07_49c8_b8e3_8811cf63fde2/hls/playlist.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D&ads.service_id=KRBC3200031KO
 #EXTINF:-1,KBS 넝쿨째 굴러온 당신
 https://dxu4wvtv4p1ec.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-0b62ma21bqfqg-ssai-prod/hls-harvester2-1293-prod-apnortheast2/ap-northeast-2/cc-0b62ma21bqfqg/master.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D
-#EXTINF:-1,tvN 고스트닥터
-https://d25mdvvpht3395.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-p8ea370fl7r4f-ssai-prd/82f296fd_2916_45b7_b799_525a4226957a/hls/playlist.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D&ads.service_id=KRBC3200013UR
 #EXTINF:-1,tvN 이브
 https://d1ttfbptd053sm.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-m5y15fbf80yi9-ssai-prd/151248c2_45a2_45a5_a31f_bb9fc72969dd/hls/playlist.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D&ads.service_id=KRBC3200032ZM
 #EXTINF:-1,tvN 나의 아저씨
 https://dp9vqmqe1b62.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-rqup1fpzurgqx-ssai-prd/dc942d76_e776_4c34_8e0c_f09008912455/hls/playlist.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D&ads.service_id=KRBC32000248R
 #EXTINF:-1,tvN 살인자의 쇼핑목록
 https://d2mtknivycr9zl.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-ndbnpcfczvjbq-ssai-prd/b32caf42_751e_4035_8904_b2cded676be7/hls/playlist.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D&ads.service_id=KRBC32000156C
-#EXTINF:-1,tvN 나인: 아홉번의 시간여행
-https://d2mecmy93314jg.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-ysoihaaolxdeo-ssai-prd/8774f2b9_200a_41a9_b741_0882edc4765b/hls/playlist.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D&ads.service_id=KRBC3200016H1
 #EXTINF:-1,OCN 라이프온마스
 https://d21dxaer0ypwk1.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-a6m2cy2rylsvo-ssai-prd/54ac8e25_eb5a_4f10_ba20_ffb254f0a16c/hls/playlist.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D&ads.service_id=KRBC32000261J
 #EXTINF:-1,tvN 악의꽃
@@ -8471,8 +8495,6 @@ https://ads.its-newid.net/api/manifest.m3u8?tp=samsung_tvplus&channel_name=%EC%9
 https://ads.its-newid.net/api/manifest.m3u8?tp=samsung_tvplus&channel_name=mbcevery1%EB%B3%84%EC%88%9C%EA%B2%80&channel_id=newid_049&apikey=b97c7a7d0c82424bb607e141ef215779&auth=80d47d1d-b88fe1dd-bab31df3-623cfbeb&ads.live=%5BCONTENT_LIVE%5D&ads.device_did=%7BPSID%7D&ads.ifa=%5BIFA%5D&ads.ifatype=%5BIFA_TYPE%5D&ads.lat=%5BLMT%5D&ads.donotsell=%5BDNS%5D&ads.ip=%5BIP%5D&ads.gdpr=%5BGDPR%5D&ads.gdprconsent=%5BGDPR_CONSENT%5D&ads.country=%5BCOUNTRY%5D&ads.us_privacy=%5BUS_PRIVACY%5D&ads.appstoreurl=%5BAPP_STOREURL%5D&ads.bundleid=%5BAPP_BUNDLE%5D&ads.app.name=%7BAPP_NAME%7D&ads.appversion=%5BAPP_VERSION%5D&ads.devicetype=%5BDEVICE_TYPE%5D&ads.devicemake=%5BDEVICE_MAKE%5D&ads.devicemodel=%5BDEVICE_MODEL%5D&ads.targetad=%5BTARGETAD_ALLOWED%5D&ads.content_title=%5BPROGRAM_TITLE%5D&ads.content_series=%5BSERIES_TITLE%5D&ads.content_season=%5BSEASON_TITLE%5D&ads.content_episode=%5BEPISODE_NO%5D&ads.content_length=%5BCONTENT_LENGTH%5D&ads.device.dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D
 #EXTINF:-1,중화TV 금수미앙
 https://d18izuz3xw10qm.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-7d2zn3pthct37-ssai-prd/68bf80a2_aec4_494d_b2ef_63779ed40809/hls/playlist.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D&ads.service_id=KRBC8000128W
-#EXTINF:-1,중화TV 향밀침침신여상
-https://d27qq4sc9v1h7c.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-dxfwub7u3zl2a-ssai-prd/328d5389_0716_4717_979f_372036a0d322/hls/playlist.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D&ads.service_id=KRBC800013YF
 #EXTINF:-1,MBC 무한도전
 https://d10m2y49qo2prz.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-ti9izov8t0kyp-prod/Channel_MBC_1.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D
 #EXTINF:-1,MBC every1 어서와 한국은 처음이지?
@@ -8521,8 +8543,6 @@ https://d3ductxks3ekko.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68
 https://d151dxm6owf2zq.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-rbhbw3vbbdjci-ssai-prd/23a98766_04e3_4a66_9467_aa8b36e32a7d/hls/playlist.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D&ads.service_id=KRBC3200023BG
 #EXTINF:-1,Mnet 걸스플래닛 999: 소녀대전
 https://d35dv31kxp3bol.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-oc5lbsxrbmd0d-ssai-prd/f9d55b7b_6be1_465e_9451_05ebac892aed/hls/playlist.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D&ads.service_id=KRBC32000191N
-#EXTINF:-1,tvN 꽃보다할배 in 그리스
-https://d3kirm9c53tl5m.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-us244sbpf51mr-ssai-prd/1e735686_e190_4801_944d_651719fca85a/hls/playlist.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D&ads.service_id=KRBC32000200B
 #EXTINF:-1,tvN 윤식당2
 https://d2jgaw7uttn3h3.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-f49y0pr4caw7w-ssai-prd/b1e01036_7c37_48b3_9137_7ecc71b50661/hls/playlist.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D&ads.service_id=KRBC3200021ZA
 #EXTINF:-1,MBC every1 식신원정대
@@ -8539,8 +8559,6 @@ https://dxkp9eljtcams.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a
 https://d3j0mi1rfmansu.cloudfront.net/v1/master/72588bff830dec7b26d7cbbf5f3c24928aec5c03/cc-p7u2m4ayh1qsb-stage/hls-harvester2-1293-prod/us-east-1/cc-p7u2m4ayh1qsb/master.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D
 #EXTINF:-1,MBC 지붕뚫고 하이킥
 https://dgaj785lmfjju.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-jsnzm21r7lwrj-prod/Channel_MBC_10.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D
-#EXTINF:-1,tvN SHOW 프리한19(15-26회)
-https://d1zto4uvqkznpl.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-e02jwpz12nm4y-ssai-prd/a8dbe12b_5883_496b_8f6e_c56ef91558c5/hls/playlist.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D&ads.service_id=KRBC3200025QG
 #EXTINF:-1,tvN 놀라운 토요일(16-28회)
 https://d2zyqoz1zsj2mq.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-i9yul1lyegl6e-ssai-prd/6d07fe2a_003a_4879_acfc_44e3c3c10f03/hls/playlist.m3u8?ads.device_did=%7BPSID%7D&ads.device_dnt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D&ads.service_id=KRBC3200014XZ
 #EXTINF:-1,MBN 여행생활자 집시맨
@@ -9231,8 +9249,6 @@ http://symc-cdn.violin.co.th:1935/tndedge/whitechannel/chunklist.m3u8
 https://vdo.plathong.net/flash7057/flash7057/playlist.m3u8
 #EXTINF:-1,TV Muslim Thailand
 https://vdo.plathong.net/tvmuslim/tvmuslim/playlist.m3u8
-#EXTINF:-1,Top News
-https://live.topnews.co.th/hls/topnews_a_720.m3u8
 #EXTINF:-1,Thai Parliament Television
 https://tv-live.tpchannel.org/live/tv.m3u8
 #EXTINF:-1,Thai Chaiyo
@@ -9283,8 +9299,6 @@ https://psiiptv-b.sky-cdn.com/v2h8-playlist/index.m3u8
 https://tx1.ibctamil.tv/CDN_IBC_Bhakthi/tracks-v1a1/mono.m3u8
 #EXTINF:-1,MixMajorChannel
 https://edge6a.v2h-cdn.com/mix_major/mix_major.stream/chunklist_w1656949848.m3u8
-#EXTINF:-1,CartoonClub
-https://edge2-bkk.3bb.co.th:9443/Web_CartoonClub_Live/cartoonclub_480P.stream/chunklist_w1788175224.m3u8
 #EXTINF:-1,CABLE37HD
 http://www5.cabletv.co.th/StreamToCTV/cablechannel/playlist.m3u8
 #EXTINF:-1,Thainews
@@ -9297,8 +9311,6 @@ http://54c241893bf39.streamlock.net:1935/bigfm/bigfm/playlist.m3u8
 http://54c241893bf39.streamlock.net:1935/looktungnetwork1/looktungnetwork1/chunklist.m3u8
 #EXTINF:-1,ลูกทุ่งเน็ตเวิร์ค2
 http://54c241893bf39.streamlock.net:1935/looktungnetwork2/looktungnetwork2/chunklist.m3u8
-#EXTINF:-1,TOPNEWS
-https://live.topnews.co.th/hls/topnews_a_720.m3u8
 #EXTINF:-1,ลูกทุ่งTVHD
 https://livefta.malimarcdn.com/ftaedge00/lookthoongtv.sdp/playlist.m3u8
 #EXTINF:-1,PoliceTV
@@ -9443,8 +9455,6 @@ http://43.252.18.195:5080/live/streams/mytv.m3u8
 http://clive.malisresidences.com:1935/rhm_hdtv/_definst_/smil:RHMHDTV.smil/playlist.m3u8
 #EXTINF:-1,SEA TV
 https://seatv.netlinkbroadcaster.com/hls/test.m3u8
-#EXTINF:-1,TV 3
-http://206.189.93.160:1935/live/myStream_720p/playlist.m3u8
 #EXTINF:-1,TV5 Cambodia
 https://es1-p1-netcdn.metfone.com.kh/netcdn-live-36/36/output/playlist.m3u8
 #EXTINF:-1,TVK
@@ -9895,8 +9905,6 @@ http://95.67.12.82:9067
 https://cdn-ue1-prod.tsv2.amagi.tv/linear/amg01415-waterbearnetwor-waterbear-samsungse/playlist.m3u8
 #EXTINF:-1,Wild Earth
 https://wildearth-plex.amagi.tv/masterR1080p.m3u8
-#EXTINF:-1,Wild Life
-https://d1vp12yk4i8ou5.cloudfront.net/playlist720p.m3u8
 #EXTINF:-1,Poker T
 https://d3w4n3hhseniak.cloudfront.net/v1/master/9d062541f2ff39b5c0f48b743c6411d25f62fc25/WPT-DistroTV/150.m3u8
 #EXTINF:-1,Russia Today
@@ -10694,7 +10702,7 @@ http://95.67.12.89:9089/
 #EXTINF:-1,24tv
 http://w8hfogtv.megatv.fun/iptv/R93QFVW6TA8DGM/6410/index.m3u8
 #EXTINF:-1,24news
-http://streamvideol1.luxnet.ua/news24/livenews_720p/index.m3u8
+http://streamvideol1.luxnet.ua/news24/livenews_1080p/index.m3u8
 #EXTINF:-1,3
 http://w8hfogtv.megatv.fun/iptv/R93QFVW6TA8DGM/6412/index.m3u8
 #EXTINF:-1,3life
@@ -10761,8 +10769,6 @@ http://78.26.128.59:9876/play/a03q/index.m3u8
 http://85.223.221.130:8000/play/a072
 #EXTINF:-1,Промінь (UA)
 http://portal.ott.pink/watch/201/video.m3u8?geo=auto&token=CFEADF9789D77A45B3B359EE168CCCA6
-#EXTINF:-1,Думская ТВ
-http://cdn1.live-tv.od.ua:8081/dumska/dumska720p/playlist.m3u8
 #EXTINF:-1,Правда ТУТ
 http://95.67.17.131/hls/pravdatytkievshina_ua_hi/index.m3u8
 #EXTINF:-1,Правда ТУТ HD (Киев)
@@ -10771,8 +10777,6 @@ http://pravdatytkievshina-hls2.cosmonova.net.ua/hls/pravdatytkievshina_ua_hi/ind
 http://95.67.21.100/hls/prm_ua_hi/index.m3u8
 #EXTINF:-1,Репортер (Одесса)
 http://cdn1.live-tv.od.ua:8081/31chod/31chod-abr/31chod/31chod/playlist.m3u8
-#EXTINF:-1,СК1
-http://cdn10.live-tv.od.ua:8081/sk1zt/sk1zt720p/playlist.m3u8
 #EXTINF:-1,TIC
 http://cdn10.live-tv.od.ua:8081/riood/tisod-abr/riood/tisod240/playlist.m3u8
 #EXTINF:-1,TPK
@@ -10925,22 +10929,14 @@ https://epiconvh.s.llnwi.net/epic/master.m3u8
 https://epiconvh.s.llnwi.net/nazara/master_480.m3u8
 #EXTINF:-1,ZEE HINDUSTAN
 https://d1hp2yai3k4ork.cloudfront.net/index_4.m3u8
-#EXTINF:-1,TV 9 BHARATVARSH
-https://dyjmyiv3bp2ez.cloudfront.net/pub-iotv9hinjzgtpe/liveabr/pub-iotv9hinjzgtpe/live_720p/chunks.m3u8
 #EXTINF:-1,Colors HD
 http://119.156.26.155:8000/play/a06w
 #EXTINF:-1,INDIA TV
 https://pl-indiatvnews.akamaized.net/out/v1/db79179b608641ceaa5a4d0dd0dca8da/index_3.m3u8
 #EXTINF:-1,bharatsamachar
 https://idvd.multitvsolution.com/idvo/bharatsamachar_540p.m3u8
-#EXTINF:-1,aajtaak
-https://aajtaklive-amd.akamaized.net/hls/live/2014416/aajtak/aajtaklive/live_720p/chunks.m3u8
 #EXTINF:-1,News 24
 https://vidcdn.vidgyor.com/news24-origin/liveabr/playlist.m3u8
-#EXTINF:-1,Aaj Tak Tej
-https://aajtakhdlive-amd.akamaized.net/hls/live/2014415/aajtakhd/aajtakhdlive/live_720p/chunks.m3u8
-#EXTINF:-1,Rajyasabha
-https://playhls.media.nic.in/live/rstv-360p/index.m3u8
 #EXTINF:-1,Aljazeera News
 https://live-hls-web-aje.getaj.net/AJE/04.m3u8
 #EXTINF:-1,MN Music
@@ -11034,7 +11030,7 @@ https://d2uumv81tp8szk.cloudfront.net/CIVIL_WAR/CIVIL_WAR_40.mp4
 #EXTINF:-1,塑料王國
 https://img.sobot.com/chatres/f82991d79fa0400288a74d8db1c9a5ba/msg/20240127/c5b00fe8ae1f41898ba4fc0ea068b770/3cebeab9c99548809fe815570bc27d0e.m3u8
 #EXTINF:-1,人在三和
-https://vip.ffzy-play7.com/20230423/22932_865b7a60/index.m3u8
+https://vip.lz-cdn16.com/20230412/16447_89982f87/index.m3u8
 #EXTINF:-1,少年小趙
 https://img.sobot.com/chatres/f82991d79fa0400288a74d8db1c9a5ba/msg/20240121/c5b00fe8ae1f41898ba4fc0ea068b770/8a93427221a94d3a8cbb720bb7c784c7.m3u8
 #EXTINF:-1,零點院線：天降
@@ -12347,6 +12343,10 @@ http://ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221225717/index.m3u8
 http://ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221225665/index.m3u8
 #EXTINF:-1,NewTV超级电视剧
 http://ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221225716/index.m3u8
+#EXTINF:-1,新片放映厅
+http://kkk.888.3116598.xyz/api.php?n=tttt&id=bshp1e&tk=FgM0vQMejxvG
+#EXTINF:-1,南方影视
+http://kkk.888.3116598.xyz/api.php?n=tttt&id=5M6AXm&tk=FgM0vQMejxvG
 #EXTINF:-1,AMC电影
 https://stream1.freetv.fun/amcdian-ying-1.m3u8
 #EXTINF:-1,靖天电影
@@ -13107,8 +13107,6 @@ http://dns.yiandrive.com:15907/douyu/1997723
 http://www.douzhicloud.site:35455/bilibili/30837590
 #EXTINF:-1,宝宝动画
 http://171.213.217.33:8888/udp/239.93.0.147:5140
-#EXTINF:-1,Fox新闻
-https://fox-foxnewsnow-samsungus.amagi.tv/playlist720p.m3u8
 #EXTINF:-1,VOA美国之音
 https://iptv.mydiver.eu.org/live/encrypted/Y2RjNDI0OWQxYzg1MTkyNWY5YjExYjdjMjg4YmUwYTk6MjZhNTdhMmYxYzM5Y2VhMmU5ZTUzMDljZTVlNzk5NDcwYTM1YzRhMmYzZDMwYmJiNWQyZDczNjhhNjhhMGM5ZmQ3NjE3MTUyMDM1NWM4ZTgxZjMxYTdlNzYyYzMzNjk3ZTE0MjMwMmY3YTE2MTdjYjU5ODBlNmY4NWNkMmY3Y2ZiYmY0ZjVmMzdkYjdjMjMzM2NkNDdhNTVjZGIzYjJkNjBkMDk3MDBmNzUzOGM3MmU3ODliZDE4Y2YzOGE3ODA4NGU2MTkyNDI0YmIwYzU2MmYzYTQxZDkwZThmZTJjZTlhYzg5YWM5ZWZjZTc4YzMyNjlhNTBlNjc0NjNiMDUwZTk5MjUyYWE4NTJiNjljNzhjNTdmYWE5NjJlYTM0MDVhMjcxYjM5ZGNiMjgyOWVjZDQ5MDA3NTA2NGRhYTFiYmNiMmNhN2NiNzY2YzdjZTc1NzFlOTk2ZjNmMGE5MGRhYjFkNGZkOGI0OTA0YjAyMDk1YTdjNmVhODdiN2EwNmQy?username=tg_at1uqlok
 #EXTINF:-1,半·新闻
@@ -13342,7 +13340,7 @@ http://play-sh13.quklive.com/live/1699001836208185.m3u8?auth_key=2027429324-c77b
 #EXTINF:-1,舟山公共
 http://play-sh13.quklive.com/live/1699002430299200.m3u8?auth_key=2027429366-f4515e585a0347f780a01c73ae293945-0-b3699e931cf04290680745e989c63d86
 #EXTINF:-1,浙江留学
-http://ali-vl.cztv.com/channels/lantian/channel009/360p.m3u8
+https://ali-m-l.cztv.com/channels/lantian/channel009/1080p.m3u8
 #EXTINF:-1,浙江数码时代
 http://ali-m-l.cztv.com/channels/lantian/channel12/720p.m3u8?zzhed
 #EXTINF:-1,浙江教科影院
@@ -13351,12 +13349,11 @@ http://ali-m-l.cztv.com/channels/lantian/channel004/1080p.m3u8?zzhed
 http://ali-m-l.cztv.com/channels/lantian/channel04/1080p.m3u8
 #EXTINF:-1,浙江公共新闻
 https://stream1.freetv.fun/zhe-jiang-gong-gong-xin-wen-1.m3u8
-#EXTINF:-1,浙江休闲台
-http://ali-m-l.cztv.com/channels/lantian/channel006/720p.m3u8
 #EXTINF:-1,浙江青田
 http://play-sh13.quklive.com/live/1692755062081192.m3u8?auth_key=2028414252-b15176e05a684b589d12314dfabf6225-0-d175afe86fbea31e2eb167a6dd06cd4f
 #EXTINF:-1,浙江遂昌
 http://play-sh13.quklive.com/live/1708426592499070.m3u8?auth_key=2028414342-e92bda8423ad478c987a8b7ae82abe0e-0-c616f7fabb9675e1ed1d84d9edae7e07
+<<<<<<< HEAD
 #EXTINF:-1,诸暨新闻综合
 http://l.cztvcloud.com/channels/lantian/SXzhuji3/720p.m3u8?zzhed
 #EXTINF:-1,龙游生活娱乐
@@ -13367,28 +13364,24 @@ http://l.cztvcloud.com/channels/lantian/SXlongyou1/720p.m3u8?zzhed
 http://l.cztvcloud.com/channels/lantian/SXlongquan1/720p.m3u8
 #EXTINF:-1,青田电视台
 http://l.cztvcloud.com/channels/lantian/SXqingtian1/720p.m3u8
+=======
+#EXTINF:-1,龙游新闻综合
+http://play-sh13.quklive.com/live/1703570877483349.m3u8?auth_key=2028414694-515206b2ec504fa3bc90bb1ec3b0c48e-0-eeeeb3d5a8f8e5415142bf430b916d79
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,鄞州二套
 http://pili-publish.yzxw.newaircloud.com/newaircloud-yzxw/yzxw_20190925090936.m3u8?zzhed
 #EXTINF:-1,鄞州一套
 http://pili-publish.yzxw.newaircloud.com/newaircloud-yzxw/yzxw_20190925090843.m3u8?zzhed
-#EXTINF:-1,遂昌综合
-http://l.cztvcloud.com/channels/lantian/SXsuichang1/720p.m3u8?zzhed;http://l.cztvcloud.com/channels/lantian/SXsuichang1/720p.m3u8zzhed
 #EXTINF:-1,象山综合
 http://play-sh13.quklive.com/live/1702360350551252.m3u8?auth_key=2037107484-800189c57a5a44d3b823b60cf84f6756-0-a6f6828a62d5c167cff5e68735fa0d39
 #EXTINF:-1,象山新闻综合
 https://stream1.freetv.fun/xiang-shan-xin-wen-zong-he-1.m3u8
 #EXTINF:-1,衢江新闻综合
 https://stream1.freetv.fun/qu-jiang-xin-wen-zong-he-1.m3u8
-#EXTINF:-1,萧山生活
-http://l.cztvcloud.com/channels/lantian/SXxiaoshan2/720p.m3u8?zzhed?
 #EXTINF:-1,萧山新闻综合
 https://stream1.freetv.fun/xiao-shan-xin-wen-zong-he-2.m3u8
 #EXTINF:-1,苍南新闻综合
 https://stream1.freetv.fun/cang-nan-xin-wen-zong-he-3.m3u8
-#EXTINF:-1,缙云综合
-http://l.cztvcloud.com/channels/lantian/SXjinyun1/720p.m3u8?zzhed?
-#EXTINF:-1,缙云新闻综合
-http://l.cztvcloud.com/channels/lantian/SXjinyun1/720p.m3u8?fbl=
 #EXTINF:-1,绍兴电视台公共
 http://live.shaoxing.com.cn/video/s10001-sxtv2/index.m3u8?zzhed
 #EXTINF:-1,绍兴文化影院
@@ -13403,52 +13396,42 @@ http://hzcm-live.media.hugd.com/1e6b554b9ab74513958c0e1ffe664d22/9acaa7634309494
 https://stream1.freetv.fun/hai-zhu-sheng-huo-fu-wu-1.m3u8
 #EXTINF:-1,海宁新闻综合
 https://stream1.freetv.fun/hai-zhu-xin-wen-zong-he-4.m3u8
-#EXTINF:-1,洞头综合
-http://l.cztvcloud.com/channels/lantian/SXdongtou1/720p.m3u8?zzhed?
 #EXTINF:-1,永嘉新闻综合
 https://stream1.freetv.fun/yong-jia-xin-wen-zong-he-1.m3u8
 #EXTINF:-1,武义新闻综合
 https://stream1.freetv.fun/wu-yi-xin-wen-zong-he-10.m3u8
 #EXTINF:-1,松阳综合
 https://stream1.freetv.fun/song-yang-xin-wen-zong-he-1.m3u8
+<<<<<<< HEAD
 #EXTINF:-1,普陀电视台
 http://l.cztvcloud.com/channels/lantian/SXputuo1/720p.m3u8?zzhed#http://l.cztvcloud.com/channels/lantian/SXputuo1/720p.m3u8
 #EXTINF:-1,普陀新闻综合
 http://l.cztvcloud.com/channels/lantian/SXputuo1/720p.m3u8?zzhed
 #EXTINF:-1,新昌生活
 http://l.cztvcloud.com/channels/lantian/SXxinchang2/720p.m3u8
+=======
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,新昌新闻综合
 https://stream1.freetv.fun/xin-chang-xin-wen-zong-he-4.m3u8
 #EXTINF:-1,文成综合
 https://stream1.freetv.fun/wen-cheng-xin-wen-zong-he-2.m3u8
 #EXTINF:-1,开化新闻综合
 https://stream1.freetv.fun/kai-hua-xin-wen-zong-he-1.m3u8
+<<<<<<< HEAD
 #EXTINF:-1,开化国家公园
 http://l.cztvcloud.com/channels/lantian/SXkaihua2/720p.m3u8
+=======
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,庆元综合
 https://stream1.freetv.fun/qing-yuan-xin-wen-zong-he-4.m3u8
-#EXTINF:-1,平湖民生休闲
-http://l.cztvcloud.com/channels/lantian/SXpinghu2/720p.m3u8?zzhed
 #EXTINF:-1,平湖新闻综合
 https://stream1.freetv.fun/ping-hu-xin-wen-zong-he-3.m3u8
 #EXTINF:-1,嵊泗综合
 https://stream1.freetv.fun/sheng-zhou-xin-wen-zong-he-1.m3u8
 #EXTINF:-1,兰溪新闻综合
 https://stream1.freetv.fun/lan-xi-xin-wen-zong-he-1.m3u8
-#EXTINF:-1,余杭综合
-http://l.cztvcloud.com/channels/lantian/SXyuhang1/720p.m3u8?zzhed
-#EXTINF:-1,余杭未来E
-http://l.cztvcloud.com/channels/lantian/SXyuhang3/720p.m3u8?zzhed
-#EXTINF:-1,余姚综合
-http://l.cztvcloud.com/channels/lantian/SXyuyao1/720p.m3u8?
-#EXTINF:-1,余姚姚江文化
-http://l.cztvcloud.com/channels/lantian/SXyuyao3/720p.m3u8?zzhed
-#EXTINF:-1,云和新闻综合
-http://l.cztvcloud.com/channels/lantian/SXyunhe1/720p.m3u8
 #EXTINF:-1,中国蓝新闻
 http://ali-m-l.cztv.com/channels/lantian/channel009/1080p.m3u8
-#EXTINF:-1,东阳影视生活
-http://l.cztvcloud.com/channels/lantian/SXdongyang1/720p.m3u8
 #EXTINF:-1,上虞新闻综合
 https://stream1.freetv.fun/shang-yu-xin-wen-zong-he-5.m3u8
 #EXTINF:-1,上虞新商都
@@ -13463,56 +13446,14 @@ http://www.li0580.top:4022/udp/233.50.201.30:5140
 http://ali-m-l.cztv.com/channels/lantian/channel012/1080p.m3u8?
 #EXTINF:-1,钱江都市
 https://ali-m-l.cztv.com/channels/lantian/channel002/1080p.m3u8?
-#EXTINF:-1,YMG未来
-http://l.cztvcloud.com/channels/lantian/SXyuhang3/720p.m3u8?
 #EXTINF:-1,上虞文化
 https://stream1.freetv.fun/shang-yu-wen-hua-1.m3u8
 #EXTINF:-1,上虞综合
 https://stream1.freetv.fun/shang-yu-zong-he-1.m3u8
-#EXTINF:-1,云和新闻
-http://l.cztvcloud.com/channels/lantian/SXyunhe1/720p.m3u8?
-#EXTINF:-1,余杭新闻
-http://l.cztvcloud.com/channels/lantian/SXyuhang1/720p.m3u8?zzhed?
-#EXTINF:-1,余杭未来
-http://l.cztvcloud.com/channels/lantian/SXlanxi1/720p.m3u8?
-#EXTINF:-1,兰溪新闻
-http://l.cztvcloud.com/channels/lantian/SXlanxi1/720p.m3u8?zzhed?
-#EXTINF:-1,姚江文化
-http://l.cztvcloud.com/channels/lantian/SXqingtian1/720p.m3u8?
-#EXTINF:-1,嵊州新闻
-http://l.cztvcloud.com/channels/lantian/SXshengzhou1/720p.m3u8?zzhed?
-#EXTINF:-1,平湖新闻
-http://l.cztvcloud.com/channels/lantian/SXpinghu1/720p.m3u8?zzhed?
-#EXTINF:-1,平湖民生
-http://l.cztvcloud.com/channels/lantian/SXpinghu2/720p.m3u8?zzhed?
-#EXTINF:-1,开化公园
-http://l.cztvcloud.com/channels/lantian/SXkaihua2/720p.m3u8?zzhed?
-#EXTINF:-1,开化新闻
-http://l.cztvcloud.com/channels/lantian/SXkaihua1/720p.m3u8?zzhed?
-#EXTINF:-1,普陀新闻
-http://l.cztvcloud.com/channels/lantian/SXputuo1/720p.m3u8?zzhed?
 #EXTINF:-1,绍兴文化
 https://stream1.freetv.fun/shao-xing-wen-hua-1.m3u8
 #EXTINF:-1,绍兴新闻
 https://stream1.freetv.fun/shao-xing-xin-wen-1.m3u8
-#EXTINF:-1,苍南新闻
-http://l.cztvcloud.com/channels/lantian/SXcangnan1/720p.m3u8?zzhed?
-#EXTINF:-1,萧山新闻
-http://l.cztvcloud.com/channels/lantian/SXxiaoshan1/720p.m3u8?zzhed?
-#EXTINF:-1,萧山综合
-http://l.cztvcloud.com/channels/lantian/SXxiaoshan1/720p.m3u8?
-#EXTINF:-1,衢江新闻
-http://l.cztvcloud.com/channels/lantian/SXqujiang1/720p.m3u8?zzhed?
-#EXTINF:-1,诸暨新闻
-http://l.cztvcloud.com/channels/lantian/SXzhuji3/720p.m3u8?zzhed?
-#EXTINF:-1,象山新闻
-http://l.cztvcloud.com/channels/lantian/SXxiangshan1/720p.m3u8?zzhed?
-#EXTINF:-1,青田电视
-http://l.cztvcloud.com/channels/lantian/SXqingtian1/720p.m3u8?zzhed?
-#EXTINF:-1,龙泉新闻
-http://l.cztvcloud.com/channels/lantian/SXlongquan1/720p.m3u8?zzhed?
-#EXTINF:-1,龙游新闻
-http://l.cztvcloud.com/channels/lantian/SXlongyou1/720p.m3u8?
 #EXTINF:-1,山东少儿
 https://stream1.freetv.fun/shan-dong-shao-er-10.m3u8
 #EXTINF:-1,山东新闻
@@ -13571,6 +13512,8 @@ http://183.3.202.19:2380/tptvho.mobaibox.com/hwcdnbacksourceflag_223.110.243.207
 http://150.158.112.123/公众号~玉玉软件库/mg.php?id=njkj
 #EXTINF:-1,南京生活
 http://183.3.202.19:2380/tptvho.mobaibox.com/hwcdnbacksourceflag_223.110.243.213/PLTV/4/224/3221227786/index.m3u8
+#EXTINF:-1,南通新闻综合
+http://kkk.888.3116598.xyz/api.php?n=tttt&id=sbddYS&tk=FgM0vQMejxvG
 #EXTINF:-1,南通都市生活
 https://cm-live.ntjoy.com/live/4f3.m3u8
 #EXTINF:-1,句容党建频道
@@ -13593,6 +13536,10 @@ http://peixian-tv-hls.cm.jstv.com/peixian-tv/pxzh.m3u8?zjiangsd"
 http://stream1.mytaizhou.net/xwzh/playlist.m3u8?_upt=2f3c2e461725409415
 #EXTINF:-1,淮安影院娱乐
 http://live1.habctv.com/ysylsl/sd/live.m3u8
+#EXTINF:-1,淮安新闻综合
+http://150.158.112.123/公众号~玉玉软件库/mg.php?id=haxwzh
+#EXTINF:-1,溧水新闻综合
+http://kkk.888.3116598.xyz/api.php?n=tttt&id=xQrYR6&tk=FgM0vQMejxvG
 #EXTINF:-1,滨海新闻综合
 http://traffic.jbh.tjbh.com/live/bhtv10/playlist.m3u8
 #EXTINF:-1,苏州4k
@@ -13890,7 +13837,7 @@ https://p8.vzan.com:443/slowlive/147077707554082780/live.m3u8
 #EXTINF:-1,安顺新闻
 http://hplayer1.juyun.tv/camera/154379194.m3u8
 #EXTINF:-1,清镇新闻综合
-http://pili-live-rtmp.143.i2863.com/i2863-143/live_143_397273.m3u8?zguizd
+https://stream1.freetv.fun/qing-zhen-xin-wen-zong-he-1.m3u8
 #EXTINF:-1,河北都市
 http://1.94.31.214/php/hebei.php?id=hbds
 #EXTINF:-1,河北｜邯郸公共
@@ -14074,7 +14021,7 @@ http://file.yizu.tv/nmip-media/channellive/channel107323/playlist.m3u8
 #EXTINF:-1,利州综合
 http://183.3.202.19:2380/hw1live.rxip.sc96655.com.huan.tv/live/lzxwzh_2000.m3u8?E=1&U=1&A=1&K=1&P=1&S=1
 #EXTINF:-1,剑阁综合
-http://183.3.202.19:2380/hw1live.rxip.sc96655.com.huan.tv/live/jgxwzhH265_4000.m3u8?E=1&U=1&A=1&K=1&P=1&S=1
+https://m3u8.channel.dzsm.com/nmip-media/channellive/channel105549/playlist.m3u8
 #EXTINF:-1,双流综合
 http://171.221.250.130:18888/27e684978eb642eeb90ab815f6cc51bf/c41893de5e8645b3b43aef1640859b0d.m3u8?zsicd
 #EXTINF:-1,叙州新闻综合
@@ -14093,8 +14040,6 @@ http://tvfile.jjrm.org.cn/nmip-media/channellive/channel106282/playlist.m3u8
 http://183.3.202.19:2380/hw1live.rxip.sc96655.com.huan.tv/live/nnt_4000.m3u8?E=1&U=1&A=1&K=1&P=1&S=1
 #EXTINF:-1,安岳综合
 http://183.3.202.19:2380/hw1live.rxip.sc96655.com.huan.tv/live/ayxwzh_4000.m3u8?E=1&U=1&A=1&K=1&P=1&S=1
-#EXTINF:-1,宜宾公共
-http://183.3.202.19:2380/hw1live.rxip.sc96655.com.huan.tv/live/ybetH264_2000.m3u8?E=1&U=1&A=1&K=1&P=1&S=1
 #EXTINF:-1,宜宾新闻综合
 http://sc.rrs.169ol.com:80/PLTV/88888888/224/3221227541/index.m3u8
 #EXTINF:-1,宝兴综合
@@ -14104,7 +14049,7 @@ http://183.3.202.19:2380/hw1live.rxip.sc96655.com.huan.tv/live/pwgq_4000.m3u8?E=
 #EXTINF:-1,广元公共
 https://m3u8.channel.dzsm.com/nmip-media/channellive/channel101257/playlist.m3u8
 #EXTINF:-1,广元综合
-http://183.3.202.19:2380/hw1live.rxip.sc96655.com.huan.tv/live/gyzhH265_4000.m3u8?E=1&U=1&A=1&K=1&P=1&S=1
+http://sc.rrs.169ol.com:80/PLTV/88888888/224/3221227531/index.m3u8
 #EXTINF:-1,广安公共
 http://183.3.202.19:2380/hw1live.rxip.sc96655.com.huan.tv/live/gagg_2000.m3u8?E=1&U=1&A=1&K=1&P=1&S=1
 #EXTINF:-1,康定综合
@@ -14140,7 +14085,7 @@ http://183.222.248.153:81/hls/cfp2p8m3.m3u8
 #EXTINF:-1,甘孜综合
 http://183.3.202.19:2380/hw1live.rxip.sc96655.com.huan.tv/live/gzxwzh_2000.m3u8?E=1&U=1&A=1&K=1&P=1&S=1
 #EXTINF:-1,绵阳科技
-http://183.3.202.19:2380/hw1live.rxip.sc96655.com.huan.tv/live/myetH265_4000.m3u8?E=1&U=1&A=1&K=1&P=1&S=1
+http://fjgcl.myxwcm.cn/live/9ff6671801971000c0df254f00000000/playlist.m3u8?wsSecret=1b86af083644069f49ea1c2faf330682&wsTime=1754990313
 #EXTINF:-1,绵阳综合
 http://fjgcl.myxwcm.cn/live/9ff5a9b001971000b986a10c00000000/playlist.m3u8?wsSecret=a5d43a8e9929a372acde8f9edc177233&wsTime=1754990284
 #EXTINF:-1,荥经综合
@@ -14169,8 +14114,6 @@ http://183.3.202.19:2380/hw1live.rxip.sc96655.com.huan.tv/live/yagg_2000.m3u8?E=
 http://sc.rrs.169ol.com:80/PLTV/88888888/224/3221228086/index.m3u8
 #EXTINF:-1,雅安雨城
 http://183.3.202.19:2380/hw1live.rxip.sc96655.com.huan.tv/live/ycpd_2000.m3u8?E=1&U=1&A=1&K=1&P=1&S=1
-#EXTINF:-1,青川综合
-http://183.3.202.19:2380/hw1live.rxip.sc96655.com.huan.tv/live/qcxwzhH265_4000.m3u8?E=1&U=1&A=1&K=1&P=1&S=1
 #EXTINF:-1,青神综合
 http://183.3.202.19:2380/hw1live.rxip.sc96655.com.huan.tv/live/qszh_2000.m3u8?E=1&U=1&A=1&K=1&P=1&S=1
 #EXTINF:-1,龙泉驿新闻综合
@@ -14533,8 +14476,6 @@ https://vdse.bdstatic.com//0c8ed110c5522e9bd31752ecb999b1ab.mp4
 https://vd3.bdstatic.com/mda-ihps4033ktcz7mfq/sc/mda-ihps4033ktcz7mfq.mp4
 #EXTINF:-1,《经典老歌》伤感女声篇
 https://vd3.bdstatic.com/mda-ig8mrb0k4jjc5ydt/sc/mda-ig8mrb0k4jjc5ydt.mp4
-#EXTINF:-1,《野狼的士高》
-https://vd2.bdstatic.com/mda-ncp47pjrm7kqjfwq/720p/h264_delogo/1648091187992655346/mda-ncp47pjrm7kqjfwq.mp4
 #EXTINF:-1,《鸳鸯DJ》劲爆DJ
 https://vd3.bdstatic.com/mda-nba9z1mqi949jyyb/sc/cae_h264_delogo/1644629210546304303/mda-nba9z1mqi949jyyb.mp4
 #EXTINF:-1,「精选DJ洗脑神曲」节奏欢快，动感魔性
@@ -14559,8 +14500,11 @@ http://ngcdn013.cnr.cn/live/wygb/index.m3u8
 https://gitee.com/kabigo/tv/raw/master/assets/about1080p.mp4
 #EXTINF:-1,关于本源(iptv365.org)
 https://gitlab.com/p2v5/wangtv/-/raw/main/about1080p.mp4
+<<<<<<< HEAD
 #EXTINF:-1,(百)每日一首
 http://vd3.bdstatic.com/mda-jfreugw1pcza8xr1/mda-jfreugw1pcza8xr1.mp4?playlist=%5B%22hd%22%2C%22sc%22%5D
+=======
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,(宝)MovieMusic欣赏
 https://lotus.stingray.com/manifest/cmusic-cme004-montreal/samsungtvplus/dee3e3af-2706-3e77-a952-91b99f6d1819/5711200/manifest.m3u8
 #EXTINF:-1,(箱)AMC音乐
@@ -14637,20 +14581,8 @@ https://txmov2.a.kwimgs.com/upic/2020/09/30/21/BMjAyMDA5MzAyMTU2NTNfODI4NTk1NTQ0
 https://txmov2.a.kwimgs.com/upic/2020/07/15/19/BMjAyMDA3MTUxOTA1MzhfNTAyNzg4MTc0XzMyNDIzMzUwMjAyXzJfMw==_b_Bd09b171541ea966fd7a324624cfe6c16.mp4
 #EXTINF:-1,周深精选72首(5小时)
 https://txmov2.a.kwimgs.com/upic/2023/08/07/21/BMjAyMzA4MDcyMTAzMzZfMzYxMjUyNDA3MV8xMDk5Mjc3MDcwMTFfMF8z_b_B707fdf2100370008b57219d4a1dab568.mp4
-#EXTINF:-1,飞轮海精选30首(2小时)
-https://www.iesdouyin.com/aweme/v1/playwm/?video_id=v0200fg10000cra24sfog65t497nn1o0&ratio=720p&line=0
-#EXTINF:-1,颜人中精选36首(1小时)
-https://www.iesdouyin.com/aweme/v1/playwm/?video_id=v0200fg10000d07m1fnog65i93c1s7qg&ratio=720p&line=0
-#EXTINF:-1,张惠妹精选10首(1小时)
-https://www.iesdouyin.com/aweme/v1/playwm/?video_id=v0200fg10000cpfe9nfog65hhstjqpn0&ratio=720p&line=0
-#EXTINF:-1,刘若英精选50首(3小时)
-https://www.iesdouyin.com/aweme/v1/playwm/?video_id=v0300fg10000csi2q17og65ogriq3jv0&ratio=720p&line=0
-#EXTINF:-1,Alin精选16首(1小时)
-https://www.iesdouyin.com/aweme/v1/playwm/?video_id=v0300fg10000cvt3q87og65l7fblbmog&ratio=720p&line=0
 #EXTINF:-1,杨丞琳精选30首(2小时)
 https://txmov2.a.kwimgs.com/upic/2020/09/20/20/BMjAyMDA5MjAyMDAyMDdfODI4NTk1NTQ0XzM2MzcyMzIwMzYzXzJfMw==_b_B8aa481540d89fe5ec2b3507f8209c663.mp4?tag=1-1750931214-std-1-wz3snqjkat-8298da1fe959ffc7&clientCacheKey=3x8t5k75nb5mzyc_b.mp4&tt=b&di=739f67b1&bp=12681&ali_redirect_ex_hot=66666800&ali_redirect_ex_beacon=1
-#EXTINF:-1,南拳妈妈精选13首(1小时)
-https://www.iesdouyin.com/aweme/v1/playwm/?video_id=v0300fg10000cqfnlknog65p5u0cnn9g&ratio=720p&line=0
 #EXTINF:-1,王心凌经典合集
 https://txmov2.a.kwimgs.com/bs3/video-hls/5210946351305777158_hlsb.m3u8
 #EXTINF:-1,林俊杰经典合集
@@ -14695,8 +14627,6 @@ https://sradio.ipradio.rs/sradio/radiostv/playlist.m3u8
 https://gcalic.v.myalicdn.com/gc/wgw05_1/index.m3u8?contentid=2820180516001
 #EXTINF:-1,🐼直播熊猫
 https://gcwbndali.v.myalicdn.com/gcwbnd/ipanda1000_2/index.m3u8
-#EXTINF:-1,钱塘江
-http://gslbmgsplive.miguvideo.com/wd_r3/cnr/qiantangjiang/2000/index.m3u8?msisdn=20250923080124d2a289d7e8424ddd9ea0d2d29a9e0744&mdspid=&spid=800033&netType=0&sid=5500613479&pid=2028597139&timestamp=20250923080124&Channel_ID=0116_2600000900-99000-201600010010027&ProgramID=647370520&ParentNodeID=-99&assertID=5500613479&client_ip=106.13.250.83&SecurityKey=20250923080124&promotionId=&mvid=5102115888&mcid=500020&playurlVersion=WX-A1-8.9.1-RELEASE&userid=&jmhm=&videocodec=h264&bean=mgspad&tid=android&conFee=0&puData=a4be52553a643d1013946a49db1f0e09&ddCalcu=9a04eeb20e7f5012b5d5934aa664439d3110
 #EXTINF:-1,中国电影
 http://bx.757888.xyz/api.php?id=zgdy
 #EXTINF:-1,▶️哪吒1魔童降世
@@ -14719,8 +14649,6 @@ https://hlsdofviewmgspvod.aikan.miguvideo.com/depository_cidcobs_wxlz03/asset/zh
 https://hlsdofviewmgspvod.aikan.miguvideo.com/depository_cidcobs_wxlz03/asset/zhengshi/5105/205/437/5105205437/media/5105205437_5195916136_56.mp4
 #EXTINF:-1,▶️阿凡达：水之道
 https://hlsdofviewmgspvod.aikan.miguvideo.com/depository_yqv/asset/zhengshi/5101/004/544/5101004544/media/5101004544_5091261956_56.mp4
-#EXTINF:-1,▶️阿凡达：水之道（普通话）
-https://hlsdofviewmgspvod.aikan.miguvideo.com/depository_yqv/asset/zhengshi/5105/080/728/5105080728/media/5105080728_5091264010_56.mp4
 #EXTINF:-1,▶️(2024)阴阳师
 https://svip.high22-playback.com/20240731/5755_91995ca9/index.m3u8
 #EXTINF:-1,▶️(2024)哥斯拉大战金刚2：帝国崛起
@@ -14793,16 +14721,12 @@ https://ukzy.ukubf4.com/20220407/jEakalqL/index.m3u8
 https://alimov2.a.kwimgs.com/upic/2021/12/28/11/BMjAyMTEyMjgxMTIyMTJfNDAzMDAxOTlfNjM2NjgxODA5MTBfMF8z_b_B6a0bcfcdbdaac183fa7dcbcd3e11bcaf.mp4
 #EXTINF:-1,🔀算死草
 https://vip.ffzy-play6.com/20221112/6085_3636efbb/index.m3u8
-#EXTINF:-1,▶️疯狂的石头
-https://vip.ffzy-play2.com/20221021/170_91678c84/index.m3u8
 #EXTINF:-1,▶️疯狂的赛车
 https://vip.ffzy-play2.com/20221021/169_37d917eb/index.m3u8
 #EXTINF:-1,▶️疯狂的外星人
 https://vip.ffzy-online2.com/20230607/38938_95adfc88/index.m3u8
 #EXTINF:-1,▶️霸王别姬
 https://vip.ffzy-play7.com/20221112/3726_f8288d50/index.m3u8
-#EXTINF:-1,▶️卧虎藏龙
-https://vip.ffzy-play6.com/20221019/118_1367b8f6/index.m3u8
 #EXTINF:-1,▶️无间道1
 https://vip.ffzy-play6.com/20221017/13_ddfc1740/index.m3u8
 #EXTINF:-1,▶️无间道2
@@ -15657,18 +15581,10 @@ https://stream1.freetv.fun/skysports-3.ctv
 https://svs.itworkscdn.net/smc4sportslive/smc4.smil/playlist.m3u8
 #EXTINF:-1,摔跤格斗
 https://d2p372oxiwmcn1.cloudfront.net:443/hls/1080p/playlist.m3u8
-#EXTINF:-1,活着
-https://vip.ffzy-play.com/20221011/100_192cffb5/index.m3u8
 #EXTINF:-1,火烧岛
 https://vip.ffzy-play6.com/20221129/9336_58c74ab9/index.m3u8
-#EXTINF:-1,火星没事
-https://vip.ffzy-play2.com/20221021/232_89153806/index.m3u8
 #EXTINF:-1,霍元甲
 https://vip.ffzy-play2.com/20221021/234_50a8a4b6/index.m3u8
-#EXTINF:-1,急先锋
-https://vip.ffzy-play6.com/20221113/6503_476b3f6c/index.m3u8
-#EXTINF:-1,记忆切割
-https://vip.ffzy-play.com/20221017/1473_691592bd/index.m3u8
 #EXTINF:-1,没完没了
 https://vip.ffzy-play6.com/20221129/9376_7f06747a/index.m3u8
 #EXTINF:-1,甲方乙方
@@ -15679,12 +15595,8 @@ https://vip.ffzy-play6.com/20221019/168_f44e1477/index.m3u8
 https://vip.ffzy-play6.com/20221019/84_a64c541f/index.m3u8
 #EXTINF:-1,江湖情
 https://vip.ffzy-play7.com/20221115/4682_5ffb4872/index.m3u8
-#EXTINF:-1,江湖儿女
-https://vip.ffzy-play7.com/20230205/13419_960c8951/index.m3u8
 #EXTINF:-1,江湖龙虎斗
 https://vip.ffzy-play7.com/20221115/4681_38b34b56/index.m3u8
-#EXTINF:-1,僵尸先生
-https://vip.ffzy-play7.com/20230507/24165_799a7b4a/index.m3u8
 #EXTINF:-1,僵尸至尊
 https://vip.ffzy-play6.com/20221129/9344_44b64a1a/index.m3u8
 #EXTINF:-1,解救吾先生
@@ -15727,8 +15639,6 @@ https://vip.ffzy-play7.com/20221112/3526_ba428b29/index.m3u8
 https://vip.ffzy-play7.com/20221224/9583_f95a6383/index.m3u8
 #EXTINF:-1,老鼠爱上猫
 https://vip.ffzy-play2.com/20221019/50_7eedcf07/index.m3u8
-#EXTINF:-1,离婚大战
-https://vip.ffzy-play7.com/20230409/21638_281e50c4/index.m3u8
 #EXTINF:-1,两只老虎
 https://vip.ffzy-play7.com/20221117/5047_beb0a18c/index.m3u8
 #EXTINF:-1,林世荣
@@ -15751,22 +15661,16 @@ https://vip.ffzy-play6.com/20221128/8945_9b4193cd/index.m3u8
 https://vip.ffzy-play7.com/20221112/3556_7788de32/index.m3u8
 #EXTINF:-1,龙腾虎跃
 https://vip.ffzy-play7.com/20221117/5171_c2d4c959/index.m3u8
-#EXTINF:-1,龙腾四海
-https://vip.ffzy-play7.com/20221112/3563_422b85c5/index.m3u8
 #EXTINF:-1,龙兄虎弟
 https://vip.ffzy-play6.com/20221116/7264_5b0b594e/index.m3u8
-#EXTINF:-1,龙在边缘
-https://vip.ffzy-play.com/20221017/1754_95490c99/index.m3u8
 #EXTINF:-1,龙在江湖
 https://vip.ffzy-play.com/20221017/1755_28d3688d/index.m3u8
 #EXTINF:-1,龙之家族
 https://vip.ffzy-play6.com/20221116/7265_dd503587/index.m3u8
 #EXTINF:-1,冒险王
 https://cdn4.yzzy-tv-cdn.com/20220608/17622_c083f16b/index.m3u8
-#EXTINF:-1,门徒
-https://vip.ffzy-play.com/20221017/1787_03664048/index.m3u8
 #EXTINF:-1,猛鬼旅行团
-https://vip.ffzy-play6.com/20221129/9331_792c1e13/index.m3u8
+https://vip.ffzy-play6.com/20221207/10600_7cbfb482/index.m3u8
 #EXTINF:-1,迷你特工队
 https://vip.ffzy-play7.com/20221117/5052_54ce37e4/index.m3u8
 #EXTINF:-1,密宗威龙
@@ -15795,14 +15699,10 @@ https://vip.ffzy-play7.com/20221125/6961_0c69f3cf/index.m3u8
 https://vip.ffzy-play7.com/20221115/4730_a7515224/index.m3u8
 #EXTINF:-1,千机变
 https://vip.ffzy-play2.com/20221019/21_687fe198/index.m3u8
-#EXTINF:-1,钱作怪
-https://vip.ffzy-play7.com/20230204/13185_290d13f1/index.m3u8
 #EXTINF:-1,秦颂
 https://vip.ffzy-play7.com/20221112/3653_ad708d24/index.m3u8
 #EXTINF:-1,秋天的童话
 https://vip.ffzy-play6.com/20221130/9473_24b3f22f/index.m3u8
-#EXTINF:-1,驱魔道长
-https://vip.ffzy-play7.com/20221112/3670_136b232e/index.m3u8
 #EXTINF:-1,驱魔警察
 https://vip.ffzy-play6.com/20221205/9856_18a53055/index.m3u8
 #EXTINF:-1,拳精
@@ -15825,16 +15725,10 @@ https://vip.ffzy-play6.com/20221128/9099_38718b59/index.m3u8
 https://vip.ffzy-play6.com/20221022/935_ffb2fe05/index.m3u8
 #EXTINF:-1,扫毒2
 https://vip.ffzy-play6.com/20221111/5625_f06cc476/index.m3u8
-#EXTINF:-1,杀手的童话
-https://vip.ffzy-play7.com/20221112/3690_803bfb83/index.m3u8
-#EXTINF:-1,杀手之王
-https://cdn10.yzzy-tv-cdn.com/20221023/2307_200a0670/index.m3u8
 #EXTINF:-1,上海红美丽
 https://vip.ffzy-play6.com/20221126/8466_47514053/index.m3u8
 #EXTINF:-1,上海十三太保
 https://vip.ffzy-play.com/20221018/2001_3ef7be69/index.m3u8
-#EXTINF:-1,少林寺
-https://cdn4.yzzy-tv-cdn.com/20220606/17324_133ab69b/index.m3u8
 #EXTINF:-1,少林小子
 https://vip.ffzy-play7.com/20230216/14926_434969e4/index.m3u8
 #EXTINF:-1,少林英雄
@@ -15845,8 +15739,6 @@ https://vip.ffzy-play6.com/20221128/9115_ff8a121e/index.m3u8
 https://vip.ffzy-play6.com/20221128/9119_1b13e298/index.m3u8
 #EXTINF:-1,神话
 https://vip.ffzy-play6.com/20221017/20_989dd1f8/index.m3u8
-#EXTINF:-1,神奇燕尾服
-https://vip.ffzy-play6.com/20221019/127_851b9820/index.m3u8
 #EXTINF:-1,神枪手与咖喱鸡
 https://vip.ffzy-play7.com/20221129/7684_7ac9e104/index.m3u8
 #EXTINF:-1,神探蒲松龄
@@ -15855,24 +15747,14 @@ https://vip.ffzy-play6.com/20221111/5646_d1cd614b/index.m3u8
 https://vip.ffzy-play1.com/20221018/299_06ee96a1/index.m3u8
 #EXTINF:-1,师弟出马
 https://vip.ffzy-play7.com/20221115/4764_aba20ecc/index.m3u8
-#EXTINF:-1,师兄撞鬼
-https://vip.ffzy-play6.com/20221207/10610_200b5bd4/index.m3u8
 #EXTINF:-1,十二生肖
 https://vip.ffzy-play6.com/20221019/191_dba04d04/index.m3u8
 #EXTINF:-1,十面埋伏
 https://vip.ffzy-play7.com/20221117/5218_ad30347f/index.m3u8
-#EXTINF:-1,时来运转
-https://vip.ffzy-play7.com/20221209/9156_396eac04/index.m3u8
-#EXTINF:-1,手机
-https://vip.ffzy-play6.com/20221019/107_6107b581/index.m3u8
 #EXTINF:-1,甩皮鬼
 https://vip.ffzy-play6.com/20221112/6431_ce84a705/index.m3u8
 #EXTINF:-1,双龙会
 https://vip.ffzy-play6.com/20221112/6064_afbd5214/index.m3u8
-#EXTINF:-1,说出你的秘密
-https://vip.ffzy-play6.com/20221112/6077_927afdf1/index.m3u8
-#EXTINF:-1,私人订制
-https://vip.ffzy-play6.com/20221019/192_52684124/index.m3u8
 #EXTINF:-1,算死草
 https://vip.ffzy-play6.com/20221112/6085_3636efbb/index.m3u8
 #EXTINF:-1,太极张三丰
@@ -15893,16 +15775,12 @@ https://vip.ffzy-play7.com/20221113/4187_a7c41927/index.m3u8
 https://vip.ffzy-play6.com/20221112/6127_d615f342/index.m3u8
 #EXTINF:-1,天将雄师
 https://vip.ffzy-play6.com/20221031/3078_d47ea8cc/index.m3u8
-#EXTINF:-1,天若有情
-https://vip.ffzy-play6.com/20221112/6132_760d67fd/index.m3u8
 #EXTINF:-1,天若有情3之烽火佳人
 https://vip.ffzy-play6.com/20221207/10617_a0d97cd1/index.m3u8
 #EXTINF:-1,天生胆小
 https://vip.ffzy-play6.com/20221129/9417_4ed30e0d/index.m3u8
 #EXTINF:-1,天下无贼
 https://vip.ffzy-play6.com/20221018/39_d0036fb2/index.m3u8
-#EXTINF:-1,天与地
-https://vip.ffzy-play6.com/20221112/6144_016eb00a/index.m3u8
 #EXTINF:-1,铜雀台
 https://vip.ffzy-play6.com/20221019/200_4eede94c/index.m3u8
 #EXTINF:-1,投名状
@@ -15919,16 +15797,10 @@ https://vip.ffzy-play6.com/20221022/1000_fa615f2b/index.m3u8
 https://vip.ffzy-play6.com/20221022/881_da82c5bb/index.m3u8
 #EXTINF:-1,我和我的父辈
 https://vip.ffzy-play7.com/20230307/17542_0c58cae5/index.m3u8
-#EXTINF:-1,我和我的家乡
-https://vip.ffzy-play1.com/20221018/511_7936e28c/index.m3u8
-#EXTINF:-1,我和我的祖国
-https://vip.ffzy-play1.com/20221018/512_4544d0ed/index.m3u8
 #EXTINF:-1,无人区
 https://vip.ffzy-play6.com/20221019/203_ce8ad9b0/index.m3u8
 #EXTINF:-1,无双
 https://vip.ffzy-play6.com/20221108/5250_e3bbb4e4/index.m3u8
-#EXTINF:-1,五虎将之决裂
-https://vip.ffzy-play6.com/20221112/6190_0250331a/index.m3u8
 #EXTINF:-1,五亿探长雷洛传1:雷老虎
 https://vip.ffzy-online.com/20221015/672_cd3f2629/index.m3u8
 #EXTINF:-1,五亿探长雷洛传2:父子情仇
@@ -15937,14 +15809,10 @@ https://vip.ffzy-online.com/20221015/676_0dc45896/index.m3u8
 https://vip.ffzy-play6.com/20221019/206_b74a99b9/index.m3u8
 #EXTINF:-1,嘻游记
 https://vip.ffzy-play6.com/20221022/1023_fae8e09f/index.m3u8
-#EXTINF:-1,喜剧明星
-https://vip.ffzy-play7.com/20230409/21692_463322cf/index.m3u8
 #EXTINF:-1,侠盗高飞
 https://vip.ffzy-play7.com/20221112/3315_eef8cb87/index.m3u8
 #EXTINF:-1,侠盗联盟
 https://vip.ffzy-play7.com/20221104/1442_e5eca889/index.m3u8
-#EXTINF:-1,侠圣
-https://vip.ffzy-online.com/20221015/741_196889fc/index.m3u8
 #EXTINF:-1,夏日福星
 https://vip.ffzy-play7.com/20230118/11937_84244e52/index.m3u8
 #EXTINF:-1,咸鱼翻身
@@ -15953,24 +15821,14 @@ https://vip.ffzy-play6.com/20221116/7303_5bfc21ee/index.m3u8
 https://vip.ffzy-online2.com/20230521/37660_a7ca3135/index.m3u8
 #EXTINF:-1,笑傲江湖1
 https://vip.ffzy-play7.com/20221129/7696_58fbd289/index.m3u8
-#EXTINF:-1,笑傲江湖2:东方不败
-https://cdn2.yzzy-tv-cdn.com/20220331/4843_724c1ac5/index.m3u8
-#EXTINF:-1,笑拳怪招
-https://vip.ffzy-play6.com/20221128/9213_05050bb8/index.m3u8
 #EXTINF:-1,心花路放
 https://vip.ffzy-play6.com/20221027/2366_e83b4d22/index.m3u8
-#EXTINF:-1,辛亥革命
-https://vip.ffzy-play6.com/20221021/591_72533d75/index.m3u8
 #EXTINF:-1,新僵尸先生
 https://vip.ffzy-play6.com/20221129/9451_47cd067c/index.m3u8
 #EXTINF:-1,新警察故事
 https://vip.ffzy-play6.com/20221017/15_7bd9a94d/index.m3u8
-#EXTINF:-1,新上海滩
-https://vip.ffzy-play.com/20221015/880_937cdc1a/index.m3u8
 #EXTINF:-1,新少林寺
 https://vip.ffzy-play.com/20221015/881_3dbc4077/index.m3u8
-#EXTINF:-1,新宿事件
-https://vip.ffzy-play7.com/20230314/18148_991eeb8a/index.m3u8
 #EXTINF:-1,兄弟之生死同盟
 https://vip.ffzy-play.com/20221015/897_d3a4e80f/index.m3u8
 #EXTINF:-1,学校风云
@@ -15989,8 +15847,6 @@ https://vip.ffzy-play.com/20221015/949_ecf3b061/index.m3u8
 https://vip.ffzy-play7.com/20221129/7713_3a3bd3ff/index.m3u8
 #EXTINF:-1,一眉道人
 https://vip.ffzy-play7.com/20221115/4803_1731be32/index.m3u8
-#EXTINF:-1,一夜惊喜
-https://vip.ffzy-play6.com/20221019/211_225bbe08/index.m3u8
 #EXTINF:-1,义本无言
 https://vip.ffzy-play6.com/20221116/7316_f568756b/index.m3u8
 #EXTINF:-1,义不容辞
@@ -16021,8 +15877,6 @@ https://vip.ffzy-play6.com/20221207/10859_1b02d27c/index.m3u8
 https://vip.ffzy-play.com/20221015/999_d5886cd0/index.m3u8
 #EXTINF:-1,杂家小子
 https://vip.ffzy-play6.com/20221128/9261_f18e5614/index.m3u8
-#EXTINF:-1,赞先生与找钱华
-https://vip.ffzy-play6.com/20221207/10710_1642c7db/index.m3u8
 #EXTINF:-1,战神传说
 https://vip.ffzy-play7.com/20221129/7734_53205031/index.m3u8
 #EXTINF:-1,长江七号
@@ -16031,10 +15885,6 @@ https://vip.ffzy-play6.com/20221022/1070_3b7b263a/index.m3u8
 https://vip.ffzy-play6.com/20221022/1071_73fbd377/index.m3u8
 #EXTINF:-1,至尊计状元才
 https://vip.ffzy-play7.com/20221112/3440_9d089764/index.m3u8
-#EXTINF:-1,至尊三十六计之偷天换日
-https://vip.ffzy-play.com/20221015/1085_37999806/index.m3u8
-#EXTINF:-1,至尊无上
-https://vip.ffzy-play.com/20221015/1086_9576a463/index.m3u8
 #EXTINF:-1,至尊无上II之永霸天下
 https://vip.ffzy-play.com/20221015/1090_e30609f3/index.m3u8
 #EXTINF:-1,中国最后一个太监
@@ -16055,8 +15905,6 @@ https://vip.ffzy-play7.com/20221112/3468_38ba3d24/index.m3u8
 https://vip.ffzy-play7.com/20221129/7753_bd15d501/index.m3u8
 #EXTINF:-1,纵横四海
 https://vip.ffzy-play7.com/20221112/3463_4e05c55e/index.m3u8
-#EXTINF:-1,最佳损友
-https://vip.ffzy-play7.com/20221115/4630_078a1b22/index.m3u8
 #EXTINF:-1,最佳损友闯情关
 https://vip.ffzy-play7.com/20221116/4843_accffdd6/index.m3u8
 #EXTINF:-1,A计划
@@ -16079,8 +15927,6 @@ https://vip.ffzy-play2.com/20221021/65_57ffccd0/index.m3u8
 https://vip.ffzy-online.com/20221015/575_a2c32b8f/index.m3u8
 #EXTINF:-1,暗战
 https://vip.ffzy-online.com/20221015/583_fb343007/index.m3u8
-#EXTINF:-1,澳门风云1
-https://vip.ffzy-online.com/20221015/587_536debfc/index.m3u8
 #EXTINF:-1,澳门风云2
 https://vip.lz-cdn8.com/20220903/25590_a12ec6f7/index.m3u8
 #EXTINF:-1,澳门风云3
@@ -16089,8 +15935,6 @@ https://vip.lz-cdn8.com/20220903/25592_5fdbb860/index.m3u8
 https://vip.ffzy-play6.com/20221116/7216_cb25f71a/index.m3u8
 #EXTINF:-1,霸王别姬
 https://vip.ffzy-play7.com/20221112/3726_f8288d50/index.m3u8
-#EXTINF:-1,白蛇传说
-https://vip.ffzy-play7.com/20221224/9605_263ee1e0/index.m3u8
 #EXTINF:-1,半生缘
 https://vip.ffzy-play7.com/20221112/3733_3f971a67/index.m3u8
 #EXTINF:-1,玻璃樽
@@ -16099,34 +15943,24 @@ https://vip.ffzy-play7.com/20221112/3750_97a1bebc/index.m3u8
 https://vip.ffzy-play2.com/20221021/73_d5c05ae2/index.m3u8
 #EXTINF:-1,不二神探
 https://cdn2.yzzy-tv-cdn.com/20220330/4069_8714f6bb/index.m3u8
-#EXTINF:-1,不见不散
-https://vip.ffzy-play7.com/20221112/3752_596da0f3/index.m3u8
 #EXTINF:-1,超级计划
 https://vip.ffzy-play7.com/20221112/3764_fd2b007a/index.m3u8
 #EXTINF:-1,超时空同居
 https://vip.ffzy-online.com/20221015/745_b4a413ef/index.m3u8
 #EXTINF:-1,城市猎人
 https://vip.ffzy-play7.com/20230112/11075_f5a96711/index.m3u8
-#EXTINF:-1,春娇与志明
-https://vip.ffzy-play6.com/20221021/451_53670596/index.m3u8
 #EXTINF:-1,催眠大师
 https://vip.ffzy-play7.com/20221028/433_adf31dfd/index.m3u8
 #EXTINF:-1,大腕
 https://vip.ffzy-play6.com/20221019/66_5c1f5d09/index.m3u8
 #EXTINF:-1,大上海
 https://vip.ffzy-play6.com/20221126/8327_89044d87/index.m3u8
-#EXTINF:-1,大唐玄奘
-https://vip.ffzy-play7.com/20230306/17314_0230edb6/index.m3u8
 #EXTINF:-1,大兵小将
 https://vip.ffzy-play7.com/20230101/10714_0de1384d/index.m3u8
 #EXTINF:-1,刀剑笑
 https://vip.ffzy-play7.com/20221112/3808_6690be34/index.m3u8
 #EXTINF:-1,狄仁杰之通天帝国
 https://vip.ffzy-play2.com/20221021/129_ed646884/index.m3u8
-#EXTINF:-1,第三个人
-https://vip.ffzy-play7.com/20230407/21350_043ad4f7/index.m3u8
-#EXTINF:-1,刁手怪招
-https://cdn7.yzzy-tv-cdn.com/20220625/561_337bba55/index.m3u8
 #EXTINF:-1,喋血双雄
 https://vip.ffzy-play7.com/20221115/4440_bd914a4d/index.m3u8
 #EXTINF:-1,东方巨龙
@@ -16141,8 +15975,6 @@ https://vip.ffzy-online.com/20221017/864_5fbb1d87/index.m3u8
 https://vip.ffzy-online.com/20221017/863_ed22c0c3/index.m3u8
 #EXTINF:-1,赌神1
 https://vip.ffzy-online.com/20221017/865_74da177a/index.m3u8
-#EXTINF:-1,赌神2
-https://vip.lz-cdn.com/20220622/20003_820596d4/index.m3u8
 #EXTINF:-1,赌侠大战拉斯维加斯
 https://vip.ffzy-online.com/20221017/873_cf765959/index.m3u8
 #EXTINF:-1,法内情
@@ -16163,8 +15995,6 @@ https://vip.ffzy-play2.com/20221021/162_cb2bb175/index.m3u8
 https://vip.ffzy-play2.com/20221021/163_a55441c0/index.m3u8
 #EXTINF:-1,疯狂的赛车
 https://vip.ffzy-play2.com/20221021/169_37d917eb/index.m3u8
-#EXTINF:-1,疯狂的石头
-https://vip.ffzy-play2.com/20221021/170_91678c84/index.m3u8
 #EXTINF:-1,疯狂的外星人
 https://vip.ffzy-online2.com/20230607/38938_95adfc88/index.m3u8
 #EXTINF:-1,福星高照
@@ -16179,8 +16009,6 @@ https://vip.ffzy-play7.com/20221115/4468_44f459bb/index.m3u8
 https://vip.ffzy-play6.com/20221021/474_a64f2156/index.m3u8
 #EXTINF:-1,给爸爸的信
 https://cdn2.yzzy-tv-cdn.com/20220414/13070_86734093/index.m3u8
-#EXTINF:-1,功夫瑜伽
-https://vip.ffzy-play2.com/20221124/1291_468b2efb/index.m3u8
 #EXTINF:-1,孤男寡女
 https://vip.ffzy-play6.com/20221021/643_da3f8354/index.m3u8
 #EXTINF:-1,古董局中局
@@ -16189,14 +16017,10 @@ https://vip.ffzy-online.com/20221017/983_2bd33011/index.m3u8
 https://vip.ffzy-play6.com/20221112/6298_1dd44909/index.m3u8
 #EXTINF:-1,鬼咬鬼
 https://vip.ffzy-play7.com/20221208/8822_26a70529/index.m3u8
-#EXTINF:-1,鬼打鬼
-https://vip.ffzy-play7.com/20221115/4476_05997c13/index.m3u8
 #EXTINF:-1,鬼打鬼之黄金道士
 https://vip.ffzy-play6.com/20221112/6296_32b14901/index.m3u8
 #EXTINF:-1,过年
 https://vip.ffzy-play6.com/20221112/6307_79a4bfc2/index.m3u8
-#EXTINF:-1,行运一条龙
-https://vip.ffzy-play6.com/20221112/6024_432f2afd/index.m3u8
 #EXTINF:-1,豪门夜宴
 https://vip.ffzy-play.com/20221204/29458_3909f6d0/index.m3u8
 #EXTINF:-1,和平饭店
@@ -16205,26 +16029,18 @@ https://vip.ffzy-play6.com/20221129/9326_fb193a3f/index.m3u8
 https://vip.ffzy-play6.com/20221022/751_a7889097/index.m3u8
 #EXTINF:-1,黑侠
 https://vip.ffzy-play6.com/20221112/6336_a08140a7/index.m3u8
-#EXTINF:-1,红番区
-https://vip.ffzy-play6.com/20221112/6346_239e11e8/index.m3u8
 #EXTINF:-1,洪熙官
 https://vip.ffzy-play7.com/20221223/9381_0fb84a1d/index.m3u8
 #EXTINF:-1,花木兰
 https://cdn2.yzzy-tv-cdn.com/20220405/7667_13f7046c/index.m3u8
-#EXTINF:-1,花旗少林
-https://vip.ffzy-play6.com/20221112/6363_411e98e2/index.m3u8
 #EXTINF:-1,哗！英雄
 https://vip.ffzy-play6.com/20221112/6371_9b5bf930/index.m3u8
-#EXTINF:-1,画皮之阴阳法王
-https://vip.ffzy-play6.com/20221112/6372_478fbcc6/index.m3u8
 #EXTINF:-1,黄河遥
 https://vip.ffzy-play7.com/20221117/5148_d5633e82/index.m3u8
 #EXTINF:-1,黄大仙
 https://vip.ffzy-play6.com/20221129/9334_1b618e68/index.m3u8
 #EXTINF:-1,黄飞鸿92之龙行天下
 https://vip.ffzy-play7.com/20221129/7657_0e98ee6f/index.m3u8
-#EXTINF:-1,黄飞鸿系列之一代宗师
-https://vip.ffzy-play6.com/20221129/9335_097bc8c1/index.m3u8
 #EXTINF:-1,黄飞鸿之铁鸡斗蜈蚣
 https://cdn2.yzzy-tv-cdn.com/20220415/13227_56714be0/index.m3u8
 #EXTINF:-1,黄飞鸿之一:壮志凌云
@@ -16553,8 +16369,6 @@ https://vip.ffzy-play6.com/20221017/13_ddfc1740/index.m3u8
 https://alimov2.a.kwimgs.com/upic/2021/02/09/10/BMjAyMTAyMDkxMDQ0NThfNDAzMDAxOTlfNDM4NTkyODc0MjhfMF8z_b_Bce206fcc2f84121a4d887259d7c5100b.mp4
 #EXTINF:-1,无间道3:终极无间
 https://vip.ffzy-play2.com/20221127/1567_f1965b4b/index.m3u8
-#EXTINF:-1,卧虎藏龙
-https://vip.ffzy-play6.com/20221019/118_1367b8f6/index.m3u8
 #EXTINF:-1,电影_赛车
 http://live.nctv.top/huya.php?id=11279247
 #EXTINF:-1,满城尽带黄金甲
@@ -16649,6 +16463,7 @@ http://www.flyskyman.cn:4022/rtp/233.50.201.180:5140
 http://lived.dmqhyadmin.com/ds/sd/live.m3u8?zzhed
 #EXTINF:-1,义乌新闻综合
 https://44911.hlsplay.aodianyun.com/tv_radio_44911/tv_channel_1796.m3u8?auth_key=4830573978-0-0-92824c2c03f95906a3c49a4aa28f1709&extra_key=Yc1XsmxOKy2UBoPM4Wy5vCPsEYqnj06taCR2SRB2Xrg2w28NPilH03KdIbbM5wgSql-VBohSnoO9AOKl94q2t2DWMftz-XB-2qUX-UjXcS80StcSZahBFjrKLivXaRjiY5r2NOMKWMKFbv-S0Bz2G6iEXgCK8yGjtrFHDcPfAQEE0pvXq0Bwy34b7We8zARN&ali_ffmpeg_version=mpengine
+<<<<<<< HEAD
 #EXTINF:-1,金华兰溪综合
 http://l.cztvcloud.com/channels/lantian/SXlanxi1/720p.m3u8
 #EXTINF:-1,文成二套
@@ -16657,6 +16472,10 @@ http://l.cztvcloud.com/channels/lantian/SXwencheng2/720p.m3u8
 http://l.cztvcloud.com/channels/lantian/SXqujiang1/720p.m3u8
 #EXTINF:-1,杭州萧山综合
 http://l.cztvcloud.com/channels/lantian/SXxiaoshan3/720p.m3u8
+=======
+#EXTINF:-1,台州温岭民生
+http://35813.hlsplay.aodianyun.com/tv_radio_35813/tv_channel_1287.m3u8
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,台州温岭综合
 http://35813.hlsplay.aodianyun.com/tv_radio_35813/tv_channel_911.m3u8
 #EXTINF:-1,衢州开化综合
@@ -16745,6 +16564,8 @@ http://livecdn.dmqhyadmin.com/hls/xjmenyuan.m3u8
 http://scdytv.cn:1935/live/m_ggpd_livevideo/playlist.m3u8
 #EXTINF:-1,筠连综合
 http://live.dameijunlian.cn/live1/live1.m3u8
+#EXTINF:-1,青川综合
+http://qcfile.qcrmt.com/nmip-media/channellive/channel100933/playlist.m3u8
 #EXTINF:-1,春晚2025
 https://res.cctvnews.cctv.com/video/3005/record/cctv/merge1/133396667284143308839013005/8fbd6180bdef4da19f6155cf6b4652e1-4.m3u8
 #EXTINF:-1,春晚2023
@@ -16833,8 +16654,6 @@ https://vd3.bdstatic.com/mda-mkp88kxv6r8y73k9/sc/cae_h264/1637733263867775329/md
 https://vd3.bdstatic.com/mda-mgqiagirsmmpuarm/1080p/cae_h264/1627218846577884242/mda-mgqiagirsmmpuarm.mp4
 #EXTINF:-1,《爱你到最后一刻》
 https://vd3.bdstatic.com/mda-mhr9c7q9xzgy1812/1080p/cae_h264/1630062648077583523/mda-mhr9c7q9xzgy1812.mp4
-#EXTINF:-1,英雄泪
-https://vd3.bdstatic.com/mda-ncnp6tm56ngrxbis/360p/h264_delogo/1648055585617071282/mda-ncnp6tm56ngrxbis.mp4
 #EXTINF:-1,雪中悍刀行01
 https://vip.ffzy-play.com/20221020/2351_1c211ba7/2000k/hls/mixed.m3u8
 #EXTINF:-1,雪中悍刀行02
@@ -16847,8 +16666,6 @@ https://vip.ffzy-play.com/20221020/2354_5169f8e8/2000k/hls/mixed.m3u8
 https://vip.ffzy-play.com/20221020/2355_2d59e771/2000k/hls/mixed.m3u8
 #EXTINF:-1,雪中悍刀行06
 https://vip.ffzy-play.com/20221020/2357_8e507635/2000k/hls/mixed.m3u8
-#EXTINF:-1,雪中悍刀行07
-https://vip.ffzy-play.com/20221020/2356_070acb8b/2000k/hls/mixed.m3u8
 #EXTINF:-1,雪中悍刀行09
 https://vip.ffzy-play.com/20221020/2358_12e4ca9a/2000k/hls/mixed.m3u8
 #EXTINF:-1,雪中悍刀行10
@@ -16907,10 +16724,6 @@ https://vip.ffzy-play.com/20221020/2400_daaf3f61/2000k/hls/mixed.m3u8
 https://vip.ffzy-play.com/20221020/2401_dfb0103e/2000k/hls/mixed.m3u8
 #EXTINF:-1,雪中悍刀行37
 https://vip.ffzy-play.com/20221020/2402_a7082890/2000k/hls/mixed.m3u8
-#EXTINF:-1,雪中悍刀行38
-https://vip.ffzy-play.com/20221020/2403_855bc85f/2000k/hls/mixed.m3u8
-#EXTINF:-1,第一集
-https://yzzy.play-cdn7.com/20221013/22686_866e04a7/index.m3u8
 #EXTINF:-1,第二集
 https://yzzy.play-cdn7.com/20221013/22687_ef6d93cf/index.m3u8
 #EXTINF:-1,第三集
@@ -16929,16 +16742,12 @@ https://yzzy.play-cdn7.com/20221013/22695_16e14a51/index.m3u8
 https://yzzy.play-cdn7.com/20221013/22694_32ffaf46/index.m3u8
 #EXTINF:-1,第十集
 https://yzzy.play-cdn7.com/20221013/22693_17eb9651/index.m3u8
-#EXTINF:-1,第十一集
-https://yzzy.play-cdn7.com/20221013/22697_426b873e/index.m3u8
 #EXTINF:-1,第十二集
 https://yzzy.play-cdn7.com/20221013/22696_1547fa94/index.m3u8
 #EXTINF:-1,第十三集
 https://yzzy.play-cdn7.com/20221013/22698_02ea9756/index.m3u8
 #EXTINF:-1,第十四集
 https://yzzy.play-cdn7.com/20221013/22699_29bc4391/index.m3u8
-#EXTINF:-1,第十五集
-https://yzzy.play-cdn7.com/20221013/22700_354ed120/index.m3u8
 #EXTINF:-1,第十六集
 https://yzzy.play-cdn7.com/20221013/22702_b9df4a89/index.m3u8
 #EXTINF:-1,第十七集
@@ -16973,16 +16782,10 @@ https://yzzy.play-cdn7.com/20221013/22716_1ac04a90/index.m3u8
 https://yzzy.play-cdn7.com/20221013/22715_de46c41c/index.m3u8
 #EXTINF:-1,第三十二集
 https://yzzy.play-cdn7.com/20221013/22717_f68706d1/index.m3u8
-#EXTINF:-1,第三十三集
-https://yzzy.play-cdn7.com/20221013/22720_512de013/index.m3u8
-#EXTINF:-1,第三十四集
-https://yzzy.play-cdn7.com/20221013/22718_0939ec0c/index.m3u8
 #EXTINF:-1,第三十五集
 https://yzzy.play-cdn7.com/20221013/22719_14bf9a3b/index.m3u8
 #EXTINF:-1,第三十六集
 https://yzzy.play-cdn7.com/20221013/22722_9f54cbd2/index.m3u8
-#EXTINF:-1,第三十七集
-https://yzzy.play-cdn7.com/20221013/22721_198ac9a4/index.m3u8
 #EXTINF:-1,第三十八集
 https://yzzy.play-cdn7.com/20221013/22723_f624149b/index.m3u8
 #EXTINF:-1,第三十九集
@@ -17001,8 +16804,11 @@ https://yzzy.play-cdn7.com/20221013/22731_53e87991/index.m3u8
 https://yzzy.play-cdn7.com/20221013/22729_2d951857/index.m3u8
 #EXTINF:-1,第四十六集
 https://yzzy.play-cdn7.com/20221013/22730_6d039e6d/index.m3u8
+<<<<<<< HEAD
 #EXTINF:-1,番外篇
 https://yzzy.play-cdn7.com/20221013/22732_018e6020/index.m3u8
+=======
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,2025-12-06 06:25:55
 http://a.402089.xyz:4022/rtp/233.50.200.143:5140
 #EXTINF:-1,风云音乐
@@ -17028,23 +16834,9 @@ https://ali-m-l.cztv.com/channels/lantian/channel006/1080p.m3u8
 #EXTINF:-1,浙江经济
 http://zwebl02.cztv.com/live/channel031080P.m3u8?auth_key=2524708799-0-0-cc09266f8e043a6df28eb148cb488d37
 #EXTINF:-1,浙江经视
-http://ali-m-l.cztv.com/channels/lantian/channel003/720p.m3u8
-#EXTINF:-1,遂昌新闻综合
-http://l.cztvcloud.com/channels/lantian/SXsuichang1/720p.m3u8
-#EXTINF:-1,松阳新闻综合
-http://l.cztvcloud.com/channels/lantian/SXsongyang1/720p.m3u8?fbl=
-#EXTINF:-1,文成新闻综合
-http://l.cztvcloud.com/channels/lantian/SXwencheng1/720p.m3u8
-#EXTINF:-1,数码时代
-http://ali-m-l.cztv.com/channels/lantian/channel12/720p.m3u8?zzhed
-#EXTINF:-1,庆元新闻综合
-http://l.cztvcloud.com/channels/lantian/SXqingyuan1/720p.m3u8?fbl=
-#EXTINF:-1,嵊泗新闻综合
-http://l.cztvcloud.com/channels/lantian/SXshengsi1/720p.m3u8
+https://ali-m-l.cztv.com/channels/lantian/channel003/1080p.m3u8
 #EXTINF:-1,嵊州新闻综合
-http://l.cztvcloud.com/channels/lantian/SXshengzhou1/720p.m3u8?zzhed#http://l.cztvcloud.com/channels/lantian/SXshengzhou1/720p.m3u8
-#EXTINF:-1,余姚新闻综合
-https://l.cztvcloud.com/channels/lantian/SXyuyao1/720p.m3u8
+https://stream1.freetv.fun/sheng-zhou-xin-wen-zong-he-1.m3u8
 #EXTINF:-1,上海新闻综合
 http://z.b.bkpcp.top/m.php?id=shxwzh
 #EXTINF:-1,东海新闻
@@ -17087,6 +16879,8 @@ http://iptv.666230.xyz/iptv/jsyd.php/G_JSGG
 http://z.b.bkpcp.top/m.php?id=jscs
 #EXTINF:-1,江苏影视
 http://z.b.bkpcp.top/m.php?id=jsys
+#EXTINF:-1,江苏教育
+http://z.b.bkpcp.top/m.php?id=jsjy
 #EXTINF:-1,泗阳综合
 http://3739115337.cloudvdn.com/a.m3u8?domain=siyang-tv-hls.cm.jstv.com&player=nwEAAKHdjSKP_58X&secondToken=secondToken%3A5FUijZmDyNMxtCDdne0YzSAwjuw&streamid=siyang-tv%3Asiyang-tv%2Fsiyangzh&v3=1
 #EXTINF:-1,泰州一套新闻综合
@@ -17103,6 +16897,8 @@ https://live-auth.51kandianshi.com/szgd/csztv4k_hd.m3u8
 http://iptv.666230.xyz/iptv/jsyd.php/xzsnzx
 #EXTINF:-1,连云港公共
 http://iptv.666230.xyz/iptv/jsyd.php/jslyggonggongpd
+#EXTINF:-1,连云港新闻综合
+http://z.b.bkpcp.top/m.php?id=lygxwzh
 #EXTINF:-1,镇江二套社会民生
 http://zjtv-wshls.homecdn.com/live/2aa16.m3u8
 #EXTINF:-1,娄底综合
@@ -17273,8 +17069,15 @@ http://satellitepull.cnr.cn/live/wx32nmgyygb/playlist.m3u8
 http://play-radio-stream3.hndt.com/now/Or5au0KN/playlist.m3u8
 #EXTINF:-1,水浒传
 http://www.clmy.cc:35455/yy/1353873252
+<<<<<<< HEAD
 #EXTINF:-1,2025-12-07 06:37:01
 http://120.40.39.246:352/newlive/live/hls/1/live.m3u8
+=======
+#EXTINF:-1,2025-12-06 18:36:07
+http://112.123.206.32:808/hls/1/index.m3u8
+#EXTINF:-1,少儿动画
+http://218.15.183.23:9901/tsfile/live/23045_1.m3u8
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,河北经济
 http://kictoc.top:7000/rtp/239.254.200.18:6000
 #EXTINF:-1,河北影视
@@ -17643,8 +17446,6 @@ http://152.32.229.52:5050/4gtv-4gtv046/index.m3u8?proxy=true
 http://152.32.229.52:5050/4gtv-4gtv054/index.m3u8?proxy=true
 #EXTINF:-1,变形金刚1
 https://vd3.bdstatic.com/mda-khb9j4g6c25biyqj/v1-cae/1080p/mda-khb9j4g6c25biyqj.mp4
-#EXTINF:-1,变形金刚U
-https://vd3.bdstatic.com/mda-nd6k8tnavw6sj0a5/720p/h264_delogo/1649341231263414752/mda-nd6k8tnavw6sj0a5.mp4
 #EXTINF:-1,变形金刚LD
 https://vd3.bdstatic.com/mda-nd6k8tnavw6sj0a5/1080p/cae_h264_delogo/1649341416696755483/mda-nd6k8tnavw6sj0a5.mp4
 #EXTINF:-1,变形金刚2K
@@ -17661,10 +17462,6 @@ https://vd4.bdstatic.com/mda-mdfijn4crxseyky0/sc/mda-mdfijn4crxseyky0.mp4
 https://vd3.bdstatic.com/mda-ne6irx2irbjbbr6v/sc/cae_h264/1651932935194074079/mda-ne6irx2irbjbbr6v.mp4
 #EXTINF:-1,3D电影
 https://vd3.bdstatic.com/mda-kj0kfvyty9dk9nk0/v1-cae/sc/mda-kj0kfvyty9dk9nk0.mp4
-#EXTINF:-1,3D投影1
-https://vd4.bdstatic.com/mda-ncuizu4wfrjswzxp/720p/h264_delogo/1648560283895563574/mda-ncuizu4wfrjswzxp.mp4
-#EXTINF:-1,3D投影2
-https://vd4.bdstatic.com/mda-ncuiyrw7qj9x5w3z/720p/h264_delogo/1648560203494563586/mda-ncuiyrw7qj9x5w3z.mp4
 #EXTINF:-1,艺术科技感
 https://vd3.bdstatic.com/mda-ncrw9pciw60jymyd/sc/cae_h264_delogo/1648329992682771558/mda-ncrw9pciw60jymyd.mp4
 #EXTINF:-1,视觉艺术
@@ -17853,8 +17650,6 @@ https://vd3.bdstatic.com/mda-qh69a8xssnud2grk//cae_h264/1723013015183209280/mda-
 https://vd3.bdstatic.com/mda-qi4ixb4mr6ksnu6j/sc/cae_h264/1725550488072570305/mda-qi4ixb4mr6ksnu6j.mp4?pd=19&vt=1
 #EXTINF:-1,红颜知己
 https://vd3.bdstatic.com/mda-pa0hxcnxr20fw2ue/sc/cae_h264/1672682378195921471/mda-pa0hxcnxr20fw2ue.mp4?pd=19&vt=1
-#EXTINF:-1,人生道场
-https://vd3.bdstatic.com/mda-pkfap53d05mbtvk3/720p/h264/1700120024002601377/mda-pkfap53d05mbtvk3.mp4?pd=19&vt=1
 #EXTINF:-1,冲动的惩罚
 https://vd3.bdstatic.com/mda-qdgmys1rnf2qfrek//cae_h264/1713501974896699310/mda-qdgmys1rnf2qfrek.mp4?pd=19&vt=1
 #EXTINF:-1,蜀道向天开
@@ -17901,8 +17696,6 @@ https://vd4.bdstatic.com:443/mda-mipn4ccctdasgr2r/f/cae_h264_nowatermark/1632498
 https://vd4.bdstatic.com/mda-pjp4ewzv0qbgsvrp/1080p/cae_h264/1699053830954017961/mda-pjp4ewzv0qbgsvrp.mp4
 #EXTINF:-1,中国歌曲宝典大全
 https://vd4.bdstatic.com/mda-pjp4cfmemqeevgyt/1080p/cae_h264/1698963629470612045/mda-pjp4cfmemqeevgyt.mp4
-#EXTINF:-1,红尘情歌
-https://vd4.bdstatic.com/mda-phac0spxk46qtnbc/720p/h264/1691742999012792589/mda-phac0spxk46qtnbc.mp4
 #EXTINF:-1,💓心跳DJ💓
 https://alimov2.a.kwimgs.com/upic/2022/06/20/21/BMjAyMjA2MjAyMTA2MDFfOTU2MzA3MDg4Xzc3MjQwNDQzNTc2XzJfMw==_b_Bc5de1a8485b55839f2c3b4f0cc203e20.mp4?clientCacheKey=3xt4gndg76bfpuq_b.mp4&tt=b&di=24716318&bp=10000
 #EXTINF:-1,今日热歌DJ(串烧)
@@ -17983,14 +17776,8 @@ https://vdse.bdstatic.com//e0ad4d203cd7d7ffa943544c8d2ddbd3.mp4
 https://vdse.bdstatic.com//4d7e8fe409b2ba9e08b179de8e146fa3.mp4
 #EXTINF:-1,酒吧DJ舞曲
 https://vdse.bdstatic.com//5208fb24e1d76b0e81f992e91537f086.mp4
-#EXTINF:-1,花都开了你来不来DJ
-https://vd3.bdstatic.com/mda-mdee523swbezmsin/480p/h264/1618480997/mda-mdee523swbezmsin.mp4
 #EXTINF:-1,首DJ情歌
 https://vdse.bdstatic.com//e0ad4d203cd7d7ffa943544c8d2ddbd3.mp4
-#EXTINF:-1,丰色DJ
-https://vd2.bdstatic.com/mda-nandk1asnbz8b75j/480p/h264_delogo/1642931505556757292/mda-nandk1asnbz8b75j.mp4
-#EXTINF:-1,丰色DJ2
-https://vd4.bdstatic.com/mda-najbjga38pge4t8f/480p/h264_delogo/1642667045615334310/mda-najbjga38pge4t8f.mp4
 #EXTINF:-1,酒吧慢摇DJ舞曲
 https://vd4.bdstatic.com/mda-ncm0qvdrfhujssxg/sc/cae_h264_delogo/1647910096911072273/mda-ncm0qvdrfhujssxg.mp4
 #EXTINF:-1,dj新歌句句在理
@@ -18017,26 +17804,18 @@ https://vd4.bdstatic.com/mda-mhacxx5vhr2we882/1080p/cae_h264/1628673933350116053
 https://vd2.bdstatic.com/mda-me5chwexudvzcayg/f/cae_h264_nowatermark/1620297137821103617/mda-m电影e5chwexudvzcayg.mp4
 #EXTINF:-1,车载必备DJ《殇雪》《潮湿的心》《酒醉的蝴蝶》《多年以后》
 https://vd3.bdstatic.com/mda-mhve4gb9hi8cstzk/1080p/cae_h264/1630319514896018158/mda-mhve4gb9hi8cstzk.mp4
-#EXTINF:-1,伤离别
-https://vd3.bdstatic.com/mda-mjtdghzjvm7z63g0/720p/h264/1635413665861153734/mda-mjtdghzjvm7z63g0.mp4
 #EXTINF:-1,DJ  爱难求
 https://vd4.bdstatic.com/mda-mk99haw9m5kp6p5s/default/h264/1636526565199080954/mda-mk99haw9m5kp6p5s.mp4
 #EXTINF:-1,情难断
 https://vd4.bdstatic.com/mda-nbpw16dugr0ppae5/sc/cae_h264_delogo/1645737527853870072/mda-nbpw16dugr0ppae5.mp4
 #EXTINF:-1,DJ 天后
 https://vd3.bdstatic.com/mda-kk5f22n13qna8edp/v1-cae/sc/mda-kk5f22n13qna8edp.mp4
-#EXTINF:-1,DJ 车载音乐
-https://vd3.bdstatic.com/mda-mjtm31vvhj027na9/720p/h264/1635433115826085505/mda-mjtm31vvhj027na9.mp4
 #EXTINF:-1,车载DJ舞曲
 https://vd3.bdstatic.com/mda-nask5v8g11h6fqmf/sc/cae_h264_delogo/1643293983357482773/mda-nask5v8g11h6fqmf.mp4
 #EXTINF:-1,经典老歌6首
 https://vd2.bdstatic.com/mda-ncd2yz4tkhsx9x7n/sc/cae_h264_delogo/1647224948607209677/mda-ncd2yz4tkhsx9x7n.mp4
 #EXTINF:-1,极乐净土
 https://vdse.bdstatic.com//4fc4e9a0941e4c05d9b9bc005e73750c.mp4?authorization=bce-auth-v1%2F40f207e648424f47b2e3dfbb1014b1a5%2F2022-04-16T14%3A18%3A36Z%2F-1%2Fhost%2F399d272c0be11afa7863a946a9e7a9c11258b1ddf71a22572198d722008e0d16
-#EXTINF:-1,热舞
-https://vd3.bdstatic.com/mda-nahby8e8zgk9g0zi/480p/h264_delogo/1642494441589812023/mda-nahby8e8zgk9g0zi.mp4
-#EXTINF:-1,车站
-https://vd3.bdstatic.com/mda-nbaei5sc9xa843zh/480p/h264_delogo/1644574959111245054/mda-nbaei5sc9xa843zh.mp4
 #EXTINF:-1,劲爆荷东2022
 https://vd3.bdstatic.com/mda-nf09b5d7j9e264cu//bd265_cae_v4/1654139867994545085/mda-nf09b5d7j9e264cu.mp4
 #EXTINF:-1,最好听的DJ串烧
@@ -18053,14 +17832,8 @@ https://vd4.bdstatic.com/mda-ncvd174zfzapmvyb//cae_h264_delogo/16488590001649930
 https://vd3.bdstatic.com/mda-ndv4c2sjkixp16nw//cae_h264_delogo/1651314865313430355/mda-ndv4c2sjkixp16nw.mp4
 #EXTINF:-1,7首车载DJ情歌
 https://vd4.bdstatic.com/mda-nd79nt67wda0rz2m//cae_h264_delogo/1649401825584808774/mda-nd79nt67wda0rz2m.mp4
-#EXTINF:-1,5首绝美情歌
-https://vd3.bdstatic.com/mda-mjtb7bbvk98u8z58/480p/h264/1635409459813822543/mda-mjtb7bbvk98u8z58.mp4
-#EXTINF:-1,5首伤感音乐舞曲🎵
-https://vd3.bdstatic.com/mda-mkh8vtjpfn1iq9ei/480p/h264/1637216574377274148/mda-mkh8vtjpfn1iq9ei.mp4
 #EXTINF:-1,6首DJ歌曲
 https://vd3.bdstatic.com/mda-nd58yc4sjrakii4r/sc/cae_h264_delogo/1649230374417253340/mda-nd58yc4sjrakii4r.mp4
-#EXTINF:-1,6首火遍全网歌曲
-https://vd3.bdstatic.com/mda-mkf63gabjer51i9c/480p/h264/1637037550863164410/mda-mkf63gabjer51i9c.mp4
 #EXTINF:-1,7首伤感情歌
 https://vd2.bdstatic.com/mda-nbdj7sp20st0jd9d/sc/cae_h264_delogo/1644847557994341172/mda-nbdj7sp20st0jd9d.mp4
 #EXTINF:-1,8首串烧歌曲
@@ -18099,8 +17872,6 @@ https://vdse.bdstatic.com//e668900af1d683c1f8762c1184d516d3.mp4
 https://vdse.bdstatic.com//59c5abc138bf1da5585bb765c530137e.mp4
 #EXTINF:-1,DJ版精选8首
 https://vdse.bdstatic.com//0ac0c7446ae226121af41b2b4e375ae3.mp4
-#EXTINF:-1,DJ车载音乐
-https://vd3.bdstatic.com/mda-mjtm31vvhj027na9/720p/h264/1635433115826085505/mda-mjtm31vvhj027na9.mp4
 #EXTINF:-1,DJ酒醉风雨情 伤心苦酒 朋友的酒 红尘没有错
 https://vd4.bdstatic.com/mda-nd1a4zuxf78py830/sc/cae_h264_delogo/1649003829932795060/mda-nd1a4zuxf78py830.mp4
 #EXTINF:-1,DJ情6首
@@ -18399,8 +18170,6 @@ https://vd3.bdstatic.com/mda-mmszwiraavrsffr0/1080p/cae_h264_delogo/164352427320
 https://vd2.bdstatic.com/mda-nc7zsmht6xm8nye2/1080p/cae_h264_delogo/1646860825962324580/mda-nc7zsmht6xm8nye2.mp4?pd=2&pt=0&cr=3&vt=0&cd=0&did=cfcd208495d565ef66e7dff9f98764da&logid=0944238650&vid=13615054605486928670&auth_key=1647593144-0-0-c1377aa288ee07870cef62c758180362&bcevod_channel=searchbox_feed
 #EXTINF:-1,一朵情花开
 https://vd4.bdstatic.com/mda-nb941efqj8sduxxa/f/cae_h264_nowatermark_delogo/1644528022253011778/mda-nb941efqj8sduxxa.mp4?pd=2&pt=0&cr=3&vt=0&cd=0&did=cfcd208495d565ef66e7dff9f98764da&logid=1942353781&vid=17929545618888552442&auth_key=1647522142-0-0-cb59c1e23078eb63ac658bdf33c862cf&bcevod_channel=searchbox_feed&cntl_id=ct_dy_11_95&sle=1&sl=353&split=608799
-#EXTINF:-1,相思
-https://vd2.bdstatic.com/mda-mmb0pntcm97258vr/480p/h264_delogo/1645602103008725852/mda-mmb0pntcm97258vr.mp4?pd=2&pt=0&cr=1&vt=0&cd=0&did=cfcd208495d565ef66e7dff9f98764da&logid=2229584109&vid=2759853396937832080&auth_key=1647522429-0-0-3383cd360b1743fdc676dc2d26c14ccb&bcevod_channel=searchbox_feed&cntl_id=ct_dy_11_95&sle=1&sl=197&split=379238
 #EXTINF:-1,风雨人生路
 https://vd3.bdstatic.com/mda-ncr16tqsb7t1zga1/1080p/cae_h264_delogo/1648328484303840898/mda-ncr16tqsb7t1zga1.mp4
 #EXTINF:-1,表白
@@ -18495,6 +18264,8 @@ https://alimov2.a.kwimgs.com/upic/2022/05/20/05/BMjAyMjA1MjAwNTMyMTJfOTU2MzA3MDg
 https://alimov2.a.kwimgs.com/upic/2022/05/20/05/BMjAyMjA1MjAwNTMwMTBfOTU2MzA3MDg4Xzc0ODAyNDQ0NDgzXzJfMw==_b_Bc661ae05775bdc55d96cf64068caa4e0.mp4?clientCacheKey=3xbapqu7g7emaug_b.mp4&tt=b&di=24710a0b&bp=10000
 #EXTINF:-1,燕雀南飞
 https://txmov2.a.kwimgs.com/upic/2022/05/20/05/BMjAyMjA1MjAwNTMwMThfOTU2MzA3MDg4Xzc0ODAyNDY2NDI4XzJfMw==_b_B0611ff1ab2bd444ebb3aefe464b3de28.mp4?clientCacheKey=3xnrixaxzvpdjs2_b.mp4&tt=b&di=24710a0b&bp=10000
+#EXTINF:-1,活着
+https://txmov2.a.kwimgs.com/upic/2022/05/20/05/BMjAyMjA1MjAwNTI1MzZfOTU2MzA3MDg4Xzc0ODAyMzc4NDE2XzJfMw==_b_Baa0e5199b8317db9c99de08752e23c5f.mp4?clientCacheKey=3xpdfhy5zwuuivg_b.mp4&tt=b&di=24710a0b&bp=10000
 #EXTINF:-1,一开始说陪你到老的人
 https://alimov2.a.kwimgs.com/upic/2022/05/20/05/BMjAyMjA1MjAwNTIyNDdfOTU2MzA3MDg4Xzc0ODAyMzE4MjUxXzJfMw==_b_B34d1d70d885847ad6b3d230bdb8a841e.mp4?clientCacheKey=3xuq9chbp7xnh86_b.mp4&tt=b&di=24710a0b&bp=10000
 #EXTINF:-1,愿你
@@ -18723,8 +18494,6 @@ https://alimov2.a.kwimgs.com/upic/2022/08/12/05/BMjAyMjA4MTIwNTU5MzRfOTU2MzA3MDg
 https://alimov2.a.kwimgs.com/upic/2022/08/12/12/BMjAyMjA4MTIxMjI4NDFfOTU2MzA3MDg4XzgxNjIwNzczMjE0XzJfMw==_b_Bb9293e44928a67a8516143e41bb648f7.mp4?clientCacheKey=3xm7qkzt7wxwx2u_b.mp4&tt=b&di=24710b75&bp=10000
 #EXTINF:-1,九月九的酒'
 https://alimov2.a.kwimgs.com/upic/2022/08/13/05/BMjAyMjA4MTMwNTI5NDNfOTU2MzA3MDg4XzgxNjgyMzI0MTA0XzJfMw==_b_B47520b4e5303dd59437f957e1cf4c9e3.mp4?clientCacheKey=3xhgeusyevt5a86_b.mp4&tt=b&di=24710b75&bp=10000
-#EXTINF:-1,精选高音质中文DJ串烧 超重低音炮 蹦迪车载音乐首选 首首洗脑
-https://vd3.bdstatic.com/mda-pbtbhnide9qbjjq1/720p/h264/1677571859269734018/mda-pbtbhnide9qbjjq1.mp4
 #EXTINF:-1,窒息妹追星 现场昏厥六次 一夜成名 这首歌曲也迅速火遍全球
 https://vd4.bdstatic.com/mda-pbqt35dsbhr7y2bg/1080p/cae_h264/1677383326358980285/mda-pbqt35dsbhr7y2bg.mp4
 #EXTINF:-1,不怕新歌有多嗨 就怕老歌带DJ 重低音版-离家的孩子 超好听
@@ -18845,8 +18614,6 @@ https://vd2.bdstatic.com/mda-md2eyfntemujuft5/1080p/cae_h264/1617446472/mda-md2e
 https://vd3.bdstatic.com/mda-mgqiagirsmmpuarm/1080p/cae_h264/1627218846577884242/mda-mgqiagirsmmpuarm.mp4
 #EXTINF:-1,《哑巴新娘...》
 https://vdse.bdstatic.com//1a3fdd4def6feeef6a49f4c2bfd9fec2.mp4
-#EXTINF:-1,《英雄泪》
-https://vd3.bdstatic.com/mda-ncnp6tm56ngrxbis/360p/h264_delogo/1648055585617071282/mda-ncnp6tm56ngrxbis.mp4
 #EXTINF:-1,【经典老歌】DJ《精选8首》
 https://vdse.bdstatic.com//200ab148a9e867ad29f5fda4ac175305.mp4
 #EXTINF:-1,【老歌DJ版】《精选8首》
@@ -18885,14 +18652,10 @@ https://15799848.s21v.faiusr.com/58/ABUIABA6GAAg3Lqw4gUoo6LL7QU.mp4
 https://txmov2.a.kwimgs.com/upic/2022/03/21/19/BMjAyMjAzMjExOTA2MjRfMjYyNzI4Mjc4MV83MDE2MTEwMjY1Ml8yXzM=_b_B977559109a6b2bec30b01e11d458d398.mp4
 #EXTINF:-1,DJ给我一把爱情火
 https://vd2.bdstatic.com/mda-ncg42rnzxats8h83/cae_h264_delogo/1647486932330653636/mda-ncg42rnzxats8h83.mp4
-#EXTINF:-1,DJ酱爆鱿鱼舞曲版》
-https://vd4.bdstatic.com/mda-ncidj3kqg98a7ent/360p/h264_delogo/1647683015061569002/mda-ncidj3kqg98a7ent.mp4
 #EXTINF:-1,DJ劲爆舞曲《在我心里有个你》《东南西北风》《一万个对不起》等
 https://vdse.bdstatic.com//8343b02f5e7465d4c5b07e54403438b8.mp4
 #EXTINF:-1,DJ流浪兄弟
 https://vd2.bdstatic.com/mda-mhrdtax1km0idkc5/1080p/cae_h264/1629972852606533219/mda-mhrdtax1km0idkc5.mp4
-#EXTINF:-1,DJ女人花
-https://vd4.bdstatic.com/mda-ncdfurx49ht1fh9w/720p/h264_delogo/1647256721820297861/mda-ncdfurx49ht1fh9w.mp4
 #EXTINF:-1,DJ情歌《昨夜的我又梦到了你》《心上的人儿你在哪》等
 https://vdse.bdstatic.com//09b76fc9762763350288fb96047ec820.mp4
 #EXTINF:-1,DJ情歌6首
@@ -18949,16 +18712,12 @@ https://vdse.bdstatic.com//b68123a666cce39e7413da912e3675a3.mp4
 https://vdse.bdstatic.com//7e9d2da860d4ac39c0ea86502360d6fe.mp4
 #EXTINF:-1,车载DJ舞曲《大风吹》《浪子闲话》《玛尼情歌》《沙漠骆驼》
 https://vdse.bdstatic.com//7002925e04c4c451cfa8aafc9b4190c7.mp4
-#EXTINF:-1,车震视频1
-https://vd2.bdstatic.com/mda-mki7h67gag5wcev9/720p/h264/1637299107495714243/mda-mki7h67gag5wcev9.mp4
 #EXTINF:-1,车震视频2
 https://vd4.bdstatic.com/mda-mkp41tr6gmkgjjxm/sc/cae_h264/1637725035882295978/mda-mkp41tr6gmkgjjxm.mp4
 #EXTINF:-1,车震视频5
 https://vd4.bdstatic.com/mda-mkj6mgsuic4gdknp/sc/cae_h264/1637383677947993989/mda-mkj6mgsuic4gdknp.mp4
 #EXTINF:-1,车震一小时
 http://gcw.bdcdn.shoujiduoduo.com/201805/0748-641.mp4
-#EXTINF:-1,痴心是我犯的错
-https://vd2.bdstatic.com/mda-ncpa1ziw0urtvsuy/720p/h264_delogo/1648105627756677310/mda-ncpa1ziw0urtvsuy.mp4
 #EXTINF:-1,初恋的人
 https://vd2.bdstatic.com:443/mda-mhwdgysnspnb1nnr/1080p/cae_h264/1630404398162757730/mda-mhwdgysnspnb1nnr.mp4
 #EXTINF:-1,初恋情人
@@ -19015,8 +18774,6 @@ https://vd4.bdstatic.com/mda-jehka6exkt6va8id/sc/mda-jehka6exkt6va8id.mp4
 https://vd2.bdstatic.com/mda-nb8j3b6sz77bdvk8/sc/cae_h264_delogo/1644413904258506067/mda-nb8j3b6sz77bdvk8.mp4
 #EXTINF:-1,韩国女团dj
 https://vd3.bdstatic.com/mda-mknba5i60je0d2dn/sc/cae_h264/1637654844357830568/mda-mknba5i60je0d2dn.mp4
-#EXTINF:-1,韩国舞团dj
-https://vd2.bdstatic.com/mda-mkipbq21ifs557b8/720p/h264/1637339353128030403/mda-mkipbq21ifs557b8.mp4
 #EXTINF:-1,好歌分享《精选6首伤感DJ舞曲》
 https://vdse.bdstatic.com//0c87c8977d0a33498fe7362d3c60c22c.mp4
 #EXTINF:-1,花儿笑了DJ
@@ -19049,8 +18806,6 @@ https://vdse.bdstatic.com//f203048340fe15016fbec9a72905680d.mp4
 https://vdse.bdstatic.com//f9cda7e70273c267b61a3d0c969d2033.mp4
 #EXTINF:-1,精选5首DJ舞曲
 https://vd4.bdstatic.com/mda-mkp1h44minspwt7t/sc/cae_h264/1637772442657333771/mda-mkp1h44minspwt7t.mp4
-#EXTINF:-1,精选dj
-https://vd3.bdstatic.com/mda-mm68drt808w1nins/720p/h264/1638861890075163680/mda-mm68drt808w1nins.mp4
 #EXTINF:-1,精选韩宝仪经典歌曲10首
 https://vdse.bdstatic.com//42d5ac65a9070eeab2513bf6bc65ea4d.mp4
 #EXTINF:-1,酒吧舞女
@@ -19091,8 +18846,6 @@ https://vd2.bdstatic.com/mda-mkqi8zsh8r874xii/sc/cae_h264/1637854401020299343/md
 https://vdse.bdstatic.com//816c73543ede254586a625cacc67ea0f.mp4
 #EXTINF:-1,美人热舞洗脑DJ舞曲
 https://vdse.bdstatic.com//3700f6b78ceaf0f4a5313f4d68c95b72.mp4
-#EXTINF:-1,梦的翅膀受了伤DJ
-https://vd3.bdstatic.com/mda-nc9a5ezg6q94csiv/360p/h264_delogo/1646896337041155631/mda-nc9a5ezg6q94csiv.mp4
 #EXTINF:-1,模特DJ
 http://gcw.bdcdn.shoujiduoduo.com/201805/0247-477.mp4
 #EXTINF:-1,男神dj舞曲
@@ -19115,8 +18868,6 @@ https://vdse.bdstatic.com//4eece717c6cc2fb9086a59a13ce30623.mp4
 https://vdse.bdstatic.com//61e318ea76e984f2bedb66f1ed1583be.mp4
 #EXTINF:-1,情歌DJ合
 https://vd4.bdstatic.com/mda-mkp3tpu9ghk2ufev/sc/cae_h264/1637733480141753790/mda-mkp3tpu9ghk2ufev.mp4
-#EXTINF:-1,情歌DJ舞曲
-https://vd2.bdstatic.com/mda-nag6y4ryfy5a0hjb/720p/h264_delogo/1642396108696963578/mda-nag6y4ryfy5a0hjb.mp4
 #EXTINF:-1,情歌皇后林翠萍《相见不如不见》
 https://vdse.bdstatic.com//1f65ad884619a069c68572f1ac9e2b0e.mp4
 #EXTINF:-1,让人陶醉的几首DJ舞曲
@@ -19127,10 +18878,6 @@ https://vd4.bdstatic.com/mda-nk3qfbxhf5dqpywt/sc/cae_h264/1667582665910576925/md
 https://vd4.bdstatic.com/mda-mknatf58h2evy18i/sc/cae_h264/1637653930525484478/mda-mknatf58h2evy18i.mp4
 #EXTINF:-1,山歌《阿里山的姑娘》《康定情歌》《山路十八弯》《敖包相会》
 https://vdse.bdstatic.com//ae82f5b93166f47d85ff12124a021323.mp4
-#EXTINF:-1,陕北民间
-https://vd4.bdstatic.com/mda-ncfk4vpkpbuhnu0s/720p_frame30/h264_cae_delogo/1647440102957240321/mda-ncfk4vpkpbuhnu0s.mp4
-#EXTINF:-1,伤感DJ串烧为爱流泪
-https://vd3.bdstatic.com/mda-nci8jqpzeyqkxe/720p/h264_delogo/1647670097763149460/mda-nci8jqpzeyqkxe.mp4
 #EXTINF:-1,伤感情歌DJ
 https://vd3.bdstatic.com/mda-mkv7idcnxrgc3cnd/sc/cae_h264/1638257251905732477/mda-mkv7idcnxrgc3cnd.mp4
 #EXTINF:-1,伤心的眼泪
@@ -19143,8 +18890,6 @@ https://vd2.bdstatic.com/mda-mkp6w1tjw8mz9kpx/sc/cae_h264/1637731815454834601/md
 https://vd2.bdstatic.com/mda-ma0st3ncw6i2yerr/v1-cae/sc/mda-ma0st3ncw6i2yerr.mp4
 #EXTINF:-1,泰坦尼克MV
 https://15799848.s21v.faiusr.com/58/ABUIABA6GAAg_uCa4gUo7Irtnwc.mp4
-#EXTINF:-1,探窗
-https://vd3.bdstatic.com/mda-mi6e4vgibhtc628h/480p/h264/1631008912303842588/mda-mi6e4vgibhtc628h.mp4
 #EXTINF:-1,推荐9首DJ舞曲_首首甜美醉人
 https://vd2.bdstatic.com/mda-mhig1c3sw223mx8p/1080p/cae_h264/1629380139191731149/mda-mhig1c3sw223mx8p.mp4
 #EXTINF:-1,网络金曲《拈花一笑》《陪你千山万水》《对面小姐姐》
@@ -19173,8 +18918,6 @@ https://vd4.bdstatic.com/mda-ncg9dxe96d9039u2/sc/cae_h264_delogo/164764877826696
 https://vd4.bdstatic.com/mda-nc005jwr87jrdssh/sc/cae_h264_delogo/1646179767551234681/mda-nc005jwr87jrdssh.mp4
 #EXTINF:-1,新歌上线_啥歌这么好听
 https://vd4.bdstatic.com/mda-nce4pddwfdazhgrt/sc/cae_h264_delogo/1647315872347291980/mda-nce4pddwfdazhgrt.mp4
-#EXTINF:-1,新歌上线7首
-https://vd2.bdstatic.com/mda-nc4fkdejg6k892tp/720p/h264_delogo/1646478313883739193/mda-nc4fkdejg6k892tp.mp4
 #EXTINF:-1,新情歌DJ
 https://vd3.bdstatic.com/mda-mkm49f32vcaf16y0/sc/cae_h264/1637551531193286304/mda-mkm49f32vcaf16y0.mp4
 #EXTINF:-1,新世纪舞曲
@@ -19211,8 +18954,6 @@ https://vdse.bdstatic.com//038c6250208e42b9427a885e0370e1a2.mp4
 https://vd4.bdstatic.com/mda-nckaxf6j35t5e3j4/sc/cae_h264_delogo/1647849433211786752/mda-nckaxf6j35t5e3j4.mp4
 #EXTINF:-1,震撼纯电音Drown
 https://vd2.bdstatic.com/mda-mjshcpd847mhnjgj/sc/cae_h264/1635337200637124885/mda-mjshcpd847mhnjgj.mp4
-#EXTINF:-1,只能拼自己DJ人不可貌相
-https://vd4.bdstatic.com/mda-mmw9fee0n7gtsu2k/480p/h264/1640932948187120706/mda-mmw9fee0n7gtsu2k.mp4
 #EXTINF:-1,最新dj
 https://vd2.bdstatic.com/mda-mm4dszarfc74t9mx/sc/cae_h264/1638819159347843097/mda-mm4dszarfc74t9mx.mp4
 #EXTINF:-1,⭕制作不易
@@ -20373,8 +20114,6 @@ https://vd2.bdstatic.com/mda-kggrrsg8hpsbyvdk/v1-cae/1080p/mda-kggrrsg8hpsbyvdk.
 https://vd3.bdstatic.com/mda-kj1vjpua11r3j95h/sc/cae_h264_clips/mda-kj1vjpua11r3j95h.mp4?auth_key=1602763774-0-0-8150b4a9e241bcd16b0520a8abc0263a&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=8797_2&sle=1&sl=997&split=980605
 #EXTINF:-1,九妹
 https://vd3.bdstatic.com/mda-kivta2jde42bpdqz/sc/cae_h264_clips/mda-kivta2jde42bpdqz.mp4?auth_key=1602763603-0-0-e6d932a08a5ae401335667294c9a3163&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=8797_2&sle=1&sl=1232&split=1199309
-#EXTINF:-1,酒干倘卖无
-https://vd2.bdstatic.com/mda-miipfs1jpdxe4iuq/360p/h264/1632069416598487421/mda-miipfs1jpdxe4iuq.mp4?v_from_s=hkapp-haokan-suzhou&auth_key=1632627281-0-0-e40452f9804a288149f1e038102ec1db&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=
 #EXTINF:-1,拉兹之歌
 https://vd3.bdstatic.com/mda-kgabkqr5n0anssjq/v1-cae/mda-kgabkqr5n0anssjq.mp4?auth_key=1602772672-0-0-d5c41094c2d4baed4e5018edbc4fe4ec&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=8797_2&sle=1&sl=665&split=689030
 #EXTINF:-1,丽达之歌
@@ -20461,8 +20200,6 @@ https://vd3.bdstatic.com/mda-kibteu2sd3etwc94/v1-cae/1080p/mda-kibteu2sd3etwc94.
 https://vd4.bdstatic.com/mda-ke6xcmw1ygjawi96/v1-cae/mda-ke6xcmw1ygjawi96.mp4?auth_key=1602767743-0-0-dc1caef9797362c98b9fde9120f1f3b1&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=8797_2&sle=1&sl=603&split=638182
 #EXTINF:-1,万里长城永不倒
 https://vd4.o.com/mda-kijvx9feb3k1j5n1/v1-cae/1080p/mda-kijvx9feb3k1j5n1.mp4?auth_key=1602762980-0-0-f48890957552ca8a1e663c944cc67e34&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=8797_2&sle=1&sl=2668&split=2321210
-#EXTINF:-1,万泉河水清又清
-https://vd2.bdstatic.com/mda-mdgeqpr41hba1rku/360p/h264_cae/1620580795306697660/mda-mdgeqpr41hba1rku.mp4?v_from_s=hkapp-haokan-suzhou&auth_key=1632626607-0-0-a1d37f0a978823f05f771b3ab17814af&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=
 #EXTINF:-1,万水千山纵横
 https://vd2.bdstatic.com/mda-kfdcqnhq8q4qc1w4/v1-cae/1080p/mda-kfdcqnhq8q4qc1w4.mp4?auth_key=1602766929-0-0-ff2d59fa07701ca60b2e90ad885e4454&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=8797_2&sle=1&sl=1991&split=1777541
 #EXTINF:-1,枉凝眉
@@ -20861,8 +20598,6 @@ http://90.188.37.86/live/playlist.m3u8
 https://vd4.bdstatic.com/mda-ncg44ya2nmih7avs/1080p/cae_h264_delogo/1647487969274086287/mda-ncg44ya2nmih7avs.mp4
 #EXTINF:-1,酒吧DJ慢摇
 https://vd4.bdstatic.com/mda-nep7389tybhqri26/sc/cae_h264/1653369853990409770/mda-nep7389tybhqri26.mp4?v_from_s=hkapp-haokan-nanjing&auth_key=1660564826-0-0-ed8f3039d644d74a001081b69ec18480&bcevod_channel=searchbox_feed&cd=0&pd=1&pt=3&logid=1826721718&vid=5722172632748597378&abtest=103742_2-103890_2-103579_2&klogid=1826721718
-#EXTINF:-1,DJ打碟Amelisa
-https://vd4.bdstatic.com/mda-nhe6iz0ya02t34mh/720p/h264/1660538849895876334/mda-nhe6iz0ya02t34mh.mp4?v_from_s=hkapp-haokan-nanjing&auth_key=1660565054-0-0-4956d281df19b6ef8ddd4cba109b74f1&bcevod_channel=searchbox_feed&cd=0&pd=1&pt=3&logid=2054620949&vid=11167157976401030828&abtest=103742_2-103890_2-103579_2&klogid=2054620949
 #EXTINF:-1,DJ打碟Medellín
 https://vd4.bdstatic.com/mda-nhckuvcwx1yre9kr/sc/cae_h264/1660407679297089319/mda-nhckuvcwx1yre9kr.mp4?v_from_s=hkapp-haokan-nanjing&auth_key=1660565121-0-0-8df9d60de8c19365fc930561dea166e9&bcevod_channel=searchbox_feed&cd=0&pd=1&pt=3&logid=2121203023&vid=10124834456939342132&abtest=103742_2-103890_2-103579_2&klogid=2121203023
 #EXTINF:-1,DJ打碟LIANA
@@ -26935,6 +26670,17 @@ http://49.113.179.174:4022/udp/238.125.0.165:5140
 https://play-qukan.cztv.com/live/1758879019692345.m3u8
 #EXTINF:-1,Zhejiang TV International
 https://ali-m-l.cztv.com/channels/lantian/channel10/1080p.m3u8
+<<<<<<< HEAD
+=======
+#EXTINF:-1,万州三峡移民 (576p) [Not 24/7]
+http://123.146.162.24:8013/tslslive/PU2vzMI/hls/live_sd.m3u8
+#EXTINF:-1,万州影视 (576p) [Not 24/7]
+http://123.146.162.24:8013/tslslive/vWlnEzU/hls/live_sd.m3u8
+#EXTINF:-1,万州科教 (576p)
+http://123.146.162.24:8013/tslslive/URetCnP/hls/live_sd.m3u8
+#EXTINF:-1,万州综合 (576p) [Not 24/7]
+http://123.146.162.24:8013/tslslive/noEX9SG/hls/live_sd.m3u8
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,东南卫视 (Southeast Television fka Fujian Television) (2160p)
 http://118.81.195.79:9003/hls/24/index.m3u8
 #EXTINF:-1,东方卫视 (2160p)
@@ -26951,6 +26697,39 @@ http://tvdrs.wsrtv.com.cn:8100/channellive/ch1.flv
 https://hwapi.yunshicloud.com/8xughf/e0bx15.m3u8
 #EXTINF:-1,云南都市 (1080p)
 http://39.130.202.81:6610/gitv_live/G_YNTV-2-HD/G_YNTV-2-HD.m3u8
+<<<<<<< HEAD
+=======
+#EXTINF:-1,五星体育 (720p)
+http://223.110.245.147/ott.js.chinamobile.com/PLTV/3/224/3221226799/index.m3u8
+#EXTINF:-1,亚太台 (480p)
+http://174.127.67.246/live330/playlist.m3u8
+#EXTINF:-1,交城電視台 (576p)
+http://sxjc.chinashadt.com:2036/live/stream:jctv.stream/playlist.m3u8
+#EXTINF:-1,京视剧场 (576p)
+http://223.110.245.143/ott.js.chinamobile.com/PLTV/3/224/3221227040/index.m3u8
+#EXTINF:-1,亳州农村 (360p)
+http://220.180.110.101:8083/videos/live/39/13/o4ncrHkSp7q09/o4ncrHkSp7q09.m3u8
+#EXTINF:-1,亳州新聞頻道 (360p)
+http://220.180.110.101:8083/videos/live/33/59/NC7XQdEveyncq/NC7XQdEveyncq.m3u8
+#EXTINF:-1,仙桃新聞綜合 (576p)
+http://221.233.242.239:280/live/71/playlist.m3u8
+#EXTINF:-1,仙桃生活文體 (576p)
+http://221.233.242.239:280/live/72/playlist.m3u8
+#EXTINF:-1,优漫卡通 (576p)
+http://183.207.249.15/PLTV/4/224/3221225933/index.m3u8
+#EXTINF:-1,兵团卫视 (540p) [Not 24/7]
+http://112.25.48.68/live/program/live/btws/1300000/mnf.m3u8
+#EXTINF:-1,内江公共 (720p)
+http://njzb.scnj.tv:90/live/gggy_gggy800.m3u8
+#EXTINF:-1,内江科教 (720p)
+http://njzb.scnj.tv:90/live/kjpd_kjpd800.m3u8
+#EXTINF:-1,内江综合 (720p)
+http://njzb.scnj.tv:90/live/xwzh_xwzh800.m3u8
+#EXTINF:-1,内蒙古 (576p)
+http://223.110.245.161/ott.js.chinamobile.com/PLTV/3/224/3221225836/index.m3u8
+#EXTINF:-1,内蒙古卫视 (576p)
+http://39.134.115.163:8080/PLTV/88888910/224/3221225667/index.m3u8
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,农安新闻综合 [Geo-blocked]
 https://stream2.jlntv.cn/naxw/sd/live.m3u8
 #EXTINF:-1,前郭综合 [Geo-blocked]
@@ -26975,6 +26754,15 @@ http://30539.hlsplay.aodianyun.com/lms_30539/tv_channel_142.m3u8
 http://30539.hlsplay.aodianyun.com/lms_30539/tv_channel_295.m3u8
 #EXTINF:-1,南陽科教頻道 (1080p) [Not 24/7]
 http://30539.hlsplay.aodianyun.com/lms_30539/tv_channel_296.m3u8
+<<<<<<< HEAD
+=======
+#EXTINF:-1,厦门卫视 (576p)
+http://223.110.245.159/ott.js.chinamobile.com/PLTV/3/224/3221226996/index.m3u8
+#EXTINF:-1,厦门卫视 (540p) [Not 24/7]
+http://112.25.48.68/live/program/live/xmws/1300000/mnf.m3u8
+#EXTINF:-1,发现之旅 (576p)
+http://125.210.152.18:9090/live/FXZL_750.m3u8
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,吉州新聞綜合 (1080p)
 http://218.204.153.158/10.m3u8
 #EXTINF:-1,吉林卫视 (2160p)
@@ -27031,6 +26819,15 @@ http://220.194.178.58:8888/newlive/live/hls/55/live.m3u8
 http://220.194.178.58:8888/newlive/live/hls/54/live.m3u8
 #EXTINF:-1,岷县电视台 (1080p)
 http://117.156.28.119/270000001111/1110000130/index.m3u8
+<<<<<<< HEAD
+=======
+#EXTINF:-1,平乡电视台 (576p)
+http://hbpx.chinashadt.com:2036/live/px1.stream/playlist.m3u8
+#EXTINF:-1,广东 Ⅰ 韶关公共台 (720p) [Not 24/7]
+https://www.sgmsw.cn/videos/tv/201805/1308/9P424TC5M000AFO13CXK6GN6BOA889D2/hls/live.m3u8
+#EXTINF:-1,广东 Ⅰ 韶关综合台 (720p) [Not 24/7]
+https://www.sgmsw.cn/videos/tv/201805/1308/SB05RIYZOU8JR418AUQOF62CAJQ08D0E/hls/live.m3u8
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,广东卫视 (2160p)
 http://118.81.195.79:9003/hls/26/index.m3u8
 #EXTINF:-1,广水新闻综合 [Geo-blocked]
@@ -27055,16 +26852,40 @@ http://223.110.245.167/ott.js.chinamobile.com/PLTV/3/224/3221225947/index.m3u8
 http://117.156.28.119/270000001111/1110000028/index.m3u8
 #EXTINF:-1,文山综合 (1080p) [Not 24/7]
 http://m3u8.channel.wsrtv.com.cn/cms/videos/nmip-media/channellive/channel7/playlist.m3u8
+<<<<<<< HEAD
 #EXTINF:-1,新昌休闲影视 (1080p) [Not 24/7]
 https://l.cztvcloud.com/channels/lantian/SXxinchang2/720p.m3u8
 #EXTINF:-1,新昌新聞綜合 (1080p) [Not 24/7]
 https://l.cztvcloud.com/channels/lantian/SXxinchang1/720p.m3u8
+=======
+#EXTINF:-1,新泰乡村党建 (480p) [Not 24/7]
+http://live.xtgdw.cn:1935/live/xtxc/playlist.m3u8
+#EXTINF:-1,新泰影視頻道 (480p) [Not 24/7]
+http://111.17.214.4:1935/live/xtys/playlist.m3u8
+#EXTINF:-1,新泰生活 (480p) [Not 24/7]
+http://111.17.214.4:1935/live/xtsh/playlist.m3u8
+#EXTINF:-1,新泰综合 (480p) [Not 24/7]
+http://111.17.214.4:1935/live/xtzh/playlist.m3u8
+#EXTINF:-1,新泰鄉村黨建 (480p) [Not 24/7]
+http://111.17.214.4:1935/live/xtxc/playlist.m3u8
+#EXTINF:-1,新疆卫视 (576p)
+http://39.134.115.163:8080/PLTV/88888910/224/3221225725/index.m3u8
+#EXTINF:-1,新疆卫视 (540p)
+http://112.25.48.68/live/program/live/xjws/1300000/mnf.m3u8
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,新郑综合 (1080p) [Not 24/7]
 http://live.dxhmt.cn:9081/tv/10184-1.m3u8
 #EXTINF:-1,晋中公共 (1080p) [Not 24/7]
 http://jzlive.jztvnews.com:90/live/jzgg.m3u8
 #EXTINF:-1,晋中综合 (1080p)
 http://jzlive.jztvnews.com:90/live/jzzh.m3u8
+<<<<<<< HEAD
+=======
+#EXTINF:-1,景县电视一套 (576p) [Not 24/7]
+http://hbjx.chinashadt.com:1935/live/jx1.stream/playlist.m3u8
+#EXTINF:-1,智慧教育 (576p)
+http://111.63.117.13:6060/030000001000/G_CETV-4/G_CETV-4.m3u8
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,松原新闻综合 [Geo-blocked]
 https://stream2.jlntv.cn/sytv/sd/live.m3u8
 #EXTINF:-1,江苏卫视 (1080p) [Not 24/7]
@@ -27073,6 +26894,21 @@ http://183.207.248.71/cntv/live1/HD-2500k-1080P-jiangsustv/HD-2500k-1080P-jiangs
 http://39.134.24.166/dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221226200/index.m3u8
 #EXTINF:-1,江西卫视 (1080p)
 http://39.134.115.163:8080/PLTV/88888910/224/3221225705/index.m3u8
+<<<<<<< HEAD
+=======
+#EXTINF:-1,江西卫视 (720p)
+http://117.169.120.140:8080/live/jiangxistv/.m3u8
+#EXTINF:-1,江西卫视 (576p)
+http://183.207.248.71/gitv/live1/JXWS/JXWS
+#EXTINF:-1,江西卫视 (360p)
+http://125.210.152.18:9090/live/JXWSHD_H265.m3u8
+#EXTINF:-1,沧县电视二套 (576p)
+http://hebcx.chinashadt.com:2036/live/10002.stream/playlist.m3u8
+#EXTINF:-1,沧县电视综合 (576p)
+http://hebcx.chinashadt.com:2036/live/10001.stream/playlist.m3u8
+#EXTINF:-1,河北农民 (576p)
+http://hbzx.chinashadt.com:2036/zhibo/stream:hbnm.stream/playlist.m3u8
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,河北卫视 (2160p)
 http://118.81.195.79:9003/hls/29/index.m3u8
 #EXTINF:-1,河南卫视 (2160p)
@@ -27101,6 +26937,23 @@ http://60.30.52.41/live/bhtv1/playlist.m3u8
 http://60.30.52.41/live/bhtv2/playlist.m3u8
 #EXTINF:-1,灵台新闻综合 (1080p)
 http://117.156.28.119/270000001111/1110000145/index.m3u8
+<<<<<<< HEAD
+=======
+#EXTINF:-1,炫动卡通 (576p)
+http://223.110.245.139/PLTV/4/224/3221226388/index.m3u8
+#EXTINF:-1,甘肃公共 (540p) [Not 24/7]
+https://hls.gstv.com.cn/49048r/3t5xyc.m3u8
+#EXTINF:-1,甘肃卫视 (576p)
+http://118.81.195.79:9003/hls/25/index.m3u8
+#EXTINF:-1,甘肃移动 (540p) [Not 24/7]
+https://hls.gstv.com.cn/49048r/y72q36.m3u8
+#EXTINF:-1,生活 (576p)
+http://223.110.245.153/ott.js.chinamobile.com/PLTV/3/224/3221227311/index.m3u8
+#EXTINF:-1,电白视窗 (576p) [Not 24/7]
+http://gddb.chinashadt.com:1935/live/video2.stream/playlist.m3u8
+#EXTINF:-1,电白综合 (576p) [Not 24/7]
+http://gddb.chinashadt.com:1935/live/video1.stream/playlist.m3u8
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,白城新闻综合 [Geo-blocked]
 https://stream2.jlntv.cn/baicheng1/sd/live.m3u8
 #EXTINF:-1,白山新闻综合 [Geo-blocked]
@@ -27137,8 +26990,39 @@ http://live.dxhmt.cn:9081/tv/11521-1.m3u8
 http://117.156.28.119/270000001111/1110000123/index.m3u8
 #EXTINF:-1,萍鄉公共頻道 (1080p) [Not 24/7]
 http://www.pxitv.com:8099/hls-live/livepkgr/_definst_/pxitvevent/pxtv3stream.m3u8
+<<<<<<< HEAD
 #EXTINF:-1,西安新闻 (1080p) [Not 24/7]
 http://stream2.xiancity.cn/xatv1/playlist.m3u8
+=======
+#EXTINF:-1,萍鄉教育頻道 (480p)
+http://www.pxitv.com:8099/hls-live/livepkgr/_definst_/pxitvevent/pxtv2stream.m3u8
+#EXTINF:-1,萍鄉新聞綜合 (576p) [Not 24/7]
+http://www.pxitv.com:8099/hls-live/livepkgr/_definst_/pxitvevent/pxtv1stream.m3u8
+#EXTINF:-1,蓬安新闻综合 (720p) [Not 24/7]
+http://palive.patv123.com:8091/live/xwpd_800K.m3u8
+#EXTINF:-1,蕪湖教育頻道 (576p)
+http://live1.wuhubtv.com/channel4/sd/live.m3u8
+#EXTINF:-1,西安丝路 (404p) [Not 24/7]
+http://stream2.xiancity.cn/xatv5/playlist.m3u8
+#EXTINF:-1,西安商务资讯 (180p) [Not 24/7]
+http://stream2.xiancity.cn/xatv3/playlist.m3u8
+#EXTINF:-1,西安影视 (180p) [Not 24/7]
+http://stream2.xiancity.cn/xatv4/playlist.m3u8
+#EXTINF:-1,西安新闻 (1080p) [Not 24/7]
+http://stream2.xiancity.cn/xatv1/playlist.m3u8
+#EXTINF:-1,西安白鸽 (180p) [Not 24/7]
+http://stream2.xiancity.cn/xatv2/playlist.m3u8
+#EXTINF:-1,西藏卫视 (576p)
+http://39.134.115.163:8080/PLTV/88888910/224/3221225723/index.m3u8
+#EXTINF:-1,贵州卫视 (576p)
+http://39.134.115.163:8080/PLTV/88888910/224/3221225728/index.m3u8
+#EXTINF:-1,贵州卫视 (360p)
+http://125.210.152.18:9090/live/GZWSHD_H265.m3u8
+#EXTINF:-1,赵县电视一套 (576p)
+http://hbzx.chinashadt.com:2036/zhibo/stream:zx1.stream/playlist.m3u8
+#EXTINF:-1,赵县电视二套 (576p)
+http://hbzx.chinashadt.com:2036/zhibo/stream:zx2.stream/playlist.m3u8
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,辽宁卫视 (1080p)
 http://39.134.39.37/PLTV/88888888/224/3221226209/index.m3u8
 #EXTINF:-1,辽源新闻综合 [Geo-blocked]
@@ -27231,6 +27115,11 @@ https://raw.githubusercontent.com/ChiSheng9/iptv/master/TV28.m3u8
 https://raw.githubusercontent.com/ChiSheng9/iptv/master/TV26.m3u8
 #EXTINF:-1,2025-11-26 18:53:51
 http://221.198.198.213:8888/udp/225.1.1.120:5002
+<<<<<<< HEAD
+=======
+#EXTINF:-1,数码时代
+https://ali-m-l.cztv.com/channels/lantian/channel012/1080p.m3u8
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,菏泽一套新闻综合
 http://live.hznet.tv:1935/live/live1/500K/tzwj_video.m3u8
 #EXTINF:-1,闻喜综合
@@ -27243,7 +27132,11 @@ http://113.101.245.153:9988/udp/239.77.1.128:5146
 http://220.176.219.18:9000/udp/239.252.220.136:5140
 #EXTINF:-1,天津音乐
 http://221.198.198.213:8888/udp/225.1.1.179:5002
+<<<<<<< HEAD
 #EXTINF:-1,2025-12-07 14:17:14
+=======
+#EXTINF:-1,2025-12-07 00:13:29
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 https://kakaxi-1.asia/LOGO/Disclaimer.mp4
 #EXTINF:-1,中国教育1台
 http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226494/1.m3u8
@@ -27379,10 +27272,25 @@ https://live.ottiptv.cc/douyu/12560807
 https://live.ottiptv.cc/douyu/2758565
 #EXTINF:-1,悠悠爱电影
 https://live.ottiptv.cc/huya/30611864
+<<<<<<< HEAD
 #EXTINF:-1,微笑影视
 https://live.ottiptv.cc/huya/25256065
 #EXTINF:-1,7喜先生
 https://live.ottiptv.cc/huya/11342421
+=======
+#EXTINF:-1,萌萌小桃子
+https://live.ottiptv.cc/huya/29807256
+#EXTINF:-1,集梦-邯郸电影院
+https://live.ottiptv.cc/huya/25132009
+#EXTINF:-1,7喜先生
+https://live.ottiptv.cc/huya/11342421
+#EXTINF:-1,沐希兔子
+https://live.ottiptv.cc/huya/29835225
+#EXTINF:-1,都爱看
+https://live.ottiptv.cc/huya/26058097
+#EXTINF:-1,古惑仔
+https://yylunbo.ottiptv.cc/yy/1458015189
+>>>>>>> 031f77b3f7acbb7ba3860b3e4e0bd4513c863e16
 #EXTINF:-1,港片 喜剧 动作
 https://yylunbo.ottiptv.cc/yy/1355480591
 #EXTINF:-1,【周星驰】搞笑电影
