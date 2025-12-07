@@ -251,6 +251,7 @@ python update_sources.py
 ## 📝 更新日志
 
 ### 最新更新
+- 修复了CCTV频道名称中的错误别名问题（如CCTV4a、CCTV4A、CCTV4o、CCTV4m等），将其转换为标准格式
 - 删除了M3U和TXT文件中的EPG相关功能（tvg-id、tvg-name、tvg-logo、tvg-url等属性）
 - 实现了频道分类内按名称升序排序功能，提高了频道列表的可读性
 - 修复了M3U文件中group-title属性后面多余空格的问题
