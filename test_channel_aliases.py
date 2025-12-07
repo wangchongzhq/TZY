@@ -11,6 +11,13 @@ from typing import Dict, List, Set
 # 导入频道名称标准化函数
 from collect_ipzy import standardize_channel_name
 
+# 导入配置管理器
+from core.config import get_config
+
+# 从配置获取本地源开关设置
+local_sources_enabled = get_config('local_sources.enabled', True)
+local_sources_files = get_config('local_sources.files', [])
+
 # 加载配置文件
 def load_config():
     """加载配置文件"""
@@ -21,25 +28,39 @@ def load_config():
 # 加载ipzy_channels.txt中的频道
 def load_ipzy_channels():
     """加载ipzy_channels.txt中的频道"""
+    # 检查本地源开关
+    if not local_sources_enabled:
+        print("本地源功能已关闭，跳过加载本地文件")
+        return []
+    
+    # 检查文件是否在允许的本地源列表中
     channels_path = 'ipzy_channels.txt'
+    if channels_path not in local_sources_files:
+        print(f"文件 '{channels_path}' 不在允许的本地源列表中，跳过加载")
+        return []
+    
     channels = []
     current_category = None
     
-    with open(channels_path, 'r', encoding='utf-8') as f:
-        for line in f:
-            line = line.strip()
-            if line.startswith('# '):
-                # 分类行
-                current_category = line[2:]
-            elif line and not line.startswith('#') and not '#genre#' in line:
-                # 频道行
-                if ',' in line:
-                    name, url = line.split(',', 1)
-                    channels.append({
-                        'name': name.strip(),
-                        'url': url.strip(),
-                        'category': current_category
-                    })
+    try:
+        with open(channels_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith('# '):
+                    # 分类行
+                    current_category = line[2:]
+                elif line and not line.startswith('#') and not '#genre#' in line:
+                    # 频道行
+                    if ',' in line:
+                        name, url = line.split(',', 1)
+                        channels.append({
+                            'name': name.strip(),
+                            'url': url.strip(),
+                            'category': current_category
+                        })
+    except FileNotFoundError:
+        print(f"错误：找不到文件 '{channels_path}'")
+        return []
     
     return channels
 

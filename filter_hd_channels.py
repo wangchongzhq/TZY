@@ -19,6 +19,13 @@ logger = logging.getLogger(__name__)
 # 导入频道处理工具
 from core.channel_utils import get_video_resolution, should_exclude_resolution
 
+# 导入配置管理器
+from core.config import get_config
+
+# 获取本地源开关设置
+local_sources_enabled = get_config('local_sources.enabled', True)
+local_sources_files = get_config('local_sources.files', [])
+
 
 def load_channels(file_path: str) -> List[Dict[str, str]]:
     """
@@ -28,6 +35,17 @@ def load_channels(file_path: str) -> List[Dict[str, str]]:
     返回:
         List[Dict[str, str]]: 频道列表，每个频道包含名称和URL
     """
+    # 检查本地源开关
+    if not local_sources_enabled:
+        logger.error("本地源功能已关闭，无法加载本地频道文件")
+        return []
+    
+    # 检查文件是否在允许的本地源列表中
+    file_name = file_path.split('\\')[-1] if '\\' in file_path else file_path
+    if file_name not in local_sources_files:
+        logger.error(f"文件 '{file_name}' 不在允许的本地源列表中，无法加载")
+        return []
+    
     channels = []
     try:
         with open(file_path, 'r', encoding='utf-8') as f:

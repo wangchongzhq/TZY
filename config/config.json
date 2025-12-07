@@ -37,6 +37,13 @@
     "m3u_file": "output/iptv.m3u",
     "txt_file": "output/channels.txt"
   },
+  "local_sources": {
+    "enabled": true,
+    "files": [
+      "tzydauto.txt",
+      "ipzy_channels.txt"
+    ]
+  },
   "channels": {
     "categories": {
       "4K频道": [
@@ -179,11 +186,15 @@
         "山东农科"
       ],
       "港澳频道": [
-        "凤凰中文",
-        "凤凰资讯",
-        "凤凰香港",
-        "凤凰电影"
-      ],
+            "凤凰中文",
+            "凤凰资讯",
+            "凤凰香港",
+            "凤凰电影",
+            "凤凰卫视",
+            "凤凰卫视中文台",
+            "凤凰卫视资讯台",
+            "凤凰卫视香港台"
+        ],
       "电影频道": [
         "CHC动作电影",
         "CHC家庭影院",

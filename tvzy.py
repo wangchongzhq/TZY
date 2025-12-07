@@ -37,16 +37,20 @@ from unified_sources import UNIFIED_SOURCES
 GITHUB_SOURCES = UNIFIED_SOURCES
 
 # 从配置获取频道分类和映射
-channel_config = get_config('channel', {})
-CHANNEL_CATEGORIES = channel_config.get('categories', {
-    "4K频道": ['CCTV4K', 'CCTV16 4K', '北京卫视4K', '北京IPTV4K', '湖南卫视4K', '山东卫视4K', '广东卫视4K', '四川卫视4K',
-                '浙江卫视4K', '江苏卫视4K', '东方卫视4K', '深圳卫视4K', '河北卫视4K', '峨眉电影4K', '求索4K', '咪视界4K', '欢笑剧场4K',
-                '苏州4K', '至臻视界4K', '南国都市4K', '翡翠台4K', '百事通电影4K', '百事通少儿4K', '百事通纪实4K', '华数爱上4K'],
-    "央视频道": ['CCTV1', 'CCTV2', 'CCTV3', 'CCTV4', 'CCTV4欧洲', 'CCTV4美洲', 'CCTV5', 'CCTV5+', 'CCTV6', 'CCTV7', 'CCTV8', 'CCTV9',
-                'CCTV10', 'CCTV11', 'CCTV12', 'CCTV13', 'CCTV14', 'CCTV15', 'CCTV16', 'CCTV17', '兵器科技', '风云音乐', '风云足球',
-                '风云剧场', '怀旧剧场', '第一剧场', '女性时尚', '世界地理', '央视台球', '高尔夫网球', '央视文化精品', '北京纪实科教',
-                '卫生健康', '电视指南']
-})
+channel_config = get_config('channels', {})
+CHANNEL_CATEGORIES = channel_config.get('categories', {})
+
+# 如果配置中没有提供频道分类，使用默认的分类
+if not CHANNEL_CATEGORIES:
+    CHANNEL_CATEGORIES = {
+        "4K频道": ['CCTV4K', 'CCTV16 4K', '北京卫视4K', '北京IPTV4K', '湖南卫视4K', '山东卫视4K', '广东卫视4K', '四川卫视4K',
+                    '浙江卫视4K', '江苏卫视4K', '东方卫视4K', '深圳卫视4K', '河北卫视4K', '峨眉电影4K', '求索4K', '咪视界4K', '欢笑剧场4K',
+                    '苏州4K', '至臻视界4K', '南国都市4K', '翡翠台4K', '百事通电影4K', '百事通少儿4K', '百事通纪实4K', '华数爱上4K'],
+        "央视频道": ['CCTV1', 'CCTV2', 'CCTV3', 'CCTV4', 'CCTV4欧洲', 'CCTV4美洲', 'CCTV5', 'CCTV5+', 'CCTV6', 'CCTV7', 'CCTV8', 'CCTV9',
+                    'CCTV10', 'CCTV11', 'CCTV12', 'CCTV13', 'CCTV14', 'CCTV15', 'CCTV16', 'CCTV17', '兵器科技', '风云音乐', '风云足球',
+                    '风云剧场', '怀旧剧场', '第一剧场', '女性时尚', '世界地理', '央视台球', '高尔夫网球', '央视文化精品', '北京纪实科教',
+                    '卫生健康', '电视指南']
+    }
 
 # 从配置获取频道映射
 CHANNEL_MAPPING = channel_config.get('mapping', {})
@@ -392,11 +396,19 @@ def categorize_channel(channel):
     if '春晚' in filtered_name or '春节联欢晚会' in filtered_name:
         return "春晚"
     
-    # 查找匹配的分类
-    for category, channels in CHANNEL_CATEGORIES.items():
-        for channel_name in channels:
+    # 查找匹配的分类，确保港澳频道优先于卫视频道
+    # 首先检查港澳频道
+    if "港澳频道" in CHANNEL_CATEGORIES:
+        for channel_name in CHANNEL_CATEGORIES["港澳频道"]:
             if channel_name in filtered_name:
-                return category
+                return "港澳频道"
+    
+    # 然后检查其他分类
+    for category, channels in CHANNEL_CATEGORIES.items():
+        if category != "港澳频道":  # 已经检查过港澳频道，跳过
+            for channel_name in channels:
+                if channel_name in filtered_name:
+                    return category
     
     # 没有匹配的分类，返回默认分类
     return "其他频道"

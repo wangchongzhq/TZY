@@ -22,6 +22,10 @@ from core.channel_utils import group_channels, get_channel_statistics
 setup_logging()
 logger = get_logger(__name__)
 
+# 获取本地源开关设置
+local_sources_enabled = get_config('local_sources.enabled', True)
+local_sources_files = get_config('local_sources.files', [])
+
 class M3UConverter:
     """M3U文件转换器类"""
     
@@ -32,6 +36,17 @@ class M3UConverter:
     def convert_m3u_to_txt(self, m3u_file_path, txt_file_path):
         """将M3U文件转换为TXT格式"""
         try:
+            # 检查本地源开关
+            if not local_sources_enabled:
+                logger.error("本地源功能已关闭，无法处理本地M3U文件")
+                return False
+            
+            # 检查文件是否在允许的本地源列表中
+            file_name = os.path.basename(m3u_file_path)
+            if file_name not in local_sources_files:
+                logger.error(f"文件 '{file_name}' 不在允许的本地源列表中，无法处理")
+                return False
+            
             # 检查文件是否存在和为空
             if not os.path.exists(m3u_file_path) or os.path.getsize(m3u_file_path) == 0:
                 return False
