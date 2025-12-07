@@ -30,7 +30,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Generate M3U files first
+    - name: Check configuration format
+      run: |
+        echo "检查配置文件格式..."
+        python check_config.py
+
+    - name: 生成 M3U 文件
       run: |
         echo "开始生成M3U文件..."
         python ipzyauto.py
