@@ -392,10 +392,6 @@ def categorize_channel(channel):
     # 过滤频道名称
     filtered_name = filter_channel_name(channel.name)
     
-    # 特殊处理春晚频道
-    if '春晚' in filtered_name or '春节联欢晚会' in filtered_name:
-        return "春晚"
-    
     # 查找匹配的分类，确保港澳频道优先于卫视频道
     # 首先检查港澳频道
     if "港澳频道" in CHANNEL_CATEGORIES:
@@ -476,8 +472,20 @@ def merge_channels(all_channels):
 def generate_output(channels):
     output = []
     
-    # 按分类对频道进行排序
-    channels.sort(key=lambda x: (x.category, x.name))
+    # 获取频道分类顺序
+    config_categories = get_config('channels.categories', {})
+    category_order = {category: index for index, category in enumerate(config_categories)}
+    
+    # 按分类顺序排序频道
+    def sort_key(channel):
+        category = channel.category
+        # 未在配置中的分类放在最后，按名称排序
+        if category in category_order:
+            return (category_order[category], channel.name)
+        else:
+            return (len(category_order), category, channel.name)
+    
+    channels.sort(key=sort_key)
     
     # 生成输出内容
     current_category = None

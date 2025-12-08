@@ -23,9 +23,6 @@ SOURCES = get_config('sources.collect_sources', [
 
 # 分类规则
 CATEGORY_RULES = get_config('category.rules', {
-    "春晚": [
-        r'春晚', r'春节联欢晚会'
-    ],
     "央视": [
         r'CCTV', r'中央电视台', r'CGTN', r'央视'
     ],

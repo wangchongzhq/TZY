@@ -273,6 +273,7 @@ def generate_m3u_content(channels: List[ChannelInfo]) -> str:
         M3U格式的文本内容
     """
     from collections import defaultdict
+    from .config import get_config
     
     # 按分类分组频道
     channels_by_group = defaultdict(list)
@@ -284,8 +285,19 @@ def generate_m3u_content(channels: List[ChannelInfo]) -> str:
     for group in channels_by_group:
         channels_by_group[group].sort(key=lambda x: x.name)
     
-    # 按分类名称升序排序
-    sorted_groups = sorted(channels_by_group.keys())
+    # 从配置中获取频道类别顺序
+    config_categories = get_config('channels.categories', {})
+    config_group_order = list(config_categories.keys())
+    
+    # 按配置中的顺序排序分类，不在配置中的分类放在最后
+    sorted_groups = []
+    for group in config_group_order:
+        if group in channels_by_group:
+            sorted_groups.append(group)
+    
+    # 添加不在配置中的其他分组，按名称升序排序
+    other_groups = [group for group in channels_by_group.keys() if group not in config_group_order]
+    sorted_groups.extend(sorted(other_groups))
     
     lines = ['#EXTM3U']
     
@@ -327,6 +339,7 @@ def generate_txt_content(channels: List[ChannelInfo], delimiter: str = '|') -> s
         TXT格式的文本内容
     """
     from collections import defaultdict
+    from .config import get_config
     
     # 按分类分组频道
     channels_by_group = defaultdict(list)
@@ -338,8 +351,19 @@ def generate_txt_content(channels: List[ChannelInfo], delimiter: str = '|') -> s
     for group in channels_by_group:
         channels_by_group[group].sort(key=lambda x: x.name)
     
-    # 按分类名称升序排序
-    sorted_groups = sorted(channels_by_group.keys())
+    # 从配置中获取频道类别顺序
+    config_categories = get_config('channels.categories', {})
+    config_group_order = list(config_categories.keys())
+    
+    # 按配置中的顺序排序分类，不在配置中的分类放在最后
+    sorted_groups = []
+    for group in config_group_order:
+        if group in channels_by_group:
+            sorted_groups.append(group)
+    
+    # 添加不在配置中的其他分组，按名称升序排序
+    other_groups = [group for group in channels_by_group.keys() if group not in config_group_order]
+    sorted_groups.extend(sorted(other_groups))
     
     lines = []
     
