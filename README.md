@@ -101,7 +101,7 @@ python IP-TV.py
 ├── validate_workflows.py  # 工作流验证脚本
 ├── filter_hd_channels.py  # HD频道过滤脚本
 ├── final_verification.py  # 最终验证脚本
-├── ipzy_channels.txt      # IP直播源频道列表
+├── ipzyauto.txt           # IP直播源频道列表
 ├── ipzyauto.m3u           # 自动生成的IP直播源M3U文件
 ├── ipzyauto.txt           # 自动生成的IP直播源TXT文件
 ├── tzydauto.txt           # 自动生成的直播源TXT文件

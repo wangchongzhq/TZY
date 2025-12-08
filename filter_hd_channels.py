@@ -142,7 +142,7 @@ def main():
     主函数
     """
     # 加载原始频道文件
-    input_file = 'ipzy_channels.txt'
+    input_file = 'ipzyauto.txt'
     channels = load_channels(input_file)
     
     if not channels:

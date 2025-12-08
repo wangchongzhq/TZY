@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-测试频道别名映射是否在ipzy_channels.txt中生效
+测试频道别名映射是否在ipzyauto.txt中生效
 """
 
 import json
@@ -25,16 +25,16 @@ def load_config():
     with open(config_path, 'r', encoding='utf-8') as f:
         return json.load(f)
 
-# 加载ipzy_channels.txt中的频道
+# 加载ipzyauto.txt中的频道
 def load_ipzy_channels():
-    """加载ipzy_channels.txt中的频道"""
+    """加载ipzyauto.txt中的频道"""
     # 检查本地源开关
     if not local_sources_enabled:
         print("本地源功能已关闭，跳过加载本地文件")
         return []
     
     # 检查文件是否在允许的本地源列表中
-    channels_path = 'ipzy_channels.txt'
+    channels_path = 'ipzyauto.txt'
     if channels_path not in local_sources_files:
         print(f"文件 '{channels_path}' 不在允许的本地源列表中，跳过加载")
         return []
@@ -71,7 +71,7 @@ def check_channel_aliases():
     config = load_config()
     name_mappings = config.get('channels', {}).get('name_mappings', {})
     
-    # 加载ipzy_channels.txt中的频道
+    # 加载ipzyauto.txt中的频道
     ipzy_channels = load_ipzy_channels()
     
     # 提取所有通用频道名
@@ -82,10 +82,10 @@ def check_channel_aliases():
     for aliases in name_mappings.values():
         all_aliases.update(aliases)
     
-    # 分析ipzy_channels.txt中的频道名称
+    # 分析ipzyauto.txt中的频道名称
     print(f"配置中的通用频道名数量: {len(standard_names)}")
     print(f"配置中的别名数量: {len(all_aliases)}")
-    print(f"ipzy_channels.txt中的频道数量: {len(ipzy_channels)}")
+    print(f"ipzyauto.txt中的频道数量: {len(ipzy_channels)}")
     
     # 检查哪些频道名称匹配通用频道名
     matched_standard = set()

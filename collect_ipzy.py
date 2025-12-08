@@ -94,7 +94,7 @@ FILTER_RULES = get_config('filter.rules', {
 })
 
 # 输出文件
-OUTPUT_FILE = get_config('output.file', 'ipzy_channels.txt')
+OUTPUT_FILE = get_config('output.file', 'ipzyauto.txt')
 
 # 网络设置
 NETWORK_CONFIG = get_config('network.config', {
