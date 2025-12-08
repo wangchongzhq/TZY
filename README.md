@@ -104,7 +104,6 @@ python IP-TV.py
 ├── ipzy_channels.txt      # IP直播源频道列表
 ├── ipzyauto.m3u           # 自动生成的IP直播源M3U文件
 ├── ipzyauto.txt           # 自动生成的IP直播源TXT文件
-├── ipzyauto_full.txt      # 完整的IP直播源列表
 ├── tzydauto.txt           # 自动生成的直播源TXT文件
 ├── channel_aliases_to_add.txt # 待添加的频道别名
 ├── .gitignore             # Git忽略文件配置

@@ -304,37 +304,48 @@ def normalize_channel_name(name: str) -> str:
         return "未知频道"
     return name.strip()
 
+# 预编译正则表达式以提高性能
+_INVALID_URL_PATTERNS = [
+    re.compile(r"http://\[[a-fA-F0-9:]+\](?::\d+)?/ottrrs\.hl\.chinamobile\.com/.+/.+"),
+    re.compile(r"http://\[2409:8087:1a01:df::7005\]/.*"),
+]
+
+_PREFERRED_URL_PATTERNS = [
+    re.compile(r"http://\[2408:.*\]"),
+    re.compile(r"http://\d+\.\d+\.\d+\.\d+.*unicom.*", re.IGNORECASE),
+    re.compile(r"http://\[240e:.*\]"),
+    re.compile(r"http://\d+\.\d+\.\d+\.\d+.*telecom.*", re.IGNORECASE),
+    re.compile(r"http://\[2409:.*\]"),
+    re.compile(r"http://\d+\.\d+\.\d+\.\d+.*mobile.*", re.IGNORECASE),
+    re.compile(r".*\.bj\.", re.IGNORECASE),
+    re.compile(r".*\.sd\.", re.IGNORECASE),
+    re.compile(r".*\.tj\.", re.IGNORECASE),
+    re.compile(r".*\.heb\.", re.IGNORECASE),
+    re.compile(r".*\.cn.*", re.IGNORECASE),
+    re.compile(r".*\.net.*", re.IGNORECASE),
+]
+
+_EXCLUDE_URL_PATTERNS = [
+    re.compile(r'^http://example', re.IGNORECASE),
+    re.compile(r'^https://example', re.IGNORECASE),
+    re.compile(r'demo', re.IGNORECASE),
+    re.compile(r'sample', re.IGNORECASE),
+    re.compile(r'samples', re.IGNORECASE),
+]
+
+_CCTV_CHANNEL_PATTERN = re.compile(r'^CCTV[- ]?(\d+)', re.IGNORECASE)
+
 def is_invalid_url(url: str) -> bool:
     """检查是否为无效 URL"""
-    invalid_patterns = [
-        r"http://\[[a-fA-F0-9:]+\](?::\d+)?/ottrrs\.hl\.chinamobile\.com/.+/.+",
-        r"http://\[2409:8087:1a01:df::7005\]/.*",
-    ]
-    
-    for pattern in invalid_patterns:
-        if re.search(pattern, url):
+    for pattern in _INVALID_URL_PATTERNS:
+        if pattern.search(url):
             return True
     return False
 
 def is_preferred_url(url: str) -> bool:
     """判断是否为优选线路"""
-    preferred_patterns = [
-        r"http://\[2408:.*\]",
-        r"http://\d+\.\d+\.\d+\.\d+.*unicom.*",
-        r"http://\[240e:.*\]",
-        r"http://\d+\.\d+\.\d+\.\d+.*telecom.*",
-        r"http://\[2409:.*\]",
-        r"http://\d+\.\d+\.\d+\.\d+.*mobile.*",
-        r".*\.bj\.",
-        r".*\.sd\.",
-        r".*\.tj\.",
-        r".*\.heb\.",
-        r".*\.cn.*",
-        r".*\.net.*",
-    ]
-    
-    for pattern in preferred_patterns:
-        if re.search(pattern, url, re.IGNORECASE):
+    for pattern in _PREFERRED_URL_PATTERNS:
+        if pattern.search(url):
             return True
     return False
 
@@ -346,16 +357,8 @@ def should_exclude_url(url, channel_name=''):
     3. 分辨率低于最小要求的URL
     """
     # 排除测试频道URL
-    exclude_patterns = [
-        r'^http://example',
-        r'^https://example',
-        r'demo',
-        r'sample',
-        r'samples'
-    ]
-    
-    for pattern in exclude_patterns:
-        if re.search(pattern, url, re.IGNORECASE):
+    for pattern in _EXCLUDE_URL_PATTERNS:
+        if pattern.search(url):
             return True
     
     # 检查分辨率是否满足要求
@@ -393,27 +396,30 @@ def speed_test_config():
     }
 
 # 测试单个URL的速度
+# 全局Session对象，避免重复创建开销
+_REQUEST_SESSION = requests.Session()
+_REQUEST_SESSION.headers.update({
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
+})
+
 def test_url_speed(url, config):
     try:
-        session = requests.Session()
-        session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
-        })
-        
         start_time = time.time()
-        response = session.get(url, stream=True, timeout=config['timeout'])
+        response = _REQUEST_SESSION.get(url, stream=True, timeout=config['timeout'])
         
         if response.status_code != 200:
             return {'url': url, 'speed_kbps': 0, 'status': 'unavailable', 'error': f'HTTP {response.status_code}'}
         
         downloaded_bytes = 0
         speed_samples = []
-        sample_start = time.time()
+        sample_start = start_time
         sample_bytes = 0
         
-        while time.time() - start_time < config['test_duration']:
+        # 优化采样逻辑，减少不必要的时间计算
+        test_end_time = start_time + config['test_duration']
+        while time.time() < test_end_time:
             chunk = response.raw.read(8192)
             if not chunk:
                 break
@@ -421,7 +427,7 @@ def test_url_speed(url, config):
             downloaded_bytes += len(chunk)
             sample_bytes += len(chunk)
             
-            # 每0.5秒采样一次速度
+            # 每0.5秒采样一次速度，使用预计算的时间点减少计算
             if time.time() - sample_start >= 0.5:
                 if sample_bytes > 0:
                     speed_kbps = (sample_bytes * 8) / (1024 * (time.time() - sample_start))
@@ -430,6 +436,10 @@ def test_url_speed(url, config):
                     sample_bytes = 0
         
         response.close()
+        
+        # 检查是否达到最小下载量
+        if downloaded_bytes < config['min_download_bytes']:
+            return {'url': url, 'speed_kbps': 0, 'status': 'unavailable', 'error': f'下载量不足 ({downloaded_bytes} bytes)'}
         
         # 计算平均速度
         if speed_samples:
@@ -449,6 +459,17 @@ def test_url_speed(url, config):
                 'downloaded_kb': downloaded_bytes / 1024
             }
         else:
+            # 如果没有样本但下载了足够数据，基于总下载量计算速度
+            total_time = time.time() - start_time
+            if total_time > 0 and downloaded_bytes > 0:
+                avg_speed_kbps = (downloaded_bytes * 8) / (1024 * total_time)
+                return {
+                    'url': url,
+                    'speed_kbps': avg_speed_kbps,
+                    'status': 'available',
+                    'stability': 0.5,  # 默认稳定性
+                    'downloaded_kb': downloaded_bytes / 1024
+                }
             return {'url': url, 'speed_kbps': 0, 'status': 'available', 'error': '无法获取速度样本', 'stability': 0}
             
     except Exception as e:
@@ -462,6 +483,7 @@ def batch_test_urls(urls, config):
     if not urls:
         return results
     
+    # 只打印一次配置信息
     print(f"\n开始测速，共 {total_urls} 个URL，配置：")
     print(f"  - 超时时间: {config['timeout']}秒")
     print(f"  - 测速时长: {config['test_duration']}秒")
@@ -470,8 +492,14 @@ def batch_test_urls(urls, config):
     
     start_time = time.time()
     
+    # 优化并发线程池使用，避免不必要的计算
     with concurrent.futures.ThreadPoolExecutor(max_workers=config['max_workers']) as executor:
+        # 预先提交所有任务
         future_to_url = {executor.submit(test_url_speed, url, config): url for url in urls}
+        
+        # 减少进度打印频率，每完成10%或至少每10个URL打印一次
+        print_interval = max(1, min(10, total_urls // 10))  # 动态调整打印间隔
+        last_printed = 0
         
         for i, future in enumerate(concurrent.futures.as_completed(future_to_url)):
             url = future_to_url[future]
@@ -479,9 +507,12 @@ def batch_test_urls(urls, config):
                 result = future.result()
                 results[url] = result
                 
-                # 显示进度
-                progress = (i + 1) / total_urls * 100
-                print(f"  测速进度: {i+1}/{total_urls} ({progress:.1f}%)", end="\r")
+                # 优化进度显示，减少打印次数
+                completed = i + 1
+                if completed - last_printed >= print_interval or completed == total_urls:
+                    progress = completed / total_urls * 100
+                    print(f"  测速进度: {completed}/{total_urls} ({progress:.1f}%)", end="\r")
+                    last_printed = completed
             except Exception as e:
                 results[url] = {'url': url, 'speed_kbps': 0, 'status': 'error', 'error': str(e)}
     
@@ -495,29 +526,22 @@ def batch_test_urls(urls, config):
     return results
 
 def fetch_lines_with_retry(url: str, max_retries=3):
-    """带重试机制的下载函数"""
-    session = requests.Session()
-    session.headers.update({
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
-    })
-    
-    for attempt in range(max_retries):
-        try:
-            timeout = 25 if 'tv.html-5.me' in url else 15
-            response = session.get(url, timeout=timeout)
-            
-            # 让requests自动检测编码，而不是强制使用UTF-8
-            # response.encoding = "utf-8"
-            
-            if response.status_code == 200:
-                return response.text.splitlines()
-        except Exception:
-            pass
+    """带重试机制的下载函数，利用现有的网络模块功能"""
+    try:
+        # 使用全局Session对象减少创建开销
+        timeout = 25 if 'tv.html-5.me' in url else 15
+        response = _REQUEST_SESSION.get(url, timeout=timeout)
         
-        if attempt < max_retries - 1:
-            time.sleep(2 ** attempt)
+        if response.status_code == 200:
+            return response.text.splitlines()
+    except Exception:
+        pass
+    
+    # 如果失败，回退到network模块的fetch_content函数
+    from core.network import fetch_content
+    content = fetch_content(url, retries=max_retries, timeout=timeout)
+    if content:
+        return content.splitlines()
     
     return []
 
@@ -530,7 +554,7 @@ def should_exclude_channel(name):
             return True
     
     # 检查CCTV频道数字是否超过17
-    cctv_match = re.match(r'^CCTV[- ]?(\d+)', name, re.IGNORECASE)
+    cctv_match = _CCTV_CHANNEL_PATTERN.match(name)
     if cctv_match:
         cctv_number = int(cctv_match.group(1))
         if cctv_number > 17:
@@ -863,14 +887,10 @@ def main():
     print("\n调用create_txt_file函数生成TXT文件...")
     txt_filename = create_txt_file(filtered_channels, "ipzyauto.txt", speed_results)
     
-    # 生成完整版本（使用原始未过滤的频道，保留原有功能）
-    full_filename = create_txt_file(all_channels, "ipzyauto_full.txt", speed_results)
-    
     # 显示生成结果
     print(f"\n文件生成完成:")
     print(f"  M3U文件: {m3u_filename}")
     print(f"  TXT文件: {txt_filename}")
-    print(f"  完整TXT文件: {full_filename}")
     
     # 统计频道信息
     total_channels = len(all_channels)
