@@ -6,7 +6,6 @@ convert_m3u_to_txt.py
 将M3U格式的直播源转换为TXT格式的直播源
 """
 
-import re
 import os
 import sys
 from datetime import datetime

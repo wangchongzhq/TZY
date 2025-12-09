@@ -3,7 +3,7 @@ import re
 
 def find_file_references(directory):
     # 正则表达式匹配文件名引用
-    pattern = re.compile(r"['"]([\w.-]+\.(txt|m3u|json|py))['"]")
+    pattern = re.compile(r'["\']([\w.-]+\.(txt|m3u|json|py))["\']')
     
     # 存储所有引用的文件名
     file_references = set()

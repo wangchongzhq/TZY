@@ -49,7 +49,7 @@ python update_sources.py
 
 ```bash
 # 运行主要直播源处理脚本
-python tvzy.py
+
 
 # 运行IP直播源收集脚本
 python collect_ipzy.py
@@ -65,7 +65,7 @@ python IP-TV.py
 │   ├── Convert M3U to TXT Daily.yml
 │   ├── IPZYTXT.yml
 │   ├── mainzy.yml
-│   ├── tvzy_update.yml
+
 │   ├── update_ip-tv.yml
 │   ├── update_ipzy.yml
 │   └── update_sources.yml
@@ -80,8 +80,7 @@ python IP-TV.py
 │   ├── logging_config.py  # 日志配置
 │   ├── network.py         # 网络请求工具
 │   ├── parser.py          # 直播源解析器
-│   ├── tvzy_processor.py  # 主要处理逻辑
-│   └── tvzy_sources.py    # 直播源管理
+
 ├── logs/                  # 日志文件目录
 ├── tests/                 # 测试文件目录
 │   ├── test_channel_utils.py
@@ -93,7 +92,7 @@ python IP-TV.py
 ├── sources.json           # 统一播放源配置文件
 ├── update_sources.py      # 播放源自动更新脚本
 ├── unified_sources.py     # 生成的统一播放源文件（请勿手动修改）
-├── tvzy.py                # 主要直播源处理脚本
+
 ├── IP-TV.py               # IP-TV直播源处理脚本
 ├── collect_ipzy.py        # IP直播源收集脚本
 ├── convert_m3u_to_txt.py  # M3U转TXT格式转换脚本
@@ -144,14 +143,14 @@ python update_sources.py
 
 ### 主要脚本功能
 
-#### 1. tvzy.py - 主要直播源处理脚本
+
 
 **功能**：提取、合并、分类直播源，支持质量筛选和格式转换
 
 **使用方法**：
 
 ```bash
-python tvzy.py
+
 ```
 
 **输出**：自动生成分类的直播源文件（默认：tzydauto.txt）
@@ -258,8 +257,8 @@ python final_verification.py
 - **功能**：主要直播源处理工作流
 - **触发方式**：定时执行和手动触发
 
-#### 4. tvzy_update.yml
-- **功能**：tvzy直播源定时更新
+
+
 - **触发方式**：定时执行
 
 #### 5. update_ip-tv.yml

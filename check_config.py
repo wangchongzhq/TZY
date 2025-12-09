@@ -17,7 +17,7 @@ def check_config():
     print(f"\n音乐频道配置: {music_channel}")
     
     # 检查是否有格式错误
-    print(f"\n检查格式错误...")
+    print("\n检查格式错误...")
     valid = True
     for category, channels in categories.items():
         if not isinstance(channels, list):

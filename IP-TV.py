@@ -11,15 +11,194 @@ import re
 import time
 import requests
 import datetime
-import threading
+
 from collections import defaultdict
-from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
+from typing import List, Tuple, Optional
+
+# 延迟导入aiohttp以避免不必要的依赖
+import aiohttp
 
 # 导入核心模块
-from core.logging_config import get_logger, log_exception, log_performance, setup_logging
+from core.logging_config import get_logger, setup_logging
 from core.config import get_config
 from core.network import fetch_multiple
 from core.file_utils import write_file
+
+# 测速配置类
+class SpeedTestConfig:
+    CONCURRENT_LIMIT = 20  # 并发限制
+    TIMEOUT = 10  # 超时时间（秒）
+    RETRY_TIMES = 3  # 重试次数
+    OUTPUT_DIR = "output"  # 输出目录
+
+# 数据类
+@dataclass
+class SpeedTestResult:
+    url: str
+    latency: Optional[float] = None  # 延迟（毫秒）
+    resolution: Optional[str] = None  # 分辨率
+    bitrate: Optional[int] = None  # 码率（Kbps）
+    content_type: Optional[str] = None  # 内容类型
+    success: bool = False  # 是否成功
+    error: Optional[str] = None  # 错误信息
+    test_time: float = 0  # 测试时间戳
+
+# 速度测试工具类
+class SpeedTester:
+    def __init__(self):
+        self.session = None
+        self.logger = get_logger(__name__)
+    
+    async def __aenter__(self):
+        import aiohttp
+        self.session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=SpeedTestConfig.TIMEOUT))
+        return self
+    
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        if self.session:
+            await self.session.close()
+    
+    async def extract_resolution_from_m3u8(self, url: str) -> Optional[str]:
+        """从m3u8文件中提取分辨率信息"""
+        try:
+            async with self.session.get(url, headers={"User-Agent": "Mozilla/5.0"}) as response:
+                if response.status == 200:
+                    content = await response.text()
+                    # 查找EXT-X-STREAM-INF标签，通常包含分辨率信息
+                    import re
+                    stream_inf_pattern = r"#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?(\S+)"
+                    matches = re.findall(stream_inf_pattern, content, re.MULTILINE | re.DOTALL)
+                    if matches:
+                        # 返回第一个流的分辨率
+                        return matches[0][0]
+            return None
+        except Exception as e:
+            self.logger.warning(f"解析m3u8分辨率失败: {e}")
+            return None
+    
+    async def measure_latency(self, url: str, retry_times: int = 3) -> SpeedTestResult:
+        """测量单个URL的延迟、分辨率、码率等指标"""
+        result = SpeedTestResult(url=url, test_time=time.time())
+        
+        for attempt in range(retry_times):
+            try:
+                start_time = time.time()
+                async with self.session.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=aiohttp.ClientTimeout(total=SpeedTestConfig.TIMEOUT)) as response:
+                    if response.status == 200:
+                        # 测量响应时间作为延迟
+                        latency = (time.time() - start_time) * 1000  # 转换为毫秒
+                        
+                        # 提取内容类型
+                        content_type = response.headers.get("Content-Type", "")
+                        
+                        # 提取分辨率
+                        resolution = None
+                        if "application/vnd.apple.mpegurl" in content_type or url.endswith(".m3u8"):
+                            # 对于m3u8文件，解析获取分辨率
+                            resolution = await self.extract_resolution_from_m3u8(url)
+                        elif "video" in content_type:
+                            # 尝试从响应头获取内容长度
+                            content_length = response.headers.get("Content-Length")
+                            if content_length:
+                                # 视频流可能没有分辨率信息，标记为流
+                                resolution = "stream"
+                        
+                        # 提取码率信息（如果可用）
+                        bitrate = None
+                        if "video" in content_type:
+                            # 尝试从响应头获取码率（有些服务器会提供）
+                            bitrate_header = response.headers.get("X-Content-Bitrate")
+                            if bitrate_header:
+                                bitrate = int(bitrate_header) // 1000  # 转换为Kbps
+                        
+                        result.latency = latency
+                        result.resolution = resolution
+                        result.bitrate = bitrate
+                        result.content_type = content_type
+                        result.success = True
+                        self.logger.info(f"URL: {url} 测试成功，延迟: {latency:.2f}ms, 分辨率: {resolution or 'unknown'}")
+                        break
+                    else:
+                        result.error = f"HTTP状态码: {response.status}"
+            except Exception as e:
+                result.error = str(e)
+                self.logger.warning(f"URL: {url} 尝试 {attempt+1}/{retry_times} 失败: {e}")
+                await asyncio.sleep(1)  # 重试前等待1秒
+        
+        return result
+    
+    async def batch_speed_test(self, urls: List[str], show_progress: bool = False) -> List[SpeedTestResult]:
+        """批量测速（带并发控制和进度显示）"""
+        results = []
+        semaphore = asyncio.Semaphore(SpeedTestConfig.CONCURRENT_LIMIT)
+
+        async def worker(url):
+            async with semaphore:
+                result = await self.measure_latency(url, SpeedTestConfig.RETRY_TIMES)
+                results.append(result)
+
+        tasks = [worker(url) for url in urls]
+        
+        # 执行任务，根据参数决定是否显示进度
+        if show_progress:
+            try:
+                from tqdm.asyncio import tqdm_asyncio
+                await tqdm_asyncio.gather(*tasks, total=len(urls), desc="测速中", unit="url")
+            except ImportError:
+                await asyncio.gather(*tasks)
+        else:
+            await asyncio.gather(*tasks)
+        
+        # 按延迟排序结果（升序）
+        return sorted(results, key=lambda x: x.latency if x.latency is not None else float('inf'))
+
+# M3U文件处理类
+class M3UProcessor:
+    @staticmethod
+    def parse_m3u(file_path: str) -> List[Tuple[str, str]]:
+        """解析M3U文件，返回[(名称, URL), ...]"""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
+            
+            live_sources = []
+            current_name = None
+            
+            for line in lines:
+                line = line.strip()
+                if line.startswith('#EXTINF:'):
+                    # 提取名称
+                    name_start = line.find(',') + 1
+                    current_name = line[name_start:] if name_start > 0 else "未知频道"
+                elif line.startswith('http') and current_name:
+                    # 添加到源列表
+                    live_sources.append((current_name, line))
+                    current_name = None
+            
+            return live_sources
+        except Exception as e:
+            logger = get_logger(__name__)
+            logger.error(f"解析M3U文件失败: {e}")
+            return []
+    
+    @staticmethod
+    def generate_m3u(live_sources: List[Tuple[str, str]], output_path: str) -> None:
+        """生成M3U文件"""
+        try:
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            
+            with open(output_path, 'w', encoding='utf-8') as f:
+                f.write('#EXTM3U\n')
+                for name, url in live_sources:
+                    f.write(f'#EXTINF:-1,{name}\n')
+                    f.write(f'{url}\n')
+            
+            logger = get_logger(__name__)
+            logger.info(f"已生成M3U文件: {output_path}")
+        except Exception as e:
+            logger = get_logger(__name__)
+            logger.error(f"生成M3U文件失败: {e}")
 
 # 设置日志
 setup_logging()
@@ -257,51 +436,90 @@ def check_ipv6_support():
     except:
         return False
 
+# 判断是否为IPv6地址
+def is_ipv6(url):
+    """通过判断URL中是否包含'['来区分IPv6地址"""
+    return '[' in url
+
 # 从M3U文件中提取频道信息
 def extract_channels_from_m3u(content):
     """从M3U内容中提取频道信息"""
     channels = defaultdict(list)
-    pattern = r'#EXTINF:.*?tvg-name="([^"]*)".*?(?:group-title="([^"]*)")?,([^\n]+)\n(http[^\n]+)'
-    matches = re.findall(pattern, content, re.DOTALL)
     
-    for match in matches:
-        tvg_name = match[0].strip() if match[0] else match[2].strip()
-        channel_name = match[2].strip()
-        url = match[3].strip()
-        
-        # 规范化频道名称
-        normalized_name = normalize_channel_name(channel_name)
-        if normalized_name:
-            # 获取频道分类
-            category = get_channel_category(normalized_name)
-            channels[category].append((normalized_name, url))
-        else:
-            # 未规范化的频道放在其他频道
-            channels["其他频道"].append((channel_name, url))
+    # 先按#EXTINF分割内容
+    sections = content.split('#EXTINF:')
+    for section in sections[1:]:  # 跳过第一个空部分
+        try:
+            # 提取频道信息行和URL行
+            lines = section.split('\n')
+            if len(lines) < 2:
+                continue
+            
+            # 解析频道信息行
+            info_line = lines[0].strip()
+            
+            # 提取频道名称
+            channel_name = ""
+            if ',' in info_line:
+                channel_name = info_line.split(',')[-1].strip()
+            
+            # 提取URL行（可能有多个URL）
+            urls = []
+            for line in lines[1:]:
+                line = line.strip()
+                if line.startswith('http://') or line.startswith('https://'):
+                    urls.append(line)
+                elif not line:  # 空行
+                    continue
+                else:  # 遇到非URL行，停止
+                    break
+            
+            if not channel_name or not urls:
+                continue
+            
+            # 为每个URL创建一个频道条目
+            for url in urls:
+                # 规范化频道名称
+                normalized_name = normalize_channel_name(channel_name)
+                if normalized_name:
+                    # 获取频道分类
+                    category = get_channel_category(normalized_name)
+                    channels[category].append((normalized_name, url))
+                else:
+                    # 未规范化的频道放在其他频道
+                    channels["其他频道"].append((channel_name, url))
+                    
+        except Exception as e:
+            logger.error(f"解析M3U节时出错: {e}")
+            continue
     
     return channels
+
+# 创建反向映射（频道 -> 分类）以提高查找效率
+CHANNEL_TO_CATEGORY = {}
+for category, channels in CHANNEL_CATEGORIES.items():
+    for channel in channels:
+        CHANNEL_TO_CATEGORY[channel] = category
 
 # 获取频道分类
 def get_channel_category(channel_name):
     """获取频道所属的分类"""
-    for category, channels in CHANNEL_CATEGORIES.items():
-        if channel_name in channels:
-            return category
-    return "其他频道"
+    # 使用反向映射直接查找，提高效率
+    return CHANNEL_TO_CATEGORY.get(channel_name, "其他频道")
+
+# 创建反向映射（别名 -> 标准名）以提高查找效率
+ALIAS_TO_STANDARD = {}
+for standard_name, aliases in CHANNEL_MAPPING.items():
+    ALIAS_TO_STANDARD[standard_name] = standard_name  # 标准名映射到自身
+    for alias in aliases:
+        ALIAS_TO_STANDARD[alias] = standard_name  # 别名映射到标准名
 
 # 规范化频道名称
 def normalize_channel_name(name):
     """将频道名称规范化为标准名称"""
     name = name.strip()
-    # 检查是否是标准名称
-    for standard_name in CHANNEL_MAPPING:
-        if name == standard_name:
-            return standard_name
-    # 检查是否是别名
-    for standard_name, aliases in CHANNEL_MAPPING.items():
-        if name in aliases:
-            return standard_name
-    return None
+    # 使用反向映射直接查找，提高效率
+    return ALIAS_TO_STANDARD.get(name, None)
 
 # 从URL获取M3U内容
 def fetch_m3u_content(url):
@@ -555,7 +773,7 @@ def extract_channels_from_txt(file_path):
 
 # 合并直播源
 def merge_sources(sources, local_files):
-    """合并多个直播源"""
+    """合并多个直播源，返回包含IPv4和IPv6的分离频道以及合并的频道"""
     all_channels = defaultdict(list)
     
     # 使用核心模块的fetch_multiple实现并发获取远程直播源
@@ -566,6 +784,8 @@ def merge_sources(sources, local_files):
     for url, content in results.items():
         if content:
             channels = extract_channels_from_m3u(content)
+            ipv6_count = sum(1 for group, chans in channels.items() for name, u in chans if is_ipv6(u))
+            logger.info(f"从 {url} 获取到 {sum(len(chans) for group, chans in channels.items())} 个频道，其中IPv6频道: {ipv6_count}个")
             for group_title, channel_list in channels.items():
                 all_channels[group_title].extend(channel_list)
     
@@ -579,15 +799,34 @@ def merge_sources(sources, local_files):
     
     # 对所有频道进行去重处理
     deduplicated_channels = defaultdict(list)
+    deduplicated_channels_ipv4 = defaultdict(list)
+    deduplicated_channels_ipv6 = defaultdict(list)
     seen = set()
     
     for group_title, channel_list in all_channels.items():
         for channel_name, url in channel_list:
             if (channel_name, url) not in seen:
+                # 添加到合并频道
                 deduplicated_channels[group_title].append((channel_name, url))
+                
+                # 根据IP类型分离
+                if is_ipv6(url):
+                    deduplicated_channels_ipv6[group_title].append((channel_name, url))
+                else:
+                    deduplicated_channels_ipv4[group_title].append((channel_name, url))
+                
                 seen.add((channel_name, url))
     
-    return deduplicated_channels
+    # 统计去重后的IPv6频道数量
+    total_ipv6_after_dedup = sum(len(chans) for group, chans in deduplicated_channels_ipv6.items())
+    logger.info(f"去重后共得到 {total_ipv6_after_dedup} 个IPv6频道")
+    
+    # 返回分离后的频道和合并频道
+    return {
+        'all': deduplicated_channels,
+        'ipv4': deduplicated_channels_ipv4,
+        'ipv6': deduplicated_channels_ipv6
+    }
 
 
 # 忽略requests的SSL警告
@@ -606,46 +845,98 @@ def update_iptv_sources():
     logger.info(f"💻 正在读取{len(default_local_sources)}个本地直播源文件...")
     
     start_time = time.time()
-    all_channels = merge_sources(all_sources, default_local_sources)
+    channels_data = merge_sources(all_sources, default_local_sources)
+    
+    # 统计过滤前的频道数量
+    logger.info(f"过滤前 - 合并频道: {sum(len(chans) for group, chans in channels_data['all'].items())} 个")
+    logger.info(f"过滤前 - IPv4频道: {sum(len(chans) for group, chans in channels_data['ipv4'].items())} 个")
+    logger.info(f"过滤前 - IPv6频道: {sum(len(chans) for group, chans in channels_data['ipv6'].items())} 个")
+    
+    # 过滤各个版本的频道
+    filtered_channels_all = filter_channels(channels_data['all'])
+    filtered_channels_ipv4 = filter_channels(channels_data['ipv4'])
+    filtered_channels_ipv6 = filter_channels(channels_data['ipv6'])
+    
+    # 统计过滤后的频道数量
+    logger.info(f"过滤后 - 合并频道: {sum(len(chans) for group, chans in filtered_channels_all.items())} 个")
+    logger.info(f"过滤后 - IPv4频道: {sum(len(chans) for group, chans in filtered_channels_ipv4.items())} 个")
+    logger.info(f"过滤后 - IPv6频道: {sum(len(chans) for group, chans in filtered_channels_ipv6.items())} 个")
     
     # 统计频道数量
-    total_channels = sum(len(channel_list) for channel_list in all_channels.values())
-    total_groups = len(all_channels)
+    total_channels_all = sum(len(channel_list) for channel_list in filtered_channels_all.values())
+    total_channels_ipv4 = sum(len(channel_list) for channel_list in filtered_channels_ipv4.values())
+    total_channels_ipv6 = sum(len(channel_list) for channel_list in filtered_channels_ipv6.values())
+    total_groups = len(filtered_channels_all)
     
     logger.info("=" * 50)
-    logger.info(f"📊 统计信息:")
+    logger.info("📊 统计信息:")
     logger.info(f"📡 直播源数量: {len(all_sources)}")
     logger.info(f"📺 频道组数: {total_groups}")
-    logger.info(f"📚 总频道数: {total_channels}")
+    logger.info(f"📚 总频道数(合并): {total_channels_all}")
+    logger.info(f"📚 IPv4频道数: {total_channels_ipv4}")
+    logger.info(f"📚 IPv6频道数: {total_channels_ipv6}")
     logger.info(f"⏱️  耗时: {format_interval(time.time() - start_time)}")
     logger.info("=" * 50)
     
-    # 显示频道组信息
-    logger.info("📋 频道组详情:")
-    for group_title, channel_list in all_channels.items():
-        logger.info(f"   {group_title}: {len(channel_list)}个频道")
-    
-    # 过滤频道
-    filtered_channels = filter_channels(all_channels)
-    
-    # 生成M3U文件
+    # 生成所有版本的文件
     output_config = get_config('output', {})
-    output_file_m3u = output_config.get('m3u_filename', "jieguo.m3u")  # 将输出文件改为jieguo.m3u
-    # 生成TXT文件
-    output_file_txt = output_config.get('txt_filename', "jieguo.txt")  # 新增TXT格式输出文件
     
-    if generate_m3u_file(filtered_channels, output_file_m3u) and generate_txt_file(filtered_channels, output_file_txt):
-        logger.info(f"🎉 任务完成！")
+    def generate_files(channels, m3u_filename, txt_filename, version_name):
+        """生成指定版本的M3U和TXT文件"""
+        file_success = True
+        
+        if generate_m3u_file(channels, m3u_filename):
+            logger.info(f"✅ 成功生成{version_name}M3U文件: {m3u_filename}")
+        else:
+            logger.error(f"❌ 生成{version_name}M3U文件失败: {m3u_filename}")
+            file_success = False
+        
+        if generate_txt_file(channels, txt_filename):
+            logger.info(f"✅ 成功生成{version_name}TXT文件: {txt_filename}")
+        else:
+            logger.error(f"❌ 生成{version_name}TXT文件失败: {txt_filename}")
+            file_success = False
+        
+        return file_success
+    
+    # 合并版本
+    output_file_m3u_all = output_config.get('m3u_filename', "jieguo.m3u")
+    output_file_txt_all = output_config.get('txt_filename', "jieguo.txt")
+    
+    # IPv4版本
+    output_file_m3u_ipv4 = output_file_m3u_all.replace('.m3u', '_ipv4.m3u')
+    output_file_txt_ipv4 = output_file_txt_all.replace('.txt', '_ipv4.txt')
+    
+    # IPv6版本
+    output_file_m3u_ipv6 = output_file_m3u_all.replace('.m3u', '_ipv6.m3u')
+    output_file_txt_ipv6 = output_file_txt_all.replace('.txt', '_ipv6.txt')
+    
+    # 生成所有文件
+    success = True
+    
+    # 合并版本
+    if not generate_files(filtered_channels_all, output_file_m3u_all, output_file_txt_all, "合并版"):
+        success = False
+    
+    # IPv4版本
+    if not generate_files(filtered_channels_ipv4, output_file_m3u_ipv4, output_file_txt_ipv4, "IPv4版"):
+        success = False
+    
+    # IPv6版本
+    if not generate_files(filtered_channels_ipv6, output_file_m3u_ipv6, output_file_txt_ipv6, "IPv6版"):
+        success = False
+    
+    if success:
+        logger.info("🎉 任务完成！共生成6个文件")
         return True
     else:
-        logger.error("💥 生成文件失败！")
+        logger.error("💥 部分文件生成失败！")
         return False
 
 
 def check_ip_tv_syntax():
     """检查IP-TV.py文件的语法错误"""
     import ast
-    import os
     
     # 尝试解析当前文件，获取更详细的错误信息
     try:
@@ -683,7 +974,6 @@ def check_ip_tv_syntax():
 def fix_ip_tv_chars():
     """修复IP-TV.py文件中的不可打印字符"""
     import re
-    import os
     
     # 读取当前文件内容
     try:
@@ -706,6 +996,114 @@ def fix_ip_tv_chars():
         return False
 
 
+async def run_speed_test(input_file, output_dir="output"):
+    """
+    运行测速功能的主函数
+    参数:
+        input_file: 输入M3U文件路径
+        output_dir: 输出目录
+    """
+    logger = get_logger(__name__)
+    
+    # 创建输出目录
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # 1. 解析M3U文件
+    logger.info(f"开始解析M3U文件: {input_file}")
+    live_sources = M3UProcessor.parse_m3u(input_file)
+    if not live_sources:
+        logger.error("解析M3U文件失败或文件中没有直播源")
+        return
+    
+    logger.info(f"成功解析 {len(live_sources)} 个直播源")
+    
+    # 2. 提取所有URL
+    urls = [url for _, url in live_sources]
+    total_urls = len(urls)
+    
+    # 3. 批量测速（带进度显示）
+    logger.info("开始批量测速...")
+    start_time = time.time()
+    
+    # 导入tqdm用于进度显示
+    try:
+        from tqdm.asyncio import tqdm_asyncio
+        has_tqdm = True
+    except ImportError:
+        has_tqdm = False
+        logger.warning("tqdm库未安装，将不显示进度条")
+    
+    async with SpeedTester() as tester:
+        results = await tester.batch_speed_test(urls, show_progress=has_tqdm)
+    
+    elapsed_time = time.time() - start_time
+    logger.info(f"测速完成，耗时: {elapsed_time:.2f}秒")
+    
+    # 4. 统计结果
+    total = len(results)
+    success = sum(1 for r in results if r.success)
+    failed = total - success
+    avg_latency = sum(r.latency for r in results if r.success) / success if success > 0 else 0
+    
+    logger.info(f"测速统计: 总直播源={total}, 成功={success}, 失败={failed}, 平均延迟={avg_latency:.2f}ms")
+    
+    # 5. 生成测速报告
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    report_path = os.path.join(output_dir, f"speed_test_report_{timestamp}.txt")
+    
+    with open(report_path, 'w', encoding='utf-8') as f:
+        f.write("=== IPTV直播源测速报告 ===\n")
+        f.write(f"测试时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(f"测试直播源总数: {total}\n")
+        f.write(f"成功测试数: {success}\n")
+        f.write(f"失败测试数: {failed}\n")
+        f.write(f"平均延迟: {avg_latency:.2f}ms\n")
+        f.write(f"测试耗时: {elapsed_time:.2f}秒\n")
+        f.write("\n")
+        f.write("=== 测试结果详情（按延迟升序排列） ===\n")
+        
+        # 创建URL到名称的映射
+        url_to_name = {url: name for name, url in live_sources}
+        
+        for i, result in enumerate(results):
+            name = url_to_name.get(result.url, "未知频道")
+            status = "成功" if result.success else "失败"
+            latency_str = f"{result.latency:.2f}ms" if result.success else "-"
+            resolution_str = result.resolution if result.resolution else "-"
+            bitrate_str = f"{result.bitrate}Kbps" if result.bitrate else "-"
+            content_type_str = result.content_type if result.content_type else "-"
+            error_str = f" 错误: {result.error}" if not result.success else ""
+            
+            f.write(f"{i+1}. {name}\n")
+            f.write(f"   URL: {result.url}\n")
+            f.write(f"   状态: {status}\n")
+            f.write(f"   延迟: {latency_str}\n")
+            f.write(f"   分辨率: {resolution_str}\n")
+            f.write(f"   码率: {bitrate_str}\n")
+            f.write(f"   内容类型: {content_type_str}\n")
+            f.write(f"   {error_str}\n")
+            f.write("\n")
+    
+    logger.info(f"测速报告已生成: {report_path}")
+    
+    # 6. 生成排序后的M3U文件
+    if success > 0:
+        # 创建排序后的直播源列表（只包含成功的）
+        sorted_sources = []
+        url_to_name = {url: name for name, url in live_sources}
+        
+        for result in results:
+            if result.success and result.url in url_to_name:
+                name = url_to_name[result.url]
+                sorted_sources.append((name, result.url))
+        
+        # 生成M3U文件
+        sorted_m3u_path = os.path.join(output_dir, f"sorted_{os.path.basename(input_file)}")
+        M3UProcessor.generate_m3u(sorted_sources, sorted_m3u_path)
+        logger.info(f"排序后的M3U文件已生成: {sorted_m3u_path}")
+    
+    return results
+
 def main():
     """主函数"""
     import sys
@@ -721,12 +1119,19 @@ def main():
         elif sys.argv[1] == "--fix-chars":
             # 修复不可打印字符
             fix_ip_tv_chars()
+        elif sys.argv[1] == "--speed-test" and len(sys.argv) > 2:
+            # 测速功能
+            import asyncio
+            input_file = sys.argv[2]
+            output_dir = sys.argv[3] if len(sys.argv) > 3 else "output"
+            asyncio.run(run_speed_test(input_file, output_dir))
         else:
             # 显示帮助信息
             print("未知参数，请使用以下参数：")
             print("  --update       # 立即手动更新直播源")
             print("  --check-syntax # 检查IP-TV.py文件语法错误")
             print("  --fix-chars    # 修复IP-TV.py文件中的不可打印字符")
+            print("  --speed-test   # 对M3U文件中的直播源进行测速，使用方法：--speed-test <input_file> [output_dir]")
     else:
         # 显示帮助信息
         print("=" * 60)
@@ -738,16 +1143,24 @@ def main():
         print("  3. 支持手动更新和通过GitHub Actions工作流定时更新")
         print("  4. 检查IP-TV.py文件语法错误")
         print("  5. 修复IP-TV.py文件中的不可打印字符")
+        print("  6. 对M3U文件中的直播源进行异步测速")
         print("")
         print("使用方法：")
         print("  python IP-TV.py --update       # 立即手动更新直播源")
         print("  python IP-TV.py --check-syntax # 检查语法错误")
         print("  python IP-TV.py --fix-chars    # 修复不可打印字符")
+        print("  python IP-TV.py --speed-test <input_file> [output_dir] # 直播源测速")
         print("")
         print("输出文件：")
         print("  - jieguo.m3u   # M3U格式的直播源文件")
         print("  - jieguo.txt   # TXT格式的直播源文件")
+        print("  - jieguo_ipv4.m3u   # IPv4版本的M3U文件")
+        print("  - jieguo_ipv4.txt   # IPv4版本的TXT文件")
+        print("  - jieguo_ipv6.m3u   # IPv6版本的M3U文件")
+        print("  - jieguo_ipv6.txt   # IPv6版本的TXT文件")
         print("  - iptv_update.log  # 更新日志文件")
+        print("  - output/speed_test_report_*.txt  # 测速报告")
+        print("  - output/sorted_*.m3u  # 排序后的M3U文件")
         print("=" * 60)
 
 

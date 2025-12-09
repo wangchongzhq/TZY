@@ -9,7 +9,7 @@ import os
 from typing import Dict, List, Set
 
 # 导入频道名称标准化函数
-from collect_ipzy import standardize_channel_name
+from core.channel_utils import normalize_channel_name
 
 # 导入配置管理器
 from core.config import get_config
@@ -96,7 +96,7 @@ def check_channel_aliases():
         name = channel['name']
         
         # 先对频道名称进行标准化处理
-        standardized_name = standardize_channel_name(name)
+        standardized_name = normalize_channel_name(name)
         
         if standardized_name in standard_names:
             matched_standard.add(name)

@@ -47,7 +47,7 @@ SAFE_REQUEST_CONFIG = {
     'max_redirects': 5
 }
 
-def fetch_content(url: str, retries: Optional[int] = None, timeout: Optional[int] = None, headers: Optional[Dict] = None, verify_ssl: bool = True) -> Optional[str]:
+def fetch_content(url: str, retries: Optional[int] = None, timeout: Optional[int] = None, headers: Optional[Dict] = None, verify: bool = True) -> Optional[str]:
     """
     统一的网络请求函数，包含重试机制
     
@@ -56,7 +56,7 @@ def fetch_content(url: str, retries: Optional[int] = None, timeout: Optional[int
         retries: 重试次数（默认从配置获取）
         timeout: 超时时间（秒，默认从配置获取）
         headers: 自定义请求头
-        verify_ssl: 是否验证SSL证书
+        verify: 是否验证SSL证书
         
     返回:
         Optional[str]: 请求成功返回响应内容，失败返回None
@@ -72,7 +72,7 @@ def fetch_content(url: str, retries: Optional[int] = None, timeout: Optional[int
     config = {
         'headers': headers,
         'timeout': timeout,
-        'verify': verify_ssl,
+        'verify': verify,
         'allow_redirects': True
     }
     

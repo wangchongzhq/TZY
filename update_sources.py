@@ -17,8 +17,7 @@ import os
 import re
 
 # 导入核心模块
-from core.config import get_config
-from core.logging_config import setup_logging, get_logger, log_exception
+from core.logging_config import setup_logging, get_logger
 
 # 设置日志
 setup_logging()
@@ -30,19 +29,13 @@ UNIFIED_SOURCES_PY = 'unified_sources.py'
 
 # 设置脚本执行时的编码
 import sys
-if sys.version_info[0] < 3:
-    reload(sys)
-    sys.setdefaultencoding('utf-8')
-else:
-    import io
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 # 需要更新的脚本列表
 SCRIPTS_TO_UPDATE = [
-    'tvzy.py',
-    'IP-TV.py',
-    'collect_ipzy.py'
+    'IP-TV.py'
 ]
 
 
@@ -102,14 +95,7 @@ def update_script(script_path):
     # 检查文件中是否已经导入了unified_sources
     if 'from unified_sources import' not in content:
         # 根据不同脚本类型进行处理
-        if script_path == 'collect_ipzy.py':
-            # 替换SOURCES列表
-            sources_pattern = r'SOURCES\s*=\s*\[.*?\]'  # 匹配SOURCES = [ ... ]
-            replacement = '''# 从统一播放源文件导入
-from unified_sources import SOURCES_WITH_NAMES
-SOURCES = SOURCES_WITH_NAMES'''
-        else:
-            # 替换GITHUB_SOURCES或其他数据源列表
+        # 替换GITHUB_SOURCES或其他数据源列表
             if 'GITHUB_SOURCES' in content:
                 # 匹配GITHUB_SOURCES = get_config(...) 的情况，使用多行匹配
                 pattern = r'GITHUB_SOURCES\s*=\s*get_config\(.*?\)'  # 匹配GITHUB_SOURCES = get_config(...) 

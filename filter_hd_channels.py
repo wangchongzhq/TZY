@@ -5,11 +5,9 @@
 功能：使用新的分层筛选方法筛选出所有高清线路，生成新的频道列表
 """
 
-import re
 import time
 import logging
-import json
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, 
