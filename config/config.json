@@ -41,7 +41,12 @@
     "enabled": true,
     "files": [
       "tzydauto.txt",
-      "ipzyauto.m3u"
+      "ipzyauto.m3u",
+      "jieguo.m3u",
+      "jieguo_i4.m3u",
+      "jieguo_i6.m3u",
+      "jieguo_ipv4.m3u",
+      "jieguo_ipv6.m3u"
     ]
   },
   "channels": {
