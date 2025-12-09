@@ -285,18 +285,21 @@ def generate_m3u_content(channels: List[ChannelInfo]) -> str:
     for group in channels_by_group:
         channels_by_group[group].sort(key=lambda x: x.name)
     
-    # 从配置中获取频道类别顺序
-    config_categories = get_config('channels.categories', {})
-    config_group_order = list(config_categories.keys())
+    # 按照要求的固定顺序输出频道分类
+    required_order = [
+        "4K频道", "央视频道", "卫视频道", "北京专属频道", "山东专属频道", 
+        "港澳频道", "电影频道", "儿童频道", "iHOT频道", "综合频道", 
+        "体育频道", "剧场频道", "其他频道"
+    ]
     
-    # 按配置中的顺序排序分类，不在配置中的分类放在最后
+    # 按要求的顺序排序分类
     sorted_groups = []
-    for group in config_group_order:
+    for group in required_order:
         if group in channels_by_group:
             sorted_groups.append(group)
     
-    # 添加不在配置中的其他分组，按名称升序排序
-    other_groups = [group for group in channels_by_group.keys() if group not in config_group_order]
+    # 添加不在要求顺序中的其他分组，按名称升序排序
+    other_groups = [group for group in channels_by_group.keys() if group not in required_order]
     sorted_groups.extend(sorted(other_groups))
     
     lines = ['#EXTM3U']

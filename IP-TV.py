@@ -72,7 +72,6 @@ class SpeedTester:
                 if response.status == 200:
                     content = await response.text()
                     # 查找EXT-X-STREAM-INF标签，通常包含分辨率信息
-                    import re
                     stream_inf_pattern = r"#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+x\d+).*?(\S+)"
                     matches = re.findall(stream_inf_pattern, content, re.MULTILINE | re.DOTALL)
                     if matches:
@@ -200,54 +199,66 @@ class M3UProcessor:
                     f.write(f'#EXTINF:-1,{name}\n')
                     f.write(f'{url}\n')
             
-            logger = get_logger(__name__)
             logger.info(f"已生成M3U文件: {output_path}")
         except Exception as e:
-            logger = get_logger(__name__)
             logger.error(f"生成M3U文件失败: {e}")
 
 # 设置日志
 setup_logging()
 logger = get_logger(__name__)
 
-# 频道分类：从config.json中读取
+# 默认频道分类
+DEFAULT_CHANNEL_CATEGORIES = {
+    "4K频道": ['CCTV4K', 'CCTV8K', 'CCTV16 4K', '北京卫视4K', '北京IPTV4K', '湖南卫视4K', '山东卫视4K','广东卫视4K', '四川卫视4K', '浙江卫视4K', '江苏卫视4K', '东方卫视4K', '深圳卫视4K', '河北卫视4K', '峨眉电影4K', '求索4K', '咪视界4K', '欢笑剧场4K', '苏州4K', '至臻视界4K', '南国都市4K', '翡翠台4K', '百事通电影4K', '百事通少儿4K', '百事通纪实4K', '华数爱上4K'],
+
+    "央视频道": ['CCTV1', 'CCTV2', 'CCTV3', 'CCTV4', 'CCTV4欧洲', 'CCTV4美洲', 'CCTV5', 'CCTV5+', 'CCTV6', 'CCTV7', 'CCTV8', 'CCTV9', 'CCTV10', 'CCTV11', 'CCTV12', 'CCTV13', 'CCTV14', 'CCTV15', 'CCTV16', 'CCTV17', 'CETV1', 'CETV2', 'CETV3', 'CETV4', '早期教育','兵器科技', '风云音乐', '风云足球', '风云剧场', '怀旧剧场', '第一剧场', '女性时尚', '世界地理', '央视台球', '高尔夫网球', '央视文化精品', '卫生健康','电视指南'],
+
+    "卫视频道": ['山东卫视', '浙江卫视', '江苏卫视', '东方卫视', '深圳卫视', '北京卫视', '广东卫视', '广西卫视', '东南卫视', '海南卫视', '河北卫视', '河南卫视', '湖北卫视', '江西卫视', '四川卫视', '重庆卫视', '贵州卫视', '云南卫视', '天津卫视', '安徽卫视', '湖南卫视', '辽宁卫视', '黑龙江卫视', '吉林卫视', '内蒙古卫视', '宁夏卫视', '山西卫视', '陕西卫视', '甘肃卫视', '青海卫视', '新疆卫视', '西藏卫视', '三沙卫视', '厦门卫视', '兵团卫视', '延边卫视', '安多卫视', '康巴卫视', '农林卫视', '山东教育'],
+
+    "北京专属频道": ['北京卫视', '北京财经', '北京纪实', '北京生活', '北京体育休闲', '北京国际', '北京文艺', '北京新闻', '北京淘电影', '北京淘剧场', '北京淘4K', '北京淘娱乐', '北京淘BABY', '北京萌宠TV', '北京卡酷少儿'],
+
+    "山东专属频道": ['山东卫视', '山东齐鲁', '山东综艺', '山东少儿', '山东生活',
+                 '山东新闻', '山东国际', '山东体育', '山东文旅', '山东农科'],
+
+    "港澳频道": ['凤凰中文', '凤凰资讯', '凤凰香港', '凤凰电影'],
+
+    "电影频道": ['CHC动作电影', 'CHC家庭影院', 'CHC影迷电影', '淘电影',
+                 '淘精彩', '淘剧场', '星空卫视', '黑莓电影', '东北热剧',
+                 '中国功夫', '动作电影', '超级电影'],
+
+    "儿童频道": ['动漫秀场', '哒啵电竞', '黑莓动画', '卡酷少儿',
+                 '金鹰卡通', '优漫卡通', '哈哈炫动', '嘉佳卡通'],
+
+    "iHOT频道": ['iHOT爱喜剧', 'iHOT爱科幻', 'iHOT爱院线', 'iHOT爱悬疑', 'iHOT爱历史', 'iHOT爱谍战', 'iHOT爱旅行', 'iHOT爱幼教', 'iHOT爱玩具', 'iHOT爱体育', 'iHOT爱赛车', 'iHOT爱浪漫', 'iHOT爱奇谈', 'iHOT爱科学', 'iHOT爱动漫'],
+
+    "综合频道": ['重温经典', 'CHANNEL[V]', '求索纪录', '求索科学', '求索生活', '求索动物', '睛彩青少', '睛彩竞技', '睛彩篮球', '睛彩广场舞', '金鹰纪实', '快乐垂钓', '茶频道', '军事评论', '军旅剧场', '乐游', '生活时尚', '都市剧场', '欢笑剧场', '游戏风云', '金色学堂', '法治天地', '哒啵赛事'],
+
+    "体育频道": ['天元围棋', '魅力足球', '五星体育', '劲爆体育', '超级体育'],
+    
+    "剧场频道": ['古装剧场', '家庭剧场', '惊悚悬疑', '明星大片', '欢乐剧场', '海外剧场', '潮妈辣婆',
+                 '爱情喜剧', '超级电视剧', '超级综艺', '金牌综艺', '武搏世界', '农业致富', '炫舞未来',
+                 '精品体育', '精品大剧', '精品纪录', '精品萌宠', '怡伴健康'],
+    
+    "音乐频道": ['CCTV音乐', '音乐Tai', '音乐台', 'MTV', 'MTV中文', '华语音乐', '流行音乐', '古典音乐'],
+}
+
+# 频道分类：从config.json中读取并与默认值合并
 CHANNEL_CATEGORIES = get_config('channels.categories', {})
 
-# 如果配置中没有频道分类，使用默认值
-if not CHANNEL_CATEGORIES:
-    CHANNEL_CATEGORIES = {
-        "4K频道": ['CCTV4K', 'CCTV8K', 'CCTV16 4K', '北京卫视4K', '北京IPTV4K', '湖南卫视4K', '山东卫视4K','广东卫视4K', '四川卫视4K', '浙江卫视4K', '江苏卫视4K', '东方卫视4K', '深圳卫视4K', '河北卫视4K', '峨眉电影4K', '求索4K', '咪视界4K', '欢笑剧场4K', '苏州4K', '至臻视界4K', '南国都市4K', '翡翠台4K', '百事通电影4K', '百事通少儿4K', '百事通纪实4K', '华数爱上4K'],
+# 合并默认分类和配置分类，确保所有分类都能应用
+merged_categories = DEFAULT_CHANNEL_CATEGORIES.copy()
+if CHANNEL_CATEGORIES:
+    # 如果配置中存在分类，则合并它们
+    for category_name, channels in CHANNEL_CATEGORIES.items():
+        if category_name in merged_categories:
+            # 如果分类已存在，合并频道列表（去重）
+            merged_categories[category_name] = list(set(merged_categories[category_name] + channels))
+        else:
+            # 如果是新分类，直接添加
+            merged_categories[category_name] = channels
 
-        "央视频道": ['CCTV1', 'CCTV2', 'CCTV3', 'CCTV4', 'CCTV4欧洲', 'CCTV4美洲', 'CCTV5', 'CCTV5+', 'CCTV6', 'CCTV7', 'CCTV8', 'CCTV9', 'CCTV10', 'CCTV11', 'CCTV12', 'CCTV13', 'CCTV14', 'CCTV15', 'CCTV16', 'CCTV17', 'CETV1', 'CETV2', 'CETV3', 'CETV4', '早期教育','兵器科技', '风云音乐', '风云足球', '风云剧场', '怀旧剧场', '第一剧场', '女性时尚', '世界地理', '央视台球', '高尔夫网球', '央视文化精品', '卫生健康','电视指南'],
-
-        "卫视频道": ['山东卫视', '浙江卫视', '江苏卫视', '东方卫视', '深圳卫视', '北京卫视', '广东卫视', '广西卫视', '东南卫视', '海南卫视', '河北卫视', '河南卫视', '湖北卫视', '江西卫视', '四川卫视', '重庆卫视', '贵州卫视', '云南卫视', '天津卫视', '安徽卫视', '湖南卫视', '辽宁卫视', '黑龙江卫视', '吉林卫视', '内蒙古卫视', '宁夏卫视', '山西卫视', '陕西卫视', '甘肃卫视', '青海卫视', '新疆卫视', '西藏卫视', '三沙卫视', '厦门卫视', '兵团卫视', '延边卫视', '安多卫视', '康巴卫视', '农林卫视', '山东教育'],
-
-        "北京专属频道": ['北京卫视', '北京财经', '北京纪实', '北京生活', '北京体育休闲', '北京国际', '北京文艺', '北京新闻', '北京淘电影', '北京淘剧场', '北京淘4K', '北京淘娱乐', '北京淘BABY', '北京萌宠TV', '北京卡酷少儿'],
-
-        "山东专属频道": ['山东卫视', '山东齐鲁', '山东综艺', '山东少儿', '山东生活',
-                     '山东新闻', '山东国际', '山东体育', '山东文旅', '山东农科'],
-
-        "港澳频道": ['凤凰中文', '凤凰资讯', '凤凰香港', '凤凰电影'],
-
-        "电影频道": ['CHC动作电影', 'CHC家庭影院', 'CHC影迷电影', '淘电影',
-                     '淘精彩', '淘剧场', '星空卫视', '黑莓电影', '东北热剧',
-                     '中国功夫', '动作电影', '超级电影'],
-
-        "儿童频道": ['动漫秀场', '哒啵电竞', '黑莓动画', '卡酷少儿',
-                     '金鹰卡通', '优漫卡通', '哈哈炫动', '嘉佳卡通'],
-
-        "iHOT频道": ['iHOT爱喜剧', 'iHOT爱科幻', 'iHOT爱院线', 'iHOT爱悬疑', 'iHOT爱历史', 'iHOT爱谍战', 'iHOT爱旅行', 'iHOT爱幼教', 'iHOT爱玩具', 'iHOT爱体育', 'iHOT爱赛车', 'iHOT爱浪漫', 'iHOT爱奇谈', 'iHOT爱科学', 'iHOT爱动漫'],
-
-        "综合频道": ['重温经典', 'CHANNEL[V]', '求索纪录', '求索科学', '求索生活', '求索动物', '睛彩青少', '睛彩竞技', '睛彩篮球', '睛彩广场舞', '金鹰纪实', '快乐垂钓', '茶频道', '军事评论', '军旅剧场', '乐游', '生活时尚', '都市剧场', '欢笑剧场', '游戏风云', '金色学堂', '法治天地', '哒啵赛事'],
-
-        "体育频道": ['天元围棋', '魅力足球', '五星体育', '劲爆体育', '超级体育'],
-        
-        "剧场频道": ['古装剧场', '家庭剧场', '惊悚悬疑', '明星大片', '欢乐剧场', '海外剧场', '潮妈辣婆',
-                     '爱情喜剧', '超级电视剧', '超级综艺', '金牌综艺', '武搏世界', '农业致富', '炫舞未来',
-                     '精品体育', '精品大剧', '精品纪录', '精品萌宠', '怡伴健康'],
-        
-        "音乐频道": ['CCTV音乐', '音乐Tai', '音乐台', 'MTV', 'MTV中文', '华语音乐', '流行音乐', '古典音乐'],
-    }
+# 使用合并后的分类
+CHANNEL_CATEGORIES = merged_categories
 
 # 频道映射（别名 -> 规范名）
 CHANNEL_MAPPING = {
@@ -378,33 +389,10 @@ from unified_sources import UNIFIED_SOURCES
 default_sources = UNIFIED_SOURCES
 
 # 本地直播源文件
-default_local_sources = [
-    "ipzyauto.txt",
-]
+default_local_sources = []
 
 # 用户自定义直播源URL（可在本地添加）
 user_sources = []
-
-# 获取URL列表
-def get_urls_from_file(file_path):
-    """从文件中读取URL列表"""
-    urls = []
-    if os.path.exists(file_path):
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                urls = [line.strip() for line in f if line.strip() and not line.startswith('#')]
-        except Exception as e:
-            print(f"读取URL文件时出错: {e}")
-    return urls
-
-# 检查URL是否有效
-def check_url(url, timeout=5):
-    """检查URL是否可访问"""
-    try:
-        response = requests.head(url, timeout=timeout, allow_redirects=True)
-        return response.status_code < 400
-    except:
-        return False
 
 # 格式化时间间隔
 def format_interval(seconds):
@@ -419,18 +407,7 @@ def format_interval(seconds):
         minutes, seconds = divmod(remainder, 60)
         return f"{int(hours)}时{int(minutes)}分{int(seconds)}秒"
 
-# 获取IP地址
-def get_ip_address():
-    """获取本地IP地址"""
-    try:
-        import socket
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(('8.8.8.8', 80))
-        ip = s.getsockname()[0]
-        s.close()
-        return ip
-    except:
-        return "127.0.0.1"
+
 
 # 检查IPv6支持
 def check_ipv6_support():
@@ -489,15 +466,24 @@ def extract_channels_from_m3u(content):
                 if should_exclude_url(url, channel_name):
                     continue
                 
+                # 检查频道名称是否包含4K/8K，无论是否规范化成功
+                is_4k_channel = '4K' in channel_name or '4k' in channel_name or '8K' in channel_name or '8k' in channel_name
+                
                 # 规范化频道名称
                 normalized_name = normalize_channel_name(channel_name)
                 if normalized_name:
                     # 获取频道分类
                     category = get_channel_category(normalized_name)
+                    # 如果是4K频道，强制放在4K频道分类
+                    if is_4k_channel:
+                        category = "4K频道"
                     channels[category].append((normalized_name, url))
                 else:
-                    # 未规范化的频道放在其他频道
-                    channels["其他频道"].append((channel_name, url))
+                    # 未规范化的频道，如果是4K/8K频道，放在4K频道分类
+                    if is_4k_channel:
+                        channels["4K频道"].append((channel_name, url))
+                    else:
+                        channels["其他频道"].append((channel_name, url))
                     
         except Exception as e:
             logger.error(f"解析M3U节时出错: {e}")
@@ -511,11 +497,30 @@ for category, channels in CHANNEL_CATEGORIES.items():
     for channel in channels:
         CHANNEL_TO_CATEGORY[channel] = category
 
+# 调试信息：打印分类配置
+print("===== 频道分类配置调试信息 =====")
+print(f"加载的分类数量: {len(CHANNEL_CATEGORIES)}")
+print(f"分类名称: {list(CHANNEL_CATEGORIES.keys())}")
+print(f"总频道数: {len(CHANNEL_TO_CATEGORY)}")
+print("前5个分类及示例频道:")
+for i, (category, channels) in enumerate(list(CHANNEL_CATEGORIES.items())[:5]):
+    print(f"  {i+1}. {category}: {channels[:3]}...")
+print("==============================")
+
 # 获取频道分类
 def get_channel_category(channel_name):
     """获取频道所属的分类"""
-    # 使用反向映射直接查找，提高效率
-    return CHANNEL_TO_CATEGORY.get(channel_name, "其他频道")
+    # 1. 使用反向映射直接查找，提高效率
+    category = CHANNEL_TO_CATEGORY.get(channel_name, None)
+    if category:
+        return category
+    
+    # 2. 如果未找到，检查是否包含4K/8K
+    if '4K' in channel_name or '4k' in channel_name or '8K' in channel_name or '8k' in channel_name:
+        return "4K频道"
+    
+    # 3. 未匹配到任何分类，返回其他频道
+    return "其他频道"
 
 # 创建反向映射（别名 -> 标准名）以提高查找效率
 ALIAS_TO_STANDARD = {}
@@ -528,8 +533,77 @@ for standard_name, aliases in CHANNEL_MAPPING.items():
 def normalize_channel_name(name):
     """将频道名称规范化为标准名称"""
     name = name.strip()
-    # 使用反向映射直接查找，提高效率
-    return ALIAS_TO_STANDARD.get(name, None)
+    
+    # 如果名称为空，直接返回None
+    if not name:
+        return None
+    
+    # 1. 直接匹配
+    if name in ALIAS_TO_STANDARD:
+        return ALIAS_TO_STANDARD[name]
+    
+    # 2. 去除括号内容
+    name_without_brackets = re.sub(r'\s*\([^)]*\)\s*', ' ', name)
+    if name_without_brackets.strip() in ALIAS_TO_STANDARD:
+        return ALIAS_TO_STANDARD[name_without_brackets.strip()]
+    
+    # 3. 去除额外描述（如"超高清"、"高清"、"2160p"等）
+    name_without_desc = re.sub(r'(超高清|高清|2160p|1080p|720p|480p|标清)\s*$', '', name_without_brackets, flags=re.IGNORECASE)
+    if name_without_desc.strip() in ALIAS_TO_STANDARD:
+        return ALIAS_TO_STANDARD[name_without_desc.strip()]
+    
+    # 3.1 特殊处理4K/8K频道：如果去除描述后包含4K/8K，尝试匹配
+    processed_name = name_without_desc.strip()
+    if '4K' in processed_name or '4k' in processed_name or '8K' in processed_name or '8k' in processed_name:
+        # 检查是否与CHANNEL_MAPPING中的4K/8K标准名称匹配
+        for standard_name in CHANNEL_MAPPING:
+            if '4K' in standard_name or '8K' in standard_name:
+                # 简单的包含关系匹配
+                if standard_name.lower() in processed_name.lower() or processed_name.lower() in standard_name.lower():
+                    return standard_name
+        # 如果没有匹配到标准名称，直接返回处理后的名称
+        return processed_name
+    
+    # 4. 尝试使用部分匹配（对于常见的4K频道）
+    # 先检查是否包含4K/8K
+    if '4K' in name or '4k' in name or '8K' in name or '8k' in name:
+        # 提取包含4K/8K的部分
+        match = re.search(r'([^\s]+4K[^\s]*)|([^\s]+8K[^\s]*)', name, re.IGNORECASE)
+        if match:
+            partial_name = match.group(0)
+            # 检查是否与标准名称匹配
+            for standard_name in CHANNEL_MAPPING:
+                # 检查标准名称是否在partial_name中，或者partial_name是否在标准名称中
+                if standard_name.lower() in partial_name.lower() or partial_name.lower() in standard_name.lower():
+                    return standard_name
+                # 检查别名
+                for alias in CHANNEL_MAPPING[standard_name]:
+                    if alias.lower() in partial_name.lower() or partial_name.lower() in alias.lower():
+                        return standard_name
+            # 如果没有匹配到标准名称，直接返回提取的部分
+            return partial_name
+    
+    # 5. 全部大写尝试
+    name_upper = name_without_brackets.strip().upper()
+    for standard_name, aliases in CHANNEL_MAPPING.items():
+        if standard_name.upper() in name_upper:
+            return standard_name
+        for alias in aliases:
+            if alias.upper() in name_upper:
+                return standard_name
+    
+    # 6. 检查是否包含4K/8K，如果包含且无法匹配，返回一个基于4K/8K的名称（如"CCTV4K"）
+    if '4K' in name or '4k' in name or '8K' in name or '8k' in name:
+        # 尝试提取频道的主要部分
+        main_part = re.sub(r'\s*[0-9]+p|\s*超高清|\s*高清|\s*超清|\s*UHD', '', name, flags=re.IGNORECASE)
+        main_part = main_part.strip()
+        if main_part:
+            return main_part
+        # 如果提取失败，直接返回原始名称
+        return name
+    
+    # 7. 无法匹配，返回None
+    return None
 
 # 从URL获取M3U内容
 def fetch_m3u_content(url):
@@ -762,8 +836,15 @@ def generate_txt_file(channels, output_path):
     content_lines.append("# 频道分类: 4K频道,央视频道,卫视频道,北京专属频道,山东专属频道,港澳频道,电影频道,儿童频道,iHOT频道,综合频道,体育频道,剧场频道,其他频道")
     content_lines.append("")
     
-    # 按CHANNEL_CATEGORIES中定义的顺序写入分类
-    for category in CHANNEL_CATEGORIES:
+    # 按照要求的固定顺序输出频道分类
+    required_order = [
+        "4K频道", "央视频道", "卫视频道", "北京专属频道", "山东专属频道", 
+        "港澳频道", "电影频道", "儿童频道", "iHOT频道", "综合频道", 
+        "体育频道", "剧场频道", "其他频道"
+    ]
+    
+    # 按要求的顺序写入分类
+    for category in required_order:
         if category in channels and channels[category]:
             # 写入分组标题，添加,genre#后缀
             content_lines.append(f"#{category}#,genre#")
@@ -774,18 +855,6 @@ def generate_txt_file(channels, output_path):
             
             # 分组之间添加空行
             content_lines.append("")
-    
-    # 最后写入其他频道
-    if "其他频道" in channels and channels["其他频道"]:
-        # 写入分组标题，添加,#genre#后缀
-        content_lines.append("#其他频道#,#genre#")
-        
-        # 写入该分组下的所有频道
-        for channel_name, url in channels["其他频道"]:
-            content_lines.append(f"{channel_name},{url}")
-        
-        # 分组之间添加空行
-        content_lines.append("")
     
     # 使用核心模块写入文件
     content = '\n'.join(content_lines)
@@ -826,15 +895,24 @@ def extract_channels_from_txt(file_path):
                     if should_exclude_url(url, channel_name):
                         continue
                     
+                    # 检查频道名称是否包含4K/8K，无论是否规范化成功
+                    is_4k_channel = '4K' in channel_name or '4k' in channel_name or '8K' in channel_name or '8k' in channel_name
+                    
                     # 规范化频道名称
                     normalized_name = normalize_channel_name(channel_name)
                     if normalized_name:
                         # 获取频道分类
                         category = get_channel_category(normalized_name)
+                        # 如果是4K频道，强制放在4K频道分类
+                        if is_4k_channel:
+                            category = "4K频道"
                         channels[category].append((normalized_name, url))
                     else:
-                        # 未规范化的频道放在其他频道
-                        channels["其他频道"].append((channel_name, url))
+                        # 未规范化的频道，如果是4K/8K频道，放在4K频道分类
+                        if is_4k_channel:
+                            channels["4K频道"].append((channel_name, url))
+                        else:
+                            channels["其他频道"].append((channel_name, url))
     except Exception as e:
         print(f"解析本地文件 {file_path} 时出错: {e}")
     

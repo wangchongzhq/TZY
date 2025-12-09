@@ -27,12 +27,6 @@ logger = get_logger(__name__)
 SOURCES_JSON = 'sources.json'
 UNIFIED_SOURCES_PY = 'unified_sources.py'
 
-# 设置脚本执行时的编码
-import sys
-import io
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
-
 # 需要更新的脚本列表
 SCRIPTS_TO_UPDATE = [
     'IP-TV.py'
@@ -54,31 +48,29 @@ def read_sources_from_json():
 
 def generate_unified_sources(urls, sources_with_names):
     """生成unified_sources.py文件"""
-    content = '''# -*- coding: utf-8 -*-
+    # 格式化URL列表
+    urls_formatted = [f'    "{url.replace("\"", "\\\"")}"' for url in urls]
+    urls_str = ',\n'.join(urls_formatted)
+    
+    # 格式化带名称的播放源列表
+    sources_with_names_formatted = [f'    ("{name.replace("\"", "\\\"")}", "{url.replace("\"", "\\\"")}")' for name, url in sources_with_names]
+    sources_with_names_str = ',\n'.join(sources_with_names_formatted)
+    
+    # 使用f-string构建文件内容
+    content = f'''# -*- coding: utf-8 -*-
 # 统一播放源列表
 # 此文件由update_sources.py自动生成，请勿手动修改
 
 # 播放源URL列表
 UNIFIED_SOURCES = [
-{urls}
+{urls_str}
 ]
 
 # 带名称的播放源列表（用于collect_ipzy.py）
 SOURCES_WITH_NAMES = [
-{sources_with_names}
+{sources_with_names_str}
 ]
 '''
-    
-    # 格式化URL列表
-    urls_formatted = ['    "' + url.replace('"', '\\"') + '"' for url in urls]
-    urls_str = ',\n'.join(urls_formatted)
-    
-    # 格式化带名称的播放源列表
-    sources_with_names_formatted = ['    ("' + name.replace('"', '\\"') + '", "' + url.replace('"', '\\"') + '")' for name, url in sources_with_names]
-    sources_with_names_str = ',\n'.join(sources_with_names_formatted)
-    
-    # 替换占位符
-    content = content.format(urls=urls_str, sources_with_names=sources_with_names_str)
     
     # 写入文件
     with open(UNIFIED_SOURCES_PY, 'w', encoding='utf-8') as f:

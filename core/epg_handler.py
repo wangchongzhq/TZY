@@ -71,13 +71,23 @@ class EPGHandler:
                         self._parse_xml_epg(response.content, source)
                     except Exception as e:
                         logger.error(f"解析EPG源 {source} 失败，不支持的格式: {e}")
+            except requests.exceptions.RequestException as e:
+                logger.error(f"网络请求EPG源 {source} 失败: {e}")
             except Exception as e:
                 logger.error(f"加载EPG源 {source} 失败: {e}")
+            logger.info(f"继续处理下一个EPG源...")
     
     def _parse_xml_epg(self, xml_content: bytes, source: str):
         """解析XML格式的EPG数据"""
         try:
-            root = ET.fromstring(xml_content)
+            # 先尝试解码为字符串，处理可能的编码问题
+            try:
+                xml_str = xml_content.decode('utf-8')
+            except UnicodeDecodeError:
+                xml_str = xml_content.decode('gbk', errors='replace')
+            
+            # 尝试解析XML
+            root = ET.fromstring(xml_str.encode('utf-8'))
             
             # 解析tv元素下的channel和programme元素
             for channel_elem in root.findall("./channel"):
@@ -148,9 +158,12 @@ class EPGHandler:
             
             logger.info(f"成功解析来自 {source} 的EPG数据，包含 {len(self.epg_data)} 个频道")
         except ET.ParseError as e:
-            logger.error(f"解析XML格式错误: {e}")
+            logger.error(f"解析XML格式错误 ({source}): {e}")
+            logger.error(f"XML解析失败的EPG源: {source}")
+        except UnicodeDecodeError as e:
+            logger.error(f"XML编码解码错误 ({source}): {e}")
         except Exception as e:
-            logger.error(f"解析EPG数据时发生未知错误: {e}")
+            logger.error(f"解析EPG数据时发生未知错误 ({source}): {e}")
     
     def get_channel_epg_info(self, channel_identifier: str) -> Optional[Dict[str, Any]]:
         """根据频道标识符获取EPG信息"""

@@ -38,7 +38,7 @@ jobs:
     - name: 生成 M3U 文件
       run: |
         echo "开始生成M3U文件..."
-        python ipzyauto.py
+        python IP-TV.py --update
         echo "=== M3U文件生成完成 ==="
         echo "当前目录下的M3U文件:"
         ls -la *.m3u
@@ -51,10 +51,10 @@ jobs:
         echo "生成的文件:"
         ls -la *.txt
         echo "=== 文件内容统计 ==="
-        ls -la *.txt | grep -v "ipzyauto.txt" | awk '{print $9}' | xargs wc -l 2>/dev/null || echo "无法统计行数"
+        ls -la *.txt | grep -v "jieguo.txt" | awk '{print $9}' | xargs wc -l 2>/dev/null || echo "无法统计行数"
         echo "=== 前20行预览 ==="
         for file in *.txt; do
-          if [ "$file" != "ipzyauto.txt" ]; then
+          if [ "$file" != "jieguo.txt" ]; then
             echo "$file:"
             head -n 5 "$file" || echo "无法预览文件"
             echo "---"
@@ -97,7 +97,7 @@ jobs:
         # 添加所有新生成的TXT文件，但排除已有的特定文件
         git add *.txt
         # 恢复不需要提交的文件
-        git restore --staged ipzyauto.txt
+        git restore --staged jieguo.txt
         
         # 检查是否有更改
         if git diff --staged --quiet; then
