@@ -342,7 +342,31 @@ http://39.134.24.24/PLTV/88888888/224/3221226023/index.m3u8
 #EXTINF:-1 group-title="央视频道",CCTV3
 http://t.061899.xyz/tl/tl.php?id=cctv3
 #EXTINF:-1 group-title="央视频道",CCTV3
-http://218.17.33.178:53290/tsfile/live/1003_1.m3u8?key=txiptv
+http://php.jdshipin.com/TVOD/hljyd.php?id=3221226021
+#EXTINF:-1 group-title="央视频道",CCTV3
+http://iptv.huuc.edu.cn/hls/cctv3hd.m3u8
+#EXTINF:-1 group-title="央视频道",CCTV3
+http://[2409:8087:1a01:df::4041]:80/TVOD/88888888/224/3221225799/main.m3u8
+#EXTINF:-1 group-title="央视频道",CCTV3
+https://smart.pendy.dpdns.org/Smart.php?id=cctv3
+#EXTINF:-1 group-title="央视频道",CCTV3
+http://[2409:8087:1a01:df::4041]/TVOD/88888888/224/3221225799/main.m3u8
+#EXTINF:-1 group-title="央视频道",CCTV3
+http://[2409:8087:1a01:df::4077]/ottrrs.hl.chinamobile.com/PLTV/88888888/8/3221226021/index.m3u8
+#EXTINF:-1 group-title="央视频道",CCTV3
+http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226456/1.m3u8
+#EXTINF:-1 group-title="央视频道",CCTV3
+http://[2409:8087:8:21::18]:6610/otttv.bj.chinamobile.com/PLTV/88888888/224/3221226471/1.m3u8
+#EXTINF:-1 group-title="央视频道",CCTV3
+http://[2409:8087:4c0a:22:1::11]:6410/170000001115/UmaiCHAN638727c125355/index.m3u8?AuthInfo=9kOOdBn7MFF%2F2bWjKgahUSPTZ4CK5oLfjaEYe9dogNMUNNEYLCPUtKY62j1Wp5u04wipypKUQ1TTuR2lXvBl5YpHqBJmlA19x22TD9bUOjk
+#EXTINF:-1 group-title="央视频道",CCTV3
+http://[2409:8087:1a0a:df::404b]/ottrrs.hl.chinamobile.com/TVOD/88888888/224/3221226021/index.m3u8
+#EXTINF:-1 group-title="央视频道",CCTV3
+http://[2409:8087:1e01:23::10]:8112/000000001000/5000000002000020548/1.m3u8
+#EXTINF:-1 group-title="央视频道",CCTV3
+http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226456/1.m3u8
+#EXTINF:-1 group-title="央视频道",CCTV3
+http://m.061899.xyz/mg/cctv3
 #EXTINF:-1 group-title="央视频道",CCTV4
 http://fn.tmde.top:35455/nptv/cctv4k.m3u8
 #EXTINF:-1 group-title="央视频道",CCTV4
@@ -426,7 +450,33 @@ http://t.061899.xyz/tl/tl.php?id=cctv6
 #EXTINF:-1 group-title="央视频道",CCTV6
 http://39.134.24.24/PLTV/88888888/224/3221226027/index.m3u8
 #EXTINF:-1 group-title="央视频道",CCTV6
-http://218.17.33.178:53290/tsfile/live/1006_1.m3u8?key=txiptv
+http://php.jdshipin.com/TVOD/hljyd.php?id=3221226010
+#EXTINF:-1 group-title="央视频道",CCTV6
+http://iptv.huuc.edu.cn/hls/cctv6hd.m3u8
+#EXTINF:-1 group-title="央视频道",CCTV6
+http://[2409:8087:1a01:df::4077]/ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221226010/index.m3u8
+#EXTINF:-1 group-title="央视频道",CCTV6
+https://smart.pendy.dpdns.org/Smart.php?id=cctv6
+#EXTINF:-1 group-title="央视频道",CCTV6
+http://[2409:8087:1a01:df::4077]:80/ottrrs.hl.chinamobile.com/TVOD/88888888/224/3221226010/index.m3u8
+#EXTINF:-1 group-title="央视频道",CCTV6
+http://[2409:8087:1a01:df::4077]/ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221226010/1.m3u8?icpid=88888888&from=1&hms_devid=1012&vqe=3
+#EXTINF:-1 group-title="央视频道",CCTV6
+http://[2409:8087:1a01:df::4077]/ottrrs.hl.chinamobile.com/PLTV/88888888/8/3221226010/index.m3u8
+#EXTINF:-1 group-title="央视频道",CCTV6
+http://[2409:8087:1a01:df::4077]/ottrrs.hl.chinamobile.com/yinhe/88888888/224/3221226010/index.m3u8
+#EXTINF:-1 group-title="央视频道",CCTV6
+http://[2409:8087:1a01:df::4077]:80/ottrrs.hl.chinamobile.com/PLTV/88888888/8/3221226010/index.m3u8
+#EXTINF:-1 group-title="央视频道",CCTV6
+http://[2409:8087:1a01:df::4077]:80/ottrrs.hl.chinamobile.com/yinhe/88888888/224/3221226010/index.m3u8
+#EXTINF:-1 group-title="央视频道",CCTV6
+http://[2409:8087:1e01:23::10]:8112/000000001000/5000000004000008886/1.m3u8
+#EXTINF:-1 group-title="央视频道",CCTV6
+http://122.70.160.24:2380/ywotttv.bj.chinamobile.com/PLTV/88888888/224/3221226468/1.m3u8
+#EXTINF:-1 group-title="央视频道",CCTV6
+http://m.061899.xyz/mg/cctv6
+#EXTINF:-1 group-title="央视频道",CCTV6
+https://iptv.catvod.com/live.php?id=CCTV-6
 #EXTINF:-1 group-title="央视频道",CCTV7
 http://223.241.247.214:9901/tsfile/live/0007_1.m3u8
 #EXTINF:-1 group-title="央视频道",CCTV7
