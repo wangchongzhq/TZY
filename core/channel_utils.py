@@ -781,8 +781,8 @@ def normalize_channel_name(name: str) -> str:
             # 提取CCTV和数字部分
             name = f"CCTV{match.group(1)}"
     
-    # 去除常见的前缀后缀
-    prefixes = [r'[\s\[\(]*(高清|HD|标清|SD|超清|4K|蓝光)[\s\]\)]*', r'[\s\[\(]*(直播|卫视|电视台|频道)[\s\]\)]*']
+    # 去除常见的前缀后缀，但保留4K标识
+    prefixes = [r'[\s\[\(]*(高清|HD|标清|SD|超清|蓝光)[\s\]\)]*', r'[\s\[\(]*(直播|卫视|电视台|频道)[\s\]\)]*']
     for prefix in prefixes:
         name = re.sub(r'^' + prefix, '', name, flags=re.IGNORECASE)
         name = re.sub(r'' + prefix + '$', '', name, flags=re.IGNORECASE)

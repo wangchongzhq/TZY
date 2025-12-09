@@ -510,14 +510,14 @@ print("==============================")
 # 获取频道分类
 def get_channel_category(channel_name):
     """获取频道所属的分类"""
-    # 1. 使用反向映射直接查找，提高效率
+    # 1. 首先检查是否包含4K/8K，优先归类为4K频道
+    if '4K' in channel_name or '4k' in channel_name or '8K' in channel_name or '8k' in channel_name:
+        return "4K频道"
+    
+    # 2. 如果不是4K频道，使用反向映射直接查找
     category = CHANNEL_TO_CATEGORY.get(channel_name, None)
     if category:
         return category
-    
-    # 2. 如果未找到，检查是否包含4K/8K
-    if '4K' in channel_name or '4k' in channel_name or '8K' in channel_name or '8k' in channel_name:
-        return "4K频道"
     
     # 3. 未匹配到任何分类，返回其他频道
     return "其他频道"
@@ -538,30 +538,53 @@ def normalize_channel_name(name):
     if not name:
         return None
     
+    # 检查是否包含4K/8K标识
+    has_4k = '4K' in name or '4k' in name or '8K' in name or '8k' in name
+    
     # 1. 直接匹配
     if name in ALIAS_TO_STANDARD:
+        # 如果原始名称包含4K/8K，确保返回的标准名称也包含4K/8K
+        if has_4k:
+            standard_name = ALIAS_TO_STANDARD[name]
+            # 检查标准名称是否包含4K/8K
+            if '4K' in standard_name or '4k' in standard_name or '8K' in standard_name or '8k' in standard_name:
+                return standard_name
         return ALIAS_TO_STANDARD[name]
     
     # 2. 去除括号内容
     name_without_brackets = re.sub(r'\s*\([^)]*\)\s*', ' ', name)
     if name_without_brackets.strip() in ALIAS_TO_STANDARD:
+        # 如果原始名称包含4K/8K，需要特殊处理
+        if has_4k:
+            base_name = ALIAS_TO_STANDARD[name_without_brackets.strip()]
+            # 检查是否有对应的4K版本标准名称
+            for standard_name in CHANNEL_MAPPING:
+                if base_name in standard_name and ('4K' in standard_name or '8K' in standard_name):
+                    return standard_name
         return ALIAS_TO_STANDARD[name_without_brackets.strip()]
     
     # 3. 去除额外描述（如"超高清"、"高清"、"2160p"等）
     name_without_desc = re.sub(r'(超高清|高清|2160p|1080p|720p|480p|标清)\s*$', '', name_without_brackets, flags=re.IGNORECASE)
     if name_without_desc.strip() in ALIAS_TO_STANDARD:
+        # 如果原始名称包含4K/8K，需要特殊处理
+        if has_4k:
+            base_name = ALIAS_TO_STANDARD[name_without_desc.strip()]
+            # 检查是否有对应的4K版本标准名称
+            for standard_name in CHANNEL_MAPPING:
+                if base_name in standard_name and ('4K' in standard_name or '8K' in standard_name):
+                    return standard_name
         return ALIAS_TO_STANDARD[name_without_desc.strip()]
     
-    # 3.1 特殊处理4K/8K频道：如果去除描述后包含4K/8K，尝试匹配
+    # 3.1 特殊处理4K/8K频道：如果包含4K/8K，尝试匹配
     processed_name = name_without_desc.strip()
-    if '4K' in processed_name or '4k' in processed_name or '8K' in processed_name or '8k' in processed_name:
+    if has_4k or '4K' in processed_name or '4k' in processed_name or '8K' in processed_name or '8k' in processed_name:
         # 检查是否与CHANNEL_MAPPING中的4K/8K标准名称匹配
         for standard_name in CHANNEL_MAPPING:
             if '4K' in standard_name or '8K' in standard_name:
-                # 简单的包含关系匹配
+                # 不区分大小写的包含关系匹配
                 if standard_name.lower() in processed_name.lower() or processed_name.lower() in standard_name.lower():
                     return standard_name
-        # 如果没有匹配到标准名称，直接返回处理后的名称
+        # 如果没有匹配到标准名称，直接返回处理后的名称（包含4K/8K信息）
         return processed_name
     
     # 4. 尝试使用部分匹配（对于常见的4K频道）

@@ -14,12 +14,12 @@
     },
     {
       "name": "ffmking",
-      "url": "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
+      "url": "https://ghproxy.it/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
       "enabled": true
     },
     {
       "name": "qingtingjjjjjjj",
-      "url": "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
+      "url": "https://ghproxy.it/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
       "enabled": true
     },
     {
@@ -29,7 +29,7 @@
     },
     {
       "name": "kimwang1978",
-      "url": "https://ghfast.top/https://github.com/kimwang1978/collect-txt/blob/main/bbxx.txt",
+      "url": "https://ghproxy.it/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt",
       "enabled": true
     },
     {
@@ -50,12 +50,12 @@
     {
       "name": "iptv-org-cn",
       "url": "https://iptv-org.github.io/iptv/countries/cn.m3u",
-      "enabled": false
+      "enabled": true
     },
     {
       "name": "iptv-org-all",
       "url": "https://iptv-org.github.io/iptv/index.m3u",
-      "enabled": false
+      "enabled": true
     },
     {
       "name": "iptv-org-streams-cn",
