@@ -322,8 +322,6 @@ http://183.220.107.138:4022/rtp/239.11.0.114:5140
 #EXTINF:-1 group-title="央视频道" tvg-id="CCTV14" tvg-name="CCTV14" tvg-logo="https://gongdian.top/logo/tv/CCTV14.png",CCTV14
 http://uo202.1985001.xyz:66/udp/239.93.1.29:6000
 #EXTINF:-1 group-title="央视频道" tvg-id="CCTV14" tvg-name="CCTV14" tvg-logo="https://gongdian.top/logo/tv/CCTV14.png",CCTV14
-https://event.pull.hebtv.com/jishi/cp2.m3u8#rtsp://103.251.96.71/PLTV/88888888/224/3221225783/10000100000000060000000000726027_0.smil?icpid=SSPID&amp;accounttype=1&amp;limitflux=-1&amp;limitdur=-1&amp;accountinfo=:20240213104135
-#EXTINF:-1 group-title="央视频道" tvg-id="CCTV14" tvg-name="CCTV14" tvg-logo="https://gongdian.top/logo/tv/CCTV14.png",CCTV14
 http://php.jdshipin.com/TVOD/hljyd.php?id=3221225732
 #EXTINF:-1 group-title="央视频道" tvg-id="CCTV14" tvg-name="CCTV14" tvg-logo="https://gongdian.top/logo/tv/CCTV14.png",CCTV14
 http://iptv.huuc.edu.cn/hls/cctv14hd.m3u8
@@ -8645,6 +8643,32 @@ http://122.189.103.229:8888/rtp/228.0.0.121:6108
 http://114.254.33.58:18888/rtp/239.3.1.209:8052
 #EXTINF:-1 group-title="山东专属频道" tvg-id="山东卫视" tvg-name="山东卫视" tvg-logo="https://gongdian.top/logo/tv/山东卫视.png",山东卫视
 http://114.254.39.224:8888/rtp/239.3.1.209:8052
+#EXTINF:-1 group-title="其他频道" tvg-id="Beautiful Life TV" tvg-name="Beautiful Life TV",Beautiful Life TV
+https://5ddce30eb4b55.streamlock.net/bltvhd/bltv1/playlist.m3u8
+#EXTINF:-1 group-title="其他频道" tvg-id="CGNTV Chinese (1080p)" tvg-name="CGNTV Chinese (1080p)",CGNTV Chinese (1080p)
+https://d3e05csss9c272.cloudfront.net/out/v1/f0bf71c57581470fb9379f603e8f5d83/CGNWebLiveCN.m3u8
+#EXTINF:-1 group-title="其他频道" tvg-id="CTS News (華視新聞資訊) [Geo-blocked]" tvg-name="CTS News (華視新聞資訊) [Geo-blocked]",CTS News (華視新聞資訊) [Geo-blocked]
+http://seb.sason.top/sc/hsxw_fhd.m3u8
+#EXTINF:-1 group-title="其他频道" tvg-id="EBC Financial News (東森財經新聞台) (1080p) [Not 24/7]" tvg-name="EBC Financial News (東森財經新聞台) (1080p) [Not 24/7]",EBC Financial News (東森財經新聞台) (1080p) [Not 24/7]
+http://seb.sason.top/sc/dscjxw_fhd.m3u8
+#EXTINF:-1 group-title="其他频道" tvg-id="EBC News (東森新聞台) (1080p) [Not 24/7]" tvg-name="EBC News (東森新聞台) (1080p) [Not 24/7]",EBC News (東森新聞台) (1080p) [Not 24/7]
+http://seb.sason.top/sc/dsxw_fhd.m3u8
+#EXTINF:-1 group-title="其他频道" tvg-id="Global News (1080p)" tvg-name="Global News (1080p)",Global News (1080p)
+https://raw.githubusercontent.com/ChiSheng9/iptv/master/TV02.m3u8
+#EXTINF:-1 group-title="其他频道" tvg-id="SET News (三立新聞) (1080p) [Geo-blocked]" tvg-name="SET News (三立新聞) (1080p) [Geo-blocked]",SET News (三立新聞) (1080p) [Geo-blocked]
+http://seb.sason.top/sc/sllive_fhd.m3u8
+#EXTINF:-1 group-title="其他频道" tvg-id="Taiwan Plus TV (1080p)" tvg-name="Taiwan Plus TV (1080p)",Taiwan Plus TV (1080p)
+https://bcovlive-a.akamaihd.net/rce33d845cb9e42dfa302c7ac345f7858/ap-northeast-1/6282251407001/playlist.m3u8
+#EXTINF:-1 group-title="其他频道" tvg-id="Taiwan Plus TV (1080p)" tvg-name="Taiwan Plus TV (1080p)",Taiwan Plus TV (1080p)
+https://raw.githubusercontent.com/ChiSheng9/iptv/master/TV78.m3u8
+#EXTINF:-1 group-title="其他频道" tvg-id="TVBS Asia (1080p)" tvg-name="TVBS Asia (1080p)",TVBS Asia (1080p)
+http://38.64.72.148/hls/modn/list/4005/playlist.m3u8
+#EXTINF:-1 group-title="其他频道" tvg-id="TVBS News (TVBS新聞台) [Geo-blocked]" tvg-name="TVBS News (TVBS新聞台) [Geo-blocked]",TVBS News (TVBS新聞台) [Geo-blocked]
+http://seb.sason.top/sc/tvbsxw_fhd.m3u8
+#EXTINF:-1 group-title="其他频道" tvg-id="中天新聞台 (1080p)" tvg-name="中天新聞台 (1080p)",中天新聞台 (1080p)
+https://raw.githubusercontent.com/ChiSheng9/iptv/master/TV28.m3u8
+#EXTINF:-1 group-title="其他频道" tvg-id="天才衝衝衝 (1080p)" tvg-name="天才衝衝衝 (1080p)",天才衝衝衝 (1080p)
+https://raw.githubusercontent.com/ChiSheng9/iptv/master/TV26.m3u8
 #EXTINF:-1 group-title="其他频道" tvg-id="HOY Infotainment (1080p) [Geo-blocked]" tvg-name="HOY Infotainment (1080p) [Geo-blocked]",HOY Infotainment (1080p) [Geo-blocked]
 https://hoytv-live-stream.hoy.tv/ch78/index.m3u8
 #EXTINF:-1 group-title="其他频道" tvg-id="HOY International Business Channel (1080p) [Geo-blocked]" tvg-name="HOY International Business Channel (1080p) [Geo-blocked]",HOY International Business Channel (1080p) [Geo-blocked]
@@ -9299,32 +9323,6 @@ http://223.110.245.161/ott.js.chinamobile.com/PLTV/3/224/3221227492/index.m3u8
 http://183.207.248.71/cntv/live1/HD-2500k-1080P-heilongjiangstv/HD-2500k-1080P-heilongjiangstv
 #EXTINF:-1 group-title="其他频道" tvg-id="黑龙江卫视 (2160p)" tvg-name="黑龙江卫视 (2160p)",黑龙江卫视 (2160p)
 http://118.81.195.79:9003/hls/31/index.m3u8
-#EXTINF:-1 group-title="其他频道" tvg-id="Beautiful Life TV" tvg-name="Beautiful Life TV",Beautiful Life TV
-https://5ddce30eb4b55.streamlock.net/bltvhd/bltv1/playlist.m3u8
-#EXTINF:-1 group-title="其他频道" tvg-id="CGNTV Chinese (1080p)" tvg-name="CGNTV Chinese (1080p)",CGNTV Chinese (1080p)
-https://d3e05csss9c272.cloudfront.net/out/v1/f0bf71c57581470fb9379f603e8f5d83/CGNWebLiveCN.m3u8
-#EXTINF:-1 group-title="其他频道" tvg-id="CTS News (華視新聞資訊) [Geo-blocked]" tvg-name="CTS News (華視新聞資訊) [Geo-blocked]",CTS News (華視新聞資訊) [Geo-blocked]
-http://seb.sason.top/sc/hsxw_fhd.m3u8
-#EXTINF:-1 group-title="其他频道" tvg-id="EBC Financial News (東森財經新聞台) (1080p) [Not 24/7]" tvg-name="EBC Financial News (東森財經新聞台) (1080p) [Not 24/7]",EBC Financial News (東森財經新聞台) (1080p) [Not 24/7]
-http://seb.sason.top/sc/dscjxw_fhd.m3u8
-#EXTINF:-1 group-title="其他频道" tvg-id="EBC News (東森新聞台) (1080p) [Not 24/7]" tvg-name="EBC News (東森新聞台) (1080p) [Not 24/7]",EBC News (東森新聞台) (1080p) [Not 24/7]
-http://seb.sason.top/sc/dsxw_fhd.m3u8
-#EXTINF:-1 group-title="其他频道" tvg-id="Global News (1080p)" tvg-name="Global News (1080p)",Global News (1080p)
-https://raw.githubusercontent.com/ChiSheng9/iptv/master/TV02.m3u8
-#EXTINF:-1 group-title="其他频道" tvg-id="SET News (三立新聞) (1080p) [Geo-blocked]" tvg-name="SET News (三立新聞) (1080p) [Geo-blocked]",SET News (三立新聞) (1080p) [Geo-blocked]
-http://seb.sason.top/sc/sllive_fhd.m3u8
-#EXTINF:-1 group-title="其他频道" tvg-id="Taiwan Plus TV (1080p)" tvg-name="Taiwan Plus TV (1080p)",Taiwan Plus TV (1080p)
-https://bcovlive-a.akamaihd.net/rce33d845cb9e42dfa302c7ac345f7858/ap-northeast-1/6282251407001/playlist.m3u8
-#EXTINF:-1 group-title="其他频道" tvg-id="Taiwan Plus TV (1080p)" tvg-name="Taiwan Plus TV (1080p)",Taiwan Plus TV (1080p)
-https://raw.githubusercontent.com/ChiSheng9/iptv/master/TV78.m3u8
-#EXTINF:-1 group-title="其他频道" tvg-id="TVBS Asia (1080p)" tvg-name="TVBS Asia (1080p)",TVBS Asia (1080p)
-http://38.64.72.148/hls/modn/list/4005/playlist.m3u8
-#EXTINF:-1 group-title="其他频道" tvg-id="TVBS News (TVBS新聞台) [Geo-blocked]" tvg-name="TVBS News (TVBS新聞台) [Geo-blocked]",TVBS News (TVBS新聞台) [Geo-blocked]
-http://seb.sason.top/sc/tvbsxw_fhd.m3u8
-#EXTINF:-1 group-title="其他频道" tvg-id="中天新聞台 (1080p)" tvg-name="中天新聞台 (1080p)",中天新聞台 (1080p)
-https://raw.githubusercontent.com/ChiSheng9/iptv/master/TV28.m3u8
-#EXTINF:-1 group-title="其他频道" tvg-id="天才衝衝衝 (1080p)" tvg-name="天才衝衝衝 (1080p)",天才衝衝衝 (1080p)
-https://raw.githubusercontent.com/ChiSheng9/iptv/master/TV26.m3u8
 #EXTINF:-1 group-title="其他频道" tvg-id="2025-11-26 18:53:51" tvg-name="2025-11-26 18:53:51",2025-11-26 18:53:51
 http://221.198.198.213:8888/udp/225.1.1.120:5002
 #EXTINF:-1 group-title="其他频道" tvg-id="CETV3" tvg-name="CETV3" tvg-logo="https://gongdian.top/logo/tv/CETV3.png",CETV3
@@ -13729,8 +13727,6 @@ https://stream1.freetv.fun/jin-ying-qia-tong-39.m3u8
 https://stream1.freetv.fun/jin-ying-qia-tong-10.m3u8
 #EXTINF:-1 group-title="其他频道" tvg-id="黑莓动画" tvg-name="黑莓动画",黑莓动画
 http://php.jdshipin.com/TVOD/hnyd.php?id=200000001898/460000089800010002
-#EXTINF:-1 group-title="其他频道" tvg-id="黑莓动画" tvg-name="黑莓动画",黑莓动画
-http://otttv.bj.chinamobile.com/PLTV/88888888/224/3221226935/1.m3u8?GuardEncType=2&accountinfo=%7E%7EV2.0%7EUc618y1E09GbQwwuOzEKaQ%7EtP4-l0lmSfjwLWEfK_el1vH_mv-s1zo4AQJwdedaVwG9xkuFTDg8J26cwOrNJzn20BErrHdLhuZ9EzLUCD3PMW-OMx4MGteHV2vLeW6BqoY%2CEND
 #EXTINF:-1 group-title="其他频道" tvg-id="黑莓动画" tvg-name="黑莓动画",黑莓动画
 http://ottrrs.hl.chinamobile.com/TVOD/88888888/224/3221225662/index.m3u8
 #EXTINF:-1 group-title="其他频道" tvg-id="炫动卡通" tvg-name="炫动卡通",炫动卡通

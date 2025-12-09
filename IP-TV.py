@@ -485,6 +485,10 @@ def extract_channels_from_m3u(content):
             
             # 为每个URL创建一个频道条目
             for url in urls:
+                # 检查URL是否应该被排除
+                if should_exclude_url(url, channel_name):
+                    continue
+                
                 # 规范化频道名称
                 normalized_name = normalize_channel_name(channel_name)
                 if normalized_name:
@@ -589,7 +593,10 @@ def should_exclude_url(url, channel_name=''):
             r'https://example\.',
             r'demo',
             r'sample',
-            r'samples'
+            r'samples',
+            r'accountinfo',  # 排除带有认证信息的URL
+            r'GuardEncType',  # 排除带有加密类型参数的URL
+            r'AuthInfo'       # 排除带有认证信息的URL
         ]
         
         # 检查是否匹配任何排除模式
@@ -813,6 +820,10 @@ def extract_channels_from_txt(file_path):
                     
                     # 跳过无效的URL
                     if not url.startswith(('http://', 'https://')):
+                        continue
+                    
+                    # 检查URL是否应该被排除
+                    if should_exclude_url(url, channel_name):
                         continue
                     
                     # 规范化频道名称

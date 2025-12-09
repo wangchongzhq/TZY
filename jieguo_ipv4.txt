@@ -1,5 +1,5 @@
 # IPTV直播源列表
-# 生成时间: 2025-12-09 17:17:11
+# 生成时间: 2025-12-09 18:44:08
 # 格式: 频道名称,播放URL
 # 按分组排列
 
@@ -167,7 +167,6 @@ CCTV14,http://222.95.175.5:58888/udp/239.49.8.56:9826
 CCTV14,http://220.176.219.18:9000/udp/239.252.220.92:5140
 CCTV14,http://183.220.107.138:4022/rtp/239.11.0.114:5140
 CCTV14,http://uo202.1985001.xyz:66/udp/239.93.1.29:6000
-CCTV14,https://event.pull.hebtv.com/jishi/cp2.m3u8#rtsp://103.251.96.71/PLTV/88888888/224/3221225783/10000100000000060000000000726027_0.smil?icpid=SSPID&amp;accounttype=1&amp;limitflux=-1&amp;limitdur=-1&amp;accountinfo=:20240213104135
 CCTV14,http://php.jdshipin.com/TVOD/hljyd.php?id=3221225732
 CCTV14,http://iptv.huuc.edu.cn/hls/cctv14hd.m3u8
 CCTV15,http://113.101.245.153:9988/udp/239.77.1.239:5146
@@ -4337,6 +4336,19 @@ CETV4,http://114.254.39.224:8888/rtp/239.3.1.56:4120
 山东卫视,http://114.254.39.224:8888/rtp/239.3.1.209:8052
 
 #其他频道#,#genre#
+Beautiful Life TV,https://5ddce30eb4b55.streamlock.net/bltvhd/bltv1/playlist.m3u8
+CGNTV Chinese (1080p),https://d3e05csss9c272.cloudfront.net/out/v1/f0bf71c57581470fb9379f603e8f5d83/CGNWebLiveCN.m3u8
+CTS News (華視新聞資訊) [Geo-blocked],http://seb.sason.top/sc/hsxw_fhd.m3u8
+EBC Financial News (東森財經新聞台) (1080p) [Not 24/7],http://seb.sason.top/sc/dscjxw_fhd.m3u8
+EBC News (東森新聞台) (1080p) [Not 24/7],http://seb.sason.top/sc/dsxw_fhd.m3u8
+Global News (1080p),https://raw.githubusercontent.com/ChiSheng9/iptv/master/TV02.m3u8
+SET News (三立新聞) (1080p) [Geo-blocked],http://seb.sason.top/sc/sllive_fhd.m3u8
+Taiwan Plus TV (1080p),https://bcovlive-a.akamaihd.net/rce33d845cb9e42dfa302c7ac345f7858/ap-northeast-1/6282251407001/playlist.m3u8
+Taiwan Plus TV (1080p),https://raw.githubusercontent.com/ChiSheng9/iptv/master/TV78.m3u8
+TVBS Asia (1080p),http://38.64.72.148/hls/modn/list/4005/playlist.m3u8
+TVBS News (TVBS新聞台) [Geo-blocked],http://seb.sason.top/sc/tvbsxw_fhd.m3u8
+中天新聞台 (1080p),https://raw.githubusercontent.com/ChiSheng9/iptv/master/TV28.m3u8
+天才衝衝衝 (1080p),https://raw.githubusercontent.com/ChiSheng9/iptv/master/TV26.m3u8
 HOY Infotainment (1080p) [Geo-blocked],https://hoytv-live-stream.hoy.tv/ch78/index.m3u8
 HOY International Business Channel (1080p) [Geo-blocked],https://hoytv-live-stream.hoy.tv/ch76/index-fhd.m3u8
 HOY International Business Channel [Geo-blocked],https://hoytv-live-stream.hoy.tv/ch76/va2-index.m3u8
@@ -4664,19 +4676,6 @@ Zhejiang TV International,https://ali-m-l.cztv.com/channels/lantian/channel10/10
 黑龙江 (1080p),http://223.110.245.161/ott.js.chinamobile.com/PLTV/3/224/3221227492/index.m3u8
 黑龙江卫 (1080p),http://183.207.248.71/cntv/live1/HD-2500k-1080P-heilongjiangstv/HD-2500k-1080P-heilongjiangstv
 黑龙江卫视 (2160p),http://118.81.195.79:9003/hls/31/index.m3u8
-Beautiful Life TV,https://5ddce30eb4b55.streamlock.net/bltvhd/bltv1/playlist.m3u8
-CGNTV Chinese (1080p),https://d3e05csss9c272.cloudfront.net/out/v1/f0bf71c57581470fb9379f603e8f5d83/CGNWebLiveCN.m3u8
-CTS News (華視新聞資訊) [Geo-blocked],http://seb.sason.top/sc/hsxw_fhd.m3u8
-EBC Financial News (東森財經新聞台) (1080p) [Not 24/7],http://seb.sason.top/sc/dscjxw_fhd.m3u8
-EBC News (東森新聞台) (1080p) [Not 24/7],http://seb.sason.top/sc/dsxw_fhd.m3u8
-Global News (1080p),https://raw.githubusercontent.com/ChiSheng9/iptv/master/TV02.m3u8
-SET News (三立新聞) (1080p) [Geo-blocked],http://seb.sason.top/sc/sllive_fhd.m3u8
-Taiwan Plus TV (1080p),https://bcovlive-a.akamaihd.net/rce33d845cb9e42dfa302c7ac345f7858/ap-northeast-1/6282251407001/playlist.m3u8
-Taiwan Plus TV (1080p),https://raw.githubusercontent.com/ChiSheng9/iptv/master/TV78.m3u8
-TVBS Asia (1080p),http://38.64.72.148/hls/modn/list/4005/playlist.m3u8
-TVBS News (TVBS新聞台) [Geo-blocked],http://seb.sason.top/sc/tvbsxw_fhd.m3u8
-中天新聞台 (1080p),https://raw.githubusercontent.com/ChiSheng9/iptv/master/TV28.m3u8
-天才衝衝衝 (1080p),https://raw.githubusercontent.com/ChiSheng9/iptv/master/TV26.m3u8
 2025-11-26 18:53:51,http://221.198.198.213:8888/udp/225.1.1.120:5002
 CETV3,http://rrs01.hw.gmcc.net:8088/PLTV/81/224/3221226722/1.m3u8
 CETV3,http://iptv.cdn.ha.chinamobile.com/PLTV/88888888/224/3221227352/index.m3u8
@@ -6879,7 +6878,6 @@ CN卡通,https://hls-gateway.vpstv.net/streams/476247.m3u8
 金鹰卡通,https://stream1.freetv.fun/jin-ying-qia-tong-39.m3u8
 金鹰卡通,https://stream1.freetv.fun/jin-ying-qia-tong-10.m3u8
 黑莓动画,http://php.jdshipin.com/TVOD/hnyd.php?id=200000001898/460000089800010002
-黑莓动画,http://otttv.bj.chinamobile.com/PLTV/88888888/224/3221226935/1.m3u8?GuardEncType=2&accountinfo=%7E%7EV2.0%7EUc618y1E09GbQwwuOzEKaQ%7EtP4-l0lmSfjwLWEfK_el1vH_mv-s1zo4AQJwdedaVwG9xkuFTDg8J26cwOrNJzn20BErrHdLhuZ9EzLUCD3PMW-OMx4MGteHV2vLeW6BqoY%2CEND
 黑莓动画,http://ottrrs.hl.chinamobile.com/TVOD/88888888/224/3221225662/index.m3u8
 炫动卡通,http://php.jdshipin.com/TVOD/hnyd.php?id=200000001898/460000089800010117
 炫动卡通,https://stream1.freetv.fun/ipv6-ha-ha-xuan-dong-10.m3u8

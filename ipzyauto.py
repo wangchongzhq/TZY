@@ -336,6 +336,9 @@ _EXCLUDE_URL_PATTERNS = [
     re.compile(r'demo', re.IGNORECASE),
     re.compile(r'sample', re.IGNORECASE),
     re.compile(r'samples', re.IGNORECASE),
+    re.compile(r'accountinfo', re.IGNORECASE),  # 排除带有认证信息的URL
+    re.compile(r'GuardEncType', re.IGNORECASE),  # 排除带有加密类型参数的URL
+    re.compile(r'AuthInfo', re.IGNORECASE),       # 排除带有认证信息的URL
 ]
 
 _CCTV_CHANNEL_PATTERN = re.compile(r'^CCTV[- ]?(\d+)', re.IGNORECASE)
