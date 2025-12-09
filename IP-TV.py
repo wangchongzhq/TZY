@@ -973,12 +973,12 @@ def update_iptv_sources():
     output_file_txt_all = output_config.get('txt_filename', "jieguo.txt")
     
     # IPv4版本
-    output_file_m3u_ipv4 = output_file_m3u_all.replace('.m3u', '_ipv4.m3u')
-    output_file_txt_ipv4 = output_file_txt_all.replace('.txt', '_ipv4.txt')
+    output_file_m3u_ipv4 = output_file_m3u_all.replace('.m3u', '_i4.m3u')
+    output_file_txt_ipv4 = output_file_txt_all.replace('.txt', '_i4.txt')
     
     # IPv6版本
-    output_file_m3u_ipv6 = output_file_m3u_all.replace('.m3u', '_ipv6.m3u')
-    output_file_txt_ipv6 = output_file_txt_all.replace('.txt', '_ipv6.txt')
+    output_file_m3u_ipv6 = output_file_m3u_all.replace('.m3u', '_i6.m3u')
+    output_file_txt_ipv6 = output_file_txt_all.replace('.txt', '_i6.txt')
     
     # 生成所有文件
     success = True
