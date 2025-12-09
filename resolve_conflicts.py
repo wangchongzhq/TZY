@@ -31,8 +31,7 @@ if __name__ == "__main__":
         "ipzyauto.m3u",
         "jieguo.m3u",
         "jieguo.txt",
-        "jieguo_ipv4.txt",
-        "tzydauto.txt"
+        "jieguo_ipv4.txt"
     ]
     
     # 项目根目录

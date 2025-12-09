@@ -40,7 +40,6 @@
   "local_sources": {
     "enabled": true,
     "files": [
-      "tzydauto.txt",
       "ipzyauto.m3u",
       "jieguo.m3u",
       "jieguo_i4.m3u",
