@@ -51,10 +51,10 @@ jobs:
         echo "生成的文件:"
         ls -la *.txt
         echo "=== 文件内容统计 ==="
-        ls -la *.txt | grep -v "ipzyauto.txt" | grep -v "tzydauto.txt" | awk '{print $9}' | xargs wc -l 2>/dev/null || echo "无法统计行数"
+        ls -la *.txt | grep -v "ipzyauto.txt" | awk '{print $9}' | xargs wc -l 2>/dev/null || echo "无法统计行数"
         echo "=== 前20行预览 ==="
         for file in *.txt; do
-          if [ "$file" != "ipzyauto.txt" ] && [ "$file" != "tzydauto.txt" ]; then
+          if [ "$file" != "ipzyauto.txt" ]; then
             echo "$file:"
             head -n 5 "$file" || echo "无法预览文件"
             echo "---"
