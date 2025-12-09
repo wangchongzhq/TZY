@@ -37,6 +37,16 @@
     "m3u_file": "output/iptv.m3u",
     "txt_file": "output/channels.txt"
   },
+  "epg": {
+    "enabled": true,
+    "sources": [
+      "https://diyp020.112114.xyz",
+      "https://e.erw.cc/all.xml"
+    ],
+    "logo_source": "epg_data.json",
+    "auto_update": true,
+    "update_interval_hours": 24
+  },
   "local_sources": {
     "enabled": true,
     "files": [

@@ -314,6 +314,8 @@ def generate_m3u_content(channels: List[ChannelInfo]) -> str:
                 extinf_line += f' tvg-name="{channel.tvg_name}"'
             if channel.tvg_logo:
                 extinf_line += f' tvg-logo="{channel.tvg_logo}"'
+            if channel.tvg_url:
+                extinf_line += f' tvg-url="{channel.tvg_url}"'
             
             # 添加group-title
             if channel.group:

@@ -16,6 +16,8 @@
 - **格式转换**：支持M3U到TXT格式的转换
 - **语法检查**：提供脚本语法检查和字符修复功能
 - **频道标准化**：自动处理频道名称的错误别名和格式问题
+- **EPG和台标支持**：自动添加电子节目指南和频道台标信息
+- **频道过滤优化**：智能过滤购物频道和无效URL
 - **模块化设计**：核心功能模块化，便于维护和扩展
 
 ## 📋 环境要求
@@ -48,14 +50,14 @@ python update_sources.py
 ### 4. 运行主要脚本
 
 ```bash
-# 运行主要直播源处理脚本
-
+# 运行IP-TV直播源处理脚本（生成包含EPG和台标的M3U文件）
+python IP-TV.py --update
 
 # 运行IP直播源收集脚本
 python collect_ipzy.py
 
-# 运行IP-TV直播源处理脚本
-python IP-TV.py
+# 运行直播源格式转换脚本
+python convert_m3u_to_txt.py
 ```
 
 ## 📁 项目结构
@@ -80,6 +82,7 @@ python IP-TV.py
 │   ├── logging_config.py  # 日志配置
 │   ├── network.py         # 网络请求工具
 │   ├── parser.py          # 直播源解析器
+│   └── epg_handler.py     # EPG和台标处理工具
 
 ├── logs/                  # 日志文件目录
 ├── tests/                 # 测试文件目录
@@ -93,11 +96,13 @@ python IP-TV.py
 ├── update_sources.py      # 播放源自动更新脚本
 ├── unified_sources.py     # 生成的统一播放源文件（请勿手动修改）
 
-├── IP-TV.py               # IP-TV直播源处理脚本
+├── IP-TV.py               # IP-TV直播源处理脚本（带EPG和台标支持）
 ├── collect_ipzy.py        # IP直播源收集脚本
 ├── convert_m3u_to_txt.py  # M3U转TXT格式转换脚本
 ├── check_all_syntax.py    # 语法检查脚本
 ├── validate_workflows.py  # 工作流验证脚本
+├── check_missing_files.py # 文件引用检查脚本
+├── epg_data.json          # EPG和台标数据源文件
 ├── filter_hd_channels.py  # HD频道过滤脚本
 ├── final_verification.py  # 最终验证脚本
 ├── ipzyauto.txt           # IP直播源频道列表

@@ -24,6 +24,12 @@ from core.logging_config import get_logger, setup_logging
 from core.config import get_config
 from core.network import fetch_multiple
 from core.file_utils import write_file
+from core.epg_handler import EPGHandler
+
+# 初始化EPG处理
+logger = get_logger(__name__)
+epg_handler = EPGHandler()
+epg_handler.load_epg_data()
 
 # 测速配置类
 class SpeedTestConfig:
@@ -550,7 +556,10 @@ def should_exclude_channel(name):
     """检查是否应该排除购物频道"""
     try:
         # 排除购物相关频道
-        shopping_keywords = ['购物', '导购', '电视购物']
+        shopping_keywords = ['购物', '导购', '电视购物', '商城', '易购', '优购', '家购', 
+                             '购享', '购彩', '购物车', '购物频道', '时尚购', '快乐购', 
+                             '好享购', '东方购物', '环球购物', '风尚购物', '居家购物', 
+                             '优购物', '电视商城', '直播购物']
         
         for keyword in shopping_keywords:
             if keyword in name:
@@ -614,37 +623,48 @@ def should_exclude_url(url, channel_name=''):
 def filter_channels(channels):
     """过滤频道列表
     1. 排除购物频道
-    2. 排除测试URL
+    2. 排除CCTV数字超过17的频道
+    3. 排除测试URL和低分辨率URL
     """
     try:
-        filtered_channels = defaultdict(list)
-        excluded_channels = 0
-        excluded_urls = 0
+        from core.channel_utils import ChannelInfo
         
+        # 将channels转换为ChannelInfo列表以便使用channel_utils.py中的filter_channels函数
+        channel_info_list = []
         for category, channel_list in channels.items():
             for channel_name, url in channel_list:
-                # 检查是否应该排除购物频道
-                if should_exclude_channel(channel_name):
-                    excluded_channels += 1
-                    continue
-                    
-                # 检查CCTV频道数字是否超过17
-                cctv_match = re.match(r'^CCTV[- ]?(\d+)', channel_name, re.IGNORECASE)
-                if cctv_match:
-                    cctv_number = int(cctv_match.group(1))
-                    if cctv_number > 17:
-                        excluded_channels += 1
-                        continue
-                    
-                # 检查是否应该排除该URL
-                if should_exclude_url(url, channel_name):
-                    excluded_urls += 1
-                    continue
-                    
-                # 保留该频道
-                filtered_channels[category].append((channel_name, url))
+                channel_info_list.append(ChannelInfo(name=channel_name, url=url, group=category))
         
-        logger.info(f"过滤统计: 排除购物频道 {excluded_channels} 个，排除测试URL {excluded_urls} 个")
+        # 自定义过滤函数
+        def custom_filter(channel):
+            # 检查是否应该排除购物频道
+            if should_exclude_channel(channel.name):
+                return False
+                
+            # 检查CCTV频道数字是否超过17
+            cctv_match = re.match(r'^CCTV[- ]?(\d+)', channel.name, re.IGNORECASE)
+            if cctv_match:
+                cctv_number = int(cctv_match.group(1))
+                if cctv_number > 17:
+                    return False
+                    
+            # 检查是否应该排除该URL
+            if should_exclude_url(channel.url, channel.name):
+                return False
+                
+            return True
+        
+        # 使用channel_utils.py中的filter_channels函数
+        from core.channel_utils import filter_channels as utils_filter_channels
+        filtered_channel_infos = utils_filter_channels(channel_info_list, custom_filter=custom_filter)
+        
+        # 将过滤后的ChannelInfo列表转换回原来的格式
+        filtered_channels = defaultdict(list)
+        for channel_info in filtered_channel_infos:
+            filtered_channels[channel_info.group].append((channel_info.name, channel_info.url))
+        
+        excluded_count = len(channel_info_list) - len(filtered_channel_infos)
+        logger.info(f"过滤统计: 共排除 {excluded_count} 个频道")
         return filtered_channels
         
     except Exception as e:
@@ -653,26 +673,64 @@ def filter_channels(channels):
 
 # 生成M3U文件
 def generate_m3u_file(channels, output_path):
-    """生成M3U文件"""
+    """生成M3U文件，包含EPG和台标信息"""
     print(f"正在生成 {output_path}...")
     
+    # 从配置中获取EPG源
+    epg_config = get_config("epg", {})
+    epg_sources = epg_config.get("sources", [])
+    
     with open(output_path, 'w', encoding='utf-8') as f:
-        # 写入文件头
-        f.write("#EXTM3U\n")
+        # 写入文件头，包含EPG源信息
+        if epg_sources:
+            # 写入第一个EPG源作为tvg-url
+            f.write(f"#EXTM3U tvg-url=\"{epg_sources[0]}\"\n")
+        else:
+            f.write("#EXTM3U\n")
         
         # 按CHANNEL_CATEGORIES中定义的顺序写入分类
         for category in CHANNEL_CATEGORIES:
             if category in channels:
                 for channel_name, url in channels[category]:
+                    # 获取频道的台标信息
+                    logo_url = epg_handler.get_channel_logo(channel_name)
+                    
+                    # 构建EXTINF行
+                    extinf_line = f"#EXTINF:-1 group-title=\"{category}\""
+                    
+                    # 添加EPG和台标信息
+                    if channel_name:
+                        extinf_line += f" tvg-id=\"{channel_name}\" tvg-name=\"{channel_name}\""
+                    if logo_url:
+                        extinf_line += f" tvg-logo=\"{logo_url}\""
+                    
+                    # 完成EXTINF行
+                    extinf_line += f",{channel_name}\n"
+                    
                     # 写入频道信息
-                    f.write(f"#EXTINF:-1 group-title=\"{category}\",{channel_name}\n")
+                    f.write(extinf_line)
                     f.write(f"{url}\n")
         
         # 最后写入其他频道
         if "其他频道" in channels:
             for channel_name, url in channels["其他频道"]:
+                # 获取频道的台标信息
+                logo_url = epg_handler.get_channel_logo(channel_name)
+                
+                # 构建EXTINF行
+                extinf_line = f"#EXTINF:-1 group-title=\"其他频道\""
+                
+                # 添加EPG和台标信息
+                if channel_name:
+                    extinf_line += f" tvg-id=\"{channel_name}\" tvg-name=\"{channel_name}\""
+                if logo_url:
+                    extinf_line += f" tvg-logo=\"{logo_url}\""
+                
+                # 完成EXTINF行
+                extinf_line += f",{channel_name}\n"
+                
                 # 写入频道信息
-                f.write(f"#EXTINF:-1 group-title=\"其他频道\",{channel_name}\n")
+                f.write(extinf_line)
                 f.write(f"{url}\n")
     
     print(f"✅ 成功生成 {output_path}")
