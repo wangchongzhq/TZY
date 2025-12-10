@@ -23,7 +23,9 @@ UNIFIED_SOURCES = [
     "https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u",
     "https://ghfast.top/https://raw.githubusercontent.com/suxuang/myIPTV/refs/heads/main/ipv4.m3u",
     "https://ghfast.top/https://raw.githubusercontent.com/suxuang/myIPTV/refs/heads/main/ipv6.m3u",
-    "https://www.iyouhun.com/tv/zb"
+    "https://www.iyouhun.com/tv/zb",
+    "https://ghproxy.it/https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv6.m3u",
+    "https://ghfast.top/https://raw.githubusercontent.com/BigBigGrandG/IPTV-URL/release/Gather.m3u"
 ]
 
 # 带名称的播放源列表（用于collect_ipzy.py）
@@ -47,5 +49,7 @@ SOURCES_WITH_NAMES = [
     ("Heiwk", "https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u"),
     ("suxuang-ipv4", "https://ghfast.top/https://raw.githubusercontent.com/suxuang/myIPTV/refs/heads/main/ipv4.m3u"),
     ("suxuang-ipv6", "https://ghfast.top/https://raw.githubusercontent.com/suxuang/myIPTV/refs/heads/main/ipv6.m3u"),
-    ("iyouhun", "https://www.iyouhun.com/tv/zb")
+    ("iyouhun", "https://www.iyouhun.com/tv/zb"),
+    ("fanmingming-ipv6", "https://ghproxy.it/https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv6.m3u"),
+    ("BigBigGrandG", "https://ghfast.top/https://raw.githubusercontent.com/BigBigGrandG/IPTV-URL/release/Gather.m3u")
 ]

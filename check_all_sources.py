@@ -9,7 +9,19 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from core.network import fetch_content
 from core.channel_utils import normalize_channel_name
 from core.parser import parse_m3u_content, parse_txt_content
-from unified_sources import SOURCES_WITH_NAMES
+
+# 从统一播放源文件导入
+try:
+    from unified_sources import SOURCES_WITH_NAMES
+    print(f"✅ 成功从unified_sources.py导入 {len(SOURCES_WITH_NAMES)} 个播放源")
+except ImportError as e:
+    print(f"❌ 导入unified_sources.py失败: {e}")
+    # 如果导入失败，使用一些默认的播放源
+    SOURCES_WITH_NAMES = [
+        ("小皮直播", "https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt"),
+        ("国V直播", "https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt")
+    ]
+    print(f"⚠️ 使用默认播放源列表，共 {len(SOURCES_WITH_NAMES)} 个播放源")
 
 # 替代collect_from_source的函数
 def collect_from_source(source):

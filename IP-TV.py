@@ -395,8 +395,18 @@ CHANNEL_MAPPING = {
 
 # 默认直播源URL
 # 从统一播放源文件导入
-from unified_sources import UNIFIED_SOURCES
-default_sources = UNIFIED_SOURCES
+try:
+    from unified_sources import UNIFIED_SOURCES
+    default_sources = UNIFIED_SOURCES
+    logger.info(f"✅ 成功从unified_sources.py导入 {len(default_sources)} 个播放源")
+except ImportError as e:
+    logger.error(f"❌ 导入unified_sources.py失败: {e}")
+    # 如果导入失败，使用一些默认的播放源
+    default_sources = [
+        "https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt",
+        "https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt"
+    ]
+    logger.info(f"⚠️ 使用默认播放源列表，共 {len(default_sources)} 个播放源")
 
 # 本地直播源文件
 default_local_sources = []

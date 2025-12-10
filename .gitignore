@@ -12,6 +12,9 @@ test_python_output.log
 
 run_test.bat
 simple_test.py
+test_workflow.py
+json_check_output.txt
+output.txt
 
 # 自动生成的日志文件
 get_cgq_sources.log
