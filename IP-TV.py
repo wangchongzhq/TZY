@@ -1563,7 +1563,9 @@ def main():
     if len(sys.argv) > 1:
         if sys.argv[1] == "--update":
             # 手动更新模式
-            update_iptv_sources()
+            if not update_iptv_sources():
+                logger.error("更新IPTV直播源失败")
+                sys.exit(1)
         elif sys.argv[1] == "--check-syntax":
             # 检查语法错误
             check_ip_tv_syntax()
