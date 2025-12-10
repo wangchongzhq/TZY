@@ -46,14 +46,14 @@ jobs:
     - name: Convert M3U to TXT
       run: |
         echo "开始转换M3U文件..."
-        python convert_m3u_to_txt.py
+        python convert_m3u_to_txt.py output/iptv_i4.m3u output/iptv_i6.m3u
         echo "=== 转换完成 ==="
         echo "生成的文件:"
-        ls -la *.txt
+        ls -la *.txt output/*.txt
         echo "=== 文件内容统计 ==="
-        ls -la *.txt | grep -v "jieguo.txt" | awk '{print $9}' | xargs wc -l 2>/dev/null || echo "无法统计行数"
+        ls -la *.txt output/*.txt | grep -v "jieguo.txt" | awk '{print $9}' | xargs wc -l 2>/dev/null || echo "无法统计行数"
         echo "=== 前20行预览 ==="
-        for file in *.txt; do
+        for file in *.txt output/*.txt; do
           if [ "$file" != "jieguo.txt" ]; then
             echo "$file:"
             head -n 5 "$file" || echo "无法预览文件"
@@ -94,8 +94,8 @@ jobs:
         
         # 添加转换后的TXT文件到Git
         echo "添加更改的文件..."
-        # 添加所有新生成的TXT文件，但排除已有的特定文件
-        git add *.txt
+        # 添加所有新生成的TXT文件（包括output目录下的），但排除已有的特定文件
+        git add *.txt output/*.txt
         # 恢复不需要提交的文件
         git restore --staged jieguo.txt
         

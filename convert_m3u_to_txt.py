@@ -42,8 +42,11 @@ class M3UConverter:
             
             # 检查文件是否在允许的本地源列表中
             file_name = os.path.basename(m3u_file_path)
-            if file_name not in local_sources_files:
-                logger.error(f"文件 '{file_name}' 不在允许的本地源列表中，无法处理")
+            file_path = m3u_file_path
+            
+            # 检查完整路径或文件名是否在允许的本地源列表中
+            if file_path not in local_sources_files and file_name not in local_sources_files:
+                logger.error(f"文件 '{file_path}' 不在允许的本地源列表中，无法处理")
                 return False
             
             # 检查文件是否存在和为空
@@ -106,19 +109,14 @@ def main():
     # 创建转换器实例
     converter = M3UConverter()
     
-    # 尝试找到M3U文件
-    possible_m3u_files = ["iptv.m3u", "cn.m3u", "4K.m3u", "ipzyauto.m3u"]
-    m3u_file = None
-    txt_file = "m3utotxt output.txt"
-    
     # 检查命令行参数
     if len(sys.argv) >= 2:
-        # 用户提供了至少一个参数
-        m3u_file = sys.argv[1]
-        # 如果提供了第二个参数，则使用它作为输出文件名
-        if len(sys.argv) >= 3:
-            txt_file = sys.argv[2]
+        # 用户提供了一个或多个M3U文件路径
+        m3u_files = sys.argv[1:]
     else:
+        # 尝试找到M3U文件
+        possible_m3u_files = ["iptv.m3u", "cn.m3u", "4K.m3u", "ipzyauto.m3u"]
+        
         # 获取当前目录下所有M3U文件（包括.m3u、.m3a和无扩展名的文件）
         all_m3u_files = [f for f in os.listdir('.') if f.lower().endswith(('.m3u', '.m3a')) or f in possible_m3u_files]
         
@@ -127,27 +125,32 @@ def main():
             valid_m3u_files = [f for f in all_m3u_files if os.path.getsize(f) > 0]
             
             if valid_m3u_files:
-                # 选择第一个有效文件
-                m3u_file = valid_m3u_files[0]
-    
-    if not m3u_file:
-        logger.error("未找到有效的M3U文件")
-        sys.exit(1)
-    
-    # 根据输入文件自动生成输出文件名
-    if m3u_file:
-        txt_file = f"{os.path.splitext(m3u_file)[0]}.txt"
-    else:
-        txt_file = "output.txt"
+                # 使用找到的所有有效文件
+                m3u_files = valid_m3u_files
+            else:
+                logger.error("未找到有效的M3U文件")
+                sys.exit(1)
+        else:
+            logger.error("未找到有效的M3U文件")
+            sys.exit(1)
     
     # 执行转换
-    success = converter.convert_m3u_to_txt(m3u_file, txt_file)
+    all_success = True
+    for m3u_file in m3u_files:
+        # 根据输入文件自动生成输出文件名
+        txt_file = f"{os.path.splitext(m3u_file)[0]}.txt"
+        
+        # 执行转换
+        success = converter.convert_m3u_to_txt(m3u_file, txt_file)
+        
+        if not success:
+            logger.error(f"转换失败: {m3u_file} -> {txt_file}")
+            all_success = False
+        else:
+            logger.info(f"转换成功: {m3u_file} -> {txt_file}")
     
-    if not success:
-        logger.error(f"转换失败: {m3u_file} -> {txt_file}")
+    if not all_success:
         sys.exit(1)
-    else:
-        logger.info(f"转换成功: {m3u_file} -> {txt_file}")
 
 if __name__ == "__main__":
     main()

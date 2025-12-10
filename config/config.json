@@ -51,6 +51,8 @@
     "enabled": true,
     "files": [
       "output/iptv.m3u",
+      "output/iptv_i4.m3u",
+      "output/iptv_i6.m3u",
       "output/channels.txt",
       "output/jieguo_merged.m3u"
     ]
