@@ -36,9 +36,22 @@ OUTPUT_DIR = "output"
 
 # 确保输出文件包含正确的输出目录的函数
 def ensure_output_dir(file_path):
-    """确保文件路径包含输出目录"""
+    """确保文件路径包含输出目录，并创建目录（如果不存在）"""
+    # 特定文件例外：这些文件应直接放在根目录
+    root_files = ['jieguo.m3u', 'jieguo.txt']
+    
     if not os.path.dirname(file_path):  # 如果没有目录部分
-        return os.path.join(OUTPUT_DIR, file_path)
+        # 如果是例外文件，保持在根目录
+        if os.path.basename(file_path) in root_files:
+            pass  # 不修改路径
+        else:
+            file_path = os.path.join(OUTPUT_DIR, file_path)
+    
+    # 确保输出目录存在
+    output_dir = os.path.dirname(file_path)
+    if output_dir and not os.path.exists(output_dir):
+        os.makedirs(output_dir, exist_ok=True)
+    
     return file_path
 
 # 测速配置类
@@ -1269,6 +1282,15 @@ def update_iptv_sources():
     output_file_m3u_merged = output_file_m3u_all.replace('.m3u', '_merged.m3u')
     output_file_txt_merged = output_file_txt_all.replace('.txt', '_merged.txt')
     
+    # 兼容配置文件和工作流的文件名 - 生成iptv_前缀的版本
+    output_dir = os.path.dirname(output_file_m3u_ipv4) or OUTPUT_DIR
+    output_file_m3u_ipv4_compat = os.path.join(output_dir, "iptv_i4.m3u")
+    output_file_txt_ipv4_compat = os.path.join(output_dir, "iptv_i4.txt")
+    output_file_m3u_ipv6_compat = os.path.join(output_dir, "iptv_i6.m3u")
+    output_file_txt_ipv6_compat = os.path.join(output_dir, "iptv_i6.txt")
+    output_file_m3u_all_compat = os.path.join(output_dir, "iptv.m3u")
+    output_file_txt_all_compat = os.path.join(output_dir, "iptv.txt")
+    
     # 生成所有文件
     success = True
     print("\n===== 调试信息: 开始生成文件 =====")
@@ -1371,6 +1393,47 @@ def update_iptv_sources():
         import traceback
         traceback.print_exc()
         success = False
+    
+    # 生成兼容版本的文件（iptv_前缀）
+    print(f"\n===== 生成兼容版本文件 =====")
+    compat_success = True
+    
+    # 1. 合并版（iptv.m3u/iptv.txt）
+    print(f"生成兼容合并版...")
+    if os.path.exists(output_file_m3u_all):
+        import shutil
+        try:
+            shutil.copy(output_file_m3u_all, output_file_m3u_all_compat)
+            shutil.copy(output_file_txt_all, output_file_txt_all_compat)
+            print(f"   成功生成: {os.path.basename(output_file_m3u_all_compat)}, {os.path.basename(output_file_txt_all_compat)}")
+        except Exception as e:
+            print(f"   生成兼容合并版失败: {e}")
+            compat_success = False
+    
+    # 2. IPv4版本（iptv_i4.m3u/iptv_i4.txt）
+    print(f"生成兼容IPv4版...")
+    if os.path.exists(output_file_m3u_ipv4):
+        try:
+            shutil.copy(output_file_m3u_ipv4, output_file_m3u_ipv4_compat)
+            shutil.copy(output_file_txt_ipv4, output_file_txt_ipv4_compat)
+            print(f"   成功生成: {os.path.basename(output_file_m3u_ipv4_compat)}, {os.path.basename(output_file_txt_ipv4_compat)}")
+        except Exception as e:
+            print(f"   生成兼容IPv4版失败: {e}")
+            compat_success = False
+    
+    # 3. IPv6版本（iptv_i6.m3u/iptv_i6.txt）
+    print(f"生成兼容IPv6版...")
+    if os.path.exists(output_file_m3u_ipv6):
+        try:
+            shutil.copy(output_file_m3u_ipv6, output_file_m3u_ipv6_compat)
+            shutil.copy(output_file_txt_ipv6, output_file_txt_ipv6_compat)
+            print(f"   成功生成: {os.path.basename(output_file_m3u_ipv6_compat)}, {os.path.basename(output_file_txt_ipv6_compat)}")
+        except Exception as e:
+            print(f"   生成兼容IPv6版失败: {e}")
+            compat_success = False
+    
+    # 更新成功状态
+    success = success and compat_success
     
     print(f"\n最终输出目录文件列表:")
     for file in os.listdir(output_dir):
