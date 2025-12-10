@@ -47,6 +47,8 @@ class EPGHandler:
                 if "tvid" in channel:
                     self.channel_logos[channel["tvid"]] = channel.get("logo", "")
             logger.info(f"成功加载了 {len(self.channel_logos)} 个频道的台标信息")
+        except FileNotFoundError:
+            logger.info("未找到epg_data.json文件，跳过台标信息加载")
         except Exception as e:
             logger.error(f"加载台标信息失败: {e}")
     
