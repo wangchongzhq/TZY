@@ -44,8 +44,25 @@ class M3UConverter:
             file_name = os.path.basename(m3u_file_path)
             file_path = m3u_file_path
             
-            # 检查完整路径或文件名是否在允许的本地源列表中
-            if file_path not in local_sources_files and file_name not in local_sources_files:
+            # 检查文件是否在允许的本地源列表中
+            # 检查完整路径、相对路径或文件名
+            is_allowed = False
+            
+            # 标准化路径格式
+            normalized_file_path = os.path.normpath(file_path)
+            normalized_file_name = os.path.normpath(file_name)
+            
+            # 检查各种可能的匹配方式
+            for allowed_file in local_sources_files:
+                allowed_file_normalized = os.path.normpath(allowed_file)
+                
+                if (normalized_file_path == allowed_file_normalized or
+                    normalized_file_name == allowed_file_normalized or
+                    os.path.basename(normalized_file_path) == os.path.basename(allowed_file_normalized)):
+                    is_allowed = True
+                    break
+            
+            if not is_allowed:
                 logger.error(f"文件 '{file_path}' 不在允许的本地源列表中，无法处理")
                 return False
             

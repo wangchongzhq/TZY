@@ -35,7 +35,7 @@
   },
   "output": {
     "m3u_file": "output/iptv.m3u",
-    "txt_file": "output/channels.txt"
+    "txt_file": "output/IP-TV.txt"
   },
   "epg": {
     "enabled": true,
@@ -53,7 +53,7 @@
       "output/iptv.m3u",
       "output/iptv_i4.m3u",
       "output/iptv_i6.m3u",
-      "output/channels.txt",
+      "output/IP-TV.txt",
       "output/jieguo_merged.m3u"
     ]
   },

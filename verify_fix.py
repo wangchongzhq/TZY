@@ -10,9 +10,9 @@ def verify_files():
         'output/iptv.m3u',
         'output/iptv_i4.m3u',
         'output/iptv_i6.m3u',
-        'output/channels.txt',
-        'output/channels_i4.txt',
-        'output/channels_i6.txt'
+        'output/IP-TV.txt',
+    'output/IP-TV_i4.txt',
+    'output/IP-TV_i6.txt'
     ]
     
     all_exist = True
