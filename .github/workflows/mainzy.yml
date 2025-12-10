@@ -66,6 +66,10 @@ jobs:
         
         # 添加文件
         echo "添加更改的文件..."
+        # 只添加核心脚本文件，不添加测试或临时文件
+        git add ./IP-TV.py ./update_sources.py ./requirements.txt || true
+        # 添加output目录下的生成文件
+        git add ./output/ || true
         
         # 检查是否有更改
         if git diff --staged --quiet; then
