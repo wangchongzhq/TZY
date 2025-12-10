@@ -18,6 +18,9 @@ from core.config import get_config
 # 导入日志配置
 from .logging_config import get_logger, log_exception, log_performance
 
+# 导入简繁体转换模块
+from core.chinese_conversion import simplify_chinese
+
 # 获取日志记录器
 logger = get_logger(__name__)
 
@@ -756,6 +759,9 @@ def normalize_channel_name(name: str) -> str:
     """
     if not name:
         return ''
+    
+    # 将繁体中文转换为简体中文
+    name = simplify_chinese(name)
     
     # 去除前后空格
     name = name.strip()
