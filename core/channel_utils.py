@@ -730,7 +730,12 @@ def should_exclude_resolution(url: str, channel_name: str = '', min_resolution: 
                 
                 # 检查是否低于最小分辨率
                 if height < min_height:
-                    logger.info(f"排除低分辨率频道: {channel_name} (分辨率: {height}p)")
+                    # 安全处理频道名称，避免Unicode编码错误
+                    try:
+                        logger.info(f"排除低分辨率频道: {channel_name} (分辨率: {height}p)")
+                    except UnicodeEncodeError:
+                        # 处理编码错误，使用替代方法记录
+                        logger.info(f"排除低分辨率频道: 【频道名称包含特殊字符】 (分辨率: {height}p)")
                     return True
     
         # 不在频道名称中显示低分辨率的，默认不排除

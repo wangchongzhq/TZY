@@ -50,12 +50,9 @@
   "local_sources": {
     "enabled": true,
     "files": [
-      "ipzyauto.m3u",
-      "jieguo.m3u",
-      "jieguo_i4.m3u",
-      "jieguo_i6.m3u",
-      "jieguo_ipv4.m3u",
-      "jieguo_ipv6.m3u"
+      "output/iptv.m3u",
+      "output/channels.txt",
+      "output/jieguo_merged.m3u"
     ]
   },
   "channels": {

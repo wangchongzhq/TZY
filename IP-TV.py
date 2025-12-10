@@ -31,6 +31,16 @@ logger = get_logger(__name__)
 epg_handler = EPGHandler()
 epg_handler.load_epg_data()
 
+# 输出目录 - 全局变量
+OUTPUT_DIR = "output"
+
+# 确保输出文件包含正确的输出目录的函数
+def ensure_output_dir(file_path):
+    """确保文件路径包含输出目录"""
+    if not os.path.dirname(file_path):  # 如果没有目录部分
+        return os.path.join(OUTPUT_DIR, file_path)
+    return file_path
+
 # 测速配置类
 class SpeedTestConfig:
     CONCURRENT_LIMIT = 20  # 并发限制
@@ -429,64 +439,42 @@ def extract_channels_from_m3u(content):
     """从M3U内容中提取频道信息"""
     channels = defaultdict(list)
     
-    # 先按#EXTINF分割内容
-    sections = content.split('#EXTINF:')
-    for section in sections[1:]:  # 跳过第一个空部分
+    # 使用core/parser.py中的解析函数来获取完整的频道信息，包括group-title
+    from core.parser import parse_m3u_content
+    channel_infos = parse_m3u_content(content)
+    
+    for channel_info in channel_infos:
         try:
-            # 提取频道信息行和URL行
-            lines = section.split('\n')
-            if len(lines) < 2:
+            channel_name = channel_info.name
+            url = channel_info.url
+            group = channel_info.group
+            
+            # 检查URL是否应该被排除
+            if should_exclude_url(url, channel_name):
                 continue
             
-            # 解析频道信息行
-            info_line = lines[0].strip()
+            # 检查频道名称或group是否包含4K/8K标识
+            is_4k_channel = ('4K' in channel_name or '4k' in channel_name or '8K' in channel_name or '8k' in channel_name or 
+                           '4K' in group or '4k' in group or '8K' in group or '8k' in group)
             
-            # 提取频道名称
-            channel_name = ""
-            if ',' in info_line:
-                channel_name = info_line.split(',')[-1].strip()
-            
-            # 提取URL行（可能有多个URL）
-            urls = []
-            for line in lines[1:]:
-                line = line.strip()
-                if line.startswith('http://') or line.startswith('https://'):
-                    urls.append(line)
-                elif not line:  # 空行
-                    continue
-                else:  # 遇到非URL行，停止
-                    break
-            
-            if not channel_name or not urls:
-                continue
-            
-            # 为每个URL创建一个频道条目
-            for url in urls:
-                # 检查URL是否应该被排除
-                if should_exclude_url(url, channel_name):
-                    continue
-                
-                # 检查频道名称是否包含4K/8K，无论是否规范化成功
-                is_4k_channel = '4K' in channel_name or '4k' in channel_name or '8K' in channel_name or '8k' in channel_name
-                
-                # 规范化频道名称
-                normalized_name = normalize_channel_name(channel_name)
-                if normalized_name:
-                    # 获取频道分类
-                    category = get_channel_category(normalized_name)
-                    # 如果是4K频道，强制放在4K频道分类
-                    if is_4k_channel:
-                        category = "4K频道"
-                    channels[category].append((normalized_name, url))
+            # 规范化频道名称
+            normalized_name = normalize_channel_name(channel_name)
+            if normalized_name:
+                # 获取频道分类
+                category = get_channel_category(normalized_name)
+                # 如果是4K频道，强制放在4K频道分类
+                if is_4k_channel:
+                    category = "4K频道"
+                channels[category].append((normalized_name, url))
+            else:
+                # 未规范化的频道，如果是4K/8K频道，放在4K频道分类
+                if is_4k_channel:
+                    channels["4K频道"].append((channel_name, url))
                 else:
-                    # 未规范化的频道，如果是4K/8K频道，放在4K频道分类
-                    if is_4k_channel:
-                        channels["4K频道"].append((channel_name, url))
-                    else:
-                        channels["其他频道"].append((channel_name, url))
+                    channels["其他频道"].append((channel_name, url))
                     
         except Exception as e:
-            logger.error(f"解析M3U节时出错: {e}")
+            logger.error(f"处理频道信息时出错: {e}")
             continue
     
     return channels
@@ -652,9 +640,9 @@ def fetch_local_m3u_content(file_path):
         print(f"读取本地文件 {file_path} 时出错: {e}")
         return None
 
-# 检查是否应该排除购物频道
+# 检查是否应该排除购物频道和测试频道
 def should_exclude_channel(name):
-    """检查是否应该排除购物频道"""
+    """检查是否应该排除购物频道和测试频道"""
     try:
         # 排除购物相关频道
         shopping_keywords = ['购物', '导购', '电视购物', '商城', '易购', '优购', '家购', 
@@ -662,7 +650,16 @@ def should_exclude_channel(name):
                              '好享购', '东方购物', '环球购物', '风尚购物', '居家购物', 
                              '优购物', '电视商城', '直播购物']
         
+        # 排除测试相关频道
+        test_keywords = ['测试', 'test']
+        
+        # 检查购物关键词
         for keyword in shopping_keywords:
+            if keyword in name:
+                return True
+        
+        # 检查测试关键词
+        for keyword in test_keywords:
             if keyword in name:
                 return True
         
@@ -686,8 +683,7 @@ def should_exclude_url(url, channel_name=''):
             
         # 定义需要排除的模式
         exclude_patterns = [
-            r'http://example\.',
-            r'https://example\.',
+            r'example\.com',  # 排除example.com域名
             r'demo',
             r'sample',
             r'samples',
@@ -721,7 +717,7 @@ def should_exclude_url(url, channel_name=''):
         
     except Exception as e:
         logger.error(f"检查URL是否应该排除时发生错误: {e}")
-        return True
+        return False  # 发生错误时不排除频道，避免误过滤
 
 # 过滤频道
 def filter_channels(channels):
@@ -733,11 +729,17 @@ def filter_channels(channels):
     try:
         from core.channel_utils import ChannelInfo
         
+        # 调试信息：打印输入频道数量
+        logger.info(f"过滤前频道组数: {len(channels)}, 总频道数: {sum(len(chans) for group, chans in channels.items())}")
+        
         # 将channels转换为ChannelInfo列表以便使用channel_utils.py中的filter_channels函数
         channel_info_list = []
         for category, channel_list in channels.items():
             for channel_name, url in channel_list:
                 channel_info_list.append(ChannelInfo(name=channel_name, url=url, group=category))
+        
+        # 调试信息：打印转换后的ChannelInfo数量
+        logger.info(f"转换为ChannelInfo后的数量: {len(channel_info_list)}")
         
         # 自定义过滤函数
         def custom_filter(channel):
@@ -762,10 +764,16 @@ def filter_channels(channels):
         from core.channel_utils import filter_channels as utils_filter_channels
         filtered_channel_infos = utils_filter_channels(channel_info_list, custom_filter=custom_filter)
         
+        # 调试信息：打印过滤后的ChannelInfo数量
+        logger.info(f"过滤后ChannelInfo的数量: {len(filtered_channel_infos)}")
+        
         # 将过滤后的ChannelInfo列表转换回原来的格式
         filtered_channels = defaultdict(list)
         for channel_info in filtered_channel_infos:
             filtered_channels[channel_info.group].append((channel_info.name, channel_info.url))
+        
+        # 调试信息：打印最终过滤后的频道数量
+        logger.info(f"最终过滤后频道组数: {len(filtered_channels)}, 总频道数: {sum(len(chans) for group, chans in filtered_channels.items())}")
         
         excluded_count = len(channel_info_list) - len(filtered_channel_infos)
         logger.info(f"过滤统计: 共排除 {excluded_count} 个频道")
@@ -773,6 +781,8 @@ def filter_channels(channels):
         
     except Exception as e:
         logger.error(f"过滤频道时发生错误: {e}")
+        import traceback
+        traceback.print_exc()
         return channels
 
 # 生成M3U文件
@@ -889,53 +899,75 @@ def generate_txt_file(channels, output_path):
         return False
 
 # 从本地TXT文件提取频道信息
+def extract_channels_from_txt_content(content):
+    """从TXT格式的内容字符串中提取频道信息，支持分类行"""
+    channels = defaultdict(list)
+    current_category = "其他频道"
+    
+    try:
+        lines = content.strip().split('\n')
+        for line in lines:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            
+            # 处理分类行（如"🇨🇳 4K,#genre#"）
+            if line.endswith(',#genre#') or line.endswith(',genre#'):
+                # 提取分类名称
+                category_name = line.split(',')[0].strip()
+                # 检查是否为4K分类
+                if '4K' in category_name or '4k' in category_name or '8K' in category_name or '8k' in category_name:
+                    current_category = "4K频道"
+                else:
+                    current_category = "其他频道"
+                continue
+            
+            # 解析频道信息（格式：频道名称,URL）
+            if ',' in line:
+                channel_name, url = line.split(',', 1)
+                channel_name = channel_name.strip()
+                url = url.strip()
+                
+                # 跳过无效的URL
+                if not url.startswith(('http://', 'https://')):
+                    continue
+                
+                # 检查URL是否应该被排除
+                if should_exclude_url(url, channel_name):
+                    continue
+                
+                # 检查频道名称是否包含4K/8K，无论是否规范化成功
+                is_4k_channel = '4K' in channel_name or '4k' in channel_name or '8K' in channel_name or '8k' in channel_name
+                
+                # 规范化频道名称
+                normalized_name = normalize_channel_name(channel_name)
+                if normalized_name:
+                    # 获取频道分类
+                    category = get_channel_category(normalized_name)
+                    # 如果是4K频道，强制放在4K频道分类
+                    if is_4k_channel or current_category == "4K频道":
+                        category = "4K频道"
+                    channels[category].append((normalized_name, url))
+                else:
+                    # 未规范化的频道，如果是4K/8K频道或当前分类是4K频道，放在4K频道分类
+                    if is_4k_channel or current_category == "4K频道":
+                        channels["4K频道"].append((channel_name, url))
+                    else:
+                        channels[current_category].append((channel_name, url))
+    except Exception as e:
+        logger.error(f"解析TXT内容时出错: {e}")
+    
+    return channels
+
+
 def extract_channels_from_txt(file_path):
     """从本地TXT文件提取频道信息"""
     channels = defaultdict(list)
     
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith('#'):
-                    continue
-                
-                # 跳过格式不正确的分组标题行（如"4K频道,#genre#"）
-                if line.endswith(',#genre#') or line.endswith(',genre#'):
-                    continue
-                
-                # 解析频道信息（格式：频道名称,URL）
-                if ',' in line:
-                    channel_name, url = line.split(',', 1)
-                    channel_name = channel_name.strip()
-                    url = url.strip()
-                    
-                    # 跳过无效的URL
-                    if not url.startswith(('http://', 'https://')):
-                        continue
-                    
-                    # 检查URL是否应该被排除
-                    if should_exclude_url(url, channel_name):
-                        continue
-                    
-                    # 检查频道名称是否包含4K/8K，无论是否规范化成功
-                    is_4k_channel = '4K' in channel_name or '4k' in channel_name or '8K' in channel_name or '8k' in channel_name
-                    
-                    # 规范化频道名称
-                    normalized_name = normalize_channel_name(channel_name)
-                    if normalized_name:
-                        # 获取频道分类
-                        category = get_channel_category(normalized_name)
-                        # 如果是4K频道，强制放在4K频道分类
-                        if is_4k_channel:
-                            category = "4K频道"
-                        channels[category].append((normalized_name, url))
-                    else:
-                        # 未规范化的频道，如果是4K/8K频道，放在4K频道分类
-                        if is_4k_channel:
-                            channels["4K频道"].append((channel_name, url))
-                        else:
-                            channels["其他频道"].append((channel_name, url))
+            content = f.read()
+        channels = extract_channels_from_txt_content(content)
     except Exception as e:
         print(f"解析本地文件 {file_path} 时出错: {e}")
     
@@ -951,21 +983,69 @@ def merge_sources(sources, local_files):
     results = fetch_multiple(sources, timeout=30, verify=False)
     
     # 处理远程直播源结果
+    failed_sources = []
     for url, content in results.items():
         if content:
-            channels = extract_channels_from_m3u(content)
+            # 根据内容格式选择合适的解析函数
+            if content.strip().startswith('#EXTM3U'):
+                # 标准M3U格式
+                channels = extract_channels_from_m3u(content)
+            else:
+                # 自定义TXT格式
+                channels = extract_channels_from_txt_content(content)
+            
             ipv6_count = sum(1 for group, chans in channels.items() for name, u in chans if is_ipv6(u))
             logger.info(f"从 {url} 获取到 {sum(len(chans) for group, chans in channels.items())} 个频道，其中IPv6频道: {ipv6_count}个")
             for group_title, channel_list in channels.items():
                 all_channels[group_title].extend(channel_list)
+        else:
+            logger.error(f"❌ 无法获取直播源: {url}")
+            failed_sources.append(url)
+    
+    # 输出失败的直播源信息
+    if failed_sources:
+        logger.warning(f"⚠️  共有 {len(failed_sources)} 个直播源读取失败:")
+        for url in failed_sources:
+            logger.warning(f"  - {url}")
+    
+    # 从配置文件获取输出文件名，避免将输出文件作为输入文件处理
+    output_config = get_config('output', {})
+    output_file_m3u_all = output_config.get('m3u_file', output_config.get('m3u_filename', "jieguo.m3u"))
+    output_file_txt_all = output_config.get('txt_file', output_config.get('txt_filename', "jieguo.txt"))
+    
+    # 应用输出目录
+    output_file_m3u_all = ensure_output_dir(output_file_m3u_all)
+    output_file_txt_all = ensure_output_dir(output_file_txt_all)
+    
+    # 生成所有可能的输出文件名
+    output_files = [output_file_m3u_all, output_file_txt_all]
+    output_files.append(output_file_m3u_all.replace('.m3u', '_i4.m3u'))
+    output_files.append(output_file_txt_all.replace('.txt', '_i4.txt'))
+    output_files.append(output_file_m3u_all.replace('.m3u', '_i6.m3u'))
+    output_files.append(output_file_txt_all.replace('.txt', '_i6.txt'))
     
     # 处理本地直播源文件
     logger.info(f"💻 正在读取{len(local_files)}个本地直播源文件...")
     for file_path in local_files:
+        # 检查是否是输出文件，如果是则跳过
+        file_name = os.path.basename(file_path)
+        if file_name in output_files:
+            logger.warning(f"⚠️  跳过输出文件: {file_path}")
+            continue
+            
         if os.path.exists(file_path):
-            local_channels = extract_channels_from_txt(file_path)
+            # 根据文件扩展名选择解析函数
+            if file_path.lower().endswith('.m3u'):
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                local_channels = extract_channels_from_m3u(content)
+            else:
+                local_channels = extract_channels_from_txt(file_path)
+            
             for group_title, channel_list in local_channels.items():
                 all_channels[group_title].extend(channel_list)
+        else:
+            logger.warning(f"⚠️  本地直播源文件不存在: {file_path}")
     
     # 对所有频道进行去重处理
     deduplicated_channels = defaultdict(list)
@@ -1012,10 +1092,31 @@ def update_iptv_sources():
     # 合并所有直播源
     all_sources = default_sources + user_sources
     logger.info(f"📡 正在获取{len(all_sources)}个远程直播源...")
-    logger.info(f"💻 正在读取{len(default_local_sources)}个本地直播源文件...")
+    
+    # 从配置文件加载本地源
+    local_sources_enabled = get_config('local_sources.enabled', True)
+    local_sources_files = get_config('local_sources.files', [])
+    
+    # 合并本地源：默认本地源 + 配置文件中的本地源
+    combined_local_sources = default_local_sources.copy()
+    if local_sources_enabled and local_sources_files:
+        combined_local_sources.extend(local_sources_files)
+    
+    # 去重本地源
+    combined_local_sources = list(set(combined_local_sources))
+    
+    # 过滤掉不存在的本地源文件
+    existing_local_sources = []
+    for file_path in combined_local_sources:
+        if os.path.exists(file_path):
+            existing_local_sources.append(file_path)
+        else:
+            logger.warning(f"⚠️  本地直播源文件不存在: {file_path}")
+    
+    logger.info(f"正在读取{len(existing_local_sources)}个本地直播源文件...")
     
     start_time = time.time()
-    channels_data = merge_sources(all_sources, default_local_sources)
+    channels_data = merge_sources(all_sources, existing_local_sources)
     
     # 统计过滤前的频道数量
     logger.info(f"过滤前 - 合并频道: {sum(len(chans) for group, chans in channels_data['all'].items())} 个")
@@ -1023,14 +1124,45 @@ def update_iptv_sources():
     logger.info(f"过滤前 - IPv6频道: {sum(len(chans) for group, chans in channels_data['ipv6'].items())} 个")
     
     # 过滤各个版本的频道
+    print("\n===== 调试信息: 开始过滤频道 =====")
+    before_all = sum(len(chans) for group, chans in channels_data['all'].items())
+    before_ipv4 = sum(len(chans) for group, chans in channels_data['ipv4'].items())
+    before_ipv6 = sum(len(chans) for group, chans in channels_data['ipv6'].items())
+    print(f"过滤前 - 合并频道: {before_all} 个")
+    print(f"过滤前 - IPv4频道: {before_ipv4} 个")
+    print(f"过滤前 - IPv6频道: {before_ipv6} 个")
+    logger.info("开始过滤频道...")
+    logger.info(f"过滤前 - 合并频道: {before_all} 个")
+    logger.info(f"过滤前 - IPv4频道: {before_ipv4} 个")
+    logger.info(f"过滤前 - IPv6频道: {before_ipv6} 个")
+    
     filtered_channels_all = filter_channels(channels_data['all'])
     filtered_channels_ipv4 = filter_channels(channels_data['ipv4'])
     filtered_channels_ipv6 = filter_channels(channels_data['ipv6'])
     
     # 统计过滤后的频道数量
-    logger.info(f"过滤后 - 合并频道: {sum(len(chans) for group, chans in filtered_channels_all.items())} 个")
-    logger.info(f"过滤后 - IPv4频道: {sum(len(chans) for group, chans in filtered_channels_ipv4.items())} 个")
-    logger.info(f"过滤后 - IPv6频道: {sum(len(chans) for group, chans in filtered_channels_ipv6.items())} 个")
+    all_count = sum(len(chans) for group, chans in filtered_channels_all.items())
+    ipv4_count = sum(len(chans) for group, chans in filtered_channels_ipv4.items())
+    ipv6_count = sum(len(chans) for group, chans in filtered_channels_ipv6.items())
+    
+    print(f"过滤后 - 合并频道: {all_count} 个")
+    print(f"过滤后 - IPv4频道: {ipv4_count} 个")
+    print(f"过滤后 - IPv6频道: {ipv6_count} 个")
+    logger.info(f"过滤后 - 合并频道: {all_count} 个")
+    logger.info(f"过滤后 - IPv4频道: {ipv4_count} 个")
+    logger.info(f"过滤后 - IPv6频道: {ipv6_count} 个")
+    print("===== 调试信息: 过滤频道完成 =====")
+    
+    # 检查过滤后的频道数据
+    if all_count == 0:
+        logger.error("过滤后没有合并频道数据！")
+    else:
+        logger.info("过滤后有合并频道数据")
+        # 打印前几个频道
+        for i, (category, chans) in enumerate(list(filtered_channels_all.items())[:3]):
+            logger.info(f"   分类 {i+1}: {category} - {len(chans)} 个频道")
+            for j, (name, url) in enumerate(chans[:2]):
+                logger.info(f"      频道 {j+1}: {name} - {url[:50]}...")
     
     # 统计频道数量
     total_channels_all = sum(len(channel_list) for channel_list in filtered_channels_all.values())
@@ -1039,39 +1171,81 @@ def update_iptv_sources():
     total_groups = len(filtered_channels_all)
     
     logger.info("=" * 50)
-    logger.info("📊 统计信息:")
-    logger.info(f"📡 直播源数量: {len(all_sources)}")
-    logger.info(f"📺 频道组数: {total_groups}")
-    logger.info(f"📚 总频道数(合并): {total_channels_all}")
-    logger.info(f"📚 IPv4频道数: {total_channels_ipv4}")
-    logger.info(f"📚 IPv6频道数: {total_channels_ipv6}")
-    logger.info(f"⏱️  耗时: {format_interval(time.time() - start_time)}")
+    logger.info("统计信息:")
+    logger.info(f"直播源数量: {len(all_sources)}")
+    logger.info(f"频道组数: {total_groups}")
+    logger.info(f"总频道数(合并): {total_channels_all}")
+    logger.info(f"IPv4频道数: {total_channels_ipv4}")
+    logger.info(f"IPv6频道数: {total_channels_ipv6}")
+    logger.info(f"耗时: {format_interval(time.time() - start_time)}")
     logger.info("=" * 50)
     
     # 生成所有版本的文件
-    output_config = get_config('output', {})
+    # 注意：output_config已经在上面获取过，这里不需要重新获取
     
     def generate_files(channels, m3u_filename, txt_filename, version_name):
         """生成指定版本的M3U和TXT文件"""
         file_success = True
         
-        if generate_m3u_file(channels, m3u_filename):
-            logger.info(f"✅ 成功生成{version_name}M3U文件: {m3u_filename}")
+        print(f"\n生成{version_name}文件")
+        print(f"   M3U文件: {m3u_filename}")
+        print(f"   TXT文件: {txt_filename}")
+        print(f"   频道数据: {sum(len(chans) for _, chans in channels.items())} 个频道，{len(channels)} 个分类")
+        print(f"   文件路径是否存在: M3U={os.path.exists(os.path.dirname(m3u_filename)) if os.path.dirname(m3u_filename) else True}, TXT={os.path.exists(os.path.dirname(txt_filename)) if os.path.dirname(txt_filename) else True}")
+        
+        if channels:
+            # 显示前3个分类及其前2个频道
+            print(f"   前3个分类示例:")
+            for i, (category, chans) in enumerate(list(channels.items())[:3]):
+                print(f"     {category} - {len(chans)} 个频道")
+                for j, (name, url) in enumerate(chans[:2]):
+                    print(f"       {name}: {url[:50]}...")
         else:
-            logger.error(f"❌ 生成{version_name}M3U文件失败: {m3u_filename}")
+            print(f"   频道数据为空！")
+            return False
+        
+        # 生成M3U文件
+        print(f"   正在生成M3U文件...")
+        try:
+            if generate_m3u_file(channels, m3u_filename):
+                logger.info(f"成功生成{version_name}M3U文件: {m3u_filename}")
+                print(f"   M3U文件生成成功")
+                print(f"   M3U文件大小: {os.path.getsize(m3u_filename) if os.path.exists(m3u_filename) else 0} 字节")
+            else:
+                logger.error(f"生成{version_name}M3U文件失败: {m3u_filename}")
+                print(f"   M3U文件生成失败")
+                file_success = False
+        except Exception as e:
+            logger.error(f"生成{version_name}M3U文件时发生异常: {e}")
+            print(f"   M3U文件生成时发生异常: {e}")
             file_success = False
         
-        if generate_txt_file(channels, txt_filename):
-            logger.info(f"✅ 成功生成{version_name}TXT文件: {txt_filename}")
-        else:
-            logger.error(f"❌ 生成{version_name}TXT文件失败: {txt_filename}")
+        # 生成TXT文件
+        print(f"   正在生成TXT文件...")
+        try:
+            if generate_txt_file(channels, txt_filename):
+                logger.info(f"成功生成{version_name}TXT文件: {txt_filename}")
+                print(f"   TXT文件生成成功")
+                print(f"   TXT文件大小: {os.path.getsize(txt_filename) if os.path.exists(txt_filename) else 0} 字节")
+            else:
+                logger.error(f"生成{version_name}TXT文件失败: {txt_filename}")
+                print(f"   TXT文件生成失败")
+                file_success = False
+        except Exception as e:
+            logger.error(f"生成{version_name}TXT文件时发生异常: {e}")
+            print(f"   TXT文件生成时发生异常: {e}")
             file_success = False
         
+        print(f"   {version_name}文件生成完成 - 成功: {file_success}")
         return file_success
     
     # 合并版本
-    output_file_m3u_all = output_config.get('m3u_filename', "jieguo.m3u")
-    output_file_txt_all = output_config.get('txt_filename', "jieguo.txt")
+    output_file_m3u_all = output_config.get('m3u_file', output_config.get('m3u_filename', "jieguo.m3u"))
+    output_file_txt_all = output_config.get('txt_file', output_config.get('txt_filename', "jieguo.txt"))
+    
+    # 应用输出目录
+    output_file_m3u_all = ensure_output_dir(output_file_m3u_all)
+    output_file_txt_all = ensure_output_dir(output_file_txt_all)
     
     # IPv4版本
     output_file_m3u_ipv4 = output_file_m3u_all.replace('.m3u', '_i4.m3u')
@@ -1081,26 +1255,123 @@ def update_iptv_sources():
     output_file_m3u_ipv6 = output_file_m3u_all.replace('.m3u', '_i6.m3u')
     output_file_txt_ipv6 = output_file_txt_all.replace('.txt', '_i6.txt')
     
+    # IPv4和IPv6合并版本（明确标识）
+    output_file_m3u_merged = output_file_m3u_all.replace('.m3u', '_merged.m3u')
+    output_file_txt_merged = output_file_txt_all.replace('.txt', '_merged.txt')
+    
     # 生成所有文件
     success = True
+    print("\n===== 调试信息: 开始生成文件 =====")
+    print(f"输出文件配置:")
+    print(f"  合并版 M3U: {output_file_m3u_all}")
+    print(f"  合并版 TXT: {output_file_txt_all}")
+    print(f"  IPv4版 M3U: {output_file_m3u_ipv4}")
+    print(f"  IPv4版 TXT: {output_file_txt_ipv4}")
+    print(f"  IPv6版 M3U: {output_file_m3u_ipv6}")
+    print(f"  IPv6版 TXT: {output_file_txt_ipv6}")
+    print(f"  IPv4&IPv6合并版 M3U: {output_file_m3u_merged}")
+    print(f"  IPv4&IPv6合并版 TXT: {output_file_txt_merged}")
     
     # 合并版本
+    print(f"\n开始生成合并版文件...")
+    logger.info(f"开始生成合并版文件 - M3U: {output_file_m3u_all}, TXT: {output_file_txt_all}")
     if not generate_files(filtered_channels_all, output_file_m3u_all, output_file_txt_all, "合并版"):
+        logger.error("合并版文件生成失败")
         success = False
+    else:
+        logger.info("合并版文件生成成功")
+        print("合并版文件生成成功")
     
     # IPv4版本
+    print(f"\n开始生成IPv4版文件...")
+    logger.info(f"开始生成IPv4版文件 - M3U: {output_file_m3u_ipv4}, TXT: {output_file_txt_ipv4}")
     if not generate_files(filtered_channels_ipv4, output_file_m3u_ipv4, output_file_txt_ipv4, "IPv4版"):
+        logger.error("IPv4版文件生成失败")
         success = False
+    else:
+        logger.info("IPv4版文件生成成功")
+        print("IPv4版文件生成成功")
     
     # IPv6版本
+    print(f"\n开始生成IPv6版文件...")
+    logger.info(f"开始生成IPv6版文件 - M3U: {output_file_m3u_ipv6}, TXT: {output_file_txt_ipv6}")
     if not generate_files(filtered_channels_ipv6, output_file_m3u_ipv6, output_file_txt_ipv6, "IPv6版"):
+        logger.error("IPv6版文件生成失败")
+        success = False
+    else:
+        logger.info("IPv6版文件生成成功")
+        print("IPv6版文件生成成功")
+    
+    # IPv4和IPv6合并版本（明确标识）
+    print(f"\n开始生成IPv4&IPv6合并版文件...")
+    logger.info(f"开始生成IPv4&IPv6合并版文件 - M3U: {output_file_m3u_merged}, TXT: {output_file_txt_merged}")
+    
+    # 确保输出目录存在
+    output_dir = os.path.dirname(output_file_m3u_merged)
+    if not os.path.exists(output_dir):
+        print(f"输出目录不存在，正在创建: {output_dir}")
+        os.makedirs(output_dir, exist_ok=True)
+    
+    # 简化的调试信息
+    print(f"输出目录: {output_dir}")
+    print(f"合并M3U文件: {os.path.basename(output_file_m3u_merged)}")
+    print(f"合并TXT文件: {os.path.basename(output_file_txt_merged)}")
+    print(f"频道总数: {sum(len(chans) for _, chans in filtered_channels_all.items())} 个")
+    
+    # 尝试直接生成文件
+    try:
+        # 先清理可能存在的旧文件
+        if os.path.exists(output_file_m3u_merged):
+            os.remove(output_file_m3u_merged)
+            print("已清理旧的M3U文件")
+        if os.path.exists(output_file_txt_merged):
+            os.remove(output_file_txt_merged)
+            print("已清理旧的TXT文件")
+        
+        # 生成M3U文件
+        print(f"\n正在生成M3U文件...")
+        m3u_success = generate_m3u_file(filtered_channels_all, output_file_m3u_merged)
+        
+        # 生成TXT文件
+        print(f"正在生成TXT文件...")
+        txt_success = generate_txt_file(filtered_channels_all, output_file_txt_merged)
+        
+        # 立即检查文件是否存在
+        print(f"\n检查文件生成结果:")
+        m3u_exists = os.path.exists(output_file_m3u_merged)
+        txt_exists = os.path.exists(output_file_txt_merged)
+        
+        print(f"   M3U文件生成成功: {m3u_exists}")
+        print(f"   TXT文件生成成功: {txt_exists}")
+        
+        if m3u_exists:
+            print(f"   M3U文件大小: {os.path.getsize(output_file_m3u_merged)} 字节")
+        if txt_exists:
+            print(f"   TXT文件大小: {os.path.getsize(output_file_txt_merged)} 字节")
+        
+        if m3u_exists and txt_exists:
+            logger.info("IPv4&IPv6合并版文件生成成功")
+            print("IPv4&IPv6合并版文件生成成功")
+        else:
+            logger.error("IPv4&IPv6合并版文件生成失败")
+            success = False
+    except Exception as e:
+        print(f"文件生成时发生异常: {e}")
+        logger.error(f"直接生成IPv4&IPv6合并版文件时发生异常: {e}")
+        import traceback
+        traceback.print_exc()
         success = False
     
+    print(f"\n最终输出目录文件列表:")
+    for file in os.listdir(output_dir):
+        if file.endswith('.m3u') or file.endswith('.txt'):
+            print(f"   - {file}")
+    
     if success:
-        logger.info("🎉 任务完成！共生成6个文件")
+        logger.info("任务完成！")
         return True
     else:
-        logger.error("💥 部分文件生成失败！")
+        logger.error("部分文件生成失败！")
         return False
 
 
@@ -1324,10 +1595,10 @@ def main():
         print("输出文件：")
         print("  - jieguo.m3u   # M3U格式的直播源文件")
         print("  - jieguo.txt   # TXT格式的直播源文件")
-        print("  - jieguo_ipv4.m3u   # IPv4版本的M3U文件")
-        print("  - jieguo_ipv4.txt   # IPv4版本的TXT文件")
-        print("  - jieguo_ipv6.m3u   # IPv6版本的M3U文件")
-        print("  - jieguo_ipv6.txt   # IPv6版本的TXT文件")
+        print("  - jieguo_i4.m3u   # IPv4版本的M3U文件")
+        print("  - jieguo_i4.txt   # IPv4版本的TXT文件")
+        print("  - jieguo_i6.m3u   # IPv6版本的M3U文件")
+        print("  - jieguo_i6.txt   # IPv6版本的TXT文件")
         print("  - iptv_update.log  # 更新日志文件")
         print("  - output/speed_test_report_*.txt  # 测速报告")
         print("  - output/sorted_*.m3u  # 排序后的M3U文件")

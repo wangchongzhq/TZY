@@ -2,8 +2,8 @@ import os
 import re
 
 def find_file_references(directory):
-    # 正则表达式匹配文件名引用
-    pattern = re.compile(r'["\']([\w.-]+\.(txt|m3u|json|py))["\']')
+    # 正则表达式匹配文件名引用（支持包含路径）
+    pattern = re.compile(r'["\']([\w./\\-]+\.(txt|m3u|json|py))["\']')
     
     # 存储所有引用的文件名
     file_references = set()
@@ -26,9 +26,24 @@ def find_file_references(directory):
 
 def check_files_exist(file_list, directory):
     missing_files = []
-    for file_name in file_list:
+    
+    # 检查文件是否存在的辅助函数
+    def file_exists(file_name):
+        # 直接检查路径
         file_path = os.path.join(directory, file_name)
-        if not os.path.exists(file_path):
+        if os.path.exists(file_path):
+            return True
+        
+        # 如果文件名不包含路径，检查是否在某个子目录下存在
+        if '/' not in file_name and '\\' not in file_name:
+            for root, dirs, files in os.walk(directory):
+                if file_name in files:
+                    return True
+        
+        return False
+    
+    for file_name in file_list:
+        if not file_exists(file_name):
             missing_files.append(file_name)
     
     return missing_files
@@ -40,6 +55,10 @@ if __name__ == "__main__":
     # 查找所有文件引用
     file_references = find_file_references(directory)
     print(f"找到 {len(file_references)} 个文件引用")
+    # 打印所有检测到的文件引用
+    print("检测到的文件引用:")
+    for file in sorted(file_references):
+        print(f"  - {file}")
     
     # 检查这些文件是否存在
     missing_files = check_files_exist(file_references, directory)

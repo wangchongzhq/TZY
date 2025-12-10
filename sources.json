@@ -6,7 +6,7 @@
       "name": "9390107",
       "url": "http://tv.html-5.me/i/9390107.txt",
       "enabled": true
-    },
+    },    
     {
       "name": "Supprise0901",
       "url": "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
@@ -50,12 +50,12 @@
     {
       "name": "iptv-org-cn",
       "url": "https://iptv-org.github.io/iptv/countries/cn.m3u",
-      "enabled": true
+      "enabled": false
     },
     {
       "name": "iptv-org-all",
       "url": "https://iptv-org.github.io/iptv/index.m3u",
-      "enabled": true
+      "enabled": false
     },
     {
       "name": "iptv-org-streams-cn",
@@ -74,13 +74,13 @@
     },
     {
       "name": "LongLiveTheKing",
-      "url": "https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt",
-      "enabled": true
+        "url": "https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt",
+        "enabled": false
     },
     {
       "name": "HeJiawen01",
       "url": "https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u",
-      "enabled": true
+      "enabled": false
     },
     {
       "name": "XIU2",
@@ -95,17 +95,17 @@
     {
       "name": "chnadsl",
       "url": "https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u",
-      "enabled": true
+      "enabled": false
     },
     {
       "name": "fanmingming",
       "url": "https://ghfast.top/https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/global.m3u",
-      "enabled": true
+      "enabled": false
     },
     {
       "name": "free-iptv",
       "url": "https://ghfast.top/https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u",
-      "enabled": true
+      "enabled": false
     },
     {
       "name": "moonkeyhoo",
@@ -125,6 +125,31 @@
     {
       "name": "Heiwk",
       "url": "https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u",
+      "enabled": true
+    },
+    {
+      "name": "suxuang-ipv4",
+      "url": "https://ghfast.top/https://raw.githubusercontent.com/suxuang/myIPTV/refs/heads/main/ipv4.m3u",
+      "enabled": true
+    },
+    {
+      "name": "suxuang-ipv6",
+      "url": "https://ghfast.top/https://raw.githubusercontent.com/suxuang/myIPTV/refs/heads/main/ipv6.m3u",
+      "enabled": true
+    },
+    {
+      "name": "iyouhun",
+      "url": "https://www.iyouhun.com/tv/zb",
+      "enabled": true
+    },
+    {
+      "name": "fanmingming-ipv6",
+      "url": "https://ghproxy.it/https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv6.m3u",
+      "enabled": true
+    },
+    {
+      "name": "BigBigGrandG",
+      "url": "https://ghfast.top/https://raw.githubusercontent.com/BigBigGrandG/IPTV-URL/release/Gather.m3u",
       "enabled": true
     }
   ]
