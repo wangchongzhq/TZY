@@ -42,6 +42,7 @@ jobs:
         echo "=== M3U文件生成完成 ==="
         echo "当前目录下的M3U文件:"
         ls -la *.m3u
+      timeout-minutes: 10
 
     - name: Convert M3U to TXT
       run: |

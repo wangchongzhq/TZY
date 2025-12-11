@@ -37,6 +37,7 @@ jobs:
 
     - name: Run script to generate m3u
       run: python IP-TV.py --update
+      timeout-minutes: 10
 
     - name: Debug - List generated files
       run: ls -la
