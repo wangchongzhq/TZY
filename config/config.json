@@ -54,6 +54,7 @@
       "output/iptv_i4.m3u",
       "output/iptv_i6.m3u",
       "output/IP-TV.txt",
+      "output/iptv_merged.m3u",
       "output/jieguo_merged.m3u"
     ]
   },

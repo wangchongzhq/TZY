@@ -10,19 +10,25 @@ import datetime
 def merge_jieguo_txt():
     """合并jieguo_i4.txt和jieguo_i6.txt生成jieguo.txt"""
     
-    # 定义文件路径
+    # 定义文件路径，支持新旧文件名
     ipv4_file = "jieguo_i4.txt"
     ipv6_file = "jieguo_i6.txt"
     output_file = "jieguo.txt"
     
-    # 检查文件是否存在
+    # 检查文件是否存在，支持新旧文件名
     if not os.path.exists(ipv4_file):
-        print(f"错误: {ipv4_file} 文件不存在")
-        return False
+        # 尝试使用新的文件名
+        ipv4_file = "iptv_i4.txt"
+        if not os.path.exists(ipv4_file):
+            print(f"错误: jieguo_i4.txt 或 iptv_i4.txt 文件不存在")
+            return False
     
     if not os.path.exists(ipv6_file):
-        print(f"错误: {ipv6_file} 文件不存在")
-        return False
+        # 尝试使用新的文件名
+        ipv6_file = "iptv_i6.txt"
+        if not os.path.exists(ipv6_file):
+            print(f"错误: jieguo_i6.txt 或 iptv_i6.txt 文件不存在")
+            return False
     
     # 读取ipv4文件内容
     with open(ipv4_file, 'r', encoding='utf-8') as f:
@@ -114,6 +120,13 @@ def merge_jieguo_txt():
     print(f"✅ 成功生成 {output_file}")
     print(f"   包含 {sum(len(channels) for channels in merged_channels.values())} 个频道")
     print(f"   包含 {len(merged_channels)} 个分类")
+    
+    # 同时生成新的文件名作为兼容
+    new_output_file = "iptv.txt"
+    with open(new_output_file, 'w', encoding='utf-8') as f:
+        f.writelines(output_lines)
+    print(f"✅ 同时生成兼容的 {new_output_file}")
+    
     return True
 
 if __name__ == "__main__":

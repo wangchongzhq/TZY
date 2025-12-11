@@ -11,8 +11,11 @@ def verify_files():
         'output/iptv_i4.m3u',
         'output/iptv_i6.m3u',
         'output/IP-TV.txt',
-    'output/IP-TV_i4.txt',
-    'output/IP-TV_i6.txt'
+        'output/IP-TV_i4.txt',
+        'output/IP-TV_i6.txt',
+        'output/jieguo.m3u',  # 旧文件名，应该作为兼容文件存在
+        'output/jieguo_i4.m3u',
+        'output/jieguo_i6.m3u'
     ]
     
     all_exist = True
@@ -76,6 +79,12 @@ def verify_files():
             print("✅ 代码包含输出文件过滤逻辑")
         else:
             print("❌ 代码不包含输出文件过滤逻辑")
+        
+        # 检查是否有兼容文件生成逻辑
+        if "兼容版本文件" in iptv_content and "shutil.copy" in iptv_content:
+            print("✅ 代码包含兼容文件生成逻辑")
+        else:
+            print("❌ 代码不包含兼容文件生成逻辑")
     else:
         print("❌ IP-TV.py文件不存在")
     

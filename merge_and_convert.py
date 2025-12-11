@@ -217,8 +217,12 @@ def main():
     output_dir = "output"
     iptv_i4 = os.path.join(output_dir, "iptv_i4.m3u")
     iptv_i6 = os.path.join(output_dir, "iptv_i6.m3u")
-    merged_m3u = os.path.join(output_dir, "jieguo_merged.m3u")
-    merged_txt = os.path.join(output_dir, "jieguo_merged.txt")
+    # 使用新的文件名作为主要输出
+    merged_m3u = os.path.join(output_dir, "iptv_merged.m3u")
+    merged_txt = os.path.join(output_dir, "iptv_merged.txt")
+    # 兼容旧的文件名
+    old_merged_m3u = os.path.join(output_dir, "jieguo_merged.m3u")
+    old_merged_txt = os.path.join(output_dir, "jieguo_merged.txt")
     
     logger.info(f"开始合并文件: {iptv_i4} 和 {iptv_i6}")
     
@@ -243,6 +247,17 @@ def main():
         sys.exit(1)
     
     logger.info(f"转换成功，生成: {merged_txt}")
+    
+    # 生成兼容旧文件名的版本
+    if merged_m3u != old_merged_m3u:
+        write_file(old_merged_m3u, content, encoding='utf-8-sig')
+        logger.info(f"同时生成兼容版本: {old_merged_m3u}")
+    
+    txt_content = read_file(merged_txt)
+    if txt_content is not None and merged_txt != old_merged_txt:
+        write_file(old_merged_txt, txt_content, encoding='utf-8-sig')
+        logger.info(f"同时生成兼容版本: {old_merged_txt}")
+    
     logger.info("所有操作完成")
 
 if __name__ == "__main__":
