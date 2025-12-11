@@ -88,8 +88,8 @@ if __name__ == "__main__":
         logger.info("\n测试文件生成...")
         
         # 获取输出文件名
-        output_file_m3u_all = output_config.get('m3u_file', output_config.get('m3u_filename', "jieguo.m3u"))
-        output_file_txt_all = output_config.get('txt_file', output_config.get('txt_filename', "jieguo.txt"))
+        output_file_m3u_all = output_config.get('m3u_file', output_config.get('m3u_filename', "ip-tv.m3u"))
+    output_file_txt_all = output_config.get('txt_file', output_config.get('txt_filename', "ip-tv.txt"))
         
         logger.info(f"M3U输出路径: {output_file_m3u_all}")
         logger.info(f"TXT输出路径: {output_file_txt_all}")

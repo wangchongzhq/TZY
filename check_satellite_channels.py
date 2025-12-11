@@ -3,7 +3,7 @@
 import re
 
 # 读取M3U文件
-with open('jieguo.m3u', 'r', encoding='utf-8') as f:
+with open('ip-tv.m3u', 'r', encoding='utf-8') as f:
     content = f.read()
 
 # 更简单的方法来处理频道信息

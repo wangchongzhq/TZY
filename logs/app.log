@@ -2857,3 +2857,195 @@
 2025-12-11 15:45:45,713 - __main__ - INFO - IP-TV.py:1179 - update_iptv_sources - 过滤后 - IPv4频道: 64699 个
 2025-12-11 15:45:45,714 - __main__ - INFO - IP-TV.py:1180 - update_iptv_sources - 过滤后 - IPv6频道: 2097 个
 2025-12-11 15:45:45,714 - __main__ - INFO - IP-TV.py:1184 - update_iptv_sources - 🔄 开始应用简繁体转换...
+2025-12-11 16:01:00,912 - __main__ - INFO - IP-TV.py:415 - <module> - ✅ 成功从unified_sources.py导入 22 个播放源
+2025-12-11 16:01:00,918 - __main__ - INFO - IP-TV.py:1115 - update_iptv_sources - 🚀 IPTV直播源自动生成工具
+2025-12-11 16:01:00,919 - __main__ - INFO - IP-TV.py:1116 - update_iptv_sources - 📅 运行时间: 2025-12-11 16:01:00
+2025-12-11 16:01:00,919 - __main__ - INFO - IP-TV.py:1117 - update_iptv_sources - ==================================================
+2025-12-11 16:01:00,920 - __main__ - INFO - IP-TV.py:1121 - update_iptv_sources - 📡 正在获取22个远程直播源...
+2025-12-11 16:01:00,920 - __main__ - INFO - IP-TV.py:1143 - update_iptv_sources - 正在读取0个本地直播源文件...
+2025-12-11 16:01:00,921 - __main__ - INFO - IP-TV.py:1006 - merge_sources - 📡 正在并发获取22个远程直播源...
+2025-12-11 16:01:00,921 - core.network - INFO - network.py:159 - fetch_multiple - 开始并发请求 22 个URL，最大并发数: 10
+2025-12-11 16:01:01,465 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 0.5221秒 url=https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt, attempt=1, status_code=200
+2025-12-11 16:01:02,079 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 1.1388秒 url=https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt, attempt=1, status_code=200
+2025-12-11 16:01:02,385 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 1.4409秒 url=https://codeberg.org/zxj/mao/raw/branch/main/live.txt, attempt=1, status_code=200
+2025-12-11 16:01:02,890 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 1.9669秒 url=https://ghproxy.it/raw.githubusercontent.com/ffmking/tv1/main/888.txt, attempt=1, status_code=200
+2025-12-11 16:01:02,937 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 2.0079秒 url=https://ghproxy.it/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt, attempt=1, status_code=200
+2025-12-11 16:01:03,056 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 2.1305秒 url=https://ghproxy.it/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt, attempt=1, status_code=200
+2025-12-11 16:01:03,949 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 1.8678秒 url=https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt, attempt=1, status_code=200
+2025-12-11 16:01:05,807 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 4.8566秒 url=https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u, attempt=1, status_code=200
+2025-12-11 16:01:05,901 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 4.4332秒 url=https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u, attempt=1, status_code=200
+2025-12-11 16:01:06,158 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt (尝试 1/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-11 16:01:06,952 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 4.0078秒 url=https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u, attempt=1, status_code=200
+2025-12-11 16:01:07,274 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 4.2121秒 url=https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv4.txt, attempt=1, status_code=200
+2025-12-11 16:01:07,961 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 0.6846秒 url=https://ghproxy.it/https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv6.m3u, attempt=1, status_code=200
+2025-12-11 16:01:09,474 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 5.5232秒 url=https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u, attempt=1, status_code=200
+2025-12-11 16:01:09,884 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 2.9302秒 url=https://www.iyouhun.com/tv/zb, attempt=1, status_code=200
+2025-12-11 16:01:14,343 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 8.5333秒 url=https://ghfast.top/https://raw.githubusercontent.com/suxuang/myIPTV/refs/heads/main/ipv4.m3u, attempt=1, status_code=200
+2025-12-11 16:01:14,642 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 13.7197秒 url=http://tv.html-5.me/i/9390107.txt, attempt=1, status_code=200
+2025-12-11 16:01:14,818 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 13.8709秒 url=https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u, attempt=1, status_code=200
+2025-12-11 16:01:15,913 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 10.0100秒 url=https://ghfast.top/https://raw.githubusercontent.com/suxuang/myIPTV/refs/heads/main/ipv6.m3u, attempt=1, status_code=200
+2025-12-11 16:01:19,765 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 16.8711秒 url=https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u, attempt=1, status_code=200
+2025-12-11 16:01:22,120 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt (尝试 2/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-11 16:01:29,609 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 28.6860秒 url=https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt, attempt=1, status_code=200
+2025-12-11 16:01:39,816 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt (尝试 3/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-11 16:01:39,817 - core.network - ERROR - network.py:141 - fetch_content - 所有重试都失败了 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-11 16:01:49,831 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 41.8689秒 url=https://ghfast.top/https://raw.githubusercontent.com/BigBigGrandG/IPTV-URL/release/Gather.m3u, attempt=1, status_code=200
+2025-12-11 16:28:48,296 - __main__ - INFO - IP-TV.py:417 - <module> - ✅ 成功从unified_sources.py导入 22 个播放源
+2025-12-11 16:28:48,300 - __main__ - INFO - IP-TV.py:1117 - update_iptv_sources - 🚀 IPTV直播源自动生成工具
+2025-12-11 16:28:48,300 - __main__ - INFO - IP-TV.py:1118 - update_iptv_sources - 📅 运行时间: 2025-12-11 16:28:48
+2025-12-11 16:28:48,301 - __main__ - INFO - IP-TV.py:1119 - update_iptv_sources - ==================================================
+2025-12-11 16:28:48,301 - __main__ - INFO - IP-TV.py:1120 - update_iptv_sources - 🔧 当前工作目录: C:\Users\Administrator\Documents\GitHub\TZY
+2025-12-11 16:28:48,302 - __main__ - INFO - IP-TV.py:1121 - update_iptv_sources - 📁 输出目录: output
+2025-12-11 16:28:48,302 - __main__ - INFO - IP-TV.py:1122 - update_iptv_sources - 🐍 Python版本: 3.13.9 (tags/v3.13.9:8183fa5, Oct 14 2025, 14:09:13) [MSC v.1944 64 bit (AMD64)]
+2025-12-11 16:28:48,303 - __main__ - INFO - IP-TV.py:1123 - update_iptv_sources - 👤 当前用户: Administrator
+2025-12-11 16:28:48,303 - __main__ - INFO - IP-TV.py:1124 - update_iptv_sources - 💻 系统: Windows 10
+2025-12-11 16:28:48,304 - __main__ - INFO - IP-TV.py:1131 - update_iptv_sources - ✅ 输出目录已存在: output
+2025-12-11 16:28:48,304 - __main__ - INFO - IP-TV.py:1134 - update_iptv_sources - 📋 当前目录内容: ['.git', '.github', '.gitignore', '.pytest_cache', 'check_4k_channels.py', 'check_aliases.py', 'check_all_sources.py', 'check_all_syntax.py', 'check_config_comprehensive.py', 'check_groups.py', 'check_invalid_file_references.py', 'check_raw_k4.py', 'check_satellite_channels.py', 'check_workflow_status.py', 'config', 'convert_m3u_to_txt.py', 'core', 'diagnose_update_iptv.py', 'diagnose_workflow.py', 'epg_data.json', 'filter_hd_channels.py', 'get_workflow_logs.py', 'IP-TV.py', 'json_check_output.txt', 'logs', 'merge_and_convert.py', 'merge_jieguo_txt.py', 'output', 'output.txt', 'README.md', 'requirements.txt', 'run_update.py', 'simple_diagnose.py', 'sources.json', 'speed_test.log', 'tests', 'unified_sources.py', 'update_hd_aliases.py', 'update_sources.py', 'update_traditional_aliases.py', 'validate_workflows.py', 'wait_for_workflow.ps1', 'wait_workflow.py', '__pycache__', '仓库优化建议文档.md', '频道分类和频道别名']
+2025-12-11 16:28:48,307 - __main__ - INFO - IP-TV.py:1136 - update_iptv_sources - 📋 输出目录内容: ['ip-tv.m3u', 'ip-tv.txt', 'ip-tv_i4.m3u', 'ip-tv_i4.txt', 'ip-tv_i6.m3u', 'ip-tv_i6.txt', 'jieguo_merged.m3u', 'jieguo_merged.txt']
+2025-12-11 16:28:48,307 - __main__ - INFO - IP-TV.py:1140 - update_iptv_sources - 📡 正在获取22个远程直播源...
+2025-12-11 16:28:48,307 - __main__ - INFO - IP-TV.py:1162 - update_iptv_sources - 正在读取0个本地直播源文件...
+2025-12-11 16:28:48,308 - __main__ - INFO - IP-TV.py:1008 - merge_sources - 📡 正在并发获取22个远程直播源...
+2025-12-11 16:28:48,308 - core.network - INFO - network.py:159 - fetch_multiple - 开始并发请求 22 个URL，最大并发数: 10
+2025-12-11 16:28:49,039 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 0.7129秒 url=https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt, attempt=1, status_code=200
+2025-12-11 16:28:49,669 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 1.3583秒 url=https://ghproxy.it/raw.githubusercontent.com/ffmking/tv1/main/888.txt, attempt=1, status_code=200
+2025-12-11 16:28:49,980 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 1.6545秒 url=https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt, attempt=1, status_code=200
+2025-12-11 16:28:50,063 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 1.7411秒 url=https://ghproxy.it/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt, attempt=1, status_code=200
+2025-12-11 16:28:50,508 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 2.1920秒 url=https://ghproxy.it/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt, attempt=1, status_code=200
+2025-12-11 16:28:52,030 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 3.7001秒 url=https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u, attempt=1, status_code=200
+2025-12-11 16:28:52,215 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 2.5419秒 url=https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt, attempt=1, status_code=200
+2025-12-11 16:28:53,864 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 5.5347秒 url=https://codeberg.org/zxj/mao/raw/branch/main/live.txt, attempt=1, status_code=200
+2025-12-11 16:28:54,735 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt (尝试 1/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-11 16:28:56,345 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 6.2694秒 url=https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u, attempt=1, status_code=200
+2025-12-11 16:28:56,999 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt (尝试 2/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-11 16:28:57,104 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 8.0476秒 url=https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u, attempt=1, status_code=200
+2025-12-11 16:28:58,305 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 9.9964秒 url=http://tv.html-5.me/i/9390107.txt, attempt=1, status_code=200
+2025-12-11 16:28:58,306 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 6.0895秒 url=https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u, attempt=1, status_code=200
+2025-12-11 16:28:59,054 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 1.9489秒 url=https://www.iyouhun.com/tv/zb, attempt=1, status_code=200
+2025-12-11 16:28:59,159 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 0.8509秒 url=https://ghproxy.it/https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv6.m3u, attempt=1, status_code=200
+2025-12-11 16:28:59,602 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 5.7353秒 url=https://ghfast.top/https://raw.githubusercontent.com/suxuang/myIPTV/refs/heads/main/ipv4.m3u, attempt=1, status_code=200
+2025-12-11 16:29:00,567 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 12.2572秒 url=https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt, attempt=1, status_code=200
+2025-12-11 16:29:02,868 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 4.5578秒 url=https://ghfast.top/https://raw.githubusercontent.com/BigBigGrandG/IPTV-URL/release/Gather.m3u, attempt=1, status_code=200
+2025-12-11 16:29:03,159 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 6.8098秒 url=https://ghfast.top/https://raw.githubusercontent.com/suxuang/myIPTV/refs/heads/main/ipv6.m3u, attempt=1, status_code=200
+2025-12-11 16:29:04,150 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 13.6363秒 url=https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u, attempt=1, status_code=200
+2025-12-11 16:29:10,549 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 18.5176秒 url=https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv4.txt, attempt=1, status_code=200
+2025-12-11 16:29:16,993 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 28.6618秒 url=https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u, attempt=1, status_code=200
+2025-12-11 16:29:17,949 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt (尝试 3/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-11 16:29:17,949 - core.network - ERROR - network.py:141 - fetch_content - 所有重试都失败了 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-11 16:31:24,106 - __main__ - INFO - IP-TV.py:417 - <module> - ✅ 成功从unified_sources.py导入 22 个播放源
+2025-12-11 16:31:24,111 - __main__ - INFO - IP-TV.py:1117 - update_iptv_sources - 🚀 IPTV直播源自动生成工具
+2025-12-11 16:31:24,111 - __main__ - INFO - IP-TV.py:1118 - update_iptv_sources - 📅 运行时间: 2025-12-11 16:31:24
+2025-12-11 16:31:24,112 - __main__ - INFO - IP-TV.py:1119 - update_iptv_sources - ==================================================
+2025-12-11 16:31:24,112 - __main__ - INFO - IP-TV.py:1120 - update_iptv_sources - 🔧 当前工作目录: C:\Users\Administrator\Documents\GitHub\TZY
+2025-12-11 16:31:24,113 - __main__ - INFO - IP-TV.py:1121 - update_iptv_sources - 📁 输出目录: output
+2025-12-11 16:31:24,113 - __main__ - INFO - IP-TV.py:1122 - update_iptv_sources - 🐍 Python版本: 3.13.9 (tags/v3.13.9:8183fa5, Oct 14 2025, 14:09:13) [MSC v.1944 64 bit (AMD64)]
+2025-12-11 16:31:24,113 - __main__ - INFO - IP-TV.py:1123 - update_iptv_sources - 👤 当前用户: Administrator
+2025-12-11 16:31:24,114 - __main__ - INFO - IP-TV.py:1124 - update_iptv_sources - 💻 系统: Windows 10
+2025-12-11 16:31:24,115 - __main__ - INFO - IP-TV.py:1131 - update_iptv_sources - ✅ 输出目录已存在: output
+2025-12-11 16:31:24,115 - __main__ - INFO - IP-TV.py:1134 - update_iptv_sources - 📋 当前目录内容: ['.git', '.github', '.gitignore', '.pytest_cache', 'check_4k_channels.py', 'check_aliases.py', 'check_all_sources.py', 'check_all_syntax.py', 'check_config_comprehensive.py', 'check_groups.py', 'check_invalid_file_references.py', 'check_raw_k4.py', 'check_satellite_channels.py', 'check_workflow_status.py', 'config', 'convert_m3u_to_txt.py', 'core', 'diagnose_update_iptv.py', 'diagnose_workflow.py', 'epg_data.json', 'filter_hd_channels.py', 'get_workflow_logs.py', 'IP-TV.py', 'json_check_output.txt', 'logs', 'merge_and_convert.py', 'merge_jieguo_txt.py', 'output', 'output.txt', 'README.md', 'requirements.txt', 'run_update.py', 'simple_diagnose.py', 'sources.json', 'speed_test.log', 'tests', 'unified_sources.py', 'update_hd_aliases.py', 'update_sources.py', 'update_traditional_aliases.py', 'validate_workflows.py', 'wait_for_workflow.ps1', 'wait_workflow.py', '__pycache__', '仓库优化建议文档.md', '频道分类和频道别名']
+2025-12-11 16:31:24,120 - __main__ - INFO - IP-TV.py:1136 - update_iptv_sources - 📋 输出目录内容: ['ip-tv.m3u', 'ip-tv.txt', 'ip-tv_i4.m3u', 'ip-tv_i4.txt', 'ip-tv_i6.m3u', 'ip-tv_i6.txt', 'jieguo_merged.m3u', 'jieguo_merged.txt']
+2025-12-11 16:31:24,121 - __main__ - INFO - IP-TV.py:1140 - update_iptv_sources - 📡 正在获取22个远程直播源...
+2025-12-11 16:31:24,124 - __main__ - INFO - IP-TV.py:1162 - update_iptv_sources - 正在读取0个本地直播源文件...
+2025-12-11 16:31:24,127 - __main__ - INFO - IP-TV.py:1008 - merge_sources - 📡 正在并发获取22个远程直播源...
+2025-12-11 16:31:24,127 - core.network - INFO - network.py:159 - fetch_multiple - 开始并发请求 22 个URL，最大并发数: 10
+2025-12-11 16:31:25,256 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 1.0900秒 url=https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt, attempt=1, status_code=200
+2025-12-11 16:31:25,355 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 1.1947秒 url=https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt, attempt=1, status_code=200
+2025-12-11 16:31:25,711 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 1.5716秒 url=https://ghproxy.it/raw.githubusercontent.com/ffmking/tv1/main/888.txt, attempt=1, status_code=200
+2025-12-11 16:31:25,713 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 1.5643秒 url=https://ghproxy.it/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt, attempt=1, status_code=200
+2025-12-11 16:31:26,218 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 2.0727秒 url=https://ghproxy.it/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt, attempt=1, status_code=200
+2025-12-11 16:31:26,527 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 2.3552秒 url=https://codeberg.org/zxj/mao/raw/branch/main/live.txt, attempt=1, status_code=200
+2025-12-11 16:31:27,166 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 2.9898秒 url=https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u, attempt=1, status_code=200
+2025-12-11 16:31:28,014 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 2.7567秒 url=https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u, attempt=1, status_code=200
+2025-12-11 16:31:28,394 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 3.0364秒 url=https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt, attempt=1, status_code=200
+2025-12-11 16:31:28,875 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 2.3399秒 url=https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv4.txt, attempt=1, status_code=200
+2025-12-11 16:31:29,073 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt (尝试 1/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-11 16:31:29,684 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 5.5511秒 url=https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt, attempt=1, status_code=200
+2025-12-11 16:31:30,357 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 0.6707秒 url=https://ghproxy.it/https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv6.m3u, attempt=1, status_code=200
+2025-12-11 16:31:31,246 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 2.3687秒 url=https://www.iyouhun.com/tv/zb, attempt=1, status_code=200
+2025-12-11 16:31:31,765 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 6.0430秒 url=https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u, attempt=1, status_code=200
+2025-12-11 16:31:32,113 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 7.9395秒 url=https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u, attempt=1, status_code=200
+2025-12-11 16:31:35,794 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 8.6259秒 url=https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u, attempt=1, status_code=200
+2025-12-11 16:31:36,286 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 12.1562秒 url=http://tv.html-5.me/i/9390107.txt, attempt=1, status_code=200
+2025-12-11 16:31:36,788 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 8.3925秒 url=https://ghfast.top/https://raw.githubusercontent.com/suxuang/myIPTV/refs/heads/main/ipv6.m3u, attempt=1, status_code=200
+2025-12-11 16:31:39,244 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt (尝试 2/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-11 16:31:49,243 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 18.8841秒 url=https://ghfast.top/https://raw.githubusercontent.com/BigBigGrandG/IPTV-URL/release/Gather.m3u, attempt=1, status_code=200
+2025-12-11 16:31:59,422 - core.network - ERROR - network.py:96 - fetch_content - 请求超时 https://ghfast.top/https://raw.githubusercontent.com/suxuang/myIPTV/refs/heads/main/ipv4.m3u (尝试 1/3)
+2025-12-11 16:31:59,422 - core.network - INFO - network.py:101 - fetch_content - 等待 1秒后重试...
+2025-12-11 16:32:01,872 - core.network - ERROR - network.py:96 - fetch_content - 请求超时 https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u (尝试 1/3)
+2025-12-11 16:32:01,873 - core.network - INFO - network.py:101 - fetch_content - 等待 1秒后重试...
+2025-12-11 16:32:08,211 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 5.3373秒 url=https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u, attempt=2, status_code=200
+2025-12-11 16:32:13,840 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 13.4173秒 url=https://ghfast.top/https://raw.githubusercontent.com/suxuang/myIPTV/refs/heads/main/ipv4.m3u, attempt=2, status_code=200
+2025-12-11 16:32:14,387 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt (尝试 3/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-11 16:32:14,415 - core.network - ERROR - network.py:141 - fetch_content - 所有重试都失败了 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-11 16:32:29,139 - __main__ - INFO - IP-TV.py:417 - <module> - ✅ 成功从unified_sources.py导入 22 个播放源
+2025-12-11 16:32:29,144 - __main__ - INFO - IP-TV.py:1117 - update_iptv_sources - 🚀 IPTV直播源自动生成工具
+2025-12-11 16:32:29,145 - __main__ - INFO - IP-TV.py:1118 - update_iptv_sources - 📅 运行时间: 2025-12-11 16:32:29
+2025-12-11 16:32:29,145 - __main__ - INFO - IP-TV.py:1119 - update_iptv_sources - ==================================================
+2025-12-11 16:32:29,145 - __main__ - INFO - IP-TV.py:1120 - update_iptv_sources - 🔧 当前工作目录: C:\Users\Administrator\Documents\GitHub\TZY
+2025-12-11 16:32:29,146 - __main__ - INFO - IP-TV.py:1121 - update_iptv_sources - 📁 输出目录: output
+2025-12-11 16:32:29,146 - __main__ - INFO - IP-TV.py:1122 - update_iptv_sources - 🐍 Python版本: 3.13.9 (tags/v3.13.9:8183fa5, Oct 14 2025, 14:09:13) [MSC v.1944 64 bit (AMD64)]
+2025-12-11 16:32:29,146 - __main__ - INFO - IP-TV.py:1123 - update_iptv_sources - 👤 当前用户: Administrator
+2025-12-11 16:32:29,147 - __main__ - INFO - IP-TV.py:1124 - update_iptv_sources - 💻 系统: Windows 10
+2025-12-11 16:32:29,147 - __main__ - INFO - IP-TV.py:1131 - update_iptv_sources - ✅ 输出目录已存在: output
+2025-12-11 16:32:29,148 - __main__ - INFO - IP-TV.py:1134 - update_iptv_sources - 📋 当前目录内容: ['.git', '.github', '.gitignore', '.pytest_cache', 'check_4k_channels.py', 'check_aliases.py', 'check_all_sources.py', 'check_all_syntax.py', 'check_config_comprehensive.py', 'check_groups.py', 'check_invalid_file_references.py', 'check_raw_k4.py', 'check_satellite_channels.py', 'check_workflow_status.py', 'config', 'convert_m3u_to_txt.py', 'core', 'diagnose_update_iptv.py', 'diagnose_workflow.py', 'epg_data.json', 'filter_hd_channels.py', 'get_workflow_logs.py', 'IP-TV.py', 'json_check_output.txt', 'logs', 'merge_and_convert.py', 'merge_jieguo_txt.py', 'output', 'output.txt', 'README.md', 'requirements.txt', 'run_update.py', 'simple_diagnose.py', 'sources.json', 'speed_test.log', 'tests', 'unified_sources.py', 'update_hd_aliases.py', 'update_sources.py', 'update_traditional_aliases.py', 'validate_workflows.py', 'wait_for_workflow.ps1', 'wait_workflow.py', '__pycache__', '仓库优化建议文档.md', '频道分类和频道别名']
+2025-12-11 16:32:29,151 - __main__ - INFO - IP-TV.py:1136 - update_iptv_sources - 📋 输出目录内容: ['ip-tv.m3u', 'ip-tv.txt', 'ip-tv_i4.m3u', 'ip-tv_i4.txt', 'ip-tv_i6.m3u', 'ip-tv_i6.txt', 'jieguo_merged.m3u', 'jieguo_merged.txt']
+2025-12-11 16:32:29,152 - __main__ - INFO - IP-TV.py:1140 - update_iptv_sources - 📡 正在获取22个远程直播源...
+2025-12-11 16:32:29,152 - __main__ - INFO - IP-TV.py:1162 - update_iptv_sources - 正在读取0个本地直播源文件...
+2025-12-11 16:32:29,153 - __main__ - INFO - IP-TV.py:1008 - merge_sources - 📡 正在并发获取22个远程直播源...
+2025-12-11 16:32:29,153 - core.network - INFO - network.py:159 - fetch_multiple - 开始并发请求 22 个URL，最大并发数: 10
+2025-12-11 16:32:29,852 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 0.6815秒 url=https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt, attempt=1, status_code=200
+2025-12-11 16:32:30,676 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 1.5064秒 url=https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt, attempt=1, status_code=200
+2025-12-11 16:32:30,681 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 1.5123秒 url=https://ghproxy.it/https://raw.githubusercontent.com/kimwang1978/collect-txt/refs/heads/main/bbxx.txt, attempt=1, status_code=200
+2025-12-11 16:32:30,698 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 1.5332秒 url=https://ghproxy.it/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt, attempt=1, status_code=200
+2025-12-11 16:32:31,169 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 1.9972秒 url=https://codeberg.org/zxj/mao/raw/branch/main/live.txt, attempt=1, status_code=200
+2025-12-11 16:32:31,179 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 2.0187秒 url=https://ghproxy.it/raw.githubusercontent.com/ffmking/tv1/main/888.txt, attempt=1, status_code=200
+2025-12-11 16:32:34,420 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 5.2452秒 url=https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u, attempt=1, status_code=200
+2025-12-11 16:32:35,987 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 6.8320秒 url=https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt, attempt=1, status_code=200
+2025-12-11 16:32:37,723 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 6.5513秒 url=https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u, attempt=1, status_code=200
+2025-12-11 16:32:39,248 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 3.2240秒 url=https://ghfast.top/https://raw.githubusercontent.com/suxuang/myIPTV/refs/heads/main/ipv4.m3u, attempt=1, status_code=200
+2025-12-11 16:32:39,364 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 8.1808秒 url=https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv4.txt, attempt=1, status_code=200
+2025-12-11 16:32:40,050 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 0.6843秒 url=https://ghproxy.it/https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv6.m3u, attempt=1, status_code=200
+2025-12-11 16:32:40,792 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 11.6163秒 url=https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u, attempt=1, status_code=200
+2025-12-11 16:32:41,042 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 1.7915秒 url=https://www.iyouhun.com/tv/zb, attempt=1, status_code=200
+2025-12-11 16:32:42,468 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 13.3139秒 url=http://tv.html-5.me/i/9390107.txt, attempt=1, status_code=200
+2025-12-11 16:32:44,785 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 14.9314秒 url=https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u, attempt=1, status_code=200
+2025-12-11 16:32:45,398 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 10.9765秒 url=https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u, attempt=1, status_code=200
+2025-12-11 16:33:01,060 - core.network - ERROR - network.py:96 - fetch_content - 请求超时 https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt (尝试 1/3)
+2025-12-11 16:33:01,060 - core.network - INFO - network.py:101 - fetch_content - 等待 1秒后重试...
+2025-12-11 16:33:01,992 - core.network - ERROR - network.py:96 - fetch_content - 请求超时 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt (尝试 1/3)
+2025-12-11 16:33:01,993 - core.network - INFO - network.py:101 - fetch_content - 等待 1秒后重试...
+2025-12-11 16:33:08,912 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt (尝试 2/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-11 16:33:10,968 - core.network - ERROR - network.py:96 - fetch_content - 请求超时 https://ghfast.top/https://raw.githubusercontent.com/BigBigGrandG/IPTV-URL/release/Gather.m3u (尝试 1/3)
+2025-12-11 16:33:10,969 - core.network - INFO - network.py:101 - fetch_content - 等待 1秒后重试...
+2025-12-11 16:33:11,362 - core.network - ERROR - network.py:105 - fetch_content - 连接错误 https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u (尝试 1/3)
+2025-12-11 16:33:11,362 - core.network - INFO - network.py:110 - fetch_content - 等待 1秒后重试...
+2025-12-11 16:33:18,756 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 16.6952秒 url=https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt, attempt=2, status_code=200
+2025-12-11 16:33:25,233 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 47.5076秒 url=https://ghfast.top/https://raw.githubusercontent.com/suxuang/myIPTV/refs/heads/main/ipv6.m3u, attempt=1, status_code=200
+2025-12-11 16:33:27,376 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 15.0133秒 url=https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u, attempt=2, status_code=200
+2025-12-11 16:33:30,039 - core.network - ERROR - network.py:115 - fetch_content - HTTP错误 0 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt (尝试 3/3): 404 Client Error: NOT FOUND for url: https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-11 16:33:30,043 - core.network - ERROR - network.py:141 - fetch_content - 所有重试都失败了 https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt
+2025-12-11 16:33:30,353 - core.network - INFO - logging_config.py:140 - log_performance - 性能统计 - 网络请求 耗时: 18.3832秒 url=https://ghfast.top/https://raw.githubusercontent.com/BigBigGrandG/IPTV-URL/release/Gather.m3u, attempt=2, status_code=200
+2025-12-11 17:04:16,979 - ip_tv - INFO - IP-TV.py:417 - <module> - ✅ 成功从unified_sources.py导入 22 个播放源
+2025-12-11 17:04:16,985 - __main__ - INFO - merge_and_convert.py:227 - main - 开始合并文件: output\ip-tv_i4.m3u 和 output\ip-tv_i6.m3u
+2025-12-11 17:04:16,986 - core.file_utils - INFO - logging_config.py:140 - log_performance - 性能统计 - 读取文件 耗时: 0.0004秒 file_path=output\ip-tv_i4.m3u, size=283
+2025-12-11 17:04:16,987 - core.file_utils - INFO - logging_config.py:140 - log_performance - 性能统计 - 读取文件 耗时: 0.0002秒 file_path=output\ip-tv_i6.m3u, size=283
+2025-12-11 17:04:16,994 - core.file_utils - INFO - file_utils.py:109 - write_file - 成功写入文件: output\ip-tv_merged.m3u，大小: 559字符，耗时: 0.01秒
+2025-12-11 17:04:16,995 - core.file_utils - INFO - logging_config.py:140 - log_performance - 性能统计 - 写入文件 耗时: 0.0057秒 file_path=output\ip-tv_merged.m3u, size=559
+2025-12-11 17:04:16,998 - __main__ - INFO - merge_and_convert.py:234 - main - 合并成功，生成: output\ip-tv_merged.m3u
+2025-12-11 17:04:16,998 - __main__ - INFO - merge_and_convert.py:237 - main - 开始转换为TXT格式: output\ip-tv_merged.txt
+2025-12-11 17:04:17,001 - core.file_utils - INFO - logging_config.py:140 - log_performance - 性能统计 - 读取文件 耗时: 0.0002秒 file_path=output\ip-tv_merged.m3u, size=560
+2025-12-11 17:04:17,004 - core.parser - INFO - logging_config.py:140 - log_performance - 性能统计 - 解析M3U内容 耗时: 0.0020秒 channel_count=4
+2025-12-11 17:04:17,004 - core.parser - INFO - parser.py:156 - parse_m3u_content - 解析M3U内容，找到 4 个频道
+2025-12-11 17:04:17,005 - core.channel_utils - INFO - channel_utils.py:245 - group_channels - 频道分组完成，共 1 个分组
+2025-12-11 17:04:17,005 - core.channel_utils - INFO - channel_utils.py:245 - group_channels - 频道分组完成，共 1 个分组
+2025-12-11 17:04:17,006 - core.channel_utils - INFO - channel_utils.py:494 - get_channel_statistics - 获取频道统计信息完成
+2025-12-11 17:04:17,010 - core.file_utils - INFO - file_utils.py:109 - write_file - 成功写入文件: output\ip-tv_merged.txt，大小: 277字符，耗时: 0.00秒
+2025-12-11 17:04:17,012 - core.file_utils - INFO - logging_config.py:140 - log_performance - 性能统计 - 写入文件 耗时: 0.0031秒 file_path=output\ip-tv_merged.txt, size=277
+2025-12-11 17:04:17,016 - __main__ - INFO - merge_and_convert.py:249 - main - 转换成功，生成: output\ip-tv_merged.txt
+2025-12-11 17:04:17,020 - core.file_utils - INFO - file_utils.py:109 - write_file - 成功写入文件: output\jieguo_merged.m3u，大小: 560字符，耗时: 0.00秒
+2025-12-11 17:04:17,020 - core.file_utils - INFO - logging_config.py:140 - log_performance - 性能统计 - 写入文件 耗时: 0.0022秒 file_path=output\jieguo_merged.m3u, size=560
+2025-12-11 17:04:17,021 - __main__ - INFO - merge_and_convert.py:254 - main - 同时生成兼容版本: output\jieguo_merged.m3u
+2025-12-11 17:04:17,022 - core.file_utils - INFO - logging_config.py:140 - log_performance - 性能统计 - 读取文件 耗时: 0.0002秒 file_path=output\ip-tv_merged.txt, size=278
+2025-12-11 17:04:17,025 - core.file_utils - INFO - file_utils.py:109 - write_file - 成功写入文件: output\jieguo_merged.txt，大小: 278字符，耗时: 0.00秒
+2025-12-11 17:04:17,029 - core.file_utils - INFO - logging_config.py:140 - log_performance - 性能统计 - 写入文件 耗时: 0.0027秒 file_path=output\jieguo_merged.txt, size=278
+2025-12-11 17:04:17,029 - __main__ - INFO - merge_and_convert.py:259 - main - 同时生成兼容版本: output\jieguo_merged.txt
+2025-12-11 17:04:17,030 - __main__ - INFO - merge_and_convert.py:261 - main - 所有操作完成

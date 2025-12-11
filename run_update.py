@@ -32,7 +32,7 @@ print("-" * 40)
 # 检查当前目录
 files = os.listdir(".")
 for file in files:
-    if file.startswith('jieguo'):
+    if file.startswith('ip-tv'):
         file_path = os.path.join(".", file)
         file_size = os.path.getsize(file_path) if os.path.exists(file_path) else 0
         print(f"  {file} - {file_size} 字节")

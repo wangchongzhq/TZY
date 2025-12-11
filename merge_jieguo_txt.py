@@ -1,33 +1,33 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-合并jieguo_i4.txt和jieguo_i6.txt生成jieguo.txt
+合并ip-tv_i4.txt和ip-tv_i6.txt生成ip-tv.txt
 """
 
 import os
 import datetime
 
-def merge_jieguo_txt():
-    """合并jieguo_i4.txt和jieguo_i6.txt生成jieguo.txt"""
+def merge_ip_tv_txt():
+    """合并ip-tv_i4.txt和ip-tv_i6.txt生成ip-tv.txt"""
     
     # 定义文件路径，支持新旧文件名
-    ipv4_file = "jieguo_i4.txt"
-    ipv6_file = "jieguo_i6.txt"
-    output_file = "jieguo.txt"
+    ipv4_file = "ip-tv_i4.txt"
+    ipv6_file = "ip-tv_i6.txt"
+    output_file = "ip-tv.txt"
     
     # 检查文件是否存在，支持新旧文件名
     if not os.path.exists(ipv4_file):
         # 尝试使用新的文件名
         ipv4_file = "ip-tv_i4.txt"
         if not os.path.exists(ipv4_file):
-            print(f"错误: jieguo_i4.txt 或 ip-tv_i4.txt 文件不存在")
+            print(f"错误: ip-tv_i4.txt 文件不存在")
             return False
     
     if not os.path.exists(ipv6_file):
         # 尝试使用新的文件名
         ipv6_file = "ip-tv_i6.txt"
         if not os.path.exists(ipv6_file):
-            print(f"错误: jieguo_i6.txt 或 ip-tv_i6.txt 文件不存在")
+            print(f"错误: ip-tv_i6.txt 文件不存在")
             return False
     
     # 读取ipv4文件内容
@@ -130,4 +130,4 @@ def merge_jieguo_txt():
     return True
 
 if __name__ == "__main__":
-    merge_jieguo_txt()
+    merge_ip_tv_txt()

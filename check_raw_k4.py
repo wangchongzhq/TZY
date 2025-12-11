@@ -11,7 +11,7 @@ def check_raw_k4_channels():
     print("=== 检查原始M3U文件中的4K频道 ===")
     
     # 获取所有临时M3U文件
-    temp_files = [f for f in os.listdir('.') if f.endswith('.m3u') and f != 'jieguo.m3u' and f != 'IPTV.m3u']
+    temp_files = [f for f in os.listdir('.') if f.endswith('.m3u') and f != 'ip-tv.m3u' and f != 'IPTV.m3u']
     
     print(f"找到 {len(temp_files)} 个临时M3U文件")
     

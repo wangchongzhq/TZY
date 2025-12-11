@@ -41,7 +41,7 @@ OUTPUT_DIR = "output"
 def ensure_output_dir(file_path):
     """确保文件路径包含输出目录，并创建目录（如果不存在）"""
     # 特定文件例外：这些文件应直接放在根目录
-    root_files = ['jieguo.m3u', 'jieguo.txt']
+    root_files = ['ip-tv.m3u', 'ip-tv.txt']
     
     if not os.path.dirname(file_path):  # 如果没有目录部分
         # 如果是例外文件，保持在根目录
@@ -1036,8 +1036,8 @@ def merge_sources(sources, local_files):
     
     # 从配置文件获取输出文件名，避免将输出文件作为输入文件处理
     output_config = get_config('output', {})
-    output_file_m3u_all = output_config.get('m3u_file', output_config.get('m3u_filename', "jieguo.m3u"))
-    output_file_txt_all = output_config.get('txt_file', output_config.get('txt_filename', "jieguo.txt"))
+    output_file_m3u_all = output_config.get('m3u_file', output_config.get('m3u_filename', "ip-tv.m3u"))
+    output_file_txt_all = output_config.get('txt_file', output_config.get('txt_filename', "ip-tv.txt"))
     
     # 应用输出目录
     output_file_m3u_all = ensure_output_dir(output_file_m3u_all)
@@ -1256,36 +1256,84 @@ def update_iptv_sources():
         """生成指定版本的M3U和TXT文件"""
         file_success = True
         
-        print(f"\n生成{version_name}文件")
-        print(f"   M3U文件: {m3u_filename}")
-        print(f"   TXT文件: {txt_filename}")
+        print(f"\n===== 生成{version_name}文件 =====")
+        print(f"   M3U文件路径: {os.path.abspath(m3u_filename)}")
+        print(f"   TXT文件路径: {os.path.abspath(txt_filename)}")
+        
+        # 确保M3U文件的输出目录存在
+        m3u_dir = os.path.dirname(m3u_filename)
+        if m3u_dir:
+            if not os.path.exists(m3u_dir):
+                print(f"   创建M3U文件目录: {m3u_dir}")
+                try:
+                    os.makedirs(m3u_dir, exist_ok=True)
+                    print(f"   M3U文件目录创建成功")
+                except Exception as e:
+                    print(f"   M3U文件目录创建失败: {e}")
+                    return False
+            else:
+                print(f"   M3U文件目录已存在: {m3u_dir}")
+        
+        # 确保TXT文件的输出目录存在
+        txt_dir = os.path.dirname(txt_filename)
+        if txt_dir:
+            if not os.path.exists(txt_dir):
+                print(f"   创建TXT文件目录: {txt_dir}")
+                try:
+                    os.makedirs(txt_dir, exist_ok=True)
+                    print(f"   TXT文件目录创建成功")
+                except Exception as e:
+                    print(f"   TXT文件目录创建失败: {e}")
+                    return False
+            else:
+                print(f"   TXT文件目录已存在: {txt_dir}")
         
         # 应用简繁体转换流水线
         print(f"   应用简繁体转换...")
-        conversion_pipeline = ChineseConversionPipeline()
-        channels = conversion_pipeline.process_channel_data(channels)
+        try:
+            conversion_pipeline = ChineseConversionPipeline()
+            channels = conversion_pipeline.process_channel_data(channels)
+            print(f"   简繁体转换成功")
+        except Exception as e:
+            print(f"   简繁体转换失败: {e}")
+            return False
         
         print(f"   转换后频道数据: {sum(len(chans) for _, chans in channels.items())} 个频道，{len(channels)} 个分类")
-        print(f"   文件路径是否存在: M3U={os.path.exists(os.path.dirname(m3u_filename)) if os.path.dirname(m3u_filename) else True}, TXT={os.path.exists(os.path.dirname(txt_filename)) if os.path.dirname(txt_filename) else True}")
         
-        if channels:
-            # 显示前3个分类及其前2个频道
-            print(f"   前3个分类示例:")
-            for i, (category, chans) in enumerate(list(channels.items())[:3]):
-                print(f"     {category} - {len(chans)} 个频道")
-                for j, (name, url) in enumerate(chans[:2]):
-                    print(f"       {name}: {url[:50]}...")
-        else:
+        if not channels:
             print(f"   频道数据为空！")
             return False
+        
+        # 显示前3个分类及其前2个频道
+        print(f"   前3个分类示例:")
+        for i, (category, chans) in enumerate(list(channels.items())[:3]):
+            print(f"     {category} - {len(chans)} 个频道")
+            for j, (name, url) in enumerate(chans[:2]):
+                print(f"       {name}: {url[:50]}...")
         
         # 生成M3U文件
         print(f"   正在生成M3U文件...")
         try:
+            print(f"   M3U文件写入模式: w, 编码: utf-8-sig")
+            with open(m3u_filename, 'w', encoding='utf-8-sig') as f:
+                # 写入文件头
+                f.write("#EXTM3U\n")
+                
+                # 写入前几个频道
+                for category in list(channels.keys())[:1]:
+                    if channels[category]:
+                        channel_name, url = channels[category][0]
+                        f.write(f"#EXTINF:-1 group-title=\"{category}\",{channel_name}\n{url}\n")
+                        break
+            
+            print(f"   M3U文件写入测试成功")
+            print(f"   M3U文件大小: {os.path.getsize(m3u_filename)} 字节")
+            
+            # 现在生成完整的M3U文件
             if generate_m3u_file(channels, m3u_filename):
                 logger.info(f"成功生成{version_name}M3U文件: {m3u_filename}")
                 print(f"   M3U文件生成成功")
-                print(f"   M3U文件大小: {os.path.getsize(m3u_filename) if os.path.exists(m3u_filename) else 0} 字节")
+                print(f"   M3U文件大小: {os.path.getsize(m3u_filename)} 字节")
             else:
                 logger.error(f"生成{version_name}M3U文件失败: {m3u_filename}")
                 print(f"   M3U文件生成失败")
@@ -1293,15 +1341,26 @@ def update_iptv_sources():
         except Exception as e:
             logger.error(f"生成{version_name}M3U文件时发生异常: {e}")
             print(f"   M3U文件生成时发生异常: {e}")
+            import traceback
+            traceback.print_exc()
             file_success = False
         
         # 生成TXT文件
         print(f"   正在生成TXT文件...")
         try:
+            # 先测试TXT文件写入
+            test_content = "测试TXT文件写入\n频道1,http://example.com/channel1\n"
+            with open(txt_filename, 'w', encoding='utf-8-sig') as f:
+                f.write(test_content)
+            
+            print(f"   TXT文件写入测试成功")
+            print(f"   TXT测试文件大小: {os.path.getsize(txt_filename)} 字节")
+            
+            # 现在生成完整的TXT文件
             if generate_txt_file(channels, txt_filename):
                 logger.info(f"成功生成{version_name}TXT文件: {txt_filename}")
                 print(f"   TXT文件生成成功")
-                print(f"   TXT文件大小: {os.path.getsize(txt_filename) if os.path.exists(txt_filename) else 0} 字节")
+                print(f"   TXT文件大小: {os.path.getsize(txt_filename)} 字节")
             else:
                 logger.error(f"生成{version_name}TXT文件失败: {txt_filename}")
                 print(f"   TXT文件生成失败")
@@ -1309,14 +1368,17 @@ def update_iptv_sources():
         except Exception as e:
             logger.error(f"生成{version_name}TXT文件时发生异常: {e}")
             print(f"   TXT文件生成时发生异常: {e}")
+            import traceback
+            traceback.print_exc()
             file_success = False
         
         print(f"   {version_name}文件生成完成 - 成功: {file_success}")
         return file_success
     
     # 合并版本
-    output_file_m3u_all = output_config.get('m3u_file', output_config.get('m3u_filename', "jieguo.m3u"))
-    output_file_txt_all = output_config.get('txt_file', output_config.get('txt_filename', "jieguo.txt"))
+    output_config = get_config('output', {})
+    output_file_m3u_all = output_config.get('m3u_file', output_config.get('m3u_filename', "ip-tv.m3u"))
+    output_file_txt_all = output_config.get('txt_file', output_config.get('txt_filename', "ip-tv.txt"))
     
     # 应用输出目录
     output_file_m3u_all = ensure_output_dir(output_file_m3u_all)

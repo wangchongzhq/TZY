@@ -7,12 +7,12 @@ def check_4k_channels():
     print("=== 检查生成的M3U文件中的4K频道 ===")
     
     # 检查文件是否存在，支持新旧文件名
-    m3u_file = "jieguo.m3u"
+    m3u_file = "ip-tv.m3u"
     if not os.path.exists(m3u_file):
         # 尝试使用新的文件名
         m3u_file = "ip-tv.m3u"
         if not os.path.exists(m3u_file):
-            print("❌ 未找到 jieguo.m3u 或 ip-tv.m3u 文件")
+            print("❌ 未找到 ip-tv.m3u 文件")
             return
         
     print(f"✅ 找到 {m3u_file} 文件")
