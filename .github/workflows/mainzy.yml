@@ -35,6 +35,10 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y ffmpeg
 
+    - name: Run diagnostic script
+      run: python diagnose_workflow.py
+      timeout-minutes: 5
+
     - name: Run script to generate m3u
       run: python IP-TV.py --update
       timeout-minutes: 10
