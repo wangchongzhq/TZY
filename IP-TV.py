@@ -11,6 +11,8 @@ import re
 import time
 import requests
 import datetime
+import sys
+import platform
 
 from collections import defaultdict
 from dataclasses import dataclass
@@ -1117,6 +1119,9 @@ def update_iptv_sources():
     logger.info("=" * 50)
     logger.info(f"🔧 当前工作目录: {os.getcwd()}")
     logger.info(f"📁 输出目录: {OUTPUT_DIR}")
+    logger.info(f"🐍 Python版本: {sys.version}")
+    logger.info(f"👤 当前用户: {os.getenv('USERNAME', os.getenv('USER', 'unknown'))}")
+    logger.info(f"💻 系统: {platform.system()} {platform.release()}")
     
     # 确保输出目录存在
     if not os.path.exists(OUTPUT_DIR):
@@ -1124,6 +1129,11 @@ def update_iptv_sources():
         logger.info(f"✅ 创建输出目录: {OUTPUT_DIR}")
     else:
         logger.info(f"✅ 输出目录已存在: {OUTPUT_DIR}")
+    
+    # 列出当前目录和输出目录的内容
+    logger.info(f"📋 当前目录内容: {os.listdir('.')}")
+    if os.path.exists(OUTPUT_DIR):
+        logger.info(f"📋 输出目录内容: {os.listdir(OUTPUT_DIR)}")
     
     # 合并所有直播源
     all_sources = default_sources + user_sources
