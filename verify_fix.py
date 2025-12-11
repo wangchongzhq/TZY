@@ -7,15 +7,12 @@ def verify_files():
     
     # 检查输出文件是否存在且有内容
     output_files = [
-        'output/iptv.m3u',
-        'output/iptv_i4.m3u',
-        'output/iptv_i6.m3u',
-        'output/IP-TV.txt',
-        'output/IP-TV_i4.txt',
-        'output/IP-TV_i6.txt',
-        'output/jieguo.m3u',  # 旧文件名，应该作为兼容文件存在
-        'output/jieguo_i4.m3u',
-        'output/jieguo_i6.m3u'
+        'output/ip-tv.m3u',
+        'output/ip-tv_i4.m3u',
+        'output/ip-tv_i6.m3u',
+        'output/ip-tv.txt',
+        'output/ip-tv_i4.txt',
+        'output/ip-tv_i6.txt'
     ]
     
     all_exist = True
@@ -49,7 +46,7 @@ def verify_files():
         print(f"配置文件中的本地源: {local_sources_files}")
         
         # 检查是否包含输出文件
-        output_file_patterns = ['jieguo.m3u', 'jieguo_i4.m3u', 'jieguo_i6.m3u', 'jieguo_ipv4.m3u', 'jieguo_ipv6.m3u']
+        output_file_patterns = ['jieguo.m3u', 'jieguo_i4.m3u', 'jieguo_i6.m3u', 'jieguo_ipv4.m3u', 'jieguo_ipv6.m3u', 'ip-tv.m3u', 'ip-tv_i4.m3u', 'ip-tv_i6.m3u']
         has_output_files = False
         for file in local_sources_files:
             if any(pattern in file for pattern in output_file_patterns):

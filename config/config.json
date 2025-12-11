@@ -34,8 +34,8 @@
     "method": "ffmpeg"
   },
   "output": {
-    "m3u_file": "output/iptv.m3u",
-    "txt_file": "output/IP-TV.txt"
+    "m3u_file": "output/ip-tv.m3u",
+    "txt_file": "output/ip-tv.txt"
   },
   "epg": {
     "enabled": true,
@@ -50,11 +50,11 @@
   "local_sources": {
     "enabled": true,
     "files": [
-      "output/iptv.m3u",
-      "output/iptv_i4.m3u",
-      "output/iptv_i6.m3u",
-      "output/IP-TV.txt",
-      "output/iptv_merged.m3u",
+      "output/ip-tv.m3u",
+      "output/ip-tv_i4.m3u",
+      "output/ip-tv_i6.m3u",
+      "output/ip-tv.txt",
+      "output/ip-tv_merged.m3u",
       "output/jieguo_merged.m3u"
     ]
   },

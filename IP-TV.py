@@ -1282,14 +1282,14 @@ def update_iptv_sources():
     output_file_m3u_merged = output_file_m3u_all.replace('.m3u', '_merged.m3u')
     output_file_txt_merged = output_file_txt_all.replace('.txt', '_merged.txt')
     
-    # 兼容配置文件和工作流的文件名 - 生成iptv_前缀的版本
+    # 兼容配置文件和工作流的文件名 - 生成ip-tv_前缀的版本
     output_dir = os.path.dirname(output_file_m3u_ipv4) or OUTPUT_DIR
-    output_file_m3u_ipv4_compat = os.path.join(output_dir, "iptv_i4.m3u")
-    output_file_txt_ipv4_compat = os.path.join(output_dir, "iptv_i4.txt")
-    output_file_m3u_ipv6_compat = os.path.join(output_dir, "iptv_i6.m3u")
-    output_file_txt_ipv6_compat = os.path.join(output_dir, "iptv_i6.txt")
-    output_file_m3u_all_compat = os.path.join(output_dir, "iptv.m3u")
-    output_file_txt_all_compat = os.path.join(output_dir, "iptv.txt")
+    output_file_m3u_ipv4_compat = os.path.join(output_dir, "ip-tv_i4.m3u")
+    output_file_txt_ipv4_compat = os.path.join(output_dir, "ip-tv_i4.txt")
+    output_file_m3u_ipv6_compat = os.path.join(output_dir, "ip-tv_i6.m3u")
+    output_file_txt_ipv6_compat = os.path.join(output_dir, "ip-tv_i6.txt")
+    output_file_m3u_all_compat = os.path.join(output_dir, "ip-tv.m3u")
+    output_file_txt_all_compat = os.path.join(output_dir, "ip-tv.txt")
     
     # 生成所有文件
     success = True
@@ -1394,11 +1394,11 @@ def update_iptv_sources():
         traceback.print_exc()
         success = False
     
-    # 生成兼容版本的文件（iptv_前缀）
+    # 生成兼容版本的文件（ip-tv_前缀）
     print(f"\n===== 生成兼容版本文件 =====")
     compat_success = True
     
-    # 1. 合并版（iptv.m3u/iptv.txt）
+    # 1. 合并版（ip-tv.m3u/ip-tv.txt）
     print(f"生成兼容合并版...")
     if os.path.exists(output_file_m3u_all):
         import shutil
@@ -1410,7 +1410,7 @@ def update_iptv_sources():
             print(f"   生成兼容合并版失败: {e}")
             compat_success = False
     
-    # 2. IPv4版本（iptv_i4.m3u/iptv_i4.txt）
+    # 2. IPv4版本（ip-tv_i4.m3u/ip-tv_i4.txt）
     print(f"生成兼容IPv4版...")
     if os.path.exists(output_file_m3u_ipv4):
         try:
@@ -1421,7 +1421,7 @@ def update_iptv_sources():
             print(f"   生成兼容IPv4版失败: {e}")
             compat_success = False
     
-    # 3. IPv6版本（iptv_i6.m3u/iptv_i6.txt）
+    # 3. IPv6版本（ip-tv_i6.m3u/ip-tv_i6.txt）
     print(f"生成兼容IPv6版...")
     if os.path.exists(output_file_m3u_ipv6):
         try:
@@ -1668,12 +1668,12 @@ def main():
         print("  python IP-TV.py --speed-test <input_file> [output_dir] # 直播源测速")
         print("")
         print("输出文件：")
-        print("  - jieguo.m3u   # M3U格式的直播源文件")
-        print("  - jieguo.txt   # TXT格式的直播源文件")
-        print("  - jieguo_i4.m3u   # IPv4版本的M3U文件")
-        print("  - jieguo_i4.txt   # IPv4版本的TXT文件")
-        print("  - jieguo_i6.m3u   # IPv6版本的M3U文件")
-        print("  - jieguo_i6.txt   # IPv6版本的TXT文件")
+        print("  - ip-tv.m3u   # M3U格式的直播源文件")
+        print("  - ip-tv.txt   # TXT格式的直播源文件")
+        print("  - ip-tv_i4.m3u   # IPv4版本的M3U文件")
+        print("  - ip-tv_i4.txt   # IPv4版本的TXT文件")
+        print("  - ip-tv_i6.m3u   # IPv6版本的M3U文件")
+        print("  - ip-tv_i6.txt   # IPv6版本的TXT文件")
         print("  - iptv_update.log  # 更新日志文件")
         print("  - output/speed_test_report_*.txt  # 测速报告")
         print("  - output/sorted_*.m3u  # 排序后的M3U文件")

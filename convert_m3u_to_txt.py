@@ -132,7 +132,7 @@ def main():
         m3u_files = sys.argv[1:]
     else:
         # 尝试找到M3U文件
-        possible_m3u_files = ["iptv.m3u", "cn.m3u", "4K.m3u", "ipzyauto.m3u"]
+        possible_m3u_files = ["ip-tv.m3u", "cn.m3u", "4K.m3u", "ipzyauto.m3u"]
         
         # 获取当前目录下所有M3U文件（包括.m3u、.m3a和无扩展名的文件）
         all_m3u_files = [f for f in os.listdir('.') if f.lower().endswith(('.m3u', '.m3a')) or f in possible_m3u_files]

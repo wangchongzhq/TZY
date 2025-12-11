@@ -46,7 +46,7 @@ jobs:
     - name: Convert M3U to TXT
       run: |
         echo "开始转换M3U文件..."
-        python convert_m3u_to_txt.py output/iptv_i4.m3u output/iptv_i6.m3u
+        python convert_m3u_to_txt.py output/ip-tv_i4.m3u output/ip-tv_i6.m3u
         echo "=== 转换完成 ==="
         echo "生成的文件:"
         ls -la *.txt output/*.txt

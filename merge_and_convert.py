@@ -215,11 +215,11 @@ def main():
     """主函数"""
     # 定义文件路径
     output_dir = "output"
-    iptv_i4 = os.path.join(output_dir, "iptv_i4.m3u")
-    iptv_i6 = os.path.join(output_dir, "iptv_i6.m3u")
+    iptv_i4 = os.path.join(output_dir, "ip-tv_i4.m3u")
+    iptv_i6 = os.path.join(output_dir, "ip-tv_i6.m3u")
     # 使用新的文件名作为主要输出
-    merged_m3u = os.path.join(output_dir, "iptv_merged.m3u")
-    merged_txt = os.path.join(output_dir, "iptv_merged.txt")
+    merged_m3u = os.path.join(output_dir, "ip-tv_merged.m3u")
+    merged_txt = os.path.join(output_dir, "ip-tv_merged.txt")
     # 兼容旧的文件名
     old_merged_m3u = os.path.join(output_dir, "jieguo_merged.m3u")
     old_merged_txt = os.path.join(output_dir, "jieguo_merged.txt")
