@@ -1115,6 +1115,15 @@ def update_iptv_sources():
     logger.info("🚀 IPTV直播源自动生成工具")
     logger.info(f"📅 运行时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     logger.info("=" * 50)
+    logger.info(f"🔧 当前工作目录: {os.getcwd()}")
+    logger.info(f"📁 输出目录: {OUTPUT_DIR}")
+    
+    # 确保输出目录存在
+    if not os.path.exists(OUTPUT_DIR):
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
+        logger.info(f"✅ 创建输出目录: {OUTPUT_DIR}")
+    else:
+        logger.info(f"✅ 输出目录已存在: {OUTPUT_DIR}")
     
     # 合并所有直播源
     all_sources = default_sources + user_sources
@@ -1487,11 +1496,22 @@ def update_iptv_sources():
         if file.endswith('.m3u') or file.endswith('.txt'):
             print(f"   - {file}")
     
-    if success:
-        logger.info("任务完成！")
+    # 检查主要文件是否生成成功
+    main_files_generated = False
+    main_files = [output_file_m3u_merged, output_file_txt_merged]
+    for file in main_files:
+        if os.path.exists(file) and os.path.getsize(file) > 0:
+            main_files_generated = True
+            break
+    
+    if main_files_generated:
+        if success:
+            logger.info("任务完成！")
+        else:
+            logger.warning("部分文件生成失败，但主要文件已成功生成！")
         return True
     else:
-        logger.error("部分文件生成失败！")
+        logger.error("所有主要文件生成失败！")
         return False
 
 
