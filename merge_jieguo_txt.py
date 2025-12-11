@@ -114,7 +114,7 @@ def merge_jieguo_txt():
             output_lines.append("\n")
     
     # 写入文件
-    with open(output_file, 'w', encoding='utf-8') as f:
+    with open(output_file, 'w', encoding='utf-8-sig') as f:
         f.writelines(output_lines)
     
     print(f"✅ 成功生成 {output_file}")
@@ -123,7 +123,7 @@ def merge_jieguo_txt():
     
     # 同时生成新的文件名作为兼容
     new_output_file = "ip-tv.txt"
-    with open(new_output_file, 'w', encoding='utf-8') as f:
+    with open(new_output_file, 'w', encoding='utf-8-sig') as f:
         f.writelines(output_lines)
     print(f"✅ 同时生成兼容的 {new_output_file}")
     

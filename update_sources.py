@@ -90,7 +90,7 @@ SOURCES_WITH_NAMES = [
             os.makedirs(dir_path)
             logger.info(f"[OK] 创建目录: {dir_path}")
         
-        with open(UNIFIED_SOURCES_PY, 'w', encoding='utf-8') as f:
+        with open(UNIFIED_SOURCES_PY, 'w', encoding='utf-8-sig') as f:
             f.write(content)
         
         # 验证文件是否生成成功
@@ -108,7 +108,7 @@ SOURCES_WITH_NAMES = [
             logger.error(f"[ERROR] 生成 {UNIFIED_SOURCES_PY} 失败，文件不存在")
             # 尝试使用相对路径再生成一次
             relative_path = "unified_sources.py"
-            with open(relative_path, 'w', encoding='utf-8') as f:
+            with open(relative_path, 'w', encoding='utf-8-sig') as f:
                 f.write(content)
             if os.path.exists(relative_path):
                 logger.info(f"[OK] 使用相对路径生成 {relative_path} 成功")
@@ -121,7 +121,7 @@ SOURCES_WITH_NAMES = [
         # 尝试使用相对路径再生成一次
         relative_path = "unified_sources.py"
         try:
-            with open(relative_path, 'w', encoding='utf-8') as f:
+            with open(relative_path, 'w', encoding='utf-8-sig') as f:
                 f.write(content)
             if os.path.exists(relative_path):
                 logger.info(f"[OK] 使用相对路径生成 {relative_path} 成功")
@@ -174,7 +174,7 @@ urls = UNIFIED_SOURCES'''
                 return
     
     # 写入更新后的内容
-    with open(script_path, 'w', encoding='utf-8') as f:
+    with open(script_path, 'w', encoding='utf-8-sig') as f:
         f.write(content)
     
     logger.info(f"[OK] 已更新 {script_path}")

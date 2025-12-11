@@ -117,7 +117,7 @@ def save_hd_channels(hd_channels: List[Dict[str, str]], output_file: str) -> boo
         bool: 保存是否成功
     """
     try:
-        with open(output_file, 'w', encoding='utf-8') as f:
+        with open(output_file, 'w', encoding='utf-8-sig') as f:
             # 写入文件头
             f.write("# 高清频道列表\n")
             f.write(f"# 生成时间: {time.strftime('%Y-%m-%d %H:%M:%S')}\n")

@@ -49,14 +49,7 @@
   },
   "local_sources": {
     "enabled": true,
-    "files": [
-      "output/ip-tv.m3u",
-      "output/ip-tv_i4.m3u",
-      "output/ip-tv_i6.m3u",
-      "output/ip-tv.txt",
-      "output/ip-tv_merged.m3u",
-      "output/jieguo_merged.m3u"
-    ]
+    "files": []
   },
   "channels": {
     "name_mappings": {

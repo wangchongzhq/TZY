@@ -43,7 +43,7 @@ def update_config_traditional_aliases():
         config['channels']['name_mappings'] = updated_aliases
         
         # 保存更新后的配置文件
-        with open(CONFIG_FILE_PATH, 'w', encoding='utf-8') as f:
+        with open(CONFIG_FILE_PATH, 'w', encoding='utf-8-sig') as f:
             json.dump(config, f, ensure_ascii=False, indent=2)
         
         print(f"✓ 成功保存更新后的配置文件到 {CONFIG_FILE_PATH}")

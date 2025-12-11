@@ -25,6 +25,7 @@ from core.config import get_config
 from core.network import fetch_multiple
 from core.file_utils import write_file
 from core.epg_handler import EPGHandler
+from core.chinese_conversion import ChineseConversionPipeline
 
 # 初始化EPG处理
 logger = get_logger(__name__)
@@ -216,7 +217,7 @@ class M3UProcessor:
         try:
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             
-            with open(output_path, 'w', encoding='utf-8') as f:
+            with open(output_path, 'w', encoding='utf-8-sig') as f:
                 f.write('#EXTM3U\n')
                 for name, url in live_sources:
                     f.write(f'#EXTINF:-1,{name}\n')
@@ -817,7 +818,7 @@ def generate_m3u_file(channels, output_path):
     epg_config = get_config("epg", {})
     epg_sources = epg_config.get("sources", [])
     
-    with open(output_path, 'w', encoding='utf-8') as f:
+    with open(output_path, 'w', encoding='utf-8-sig') as f:
         # 写入文件头，包含EPG源信息
         if epg_sources:
             # 写入第一个EPG源作为tvg-url
@@ -914,7 +915,7 @@ def generate_txt_file(channels, output_path):
     
     # 使用核心模块写入文件
     content = '\n'.join(content_lines)
-    if write_file(output_path, content):
+    if write_file(output_path, content, encoding='utf-8-sig'):
         logger.info(f"✅ 成功生成 {output_path}")
         return True
     else:
@@ -1040,19 +1041,22 @@ def merge_sources(sources, local_files):
     output_file_m3u_all = ensure_output_dir(output_file_m3u_all)
     output_file_txt_all = ensure_output_dir(output_file_txt_all)
     
-    # 生成所有可能的输出文件名
-    output_files = [output_file_m3u_all, output_file_txt_all]
-    output_files.append(output_file_m3u_all.replace('.m3u', '_i4.m3u'))
-    output_files.append(output_file_txt_all.replace('.txt', '_i4.txt'))
-    output_files.append(output_file_m3u_all.replace('.m3u', '_i6.m3u'))
-    output_files.append(output_file_txt_all.replace('.txt', '_i6.txt'))
+    # 生成所有可能的输出文件名（用于跳过检查）
+    output_files_full = [output_file_m3u_all, output_file_txt_all]
+    output_files_full.append(output_file_m3u_all.replace('.m3u', '_i4.m3u'))
+    output_files_full.append(output_file_txt_all.replace('.txt', '_i4.txt'))
+    output_files_full.append(output_file_m3u_all.replace('.m3u', '_i6.m3u'))
+    output_files_full.append(output_file_txt_all.replace('.txt', '_i6.txt'))
+    
+    # 同时保存输出文件名（用于跳过检查）
+    output_file_names = [os.path.basename(file_path) for file_path in output_files_full]
     
     # 处理本地直播源文件
     logger.info(f"💻 正在读取{len(local_files)}个本地直播源文件...")
     for file_path in local_files:
         # 检查是否是输出文件，如果是则跳过
         file_name = os.path.basename(file_path)
-        if file_name in output_files:
+        if file_path in output_files_full or file_name in output_file_names:
             logger.warning(f"⚠️  跳过输出文件: {file_path}")
             continue
             
@@ -1176,6 +1180,29 @@ def update_iptv_sources():
     logger.info(f"过滤后 - IPv6频道: {ipv6_count} 个")
     print("===== 调试信息: 过滤频道完成 =====")
     
+    # 应用简繁体转换（在数据处理早期统一转换，确保所有后续处理都使用简体）
+    logger.info("🔄 开始应用简繁体转换...")
+    conversion_pipeline = ChineseConversionPipeline()
+    
+    # 转换所有频道数据
+    converted_channels_all = conversion_pipeline.process_channel_data(filtered_channels_all)
+    converted_channels_ipv4 = conversion_pipeline.process_channel_data(filtered_channels_ipv4)
+    converted_channels_ipv6 = conversion_pipeline.process_channel_data(filtered_channels_ipv6)
+    
+    # 统计转换后的频道数量
+    conv_all_count = sum(len(chans) for group, chans in converted_channels_all.items())
+    conv_ipv4_count = sum(len(chans) for group, chans in converted_channels_ipv4.items())
+    conv_ipv6_count = sum(len(chans) for group, chans in converted_channels_ipv6.items())
+    
+    logger.info(f"简繁体转换完成 - 合并频道: {conv_all_count} 个")
+    logger.info(f"简繁体转换完成 - IPv4频道: {conv_ipv4_count} 个")
+    logger.info(f"简繁体转换完成 - IPv6频道: {conv_ipv6_count} 个")
+    
+    # 用转换后的频道替换原始频道
+    filtered_channels_all = converted_channels_all
+    filtered_channels_ipv4 = converted_channels_ipv4
+    filtered_channels_ipv6 = converted_channels_ipv6
+    
     # 检查过滤后的频道数据
     if all_count == 0:
         logger.error("过滤后没有合并频道数据！")
@@ -1213,7 +1240,13 @@ def update_iptv_sources():
         print(f"\n生成{version_name}文件")
         print(f"   M3U文件: {m3u_filename}")
         print(f"   TXT文件: {txt_filename}")
-        print(f"   频道数据: {sum(len(chans) for _, chans in channels.items())} 个频道，{len(channels)} 个分类")
+        
+        # 应用简繁体转换流水线
+        print(f"   应用简繁体转换...")
+        conversion_pipeline = ChineseConversionPipeline()
+        channels = conversion_pipeline.process_channel_data(channels)
+        
+        print(f"   转换后频道数据: {sum(len(chans) for _, chans in channels.items())} 个频道，{len(channels)} 个分类")
         print(f"   文件路径是否存在: M3U={os.path.exists(os.path.dirname(m3u_filename)) if os.path.dirname(m3u_filename) else True}, TXT={os.path.exists(os.path.dirname(txt_filename)) if os.path.dirname(txt_filename) else True}")
         
         if channels:
@@ -1304,6 +1337,13 @@ def update_iptv_sources():
     print(f"  IPv4&IPv6合并版 M3U: {output_file_m3u_merged}")
     print(f"  IPv4&IPv6合并版 TXT: {output_file_txt_merged}")
     
+    # 清理旧文件
+    print(f"\n清理旧文件...")
+    for file_path in [output_file_m3u_all, output_file_txt_all, output_file_m3u_ipv4, output_file_txt_ipv4, output_file_m3u_ipv6, output_file_txt_ipv6, output_file_m3u_merged, output_file_txt_merged, output_file_m3u_all_compat, output_file_txt_all_compat, output_file_m3u_ipv4_compat, output_file_txt_ipv4_compat, output_file_m3u_ipv6_compat, output_file_txt_ipv6_compat]:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            print(f"  已删除: {os.path.basename(file_path)}")
+    
     # 合并版本
     print(f"\n开始生成合并版文件...")
     logger.info(f"开始生成合并版文件 - M3U: {output_file_m3u_all}, TXT: {output_file_txt_all}")
@@ -1362,11 +1402,18 @@ def update_iptv_sources():
         
         # 生成M3U文件
         print(f"\n正在生成M3U文件...")
-        m3u_success = generate_m3u_file(filtered_channels_all, output_file_m3u_merged)
+        
+        # 应用简繁体转换
+        from core.chinese_conversion import ChineseConversionPipeline
+        conversion_pipeline = ChineseConversionPipeline()
+        converted_channels_all = conversion_pipeline.process_channel_data(filtered_channels_all)
+        
+        # 使用转换后的频道数据生成文件
+        m3u_success = generate_m3u_file(converted_channels_all, output_file_m3u_merged)
         
         # 生成TXT文件
         print(f"正在生成TXT文件...")
-        txt_success = generate_txt_file(filtered_channels_all, output_file_txt_merged)
+        txt_success = generate_txt_file(converted_channels_all, output_file_txt_merged)
         
         # 立即检查文件是否存在
         print(f"\n检查文件生成结果:")
@@ -1499,7 +1546,7 @@ def fix_ip_tv_chars():
         cleaned_content = re.sub(r'[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f-\x9f\u20ac\ue000-\uf8ff]', '', content)
         
         # 将清理后的内容写回文件
-        with open(__file__, 'w', encoding='utf-8') as f:
+        with open(__file__, 'w', encoding='utf-8-sig') as f:
             f.write(cleaned_content)
         
         print('✓ IP-TV.py文件中的不可打印字符已移除')
@@ -1565,7 +1612,7 @@ async def run_speed_test(input_file, output_dir="output"):
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     report_path = os.path.join(output_dir, f"speed_test_report_{timestamp}.txt")
     
-    with open(report_path, 'w', encoding='utf-8') as f:
+    with open(report_path, 'w', encoding='utf-8-sig') as f:
         f.write("=== IPTV直播源测速报告 ===\n")
         f.write(f"测试时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
         f.write(f"测试直播源总数: {total}\n")
