@@ -4,6 +4,11 @@
 """
 import json
 import os
+import sys
+
+# 添加项目根目录到模块搜索路径
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from core.chinese_conversion import add_traditional_aliases, traditionalize_chinese
 
 # 配置文件路径

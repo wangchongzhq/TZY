@@ -44,7 +44,7 @@ jobs:
         sudo apt-get install -y ffmpeg
 
     - name: Run script to generate m3u
-      run: python scripts/ipzyauto.py
+      run: python ipzyauto.py
 
     - name: Debug - List generated files
       run: ls -la
@@ -70,7 +70,7 @@ jobs:
         echo "本地仓库已重置为远程最新状态"
         
         # 重新执行脚本确保生成最新文件
-        python scripts/ipzyauto.py
+        python ipzyauto.py
         
         # 添加文件
         echo "添加更改的文件..."

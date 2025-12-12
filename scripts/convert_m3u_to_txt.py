@@ -10,6 +10,9 @@ import os
 import sys
 from datetime import datetime
 
+# 添加项目根目录到模块搜索路径
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 # 导入核心模块
 from core.config import get_config
 from core.logging_config import setup_logging, get_logger, log_exception

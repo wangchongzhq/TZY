@@ -22,8 +22,13 @@ class ConfigManager:
     """
     _instance = None
     
-    def __new__(cls, config_path: str = "config/config.json"):
+    def __new__(cls, config_path: str = None):
         if cls._instance is None:
+            # 使用绝对路径加载配置文件
+            if config_path is None:
+                # 获取当前文件所在目录的父目录（项目根目录）
+                project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                config_path = os.path.join(project_root, "config", "config.json")
             cls._instance = super().__new__(cls)
             cls._instance._initialize(config_path)
         return cls._instance

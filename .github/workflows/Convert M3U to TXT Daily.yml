@@ -46,7 +46,7 @@ jobs:
     - name: 生成 M3U 文件
       run: |
         echo "开始生成M3U文件..."
-        python scripts/ipzyauto.py
+        python ipzyauto.py
         echo "=== M3U文件生成完成 ==="
         echo "当前目录下的M3U文件:"
         ls -la *.m3u
