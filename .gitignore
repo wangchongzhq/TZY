@@ -21,6 +21,9 @@ check_*.py
 fix_*.py
 verify_*.py
 
+# 但保留工作流需要的特定文件
+!check_config.py
+
 # 输出和临时文件
 run_output.txt
 temp.txt
