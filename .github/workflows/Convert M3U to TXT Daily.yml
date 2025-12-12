@@ -57,12 +57,12 @@ jobs:
         python scripts/convert_m3u_to_txt.py
         echo "=== 转换完成 ==="
         echo "生成的文件:"
-        ls -la *.txt
+        ls -la output/*.txt
         echo "=== 文件内容统计 ==="
-        ls -la *.txt | grep -v "ipzyauto.txt" | awk '{print $9}' | xargs wc -l 2>/dev/null || echo "无法统计行数"
+        ls -la output/*.txt | grep -v "ipzyauto.txt" | awk '{print $9}' | xargs wc -l 2>/dev/null || echo "无法统计行数"
         echo "=== 前20行预览 ==="
-        for file in *.txt; do
-          if [ "$file" != "ipzyauto.txt" ]; then
+        for file in output/*.txt; do
+          if [ "$(basename "$file")" != "ipzyauto.txt" ]; then
             echo "$file:"
             head -n 5 "$file" || echo "无法预览文件"
             echo "---"
@@ -103,9 +103,9 @@ jobs:
         # 添加转换后的TXT文件到Git
         echo "添加更改的文件..."
         # 添加所有新生成的TXT文件，但排除已有的特定文件
-        git add *.txt
+        git add output/*.txt
         # 恢复不需要提交的文件
-        git restore --staged ipzyauto.txt
+        git restore --staged output/ipzyauto.txt
         
         # 检查是否有更改
         if git diff --staged --quiet; then

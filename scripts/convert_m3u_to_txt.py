@@ -139,9 +139,9 @@ def main():
     
     # 根据输入文件自动生成输出文件名
     if m3u_file:
-        txt_file = f"{os.path.splitext(m3u_file)[0]}.txt"
+        txt_file = f"output/{os.path.splitext(m3u_file)[0]}.txt"
     else:
-        txt_file = "output.txt"
+        txt_file = "output/output.txt"
     
     # 执行转换
     success = converter.convert_m3u_to_txt(m3u_file, txt_file)

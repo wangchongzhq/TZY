@@ -915,10 +915,10 @@ def main():
     
     # 生成M3U和TXT文件（使用过滤后的频道）
     print("\n调用create_m3u_file函数生成M3U文件...")
-    m3u_filename = create_m3u_file(filtered_channels, "ipzyauto.m3u", speed_results)
+    m3u_filename = create_m3u_file(filtered_channels, "output/ipzyauto.m3u", speed_results)
     
     print("\n调用create_txt_file函数生成TXT文件...")
-    txt_filename = create_txt_file(filtered_channels, "ipzyauto.txt", speed_results)
+    txt_filename = create_txt_file(filtered_channels, "output/ipzyauto.txt", speed_results)
     
     # 显示生成结果
     print(f"\n文件生成完成:")

@@ -34,7 +34,7 @@ logs/
 output.log
 
 # 输出文件目录
-output/
+# output/
 
 # 本地源文件
 ipzyauto.m3u
