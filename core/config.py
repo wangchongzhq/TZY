@@ -141,7 +141,7 @@ class ConfigManager:
             os.makedirs(os.path.dirname(self._config_path), exist_ok=True)
             
             # 写入配置文件
-            with open(self._config_path, 'w', encoding='utf-8-sig') as f:
+            with open(self._config_path, 'w', encoding='utf-8') as f:
                 json.dump(self._config, f, ensure_ascii=False, indent=2)
             
             elapsed_time = time.time() - start_time

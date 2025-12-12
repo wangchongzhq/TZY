@@ -18,9 +18,6 @@ from core.config import get_config
 # 导入日志配置
 from .logging_config import get_logger, log_exception, log_performance
 
-# 导入简繁体转换模块
-from core.chinese_conversion import simplify_chinese
-
 # 获取日志记录器
 logger = get_logger(__name__)
 
@@ -733,12 +730,7 @@ def should_exclude_resolution(url: str, channel_name: str = '', min_resolution: 
                 
                 # 检查是否低于最小分辨率
                 if height < min_height:
-                    # 安全处理频道名称，避免Unicode编码错误
-                    try:
-                        logger.info(f"排除低分辨率频道: {channel_name} (分辨率: {height}p)")
-                    except UnicodeEncodeError:
-                        # 处理编码错误，使用替代方法记录
-                        logger.info(f"排除低分辨率频道: 【频道名称包含特殊字符】 (分辨率: {height}p)")
+                    logger.info(f"排除低分辨率频道: {channel_name} (分辨率: {height}p)")
                     return True
     
         # 不在频道名称中显示低分辨率的，默认不排除
@@ -759,9 +751,6 @@ def normalize_channel_name(name: str) -> str:
     """
     if not name:
         return ''
-    
-    # 将繁体中文转换为简体中文
-    name = simplify_chinese(name)
     
     # 去除前后空格
     name = name.strip()
@@ -792,8 +781,8 @@ def normalize_channel_name(name: str) -> str:
             # 提取CCTV和数字部分
             name = f"CCTV{match.group(1)}"
     
-    # 去除常见的前缀后缀，但保留4K标识
-    prefixes = [r'[\s\[\(]*(高清|HD|标清|SD|超清|蓝光)[\s\]\)]*', r'[\s\[\(]*(直播|卫视|电视台|频道)[\s\]\)]*']
+    # 去除常见的前缀后缀
+    prefixes = [r'[\s\[\(]*(高清|HD|标清|SD|超清|4K|蓝光)[\s\]\)]*', r'[\s\[\(]*(直播|卫视|电视台|频道)[\s\]\)]*']
     for prefix in prefixes:
         name = re.sub(r'^' + prefix, '', name, flags=re.IGNORECASE)
         name = re.sub(r'' + prefix + '$', '', name, flags=re.IGNORECASE)

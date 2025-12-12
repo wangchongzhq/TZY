@@ -12,13 +12,32 @@ test_python_output.log
 
 run_test.bat
 simple_test.py
-test_workflow.py
-json_check_output.txt
-output.txt
+direct_test.py
+
+# 临时测试和验证脚本
+test_*.py
+analyze_*.py
+check_*.py
+fix_*.py
+verify_*.py
+
+# 输出和临时文件
+run_output.txt
+temp.txt
 
 # 自动生成的日志文件
 get_cgq_sources.log
 logs/
+output.log
+
+# 输出文件目录
+output/
+
+# 本地源文件
+ipzyauto.m3u
+ipzyauto.txt
+ipzy_channels.txt
+channel_aliases_to_add.txt
 
 # 操作系统文件
 .DS_Store

@@ -20,8 +20,8 @@ network:
 
 # 输出配置
 output:
-  m3u_filename: "ip-tv.m3u"  # M3U输出文件名
-  txt_filename: "ip-tv.txt"  # TXT输出文件名
+  m3u_filename: "jieguo.m3u"  # M3U输出文件名
+  txt_filename: "jieguo.txt"  # TXT输出文件名
   min_lines_per_channel: 10  # 每个频道的最小线路数
   max_lines_per_channel: 90  # 每个频道的最大线路数
 

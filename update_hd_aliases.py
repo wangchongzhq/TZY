@@ -80,7 +80,7 @@ def update_hd_aliases():
             break
     
     # 保存更新后的配置文件
-    with open(config_path, 'w', encoding='utf-8-sig') as f:
+    with open(config_path, 'w', encoding='utf-8') as f:
         json.dump(config, f, ensure_ascii=False, indent=2)
     
     print(f"\n更新完成！共为 {updated_count} 个频道添加了HD格式别名")

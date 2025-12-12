@@ -52,7 +52,7 @@ jobs:
     - name: 检查文件变更
       id: check_changes
       run: |
-        git add ip-tv.m3u ip-tv.txt
+        git add jieguo.m3u jieguo.txt
         git diff --staged --quiet || echo "changes=true" >> $GITHUB_OUTPUT
 
     - name: 提交更新
@@ -81,14 +81,14 @@ jobs:
         python IP-TV.py --update
         
         # 检查文件是否存在
-        if [ ! -f "ip-tv.m3u" ] || [ ! -f "ip-tv.txt" ]; then
+        if [ ! -f "jieguo.m3u" ] || [ ! -f "jieguo.txt" ]; then
           echo "::error::错误：生成的文件未找到"
           exit 1
         fi
         
         # 添加文件
         echo "添加更改的文件..."
-        git add ip-tv.m3u ip-tv.txt
+        git add jieguo.m3u jieguo.txt
         
         # 检查是否有更改
         if git diff --staged --quiet; then

@@ -16,8 +16,6 @@
 - **格式转换**：支持M3U到TXT格式的转换
 - **语法检查**：提供脚本语法检查和字符修复功能
 - **频道标准化**：自动处理频道名称的错误别名和格式问题
-- **EPG和台标支持**：自动添加电子节目指南和频道台标信息
-- **频道过滤优化**：智能过滤购物频道和无效URL
 - **模块化设计**：核心功能模块化，便于维护和扩展
 
 ## 📋 环境要求
@@ -50,14 +48,14 @@ python update_sources.py
 ### 4. 运行主要脚本
 
 ```bash
-# 运行IP-TV直播源处理脚本（生成包含EPG和台标的M3U文件）
-python IP-TV.py --update
+# 运行主要直播源处理脚本
+
 
 # 运行IP直播源收集脚本
-python collect_ipzy.py
+python ipzyauto.py
 
-# 运行直播源格式转换脚本
-python convert_m3u_to_txt.py
+# 运行IP-TV直播源处理脚本
+python IP-TV.py
 ```
 
 ## 📁 项目结构
@@ -82,7 +80,6 @@ python convert_m3u_to_txt.py
 │   ├── logging_config.py  # 日志配置
 │   ├── network.py         # 网络请求工具
 │   ├── parser.py          # 直播源解析器
-│   └── epg_handler.py     # EPG和台标处理工具
 
 ├── logs/                  # 日志文件目录
 ├── tests/                 # 测试文件目录
@@ -96,18 +93,13 @@ python convert_m3u_to_txt.py
 ├── update_sources.py      # 播放源自动更新脚本
 ├── unified_sources.py     # 生成的统一播放源文件（请勿手动修改）
 
-├── IP-TV.py               # IP-TV直播源处理脚本（带EPG和台标支持）
-├── collect_ipzy.py        # IP直播源收集脚本
+├── IP-TV.py               # IP-TV直播源处理脚本
+├── ipzyauto.py            # IP直播源自动生成脚本
 ├── convert_m3u_to_txt.py  # M3U转TXT格式转换脚本
 ├── check_all_syntax.py    # 语法检查脚本
 ├── validate_workflows.py  # 工作流验证脚本
-├── check_missing_files.py # 文件引用检查脚本
-├── epg_data.json          # EPG和台标数据源文件
 ├── filter_hd_channels.py  # HD频道过滤脚本
-├── final_verification.py  # 最终验证脚本
-├── ipzyauto.txt           # IP直播源频道列表
-├── ipzyauto.m3u           # 自动生成的IP直播源M3U文件
-├── ipzyauto.txt           # 自动生成的IP直播源TXT文件
+├── ipzyauto.py            # IP直播源自动生成脚本
 ├── tzydauto.txt           # 自动生成的直播源TXT文件
 ├── channel_aliases_to_add.txt # 待添加的频道别名
 ├── .gitignore             # Git忽略文件配置
@@ -232,17 +224,7 @@ python filter_hd_channels.py
 
 **输出**：生成高清频道列表
 
-#### 8. final_verification.py - 最终验证脚本
 
-**功能**：验证生成的直播源文件的完整性和可用性
-
-**使用方法**：
-
-```bash
-python final_verification.py
-```
-
-**输出**：显示验证结果
 
 ## 🤖 自动化工作流
 
@@ -308,14 +290,6 @@ python final_verification.py
 ## 📝 更新日志
 
 ### 最新更新
-- 🔧 **仓库结构优化**：删除了多个冗余测试文件和临时文件，精简了仓库结构，提高了代码的可维护性
-- 🐛 **错误修复**：解决了IP-TV.py文件开头的UTF-8 BOM字符导致的语法错误
-- 🔄 **依赖管理**：重新生成了unified_sources.py文件，确保其他脚本的正常依赖
-- ✅ **代码验证**：验证了核心文件的语法正确性，确保系统稳定运行
-- 🚀 **性能提升**：移除了无用的语句和文件，提升了处理速度
-- 🔪 **冗余清理**：删除了功能重复的诊断类文件和不再需要的脚本
-
-### 前期更新
 - 修复了CCTV频道名称中的错误别名问题（如CCTV4a、CCTV4A、CCTV4o、CCTV4m等），将其转换为标准格式
 - 更新了项目结构，完善了核心模块的文档说明
 - 删除了M3U和TXT文件中的EPG相关功能（tvg-id、tvg-name、tvg-logo、tvg-url等属性）

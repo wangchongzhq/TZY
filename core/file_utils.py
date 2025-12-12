@@ -66,14 +66,14 @@ def read_file(file_path: str, encoding: str = 'utf-8', errors: str = 'strict') -
             log_exception(logger, f"读取文件失败 {file_path}", e)
             return None
 
-def write_file(file_path: str, content: str, encoding: str = 'utf-8-sig', overwrite: bool = True) -> bool:
+def write_file(file_path: str, content: str, encoding: str = 'utf-8', overwrite: bool = True) -> bool:
     """
     安全写入文件内容
     
     参数:
         file_path: 文件路径
         content: 要写入的内容
-        encoding: 文件编码，默认为utf-8-sig
+        encoding: 文件编码，默认为utf-8
         overwrite: 是否覆盖现有文件，默认为True
         
     返回:

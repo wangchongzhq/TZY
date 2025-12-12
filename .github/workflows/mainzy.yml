@@ -35,13 +35,8 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y ffmpeg
 
-    - name: Run diagnostic script
-      run: python diagnose_workflow.py
-      timeout-minutes: 5
-
     - name: Run script to generate m3u
-      run: python IP-TV.py --update
-      timeout-minutes: 10
+      run: python ipzyauto.py
 
     - name: Debug - List generated files
       run: ls -la
@@ -67,14 +62,10 @@ jobs:
         echo "本地仓库已重置为远程最新状态"
         
         # 重新执行脚本确保生成最新文件
-        python IP-TV.py --update
+        python ipzyauto.py
         
         # 添加文件
         echo "添加更改的文件..."
-        # 只添加核心脚本文件，不添加测试或临时文件
-        git add ./IP-TV.py ./update_sources.py ./requirements.txt || true
-        # 添加output目录下的生成文件
-        git add ./output/ || true
         
         # 检查是否有更改
         if git diff --staged --quiet; then
