@@ -28,7 +28,7 @@ import aiohttp
 # 导入核心模块
 from core.logging_config import get_logger, setup_logging
 from core.config import get_config, config_manager
-from core.network import fetch_multiple
+from core.network import fetch_multiple, fetch_content, check_url_availability
 from core.file_utils import write_file
 
 # 重新加载配置文件以确保使用最新配置
@@ -36,7 +36,7 @@ config_manager.load_config()
 
 # 测速配置类
 class SpeedTestConfig:
-    CONCURRENT_LIMIT = 20  # 并发限制
+    CONCURRENT_LIMIT = 30  # 并发限制（优化：从20增加到30以提高测速效率）
     TIMEOUT = 10  # 超时时间（秒）
     RETRY_TIMES = 3  # 重试次数
     OUTPUT_DIR = "output"  # 输出目录
@@ -82,7 +82,7 @@ class SpeedTester:
                         # 返回第一个流的分辨率
                         return matches[0][0]
             return None
-        except Exception as e:
+        except (requests.exceptions.RequestException, re.error) as e:
             self.logger.warning(f"解析m3u8分辨率失败: {e}")
             return None
     
@@ -130,7 +130,7 @@ class SpeedTester:
                         break
                     else:
                         result.error = f"HTTP状态码: {response.status}"
-            except Exception as e:
+            except (aiohttp.ClientError, asyncio.TimeoutError, OSError) as e:
                 result.error = str(e)
                 self.logger.warning(f"URL: {url} 尝试 {attempt+1}/{retry_times} 失败: {e}")
                 await asyncio.sleep(1)  # 重试前等待1秒
@@ -397,17 +397,14 @@ def get_urls_from_file(file_path):
             with open(file_path, 'r', encoding='utf-8') as f:
                 urls = [line.strip() for line in f if line.strip() and not line.startswith('#')]
         except Exception as e:
-            print(f"读取URL文件时出错: {e}")
+            logger.error(f"读取URL文件时出错: {e}")
     return urls
 
 # 检查URL是否有效
 def check_url(url, timeout=5):
     """检查URL是否可访问"""
-    try:
-        response = requests.head(url, timeout=timeout, allow_redirects=True)
-        return response.status_code < 400
-    except:
-        return False
+    result = check_url_availability(url, timeout=timeout)
+    return result['available']
 
 # 格式化时间间隔
 def format_interval(seconds):
@@ -432,7 +429,7 @@ def get_ip_address():
         ip = s.getsockname()[0]
         s.close()
         return ip
-    except:
+    except (socket.gaierror, socket.error, TimeoutError) as e:
         return "127.0.0.1"
 
 # 检查IPv6支持
@@ -442,7 +439,7 @@ def check_ipv6_support():
         import socket
         socket.inet_pton(socket.AF_INET6, '::1')
         return True
-    except:
+    except (AttributeError, OSError) as e:
         return False
 
 # 判断是否为IPv6地址
@@ -546,25 +543,19 @@ def normalize_channel_name(name):
 # 从URL获取M3U内容
 def fetch_m3u_content(url):
     """从URL获取M3U内容"""
-    try:
-        print(f"正在获取: {url}")
-        # 添加verify=False参数来跳过SSL证书验证
-        response = requests.get(url, timeout=30, verify=False)
-        response.raise_for_status()
-        return response.text
-    except Exception as e:
-        print(f"获取 {url} 时出错: {e}")
-        return None
+    logger = get_logger("fetch_m3u_content")
+    logger.info(f"正在获取: {url}")
+    return fetch_content(url, timeout=30, verify=False)
 
 # 从本地文件获取M3U内容
 def fetch_local_m3u_content(file_path):
     """从本地文件获取M3U内容"""
     try:
-        print(f"正在读取本地文件: {file_path}")
+        logger.info(f"正在读取本地文件: {file_path}")
         with open(file_path, 'r', encoding='utf-8') as f:
             return f.read()
     except Exception as e:
-        print(f"读取本地文件 {file_path} 时出错: {e}")
+        logger.error(f"读取本地文件 {file_path} 时出错: {e}")
         return None
 
 # 检查是否应该排除购物频道
@@ -676,7 +667,7 @@ def filter_channels(channels):
 # 生成M3U文件
 def generate_m3u_file(channels, output_path):
     """生成M3U文件"""
-    print(f"正在生成 {output_path}...")
+    logger.info(f"正在生成 {output_path}...")
     
     # 生成文件内容
     content_lines = []
@@ -702,10 +693,10 @@ def generate_m3u_file(channels, output_path):
     # 使用核心模块写入文件
     content = '\n'.join(content_lines)
     if write_file(output_path, content):
-        print(f"✅ 成功生成 {output_path}")
+        logger.info(f"✅ 成功生成 {output_path}")
         return True
     else:
-        print(f"❌ 生成 {output_path} 失败")
+        logger.error(f"❌ 生成 {output_path} 失败")
         return False
 
 # 生成TXT文件
@@ -806,7 +797,7 @@ def extract_channels_from_txt(file_path):
                             # 未规范化且不含4K的频道放在其他
                             channels["其他"].append((channel_name, url))
     except Exception as e:
-        print(f"解析本地文件 {file_path} 时出错: {e}")
+        logger.error(f"解析本地文件 {file_path} 时出错: {e}")
     
     return channels
 
@@ -991,29 +982,29 @@ def check_ip_tv_syntax():
         
         # 尝试解析整个文件
         ast.parse(content)
-        print('✓ IP-TV.py: 语法正确')
+        logger.info('✓ IP-TV.py: 语法正确')
         return True
         
     except SyntaxError as e:
-        print(f'✗ 语法错误: {e}')
-        print(f'行号: {e.lineno}, 偏移量: {e.offset}')
+        logger.error(f'✗ 语法错误: {e}')
+        logger.error(f'行号: {e.lineno}, 偏移量: {e.offset}')
         
         # 获取有问题的行
         lines = content.splitlines()
         if 0 <= e.lineno - 1 < len(lines):
             problem_line = lines[e.lineno - 1]
-            print(f'问题行内容: {repr(problem_line)}')
+            logger.error(f'问题行内容: {repr(problem_line)}')
             
             # 打印该行的十六进制表示
-            print(f'问题行十六进制: {problem_line.encode("utf-8").hex()}')
+            logger.error(f'问题行十六进制: {problem_line.encode("utf-8").hex()}')
             
             # 标记错误位置
             if 0 <= e.offset - 1 < len(problem_line):
-                print('错误位置: ' + ' ' * (e.offset - 1) + '^')
+                logger.error('错误位置: ' + ' ' * (e.offset - 1) + '^')
         return False
         
     except Exception as e:
-        print(f'✗ 其他错误: {type(e).__name__}: {e}')
+        logger.error(f'✗ 其他错误: {type(e).__name__}: {e}')
         return False
 
 
@@ -1034,11 +1025,11 @@ def fix_ip_tv_chars():
         with open(__file__, 'w', encoding='utf-8') as f:
             f.write(cleaned_content)
         
-        print('✓ IP-TV.py文件中的不可打印字符已移除')
+        logger.info('✓ IP-TV.py文件中的不可打印字符已移除')
         return True
         
     except Exception as e:
-        print(f'✗ 处理文件时出错: {type(e).__name__}: {e}')
+        logger.error(f'✗ 处理文件时出错: {type(e).__name__}: {e}')
         return False
 
 
@@ -1173,41 +1164,41 @@ def main():
             asyncio.run(run_speed_test(input_file, output_dir))
         else:
             # 显示帮助信息
-            print("未知参数，请使用以下参数：")
-            print("  --update       # 立即手动更新直播源")
-            print("  --check-syntax # 检查IP-TV.py文件语法错误")
-            print("  --fix-chars    # 修复IP-TV.py文件中的不可打印字符")
-            print("  --speed-test   # 对M3U文件中的直播源进行测速，使用方法：--speed-test <input_file> [output_dir]")
+            logger.info("未知参数，请使用以下参数：")
+            logger.info("  --update       # 立即手动更新直播源")
+            logger.info("  --check-syntax # 检查IP-TV.py文件语法错误")
+            logger.info("  --fix-chars    # 修复IP-TV.py文件中的不可打印字符")
+            logger.info("  --speed-test   # 对M3U文件中的直播源进行测速，使用方法：--speed-test <input_file> [output_dir]")
     else:
         # 显示帮助信息
-        print("=" * 60)
-        print("      IPTV直播源自动生成工具")
-        print("=" * 60)
-        print("功能：")
-        print("  1. 从多个来源获取IPTV直播源")
-        print("  2. 生成M3U和TXT格式的直播源文件")
-        print("  3. 支持手动更新和通过GitHub Actions工作流定时更新")
-        print("  4. 检查IP-TV.py文件语法错误")
-        print("  5. 修复IP-TV.py文件中的不可打印字符")
-        print("  6. 对M3U文件中的直播源进行异步测速")
-        print("")
-        print("使用方法：")
-        print("  python IP-TV.py --update       # 立即手动更新直播源")
-        print("  python IP-TV.py --check-syntax # 检查语法错误")
-        print("  python IP-TV.py --fix-chars    # 修复不可打印字符")
-        print("  python IP-TV.py --speed-test <input_file> [output_dir] # 直播源测速")
-        print("")
-        print("输出文件：")
-        print("  - iptv.m3u   # M3U格式的直播源文件")
-        print("  - channels.txt   # TXT格式的直播源文件")
-        print("  - iptv_ipv4.m3u   # IPv4版本的M3U文件")
-        print("  - channels_ipv4.txt   # IPv4版本的TXT文件")
-        print("  - iptv_ipv6.m3u   # IPv6版本的M3U文件")
-        print("  - channels_ipv6.txt   # IPv6版本的TXT文件")
-        print("  - iptv_update.log  # 更新日志文件")
-        print("  - output/speed_test_report_*.txt  # 测速报告")
-        print("  - output/sorted_*.m3u  # 排序后的M3U文件")
-        print("=" * 60)
+        logger.info("=" * 60)
+        logger.info("      IPTV直播源自动生成工具")
+        logger.info("=" * 60)
+        logger.info("功能：")
+        logger.info("  1. 从多个来源获取IPTV直播源")
+        logger.info("  2. 生成M3U和TXT格式的直播源文件")
+        logger.info("  3. 支持手动更新和通过GitHub Actions工作流定时更新")
+        logger.info("  4. 检查IP-TV.py文件语法错误")
+        logger.info("  5. 修复IP-TV.py文件中的不可打印字符")
+        logger.info("  6. 对M3U文件中的直播源进行异步测速")
+        logger.info("")
+        logger.info("使用方法：")
+        logger.info("  python IP-TV.py --update       # 立即手动更新直播源")
+        logger.info("  python IP-TV.py --check-syntax # 检查语法错误")
+        logger.info("  python IP-TV.py --fix-chars    # 修复不可打印字符")
+        logger.info("  python IP-TV.py --speed-test <input_file> [output_dir] # 直播源测速")
+        logger.info("")
+        logger.info("输出文件：")
+        logger.info("  - iptv.m3u   # M3U格式的直播源文件")
+        logger.info("  - channels.txt   # TXT格式的直播源文件")
+        logger.info("  - iptv_ipv4.m3u   # IPv4版本的M3U文件")
+        logger.info("  - channels_ipv4.txt   # IPv4版本的TXT文件")
+        logger.info("  - iptv_ipv6.m3u   # IPv6版本的M3U文件")
+        logger.info("  - channels_ipv6.txt   # IPv6版本的TXT文件")
+        logger.info("  - iptv_update.log  # 更新日志文件")
+        logger.info("  - output/speed_test_report_*.txt  # 测速报告")
+        logger.info("  - output/sorted_*.m3u  # 排序后的M3U文件")
+        logger.info("=" * 60)
 
 
 if __name__ == "__main__":

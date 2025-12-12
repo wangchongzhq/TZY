@@ -48,14 +48,11 @@ python update_sources.py
 ### 4. 运行主要脚本
 
 ```bash
-# 运行主要直播源处理脚本
-
+# 运行IP-TV直播源处理脚本
+python IP-TV.py
 
 # 运行IP直播源收集脚本
 python ipzyauto.py
-
-# 运行IP-TV直播源处理脚本
-python IP-TV.py
 ```
 
 ## 📁 项目结构
@@ -65,7 +62,6 @@ python IP-TV.py
 │   ├── Convert M3U to TXT Daily.yml
 │   ├── IPZYTXT.yml
 │   ├── mainzy.yml
-
 │   ├── update_ip-tv.yml
 │   ├── update_ipzy.yml
 │   └── update_sources.yml
@@ -79,7 +75,7 @@ python IP-TV.py
 │   ├── file_utils.py      # 文件处理工具
 │   ├── logging_config.py  # 日志配置
 │   ├── network.py         # 网络请求工具
-│   ├── parser.py          # 直播源解析器
+│   └── parser.py          # 直播源解析器
 
 ├── logs/                  # 日志文件目录
 ├── tests/                 # 测试文件目录
@@ -95,12 +91,15 @@ python IP-TV.py
 
 ├── IP-TV.py               # IP-TV直播源处理脚本
 ├── ipzyauto.py            # IP直播源自动生成脚本
-├── convert_m3u_to_txt.py  # M3U转TXT格式转换脚本
-├── check_all_syntax.py    # 语法检查脚本
-├── validate_workflows.py  # 工作流验证脚本
-├── filter_hd_channels.py  # HD频道过滤脚本
-├── ipzyauto.py            # IP直播源自动生成脚本
+├── scripts/               # 辅助脚本目录
+│   ├── convert_m3u_to_txt.py  # M3U转TXT格式转换脚本
+│   ├── check_all_syntax.py    # 语法检查脚本
+│   ├── validate_workflows.py  # 工作流验证脚本
+│   ├── resolve_conflicts.py   # 冲突解决脚本
+│   ├── update_hd_aliases.py   # HD频道别名更新脚本
+│   └── update_traditional_aliases.py # 传统频道别名更新脚本
 ├── tzydauto.txt           # 自动生成的直播源TXT文件
+├── epg_data.json          # EPG数据文件
 ├── channel_aliases_to_add.txt # 待添加的频道别名
 ├── .gitignore             # Git忽略文件配置
 └── README.md              # 项目说明文档
@@ -140,19 +139,7 @@ python update_sources.py
 
 ### 主要脚本功能
 
-
-
-**功能**：提取、合并、分类直播源，支持质量筛选和格式转换
-
-**使用方法**：
-
-```bash
-
-```
-
-**输出**：自动生成分类的直播源文件（默认：tzydauto.txt）
-
-#### 2. IP-TV.py - IP-TV直播源处理脚本
+#### 1. IP-TV.py - IP-TV直播源处理脚本
 
 **功能**：处理IP-TV格式的直播源，支持多种格式转换和源合并
 
@@ -164,14 +151,14 @@ python IP-TV.py
 
 **输出**：自动生成IP-TV格式的直播源文件
 
-#### 3. collect_ipzy.py - IP直播源收集脚本
+#### 3. ipzyauto.py - IP直播源收集脚本
 
 **功能**：从多个源收集IP直播源，自动筛选高清线路，智能分类
 
 **使用方法**：
 
 ```bash
-python collect_ipzy.py
+python ipzyauto.py
 ```
 
 **输出**：自动生成分类的IP直播源文件（默认：ipzyauto.txt、ipzyauto.m3u等）

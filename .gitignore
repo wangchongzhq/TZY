@@ -14,15 +14,15 @@ run_test.bat
 simple_test.py
 direct_test.py
 
-# 临时测试和验证脚本
-test_*.py
-analyze_*.py
-check_*.py
-fix_*.py
-verify_*.py
+# 临时测试和验证脚本（仅忽略根目录）
+/test_*.py
+/analyze_*.py
+/check_*.py
+/fix_*.py
+/verify_*.py
 
-# 但保留工作流需要的特定文件
-!check_config.py
+# tests目录下的测试文件不忽略
+tests/
 
 # 输出和临时文件
 run_output.txt

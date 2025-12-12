@@ -15,6 +15,7 @@ python update_sources.py
 import json
 import os
 import re
+import sys
 
 # 导入核心模块
 from core.logging_config import setup_logging, get_logger
@@ -26,12 +27,6 @@ logger = get_logger(__name__)
 # 定义文件路径
 SOURCES_JSON = 'sources.json'
 UNIFIED_SOURCES_PY = 'unified_sources.py'
-
-# 设置脚本执行时的编码
-import sys
-import io
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 # 需要更新的脚本列表
 SCRIPTS_TO_UPDATE = [
@@ -91,51 +86,78 @@ SOURCES_WITH_NAMES = [
 
 def update_script(script_path):
     """更新单个脚本中的播放源"""
-    with open(script_path, 'r', encoding='utf-8') as f:
-        content = f.read()
+    try:
+        with open(script_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+    except Exception as e:
+        logger.error(f"❌ 读取文件 {script_path} 失败: {e}")
+        return
     
     # 检查文件中是否已经导入了unified_sources
     if 'from unified_sources import' not in content:
+        updated = False
+        
         # 根据不同脚本类型进行处理
-        # 替换GITHUB_SOURCES或其他数据源列表
-            if 'GITHUB_SOURCES' in content:
-                # 匹配GITHUB_SOURCES = get_config(...) 的情况，使用多行匹配
-                pattern = r'GITHUB_SOURCES\s*=\s*get_config\(.*?\)'  # 匹配GITHUB_SOURCES = get_config(...) 
-                replacement = '''# 从统一播放源文件导入
+        if 'GITHUB_SOURCES' in content:
+            # 匹配GITHUB_SOURCES = get_config(...) 的情况，使用多行匹配
+            pattern = r'GITHUB_SOURCES\s*=\s*get_config\(.*?\)'
+            replacement = '''# 从统一播放源文件导入
 from unified_sources import UNIFIED_SOURCES
 GITHUB_SOURCES = UNIFIED_SOURCES'''
-                content = re.sub(pattern, replacement, content, flags=re.DOTALL)
-            elif 'default_sources' in content and 'user_sources' in content:
-                # 处理IP-TV.py类型的脚本
-                # 分别匹配default_sources和user_sources，不要求它们紧挨着
-                default_sources_pattern = r'default_sources\s*=\s*\[.*?\]'
-                user_sources_pattern = r'user_sources\s*=\s*\[.*?\]'
-                
-                # 先替换default_sources
-                content = re.sub(default_sources_pattern, '''# 从统一播放源文件导入
+            new_content = re.sub(pattern, replacement, content, flags=re.DOTALL)
+            if new_content != content:
+                content = new_content
+                updated = True
+                logger.debug(f"使用GITHUB_SOURCES模式更新 {script_path}")
+        
+        if 'default_sources' in content and 'user_sources' in content:
+            # 处理IP-TV.py类型的脚本
+            # 分别匹配default_sources和user_sources，不要求它们紧挨着
+            default_sources_pattern = r'default_sources\s*=\s*\[.*?\]'
+            user_sources_pattern = r'user_sources\s*=\s*\[.*?\]'
+            
+            # 先替换default_sources
+            new_content = re.sub(default_sources_pattern, '''# 从统一播放源文件导入
 from unified_sources import UNIFIED_SOURCES
 default_sources = UNIFIED_SOURCES''', content, flags=re.DOTALL)
-                
-                # 然后替换user_sources
-                content = re.sub(user_sources_pattern, '''user_sources = []''', content, flags=re.DOTALL)
-            elif 'urls' in content:
-                # 处理其他直接使用urls变量的脚本
-                pattern = r'urls\s*=\s*\[.*?\]'
-                replacement = '''# 从统一播放源文件导入
+            if new_content != content:
+                content = new_content
+                updated = True
+                logger.debug(f"更新 {script_path} 中的default_sources")
+            
+            # 然后替换user_sources
+            new_content = re.sub(user_sources_pattern, '''user_sources = []''', content, flags=re.DOTALL)
+            if new_content != content:
+                content = new_content
+                updated = True
+                logger.debug(f"更新 {script_path} 中的user_sources")
+        
+        elif 'urls' in content:
+            # 处理其他直接使用urls变量的脚本
+            pattern = r'urls\s*=\s*\[.*?\]'
+            replacement = '''# 从统一播放源文件导入
 from unified_sources import UNIFIED_SOURCES
 urls = UNIFIED_SOURCES'''
-                
-                # 使用多行匹配进行替换
-                content = re.sub(pattern, replacement, content, flags=re.DOTALL)
-            else:
-                logger.warning(f"⚠️  未知的数据源格式，跳过 {script_path}")
-                return
+            
+            # 使用多行匹配进行替换
+            new_content = re.sub(pattern, replacement, content, flags=re.DOTALL)
+            if new_content != content:
+                content = new_content
+                updated = True
+                logger.debug(f"使用urls模式更新 {script_path}")
+        
+        if not updated:
+            logger.warning(f"⚠️  未知的数据源格式，跳过 {script_path}")
+            return
     
-    # 写入更新后的内容
-    with open(script_path, 'w', encoding='utf-8') as f:
-        f.write(content)
-    
-    logger.info(f"✅ 已更新 {script_path}")
+    try:
+        # 写入更新后的内容
+        with open(script_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+        logger.info(f"✅ 已更新 {script_path}")
+    except Exception as e:
+        logger.error(f"❌ 写入文件 {script_path} 失败: {e}")
+        return
 
 
 def main():
