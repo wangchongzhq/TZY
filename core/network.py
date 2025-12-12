@@ -69,6 +69,12 @@ def fetch_content(url: str, retries: Optional[int] = None, timeout: Optional[int
     if headers is None:
         headers = DEFAULT_HEADERS.copy()
     
+    # 针对特定域名的特殊处理
+    if 'ghfast.top' in url:
+        # 对ghfast.top域名设置更短的超时和更少的重试次数
+        timeout = 5
+        retries = 1
+    
     config = {
         'headers': headers,
         'timeout': timeout,
