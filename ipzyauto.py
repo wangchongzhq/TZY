@@ -1,4 +1,7 @@
-# -*- coding: utf-8 -*-
+﻿﻿# -*- coding: utf-8 -*-
+import os
+import sys
+import io
 import re
 import time
 import requests
@@ -6,8 +9,14 @@ import statistics
 import concurrent.futures
 import json
 from collections import defaultdict
+
+# 设置标准输出为UTF-8编码
+if sys.platform == 'win32':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 from core.file_utils import write_file
 from core.config import get_config
+from core.channel_utils import normalize_channel_name
 from unified_sources import UNIFIED_SOURCES
 
 # 频道分类：从config.json中读取
@@ -303,11 +312,7 @@ CHANNEL_MAPPING = {
 ipv4_regex = r"http://\d+\.\d+\.\d+\.\d+(?::\d+)?"
 ipv6_regex = r"http://\[[0-9a-fA-F:]+\]"
 
-def normalize_channel_name(name: str) -> str:
-    """标准化频道名称"""
-    if not name:
-        return "未知频道"
-    return name.strip()
+# normalize_channel_name函数已从core.channel_utils导入，确保所有文件使用统一的标准化逻辑
 
 # 预编译正则表达式以提高性能
 _INVALID_URL_PATTERNS = [
@@ -622,7 +627,12 @@ def parse_lines(lines):
         processed_lines += 1
         # 只打印第1-50行和包含购物的行，减少输出量
         if i < 50 or any(keyword in line for keyword in ['购物', 'example', 'demo', 'sample']):
-            print(f"处理行 {i+1}: {line[:100]}{'...' if len(line) > 100 else ''}")
+            # 确保能够处理所有Unicode字符
+            try:
+                print(f"处理行 {i+1}: {line[:100]}{'...' if len(line) > 100 else ''}")
+            except UnicodeEncodeError:
+                # 如果无法打印，跳过这行的打印
+                pass
 
         # M3U #EXTINF 格式
         if line.startswith("#EXTINF"):

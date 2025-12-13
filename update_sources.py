@@ -32,7 +32,7 @@ UNIFIED_SOURCES_PY = 'unified_sources.py'
 SCRIPTS_TO_UPDATE = [
     'IP-TV.py',
     'ipzyauto.py',
-    'convert_m3u_to_txt.py'
+    'scripts/convert_m3u_to_txt.py'
 ]
 
 
@@ -78,7 +78,7 @@ SOURCES_WITH_NAMES = [
     content = content.format(urls=urls_str, sources_with_names=sources_with_names_str)
     
     # 写入文件
-    with open(UNIFIED_SOURCES_PY, 'w', encoding='utf-8') as f:
+    with open(UNIFIED_SOURCES_PY, 'w', encoding='utf-8-sig') as f:
         f.write(content)
     
     logger.info(f"✅ 已生成 {UNIFIED_SOURCES_PY}")
@@ -152,7 +152,7 @@ urls = UNIFIED_SOURCES'''
     
     try:
         # 写入更新后的内容
-        with open(script_path, 'w', encoding='utf-8') as f:
+        with open(script_path, 'w', encoding='utf-8-sig') as f:
             f.write(content)
         logger.info(f"✅ 已更新 {script_path}")
     except Exception as e:

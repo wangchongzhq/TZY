@@ -752,37 +752,82 @@ def normalize_channel_name(name: str) -> str:
     if not name:
         return ''
     
-    # 去除前后空格
+    # 保存原始名称用于调试
+    original_name = name
+    
+    # 第一步：统一转换为简体中文
+    try:
+        import core.chinese_conversion
+        name = core.chinese_conversion.traditional_to_simplified(name)
+    except Exception as e:
+        # 如果转换失败，继续处理
+        pass
+    
+    # 第二步：去除前后空格
     name = name.strip()
     
-    # 替换常见的特殊字符和分隔符
+    # 第三步：替换常见的特殊字符和分隔符为空格
     name = re.sub(r'[\s_\-\.]+', ' ', name)
     
-    # 去除多余的空格
-    name = re.sub(r'\s+', ' ', name)
+    # 第四步：去除多余的空格
+    name = re.sub(r'\s+', ' ', name).strip()
+    
+    # 第五步：转换为小写用于匹配
+    name_lower = name.lower()
+    
+    # 第六步：处理CCTV频道名称 - 优先处理，避免被其他逻辑影响
+    # 先处理CCTV频道，处理完成后直接返回结果
+    if name_lower.startswith('cctv'):
+        # 匹配所有CCTV格式，包括带空格、带后缀、带区域等
+        # 提取CCTV后面的数字和可能的加号
+        cctv_pattern = re.compile(r'cctv\s*(\d+)\s*([+]?)', re.IGNORECASE)
+        cctv_match = cctv_pattern.search(name_lower)
+        
+        if cctv_match:
+            cctv_number = cctv_match.group(1)
+            has_plus = cctv_match.group(2) == '+'
+            
+            # 检查是否有区域后缀
+            region = ''
+            if '欧洲' in name_lower:
+                region = '欧洲'
+            elif '美洲' in name_lower:
+                region = '美洲'
+            
+            # 构建标准化名称
+            if has_plus:
+                if region:
+                    return f"CCTV{cctv_number}+{region}"
+                else:
+                    return f"CCTV{cctv_number}+"
+            else:
+                if region:
+                    return f"CCTV{cctv_number}{region}"
+                else:
+                    return f"CCTV{cctv_number}"
     
     # 处理CCTV频道名称中的错误别名（如CCTV4a, CCTV4A, CCTV4o等）
-    if re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?\d+[AaOoMm]', name, re.IGNORECASE):
-        match = re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)', name, re.IGNORECASE)
-        if match:
-            # 提取CCTV和数字部分
-            base_name = f"CCTV{match.group(1)}"
-            # 检查是否有欧洲/美洲等后缀
-            if '欧洲' in name or '美洲' in name:
-                region = '欧洲' if '欧洲' in name else '美洲'
-                name = f"{base_name}{region}"
-            else:
-                name = base_name
+    cctv_alias_pattern = re.compile(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)[AaOoMm]', re.IGNORECASE)
+    cctv_alias_match = cctv_alias_pattern.match(name)
+    if cctv_alias_match:
+        cctv_number = cctv_alias_match.group(1)
+        return f"CCTV{cctv_number}"
     
-    # 处理CCTV-数字格式（如CCTV-1, CCTV -1, CCTV- 1等）
-    elif re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)', name, re.IGNORECASE):
-        match = re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)', name, re.IGNORECASE)
-        if match:
-            # 提取CCTV和数字部分
-            name = f"CCTV{match.group(1)}"
+    # 处理CCTV-13、CCTV-14等格式
+    cctv_dash_pattern = re.compile(r'^[Cc][Cc][Tt][Vv][-](\d+)', re.IGNORECASE)
+    cctv_dash_match = cctv_dash_pattern.match(name)
+    if cctv_dash_match:
+        cctv_number = cctv_dash_match.group(1)
+        return f"CCTV{cctv_number}"
+    
+    # 处理卫视频道，如"山东卫视高清"、"浙江卫视直播"等
+    sat_pattern = re.compile(r'^(.+?)(?:卫视|卫视台|电视台|频道|台)(?:高清|HD|标清|SD|超清|直播)?$')
+    sat_match = sat_pattern.match(name)
+    if sat_match:
+        name = f"{sat_match.group(1)}卫视"
     
     # 去除常见的前缀后缀
-    prefixes = [r'[\s\[\(]*(高清|HD|标清|SD|超清|4K|蓝光)[\s\]\)]*', r'[\s\[\(]*(直播|卫视|电视台|频道)[\s\]\)]*']
+    prefixes = [r'[\s\[\(]*(高清|HD|标清|SD|超清|4K|蓝光)[\s\]\)]*', r'[\s\[\(]*(直播|卫视|电视台|频道|台)[\s\]\)]*']
     for prefix in prefixes:
         name = re.sub(r'^' + prefix, '', name, flags=re.IGNORECASE)
         name = re.sub(r'' + prefix + '$', '', name, flags=re.IGNORECASE)

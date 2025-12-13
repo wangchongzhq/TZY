@@ -102,7 +102,7 @@ def write_file(file_path: str, content: str, encoding: str = 'utf-8', overwrite:
                     return False
         
         start_time = time.time()
-        with open(file_path, 'w', encoding=encoding) as f:
+        with open(file_path, 'w', encoding='utf-8-sig' if encoding == 'utf-8' else encoding) as f:
             f.write(content)
             
         elapsed_time = time.time() - start_time
@@ -138,7 +138,7 @@ def append_to_file(file_path: str, content: str, encoding: str = 'utf-8') -> boo
                 return False
         
         start_time = time.time()
-        with open(file_path, 'a', encoding=encoding) as f:
+        with open(file_path, 'a', encoding='utf-8-sig' if encoding == 'utf-8' else encoding) as f:
             f.write(content)
         
         elapsed_time = time.time() - start_time

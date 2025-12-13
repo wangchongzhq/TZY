@@ -20,7 +20,7 @@ def resolve_conflicts(file_path):
     pattern = r'<<<<<<< HEAD(?::.*?)?\n(.*?)\n=======.*?\n>>>>>>> [0-9a-f]+'
     resolved_content = re.sub(pattern, r'\1', content, flags=re.DOTALL)
     
-    with open(file_path, 'w', encoding='utf-8') as f:
+    with open(file_path, 'w', encoding='utf-8-sig') as f:
         f.write(resolved_content)
     
     print(f"已解决{file_path}中的所有冲突")

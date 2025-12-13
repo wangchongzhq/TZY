@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿﻿#!/usr/bin/env python3
 """
 IPTV直播源自动生成工具
 功能：从多个来源获取IPTV直播源并生成M3U文件
@@ -93,7 +93,7 @@ class SpeedTester:
         for attempt in range(retry_times):
             try:
                 start_time = time.time()
-                async with self.session.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=aiohttp.ClientTimeout(total=SpeedTestConfig.TIMEOUT)) as response:
+                async with self.session.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=aiohttp.ClientTimeout(total=30)) as response:  # 增加超时时间到30秒
                     if response.status == 200:
                         # 测量响应时间作为延迟
                         latency = (time.time() - start_time) * 1000  # 转换为毫秒
@@ -130,10 +130,20 @@ class SpeedTester:
                         break
                     else:
                         result.error = f"HTTP状态码: {response.status}"
-            except (aiohttp.ClientError, asyncio.TimeoutError, OSError) as e:
-                result.error = str(e)
-                self.logger.warning(f"URL: {url} 尝试 {attempt+1}/{retry_times} 失败: {e}")
-                await asyncio.sleep(1)  # 重试前等待1秒
+                        self.logger.warning(f"URL: {url} 尝试 {attempt+1}/{retry_times} 失败: HTTP状态码 {response.status}")
+            except asyncio.TimeoutError:
+                result.error = "连接超时"
+                self.logger.warning(f"URL: {url} 尝试 {attempt+1}/{retry_times} 失败: 连接超时")
+            except aiohttp.ClientError as e:
+                result.error = f"网络错误: {str(e)}"
+                self.logger.warning(f"URL: {url} 尝试 {attempt+1}/{retry_times} 失败: 网络错误 - {e}")
+            except OSError as e:
+                result.error = f"系统错误: {str(e)}"
+                self.logger.warning(f"URL: {url} 尝试 {attempt+1}/{retry_times} 失败: 系统错误 - {e}")
+            except Exception as e:
+                result.error = f"未知错误: {str(e)}"
+                self.logger.warning(f"URL: {url} 尝试 {attempt+1}/{retry_times} 失败: 未知错误 - {e}")
+            await asyncio.sleep(1)  # 重试前等待1秒
         
         return result
     
@@ -168,8 +178,20 @@ class M3UProcessor:
     def parse_m3u(file_path: str) -> List[Tuple[str, str]]:
         """解析M3U文件，返回[(名称, URL), ...]"""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
+            # 尝试使用不同的编码方式打开文件
+            encodings = ['utf-8', 'gbk', 'gb2312', 'latin-1']
+            lines = None
+            
+            for encoding in encodings:
+                try:
+                    with open(file_path, 'r', encoding=encoding) as f:
+                        lines = f.readlines()
+                    break
+                except UnicodeDecodeError:
+                    continue
+            
+            if lines is None:
+                raise Exception("无法识别文件编码")
             
             live_sources = []
             current_name = None
@@ -197,7 +219,7 @@ class M3UProcessor:
         try:
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             
-            with open(output_path, 'w', encoding='utf-8') as f:
+            with open(output_path, 'w', encoding='utf-8-sig') as f:
                 f.write('#EXTM3U\n')
                 for name, url in live_sources:
                     f.write(f'#EXTINF:-1,{name}\n')
@@ -536,9 +558,75 @@ for standard_name, aliases in CHANNEL_MAPPING.items():
 # 规范化频道名称
 def normalize_channel_name(name):
     """将频道名称规范化为标准名称"""
+    if not name:
+        return None
+    
+    # 去除前后空格
     name = name.strip()
+    
+    # 统一转换为简体中文
+    try:
+        import core.chinese_conversion
+        name = core.chinese_conversion.traditional_to_simplified(name)
+    except:
+        pass
+    
+    # 替换常见的特殊字符和分隔符
+    name = re.sub(r'[\s_\-\.]+', ' ', name)
+    
+    # 去除多余的空格
+    name = re.sub(r'\s+', ' ', name)
+    
+    # 处理CCTV频道名称中的错误别名（如CCTV4a, CCTV4A, CCTV4o等）
+    if re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?\d+[AaOoMm]', name, re.IGNORECASE):
+        match = re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)', name, re.IGNORECASE)
+        if match:
+            # 提取CCTV和数字部分
+            base_name = f"CCTV{match.group(1)}"
+            # 检查是否有欧洲/美洲等后缀
+            if '欧洲' in name or '美洲' in name:
+                region = '欧洲' if '欧洲' in name else '美洲'
+                name = f"{base_name}{region}"
+            else:
+                name = base_name
+    
+    # 处理CCTV-数字格式（如CCTV-1, CCTV -1, CCTV- 1等）
+    elif re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)', name, re.IGNORECASE):
+        match = re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)', name, re.IGNORECASE)
+        if match:
+            # 提取CCTV和数字部分
+            name = f"CCTV{match.group(1)}"
+    
+    # 处理带中文的CCTV频道，如"CCTV-1综合"、"CCTV-2财经"等
+    chinese_cctv_match = re.search(r'^(?:CCTV|cctv)[\-_]?(\d+)(?:综合|财经|综艺|中文国际|体育|电影|国防军事|电视剧|纪录|科教|戏曲|社会与法|新闻|少儿|音乐|农业农村|奥林匹克)?', name, re.IGNORECASE)
+    if chinese_cctv_match:
+        cctv_number = int(chinese_cctv_match.group(1))
+        name = f"CCTV{cctv_number}"
+    
+    # 处理"CCTV-13"、"CCTV-14"这样的格式
+    dash_cctv_match = re.search(r'^(?:CCTV|cctv)[-](\d+)$', name, re.IGNORECASE)
+    if dash_cctv_match:
+        cctv_number = int(dash_cctv_match.group(1))
+        name = f"CCTV{cctv_number}"
+    
+    # 处理"CCTV4欧洲"、"CCTV4美洲"这样的格式
+    region_cctv_match = re.search(r'^(?:CCTV|cctv)(\d+)(?:欧洲|美洲|亚洲)?$', name, re.IGNORECASE)
+    if region_cctv_match:
+        cctv_number = int(region_cctv_match.group(1))
+        region = "欧洲" if "欧洲" in name else "美洲" if "美洲" in name else "亚洲" if "亚洲" in name else ""
+        name = f"CCTV{cctv_number}{region}"
+    
+    # 去除常见的前缀后缀
+    prefixes = [r'[\s\[\(]*(高清|HD|标清|SD|超清|4K|蓝光)[\s\]\)]*', r'[\s\[\(]*(直播|卫视|电视台|频道|台)[\s\]\)]*']
+    for prefix in prefixes:
+        name = re.sub(r'^' + prefix, '', name, flags=re.IGNORECASE)
+        name = re.sub(r'' + prefix + '$', '', name, flags=re.IGNORECASE)
+    
+    # 去除多余的空格
+    name = re.sub(r'\s+', ' ', name).strip()
+    
     # 使用反向映射直接查找，提高效率
-    return ALIAS_TO_STANDARD.get(name, None)
+    return ALIAS_TO_STANDARD.get(name, name)
 
 # 从URL获取M3U内容
 def fetch_m3u_content(url):
@@ -1088,7 +1176,7 @@ async def run_speed_test(input_file, output_dir="output"):
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     report_path = os.path.join(output_dir, f"speed_test_report_{timestamp}.txt")
     
-    with open(report_path, 'w', encoding='utf-8') as f:
+    with open(report_path, 'w', encoding='utf-8-sig') as f:
         f.write("=== IPTV直播源测速报告 ===\n")
         f.write(f"测试时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
         f.write(f"测试直播源总数: {total}\n")
@@ -1141,6 +1229,91 @@ async def run_speed_test(input_file, output_dir="output"):
     
     return results
 
+def check_test_files(test_type=None):
+    """检查tests目录下是否有可用的测试文件
+    
+    参数:
+        test_type: 可选，指定测试类型（如"channel_utils", "network"等）
+    
+    返回:
+        list: 找到的测试文件路径列表
+    """
+    import os
+    
+    # 测试目录路径
+    tests_dir = os.path.join(os.path.dirname(__file__), "tests")
+    
+    # 如果目录不存在，返回空列表
+    if not os.path.exists(tests_dir):
+        logger.warning(f"测试目录 {tests_dir} 不存在")
+        return []
+    
+    # 获取所有测试文件
+    test_files = []
+    for filename in os.listdir(tests_dir):
+        if filename.endswith(".py") and (filename.startswith("test_") or filename.startswith("check_")):
+            # 如果指定了测试类型，检查文件名是否包含该类型
+            if test_type is None or test_type in filename:
+                test_files.append(os.path.join(tests_dir, filename))
+    
+    if test_files:
+        logger.info(f"找到 {len(test_files)} 个可用测试文件:")
+        for file in test_files:
+            logger.info(f"  - {os.path.basename(file)}")
+    else:
+        logger.info("没有找到匹配的测试文件")
+    
+    return test_files
+
+def run_tests(test_files):
+    """运行指定的测试文件
+    
+    参数:
+        test_files: 要运行的测试文件路径列表
+    
+    返回:
+        bool: 测试是否全部通过
+    """
+    import subprocess
+    import sys
+    import codecs
+    
+    all_passed = True
+    
+    for test_file in test_files:
+        logger.info(f"\n正在运行测试: {os.path.basename(test_file)}")
+        try:
+            # 处理Windows系统上的Unicode编码问题
+            result = subprocess.run(
+                [sys.executable, test_file],
+                capture_output=True,
+                check=False
+            )
+            
+            # 尝试解码输出
+            try:
+                stdout = result.stdout.decode('utf-8')
+                stderr = result.stderr.decode('utf-8')
+            except UnicodeDecodeError:
+                # 如果UTF-8解码失败，尝试使用GBK
+                stdout = result.stdout.decode('gbk', errors='replace')
+                stderr = result.stderr.decode('gbk', errors='replace')
+            
+            if result.returncode == 0:
+                logger.info(f"✓ 测试通过: {os.path.basename(test_file)}")
+                if stdout:
+                    logger.debug(f"输出: {stdout}")
+            else:
+                logger.error(f"✗ 测试失败: {os.path.basename(test_file)}")
+                logger.error(f"错误: {stderr}")
+                all_passed = False
+                
+        except Exception as e:
+            logger.error(f"✗ 运行测试 {os.path.basename(test_file)} 时出错: {e}")
+            all_passed = False
+    
+    return all_passed
+
 def main():
     """主函数"""
     import sys
@@ -1149,6 +1322,18 @@ def main():
     if len(sys.argv) > 1:
         if sys.argv[1] == "--update":
             # 手动更新模式
+            logger.info("开始更新直播源...")
+            
+            # 先检查是否有相关测试文件
+            logger.info("\n正在检查tests目录下的测试文件...")
+            test_files = check_test_files()
+            
+            # 如果有测试文件，询问用户是否运行
+            if test_files:
+                logger.info("\n发现可用测试文件，建议在更新前运行测试以确保代码正确性。")
+                # 这里可以添加用户交互，但为了自动化运行，默认不运行
+                logger.info("继续进行直播源更新...")
+            
             update_iptv_sources()
         elif sys.argv[1] == "--check-syntax":
             # 检查语法错误
@@ -1162,6 +1347,20 @@ def main():
             input_file = sys.argv[2]
             output_dir = sys.argv[3] if len(sys.argv) > 3 else "output"
             asyncio.run(run_speed_test(input_file, output_dir))
+        elif sys.argv[1] == "--test":
+            # 运行测试功能
+            test_type = sys.argv[2] if len(sys.argv) > 2 else None
+            logger.info(f"开始运行测试{' (类型: ' + test_type + ')' if test_type else ''}...")
+            test_files = check_test_files(test_type)
+            if test_files:
+                success = run_tests(test_files)
+                if success:
+                    logger.info("\n🎉 所有测试通过！")
+                else:
+                    logger.error("\n💥 部分测试失败！")
+                    sys.exit(1)
+            else:
+                logger.info("\n没有找到可运行的测试文件")
         else:
             # 显示帮助信息
             logger.info("未知参数，请使用以下参数：")
@@ -1169,6 +1368,7 @@ def main():
             logger.info("  --check-syntax # 检查IP-TV.py文件语法错误")
             logger.info("  --fix-chars    # 修复IP-TV.py文件中的不可打印字符")
             logger.info("  --speed-test   # 对M3U文件中的直播源进行测速，使用方法：--speed-test <input_file> [output_dir]")
+            logger.info("  --test         # 运行tests目录下的测试文件，可指定类型：--test <test_type>")
     else:
         # 显示帮助信息
         logger.info("=" * 60)
@@ -1181,12 +1381,15 @@ def main():
         logger.info("  4. 检查IP-TV.py文件语法错误")
         logger.info("  5. 修复IP-TV.py文件中的不可打印字符")
         logger.info("  6. 对M3U文件中的直播源进行异步测速")
+        logger.info("  7. 运行tests目录下的测试文件进行代码验证")
         logger.info("")
         logger.info("使用方法：")
         logger.info("  python IP-TV.py --update       # 立即手动更新直播源")
         logger.info("  python IP-TV.py --check-syntax # 检查语法错误")
         logger.info("  python IP-TV.py --fix-chars    # 修复不可打印字符")
         logger.info("  python IP-TV.py --speed-test <input_file> [output_dir] # 直播源测速")
+        logger.info("  python IP-TV.py --test         # 运行tests目录下的测试文件")
+        logger.info("  python IP-TV.py --test <type>  # 运行特定类型的测试文件")
         logger.info("")
         logger.info("输出文件：")
         logger.info("  - iptv.m3u   # M3U格式的直播源文件")
