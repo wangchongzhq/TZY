@@ -1684,98 +1684,63 @@ def generate_txt_file(channels, output_path):
 
 
 
-# 从本地TXT文件提取频道信息
+# 从TXT内容提取频道信息
 
-def extract_channels_from_txt(file_path):
-
-    """从本地TXT文件提取频道信息"""
-
+def extract_channels_from_txt(file_path_or_content):
+    """从TXT文件或内容字符串提取频道信息"""
     channels = defaultdict(list)
-
     
-
     try:
-
-        with open(file_path, 'r', encoding='utf-8') as f:
-
-            for line in f:
-
-                line = line.strip()
-
-                if not line or line.startswith('#'):
-
-                    continue
-
+        # 如果是文件路径，则读取文件内容
+        if isinstance(file_path_or_content, str) and os.path.exists(file_path_or_content):
+            with open(file_path_or_content, 'r', encoding='utf-8') as f:
+                content = f.read()
+            source_info = f"本地文件 {file_path_or_content}"
+        else:
+            # 否则视为内容字符串
+            content = file_path_or_content
+            source_info = "内容字符串"
+        
+        # 按行处理内容
+        for line in content.split('\n'):
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            
+            # 跳过格式不正确的分组标题行（如"4K频道,#genre#"）
+            if line.endswith(',#genre#') or line.endswith(',genre#'):
+                continue
+            
+            # 解析频道信息（格式：频道名称,URL）
+            if ',' in line:
+                channel_name, url = line.split(',', 1)
+                channel_name = channel_name.strip()
+                url = url.strip()
                 
-
-                # 跳过格式不正确的分组标题行（如"4K频道,#genre#"）
-
-                if line.endswith(',#genre#') or line.endswith(',genre#'):
-
+                # 跳过无效的URL
+                if not url.startswith(('http://', 'https://')):
                     continue
-
                 
-
-                # 解析频道信息（格式：频道名称,URL）
-
-                if ',' in line:
-
-                    channel_name, url = line.split(',', 1)
-
-                    channel_name = channel_name.strip()
-
-                    url = url.strip()
-
-                    
-
-                    # 跳过无效的URL
-
-                    if not url.startswith(('http://', 'https://')):
-
-                        continue
-
-                    
-
-                    # 首先检查原始频道名是否包含4K相关标识，无论是否能规范化
-
-                    if ("4K" in channel_name or "4k" in channel_name or 
-
-                        "8K" in channel_name or "8k" in channel_name or
-
-                        "超高清" in channel_name or "2160" in channel_name):
-
-                        # 使用规范化后的名称作为显示名称（如果能规范化的话）
-
-                        display_name = normalize_channel_name(channel_name) or channel_name
-
-                        channels["4K频道"].append((display_name, url))
-
+                # 首先检查原始频道名是否包含4K相关标识，无论是否能规范化
+                if ("4K" in channel_name or "4k" in channel_name or 
+                    "8K" in channel_name or "8k" in channel_name or
+                    "超高清" in channel_name or "2160" in channel_name):
+                    # 使用规范化后的名称作为显示名称（如果能规范化的话）
+                    display_name = normalize_channel_name(channel_name) or channel_name
+                    channels["4K频道"].append((display_name, url))
+                else:
+                    # 规范化频道名称
+                    normalized_name = normalize_channel_name(channel_name)
+                    if normalized_name:
+                        # 获取频道分类
+                        category = get_channel_category(normalized_name)
+                        channels[category].append((normalized_name, url))
                     else:
-
-                        # 规范化频道名称
-
-                        normalized_name = normalize_channel_name(channel_name)
-
-                        if normalized_name:
-
-                            # 获取频道分类
-
-                            category = get_channel_category(normalized_name)
-
-                            channels[category].append((normalized_name, url))
-
-                        else:
-
-                            # 未规范化且不含4K的频道放在其他
-
-                            channels["其他"].append((channel_name, url))
-
+                        # 未规范化且不含4K的频道放在其他
+                        channels["其他"].append((channel_name, url))
     except Exception as e:
-
-        logger.error(f"解析本地文件 {file_path} 时出错: {e}")
-
+        logger.error(f"解析{source_info}时出错: {e}")
     
-
     return channels
 
 
@@ -1799,19 +1764,18 @@ def merge_sources(sources, local_files):
     
 
     # 处理远程直播源结果
-
     for url, content in results.items():
-
         if content:
-
-            channels = extract_channels_from_m3u(content)
-
+            # 根据内容格式选择合适的解析函数
+            if '#EXTINF:' in content:
+                channels = extract_channels_from_m3u(content)
+            else:
+                # 直接将文本内容传递给extract_channels_from_txt函数解析
+                channels = extract_channels_from_txt(content)
+            
             ipv6_count = sum(1 for group, chans in channels.items() for name, u in chans if is_ipv6(u))
-
             logger.info(f"从 {url} 获取到 {sum(len(chans) for group, chans in channels.items())} 个频道，其中IPv6频道: {ipv6_count}个")
-
             for group_title, channel_list in channels.items():
-
                 all_channels[group_title].extend(channel_list)
 
     

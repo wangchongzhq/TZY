@@ -23,6 +23,11 @@
       "enabled": true
     },
     {
+      "name": "qingtingjjjjjjj_local",
+      "url": "file://c:/Users/Administrator/Documents/GitHub/TZY/temp_live.txt",
+      "enabled": true
+    },
+    {
       "name": "freetv",
       "url": "https://freetv.fun/test_channels_new.txt",
       "enabled": false

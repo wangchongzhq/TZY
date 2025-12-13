@@ -113,9 +113,9 @@ def fetch_content(url: str, retries: Optional[int] = None, timeout: Optional[int
     
     # 针对特定域名的特殊处理
     if 'ghfast.top' in url:
-        # 对ghfast.top域名设置更短的超时和更少的重试次数
-        timeout = 5
-        retries = 1
+        # 对ghfast.top域名设置更长的超时时间以处理大文件
+        timeout = 15
+        retries = 3
     
     config = {
         'headers': headers,
@@ -126,10 +126,44 @@ def fetch_content(url: str, retries: Optional[int] = None, timeout: Optional[int
     
     for attempt in range(retries):
         try:
+            # 处理file://协议的本地文件
+            if url.startswith('file://'):
+                # 移除file://前缀
+                file_path = url[7:]
+                # 读取本地文件内容
+                start_time = time.time()
+                with open(file_path, 'rb') as f:
+                    raw_content = f.read()
+                
+                # 自动检测文件编码
+                import chardet
+                detected_encoding = chardet.detect(raw_content)['encoding']
+                content = raw_content.decode(detected_encoding if detected_encoding else 'utf-8')
+                
+                # 计算请求耗时
+                elapsed_time = time.time() - start_time
+                logger.debug(f"读取本地文件成功 {url} (尝试 {attempt+1}/{retries})，耗时: {elapsed_time:.2f}秒")
+                
+                # 记录性能信息
+                log_performance(logger, "本地文件读取", elapsed_time, url=url, attempt=attempt+1, status_code=200)
+                
+                # 缓存结果
+                if use_cache and NETWORK_CONFIG.get('enable_cache', True):
+                    cache_key = hashlib.md5(url.encode()).hexdigest()
+                    _cache.set(cache_key, content)
+                
+                return content
+            
+            # 处理HTTP/HTTPS协议的远程URL
             start_time = time.time()
             response = requests.get(url, **config)
             response.raise_for_status()  # 抛出HTTP错误
-            response.encoding = 'utf-8'  # 确保使用UTF-8编码
+            # 自动检测响应编码，而不是强制使用UTF-8
+            # 使用chardet库检测编码，如果失败则使用UTF-8作为后备
+            import chardet
+            raw_content = response.content
+            detected_encoding = chardet.detect(raw_content)['encoding']
+            response.encoding = detected_encoding if detected_encoding else 'utf-8'
             
             # 计算请求耗时
             elapsed_time = time.time() - start_time
@@ -244,8 +278,9 @@ async def async_fetch_content(url: str, session: aiohttp.ClientSession, **kwargs
     
     # 针对特定域名的特殊处理
     if 'ghfast.top' in url:
-        timeout = 5
-        retries = 1
+        # 对ghfast.top域名设置更长的超时时间以处理大文件
+        timeout = 15
+        retries = 3
     
     for attempt in range(retries):
         try:
