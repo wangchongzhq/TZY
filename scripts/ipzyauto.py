@@ -1,24 +1,18 @@
 # -*- coding: utf-8 -*-
 
 import os
-
 import sys
-
 import io
-
 import re
-
 import time
-
 import requests
-
 import statistics
-
 import concurrent.futures
-
 import json
-
 from collections import defaultdict
+
+# 将当前脚本所在目录的父目录添加到Python路径，以便导入core模块
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 
@@ -36,7 +30,8 @@ from core.config import get_config
 
 from core.channel_utils import normalize_channel_name
 
-from unified_sources import UNIFIED_SOURCES
+# 导入unified_sources模块（同一目录下）
+from .unified_sources import UNIFIED_SOURCES
 
 
 

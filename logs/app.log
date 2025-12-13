@@ -13943,3 +13943,22 @@ SyntaxError: invalid syntax
 2025-12-13 20:35:35,918 - core.network - INFO - network.py:243 - fetch_content - 等待 2秒后重试...
 2025-12-13 20:36:49,527 - core.network - ERROR - network.py:223 - fetch_content - 连接错误 https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt (尝试 5/5)
 2025-12-13 20:36:49,528 - core.network - ERROR - network.py:246 - fetch_content - 所有重试都失败了 https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt
+2025-12-13 22:05:13,716 - __main__ - INFO - update_sources.py:167 - main - === 播放源自动更新脚本 ===
+2025-12-13 22:05:13,717 - __main__ - INFO - update_sources.py:175 - main - 📖 读取播放源列表...
+2025-12-13 22:05:13,718 - core.file_utils - INFO - logging_config.py:140 - log_performance - 性能统计 - 读取文件 耗时: 0.0003秒 file_path=sources.json, size=3168
+2025-12-13 22:05:13,718 - __main__ - INFO - update_sources.py:177 - main - 📊 共读取到 16 个启用的播放源
+2025-12-13 22:05:13,718 - __main__ - INFO - update_sources.py:180 - main - 🔧 生成统一播放源文件...
+2025-12-13 22:05:13,720 - core.file_utils - INFO - file_utils.py:109 - write_file - 成功写入文件: unified_sources.py，大小: 3283字符，耗时: 0.00秒
+2025-12-13 22:05:13,721 - core.file_utils - INFO - logging_config.py:140 - log_performance - 性能统计 - 写入文件 耗时: 0.0016秒 file_path=unified_sources.py, size=3283
+2025-12-13 22:05:13,723 - __main__ - INFO - update_sources.py:89 - generate_unified_sources - ✅ 已生成 unified_sources.py
+2025-12-13 22:05:13,723 - __main__ - INFO - update_sources.py:184 - main - 🔄 更新所有脚本...
+2025-12-13 22:05:13,725 - core.file_utils - INFO - logging_config.py:140 - log_performance - 性能统计 - 读取文件 耗时: 0.0011秒 file_path=IPTV.py, size=51165
+2025-12-13 22:05:13,728 - core.file_utils - INFO - file_utils.py:109 - write_file - 成功写入文件: IPTV.py，大小: 51165字符，耗时: 0.00秒
+2025-12-13 22:05:13,729 - core.file_utils - INFO - logging_config.py:140 - log_performance - 性能统计 - 写入文件 耗时: 0.0022秒 file_path=IPTV.py, size=51165
+2025-12-13 22:05:13,730 - __main__ - INFO - update_sources.py:159 - update_script - ✅ 已更新 IPTV.py
+2025-12-13 22:05:13,731 - __main__ - ERROR - update_sources.py:189 - main - ❌ 找不到 ipzyauto.py 文件
+2025-12-13 22:05:13,732 - core.file_utils - INFO - logging_config.py:140 - log_performance - 性能统计 - 读取文件 耗时: 0.0005秒 file_path=scripts/convert_m3u_to_txt.py, size=4858
+2025-12-13 22:05:13,733 - __main__ - WARNING - update_sources.py:155 - update_script - ⚠️  未知的数据源格式，跳过 scripts/convert_m3u_to_txt.py
+2025-12-13 22:05:13,734 - __main__ - INFO - update_sources.py:191 - main - 
+🎉 所有更新已完成！
+2025-12-13 22:05:13,736 - __main__ - INFO - update_sources.py:192 - main - 📝 更新了 2 个脚本

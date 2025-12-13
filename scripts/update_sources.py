@@ -15,10 +15,14 @@ python update_sources.py
 import json
 import os
 import re
+import sys
+
+# 将当前脚本所在目录的父目录添加到Python路径，以便导入core模块
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # 导入核心模块
 from core.logging_config import setup_logging, get_logger
-from core import read_file, write_file, file_exists
+from core.file_utils import read_file, write_file, file_exists
 
 # 设置日志
 setup_logging()
@@ -152,10 +156,10 @@ urls = UNIFIED_SOURCES'''
             return
     
     if write_file(script_path, content):
-            logger.info(f"✅ 已更新 {script_path}")
-        else:
-            logger.error(f"❌ 写入文件 {script_path} 失败")
-            return
+        logger.info(f"✅ 已更新 {script_path}")
+    else:
+        logger.error(f"❌ 写入文件 {script_path} 失败")
+        return
 
 
 def main():

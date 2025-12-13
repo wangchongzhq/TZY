@@ -3,9 +3,13 @@
 
 import os
 import re
+import sys
+
+# 将当前脚本所在目录的父目录添加到Python路径，以便导入core模块
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # 导入核心模块
-from core import file_exists, read_file, write_file
+from core.file_utils import file_exists, read_file, write_file
 
 def resolve_conflicts(file_path):
     """解决单个文件中的Git冲突"""
