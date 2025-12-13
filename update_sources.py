@@ -78,7 +78,7 @@ SOURCES_WITH_NAMES = [
     content = content.format(urls=urls_str, sources_with_names=sources_with_names_str)
     
     # 写入文件
-    with open(UNIFIED_SOURCES_PY, 'w', encoding='utf-8-sig') as f:
+    with open(UNIFIED_SOURCES_PY, 'w', encoding='utf-8') as f:
         f.write(content)
     
     logger.info(f"✅ 已生成 {UNIFIED_SOURCES_PY}")
@@ -87,7 +87,8 @@ SOURCES_WITH_NAMES = [
 def update_script(script_path):
     """更新单个脚本中的播放源"""
     try:
-        with open(script_path, 'r', encoding='utf-8') as f:
+        # 使用utf-8-sig编码读取文件，自动处理BOM字符
+        with open(script_path, 'r', encoding='utf-8-sig') as f:
             content = f.read()
     except Exception as e:
         logger.error(f"❌ 读取文件 {script_path} 失败: {e}")
@@ -152,7 +153,7 @@ urls = UNIFIED_SOURCES'''
     
     try:
         # 写入更新后的内容
-        with open(script_path, 'w', encoding='utf-8-sig') as f:
+        with open(script_path, 'w', encoding='utf-8') as f:
             f.write(content)
         logger.info(f"✅ 已更新 {script_path}")
     except Exception as e:

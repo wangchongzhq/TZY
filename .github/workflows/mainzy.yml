@@ -43,11 +43,17 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y ffmpeg
 
+    - name: Debug - Current directory
+      run: pwd
+
+    - name: Debug - List all files
+      run: ls -la
+
     - name: Run script to generate m3u
       run: python ipzyauto.py
 
-    - name: Debug - List generated files
-      run: ls -la
+    - name: Debug - List generated files after execution
+      run: ls -la output/
 
     - name: Commit and push if changes
       run: |
