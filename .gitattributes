@@ -1,0 +1,26 @@
+# 统一设置所有文本文件使用UTF-8编码
+* text=auto encoding=utf-8
+
+# 确保Python脚本使用UTF-8编码且无BOM
+*.py text encoding=utf-8 eol=lf
+
+# 配置文件使用UTF-8编码
+*.json text encoding=utf-8
+*.yaml text encoding=utf-8
+*.yml text encoding=utf-8
+*.ini text encoding=utf-8
+
+# Markdown文档使用UTF-8编码
+*.md text encoding=utf-8 eol=lf
+
+# 确保shell脚本使用LF行尾
+*.sh text eol=lf
+
+# 二进制文件不进行文本处理
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.zip binary
+*.tar.gz binary
+*.exe binary

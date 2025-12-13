@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # 统一播放源列表
 # 此文件由update_sources.py自动生成，请勿手动修改
 

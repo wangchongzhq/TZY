@@ -65,7 +65,9 @@ class ConfigManager:
             if file_content is None:
                 logger.error(f"读取配置文件失败: {self._config_path}")
                 return False
-            self._config = json.loads(file_content)
+            # 使用object_pairs_hook确保字典顺序与配置文件一致
+            import collections
+            self._config = json.loads(file_content, object_pairs_hook=collections.OrderedDict)
             
             elapsed_time = time.time() - start_time
             log_performance(logger, "加载配置文件", elapsed_time, file_path=self._config_path)
