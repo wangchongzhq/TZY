@@ -11,12 +11,29 @@
 - **多格式支持**：支持M3U、TXT等多种直播源格式
 - **自动分类**：智能分类央视频道、卫视频道、4K频道等
 - **质量筛选**：自动筛选可用的高质量直播源，支持清晰度过滤
-- **自动化工作流**：GitHub Actions实现定时和手动触发更新（7个工作流文件）
+- **自动化工作流**：GitHub Actions实现定时和手动触发更新
 - **IP直播源处理**：专门的IP直播源收集和处理功能
 - **格式转换**：支持M3U到TXT格式的转换
 - **语法检查**：提供脚本语法检查和字符修复功能
 - **频道标准化**：自动处理频道名称的错误别名和格式问题
 - **模块化设计**：核心功能模块化，便于维护和扩展
+- **性能优化**：实现了网络请求缓存和并发请求控制
+- **错误处理**：增强了异常处理机制，提高了系统稳定性
+- **代码质量**：统一了网络请求和配置管理，移除了重复代码
+- **测试覆盖**：完善了单元测试，提高了代码可靠性
+
+## 📅 最近更新
+
+- **频道名称标准化修复**：解决了"凤凰"、"凤凰卫视"、"凤凰中文台"、"凤凰中文卫视"等频道名称的标准化问题，确保它们都能正确映射
+- **标识保留优化**：改进了频道名称处理逻辑，保留了"卫视"等重要标识
+- **代码结构优化**：移除了未使用的重复函数，提高了代码效率
+- **调试信息清理**：清理了开发调试信息，提高了代码可读性
+- **测试完善**：添加了针对频道名称标准化的单元测试，确保功能稳定性
+- **4K频道统计功能**：在channel_utils.py中添加了4K和高清频道统计功能
+- **性能优化**：实现了网络请求缓存和并发请求控制
+- **Core模块扩展**：完善了core模块的功能，统一了接口设计
+- **项目结构优化**：将测试文件统一到tests目录，辅助脚本移动到scripts目录
+- **文档更新**：完善了README.md文档，确保与代码同步
 
 ## 📋 环境要求
 
@@ -60,31 +77,44 @@ python ipzyauto.py
 ```
 ├── .github/workflows/     # GitHub Actions工作流配置
 │   ├── Convert M3U to TXT Daily.yml
-│   ├── IPZYTXT.yml
 │   ├── mainzy.yml
 │   ├── update_ip-tv.yml
-│   ├── update_ipzy.yml
 │   └── update_sources.yml
 ├── config/                # 配置文件目录
 │   ├── config.json        # 主配置文件
 │   └── config_example.yaml # 配置示例文件
 ├── core/                  # 核心功能模块
+│   ├── __init__.py        # 模块初始化文件
 │   ├── channel_utils.py   # 频道处理工具
 │   ├── chinese_conversion.py # 中文转换工具
 │   ├── config.py          # 配置管理
 │   ├── file_utils.py      # 文件处理工具
 │   ├── logging_config.py  # 日志配置
-│   ├── network.py         # 网络请求工具
+│   ├── network.py         # 网络请求工具（带缓存功能）
 │   └── parser.py          # 直播源解析器
 
-├── logs/                  # 日志文件目录
 ├── tests/                 # 测试文件目录
+│   ├── analyze_ipv6_4k.py
+│   ├── check_4k_channels.py
+│   ├── check_all_syntax.py
+│   ├── check_config.py
+│   ├── check_ipv6.py
+│   ├── check_m3u_syntax.py
+│   ├── check_network.py
+│   ├── convert_m3u_to_txt.py
+│   ├── debug_normalize.py
+│   ├── generate_statistics.py
+│   ├── resolve_conflicts.py
 │   ├── test_channel_utils.py
-│   ├── test_config_manager.py
+│   ├── test_config.py
 │   ├── test_file_utils.py
 │   ├── test_logging_config.py
 │   ├── test_network.py
-│   └── test_parser.py
+│   ├── test_parser.py
+│   ├── update_hd_aliases.py
+│   ├── update_sources.py
+│   ├── update_traditional_aliases.py
+│   └── validate_workflows.py
 ├── sources.json           # 统一播放源配置文件
 ├── update_sources.py      # 播放源自动更新脚本
 ├── unified_sources.py     # 生成的统一播放源文件（请勿手动修改）
@@ -98,11 +128,10 @@ python ipzyauto.py
 │   ├── resolve_conflicts.py   # 冲突解决脚本
 │   ├── update_hd_aliases.py   # HD频道别名更新脚本
 │   └── update_traditional_aliases.py # 传统频道别名更新脚本
-├── tzydauto.txt           # 自动生成的直播源TXT文件
 ├── epg_data.json          # EPG数据文件
-├── channel_aliases_to_add.txt # 待添加的频道别名
 ├── .gitignore             # Git忽略文件配置
-└── README.md              # 项目说明文档
+├── README.md              # 项目说明文档
+└── 仓库优化建议.md        # 项目优化建议文档
 ```
 
 ## 🎯 使用指南
@@ -141,17 +170,26 @@ python update_sources.py
 
 #### 1. IPTV.py - IPTV直播源处理脚本
 
-**功能**：处理IP-TV格式的直播源，支持多种格式转换和源合并
+**功能**：处理IP-TV格式的直播源，支持多种格式转换和源合并，智能分类4K频道
 
 **使用方法**：
 
 ```bash
+# 基本使用
 python IPTV.py
+
+# 查看帮助信息
+python IPTV.py --help
 ```
 
-**输出**：自动生成IP-TV格式的直播源文件
+**参数说明**：
+- `--update`: 更新播放源配置
+- `--check-syntax`: 检查脚本语法
+- `--fix-encoding`: 修复字符编码问题
 
-#### 3. ipzyauto.py - IP直播源收集脚本
+**输出**：自动生成IP-TV格式的直播源文件（iptv.m3u、channels.txt等）
+
+#### 2. ipzyauto.py - IP直播源收集脚本
 
 **功能**：从多个源收集IP直播源，自动筛选高清线路，智能分类
 
@@ -163,7 +201,7 @@ python ipzyauto.py
 
 **输出**：自动生成分类的IP直播源文件（默认：ipzyauto.txt、ipzyauto.m3u等）
 
-#### 4. convert_m3u_to_txt.py - M3U转TXT格式转换
+#### 3. convert_m3u_to_txt.py - M3U转TXT格式转换
 
 **功能**：将M3U格式的直播源转换为TXT格式
 
@@ -175,7 +213,7 @@ python convert_m3u_to_txt.py input.m3u output.txt
 
 **输出**：生成指定名称的TXT格式直播源文件
 
-#### 5. check_all_syntax.py - 语法检查脚本
+#### 4. check_all_syntax.py - 语法检查脚本
 
 **功能**：检查所有Python脚本的语法正确性
 
@@ -187,7 +225,7 @@ python check_all_syntax.py
 
 **输出**：显示所有脚本的语法检查结果
 
-#### 6. validate_workflows.py - 工作流验证脚本
+#### 5. validate_workflows.py - 工作流验证脚本
 
 **功能**：验证GitHub Actions工作流配置的正确性
 
@@ -199,17 +237,7 @@ python validate_workflows.py
 
 **输出**：显示工作流配置的验证结果
 
-#### 7. filter_hd_channels.py - HD频道过滤脚本
 
-**功能**：从直播源中过滤出高清频道
-
-**使用方法**：
-
-```bash
-python filter_hd_channels.py
-```
-
-**输出**：生成高清频道列表
 
 
 
@@ -217,33 +245,21 @@ python filter_hd_channels.py
 
 ### GitHub Actions工作流配置
 
-项目配置了7个自动化工作流，支持定时和手动触发：
+项目配置了4个自动化工作流，支持定时和手动触发：
 
 #### 1. Convert M3U to TXT Daily.yml
 - **功能**：每日自动将M3U格式转换为TXT格式
 - **触发方式**：定时执行
 
-#### 2. IPZYTXT.yml
-- **功能**：IPZY直播源TXT文件更新
-- **触发方式**：定时执行和手动触发
-
-#### 3. mainzy.yml
+#### 2. mainzy.yml
 - **功能**：主要直播源处理工作流
 - **触发方式**：定时执行和手动触发
 
-
-
-- **触发方式**：定时执行
-
-#### 5. update_ip-tv.yml
+#### 3. update_ip-tv.yml
 - **功能**：IP-TV直播源定时更新
 - **触发方式**：定时执行
 
-#### 6. update_ipzy.yml
-- **功能**：IPZY直播源定时更新
-- **触发方式**：定时执行
-
-#### 7. update_sources.yml
+#### 4. update_sources.yml
 - **功能**：统一播放源配置更新
 - **触发方式**：定时执行和手动触发
 
@@ -263,6 +279,12 @@ python filter_hd_channels.py
 - **手动触发**：在GitHub Actions页面点击"Run workflow"按钮
 - **代码推送**：当推送到主分支时自动触发（部分工作流）
 
+### 工作流优化
+
+- **分离功能**：不同功能的工作流已经分离，便于管理
+- **错误处理**：增强了错误处理机制，添加了详细的错误日志
+- **执行时间优化**：实现了增量构建和测试，避免不必要的重复执行
+
 ## ⚠️ 注意事项
 
 1. **请勿手动修改** `unified_sources.py`文件，该文件由`update_sources.py`自动生成
@@ -277,22 +299,33 @@ python filter_hd_channels.py
 ## 📝 更新日志
 
 ### 最新更新
+- **4K频道统计功能**：在channel_utils.py中添加了4K和高清频道统计功能
+- **性能优化**：实现了网络请求缓存和并发请求控制，提高了网络请求效率
+- **Core模块扩展**：完善了core模块的功能，统一了接口设计，添加了类型注解
+- **项目结构优化**：将测试文件统一到tests目录，辅助脚本移动到scripts目录
+- **测试完善**：添加了针对get_channel_statistics函数的单元测试
+- **文档更新**：完善了README.md文档，确保与代码同步
 - 修复了CCTV频道名称中的错误别名问题（如CCTV4a、CCTV4A、CCTV4o、CCTV4m等），将其转换为标准格式
-- 更新了项目结构，完善了核心模块的文档说明
+- 改进了CCTV 4K/8K频道名称规范化逻辑，支持"CCTV 4K超高清"等变体格式转换为标准"CCTV4K"
+- 统一了M3U和TXT解析函数的4K频道判断逻辑，确保一致性
+- 修复了分组标题错误分类为4K频道的问题，仅根据频道名称判断4K属性
+- 改进了4K频道判断逻辑，排除含否定词的频道（如"不包含4K"等）
 - 删除了M3U和TXT文件中的EPG相关功能（tvg-id、tvg-name、tvg-logo、tvg-url等属性）
 - 实现了频道分类内按名称升序排序功能，提高了频道列表的可读性
 - 修复了M3U文件中group-title属性后面多余空格的问题
-- 清理了项目结构，优化了模块化设计
 
 ### 主要功能更新
 - 实现统一播放源管理系统(`sources.json`)
 - 开发自动更新脚本(`update_sources.py`)
-- 配置GitHub Actions自动化工作流(7个工作流文件)
+- 配置GitHub Actions自动化工作流
 - 支持M3U、TXT等多种直播源格式处理
 - 实现智能分类和质量筛选功能
 - 提供IP直播源收集和处理功能
 - 开发M3U转TXT格式转换工具
 - 实现频道名称标准化功能
+- 统一了网络请求和配置管理，移除了重复代码
+- 增强了异常处理机制，提高了系统稳定性
+- 完善了单元测试，提高了代码可靠性
 
 ## 📄 免责声明
 

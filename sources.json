@@ -78,38 +78,8 @@
       "enabled": true
     },
     {
-      "name": "LongLiveTheKing",
-      "url": "https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt",
-      "enabled": true
-    },
-    {
-      "name": "HeJiawen01",
-      "url": "https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u",
-      "enabled": true
-    },
-    {
       "name": "XIU2",
       "url": "https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt",
-      "enabled": true
-    },
-    {
-      "name": "chenjie",
-      "url": "https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt",
-      "enabled": true
-    },
-    {
-      "name": "chnadsl",
-      "url": "https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u",
-      "enabled": true
-    },
-    {
-      "name": "fanmingming",
-      "url": "https://ghfast.top/https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/global.m3u",
-      "enabled": true
-    },
-    {
-      "name": "free-iptv",
-      "url": "https://ghfast.top/https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u",
       "enabled": true
     },
     {
@@ -130,16 +100,6 @@
     {
       "name": "Heiwk",
       "url": "https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u",
-      "enabled": true
-    },
-    {
-      "name": "iptv666-ipv6",
-      "url": "https://ghfast.top/https://raw.githubusercontent.com/iptv666/iptv/main/ipv6.m3u",
-      "enabled": true
-    },
-    {
-      "name": "iptv-ipv6",
-      "url": "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ipv6.m3u",
       "enabled": true
     }
   ]

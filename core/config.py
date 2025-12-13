@@ -11,6 +11,7 @@ import time
 from typing import Dict, Any, Optional
 
 from .logging_config import get_logger, log_exception, log_performance
+from .file_utils import read_file, write_file, file_exists
 
 # 获取日志记录器
 logger = get_logger(__name__)
@@ -55,13 +56,16 @@ class ConfigManager:
             start_time = time.time()
             
             # 检查配置文件是否存在
-            if not os.path.exists(self._config_path):
+            if not file_exists(self._config_path):
                 logger.error(f"配置文件不存在: {self._config_path}")
                 return False
             
             # 读取并解析配置文件
-            with open(self._config_path, 'r', encoding='utf-8') as f:
-                self._config = json.load(f)
+            file_content = read_file(self._config_path, encoding='utf-8-sig')
+            if file_content is None:
+                logger.error(f"读取配置文件失败: {self._config_path}")
+                return False
+            self._config = json.loads(file_content)
             
             elapsed_time = time.time() - start_time
             log_performance(logger, "加载配置文件", elapsed_time, file_path=self._config_path)
@@ -146,8 +150,10 @@ class ConfigManager:
             os.makedirs(os.path.dirname(self._config_path), exist_ok=True)
             
             # 写入配置文件
-            with open(self._config_path, 'w', encoding='utf-8-sig') as f:
-                json.dump(self._config, f, ensure_ascii=False, indent=2)
+            config_content = json.dumps(self._config, ensure_ascii=False, indent=2)
+            if not write_file(self._config_path, config_content, encoding='utf-8-sig'):
+                logger.error(f"写入配置文件失败: {self._config_path}")
+                return False
             
             elapsed_time = time.time() - start_time
             log_performance(logger, "保存配置文件", elapsed_time, file_path=self._config_path)

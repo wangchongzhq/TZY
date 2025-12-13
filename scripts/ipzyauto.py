@@ -1293,31 +1293,19 @@ def parse_lines(lines):
                     print(f"  找到URL: {url}")
 
                 if url.startswith("http://") or url.startswith("https://"):
-
                     # 过滤购物频道
-
                     if should_exclude_channel(current_name):
-
                         print(f"  排除购物频道: {current_name}")
-
                         excluded_channels += 1
-
                     # 过滤测试URL
-
                     elif should_exclude_url(url, current_name):
-
                         print(f"  排除测试URL: {url}")
-
                         excluded_urls += 1
-
                     else:
-
+                        # 根据用户要求：仅从频道名称判断4K频道，不考虑URL中的字符
                         norm_name = normalize_channel_name(current_name)
-
                         channels_dict[norm_name].append(url)
-
                         if i < 50 or any(keyword in current_name for keyword in ['购物']):
-
                             print(f"  添加到字典: {norm_name} -> {url}")
 
             current_name = None
@@ -1753,26 +1741,16 @@ def main():
         
 
         # 优化网络请求策略
-
         if 'ghfast.top' in url:
-
-            # 对ghfast.top域名设置更短的超时和更少的重试次数
-
-            max_retries = 1
-
-            timeout = 5
-
+            # 对ghfast.top域名设置更长的超时时间以处理大文件
+            max_retries = 5  # 增加重试次数
+            timeout = 30     # 增加超时时间到30秒
         elif 'tv.html-5.me' in url:
-
             max_retries = 5
-
             timeout = 10
-
         else:
-
             max_retries = 3
-
-            timeout = 10
+            timeout = 15  # 适当增加默认超时时间
 
             
 

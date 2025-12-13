@@ -18,6 +18,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from .logging_config import get_logger, log_exception, log_performance
 # 导入配置管理
 from .config import get_config
+# 导入编码检测模块（提前导入，避免重复导入开销）
+import chardet
 
 # 禁用不安全请求警告
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
@@ -32,10 +34,12 @@ NETWORK_CONFIG = get_config('network', {
     'request_headers': {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36'
     },
-    'max_workers': 20,  # 多线程最大并发数（优化：增加到20以提高性能）
-    'max_concurrency': 50,  # 异步最大并发数（优化：增加到50以充分利用异步IO优势）
+    'max_workers': 20,  # 多线程最大并发数
+    'max_concurrency': 50,  # 异步最大并发数
     'enable_cache': True,  # 是否启用缓存
-    'cache_expiry': 3600  # 缓存过期时间（秒）
+    'cache_expiry': 3600,  # 缓存过期时间（秒）
+    'cache_max_size': 1000,  # 缓存最大条目数（优化：限制缓存大小）
+    'retry_delay': 2  # 重试延迟（秒）
 })
 
 # 默认请求头
@@ -52,16 +56,21 @@ SAFE_REQUEST_CONFIG = {
     'max_redirects': 5
 }
 
-# 简单的内存缓存实现
-class SimpleCache:
-    """简单的内存缓存实现"""
-    def __init__(self, expiry_time: int = 3600):
-        self.cache = {}
+# 更高效的LRU缓存实现
+from collections import OrderedDict
+
+class LRUCache:
+    """LRU（最近最少使用）缓存实现"""
+    def __init__(self, expiry_time: int = 3600, max_size: int = 1000):
+        self.cache = OrderedDict()  # 使用OrderedDict实现LRU
         self.expiry_time = expiry_time
+        self.max_size = max_size
     
     def get(self, key: str) -> Optional[Any]:
-        """获取缓存值"""
+        """获取缓存值，并更新使用顺序"""
         if key in self.cache:
+            # 移动到末尾表示最近使用
+            self.cache.move_to_end(key)
             value, timestamp = self.cache[key]
             if time.time() - timestamp < self.expiry_time:
                 return value
@@ -70,7 +79,14 @@ class SimpleCache:
         return None
     
     def set(self, key: str, value: Any) -> None:
-        """设置缓存值"""
+        """设置缓存值，如果超过最大大小则移除最久未使用的条目"""
+        if key in self.cache:
+            # 更新现有条目并移动到末尾
+            self.cache.move_to_end(key)
+        elif len(self.cache) >= self.max_size:
+            # 移除最久未使用的条目（OrderedDict头部）
+            self.cache.popitem(last=False)
+        # 设置新值
         self.cache[key] = (value, time.time())
     
     def clear(self) -> None:
@@ -78,7 +94,10 @@ class SimpleCache:
         self.cache.clear()
 
 # 创建全局缓存实例
-_cache = SimpleCache(NETWORK_CONFIG.get('cache_expiry', 3600))
+_cache = LRUCache(
+    expiry_time=NETWORK_CONFIG.get('cache_expiry', 3600),
+    max_size=NETWORK_CONFIG.get('cache_max_size', 1000)
+)
 
 def fetch_content(url: str, retries: Optional[int] = None, timeout: Optional[int] = None, headers: Optional[Dict] = None, verify: bool = True, use_cache: bool = True) -> Optional[str]:
     """
@@ -114,8 +133,8 @@ def fetch_content(url: str, retries: Optional[int] = None, timeout: Optional[int
     # 针对特定域名的特殊处理
     if 'ghfast.top' in url:
         # 对ghfast.top域名设置更长的超时时间以处理大文件
-        timeout = 15
-        retries = 3
+        timeout = 30
+        retries = NETWORK_CONFIG.get('max_retries', 5)  # 使用配置的重试次数
     
     config = {
         'headers': headers,
@@ -135,10 +154,27 @@ def fetch_content(url: str, retries: Optional[int] = None, timeout: Optional[int
                 with open(file_path, 'rb') as f:
                     raw_content = f.read()
                 
-                # 自动检测文件编码
-                import chardet
+                # 自动检测文件编码，并尝试多种编码
                 detected_encoding = chardet.detect(raw_content)['encoding']
-                content = raw_content.decode(detected_encoding if detected_encoding else 'utf-8')
+                content = None
+                
+                # 尝试多种编码，提高兼容性
+                encodings_to_try = [detected_encoding, 'utf-8', 'gbk', 'gb2312', 'utf-8-sig']
+                for encoding in encodings_to_try:
+                    if not encoding:
+                        continue
+                    try:
+                        content = raw_content.decode(encoding)
+                        logger.debug(f"使用编码 {encoding} 成功解码本地文件 {url}")
+                        break
+                    except UnicodeDecodeError:
+                        logger.debug(f"使用编码 {encoding} 解码本地文件 {url} 失败")
+                        continue
+                
+                # 如果所有编码都失败，使用UTF-8并忽略错误
+                if content is None:
+                    logger.warning(f"所有编码尝试都失败，将使用UTF-8并忽略错误来解码本地文件 {url}")
+                    content = raw_content.decode('utf-8', errors='ignore')
                 
                 # 计算请求耗时
                 elapsed_time = time.time() - start_time
@@ -158,12 +194,30 @@ def fetch_content(url: str, retries: Optional[int] = None, timeout: Optional[int
             start_time = time.time()
             response = requests.get(url, **config)
             response.raise_for_status()  # 抛出HTTP错误
-            # 自动检测响应编码，而不是强制使用UTF-8
-            # 使用chardet库检测编码，如果失败则使用UTF-8作为后备
-            import chardet
+            # 获取原始响应内容
             raw_content = response.content
+            
+            # 尝试多种编码解码，提高兼容性
             detected_encoding = chardet.detect(raw_content)['encoding']
-            response.encoding = detected_encoding if detected_encoding else 'utf-8'
+            content = None
+            
+            # 尝试多种编码
+            encodings_to_try = [detected_encoding, 'utf-8', 'gbk', 'gb2312', 'utf-8-sig']
+            for encoding in encodings_to_try:
+                if not encoding:
+                    continue
+                try:
+                    content = raw_content.decode(encoding)
+                    logger.debug(f"使用编码 {encoding} 成功解码远程文件 {url}")
+                    break
+                except UnicodeDecodeError:
+                    logger.debug(f"使用编码 {encoding} 解码远程文件 {url} 失败")
+                    continue
+            
+            # 如果所有编码都失败，使用UTF-8并忽略错误
+            if content is None:
+                logger.warning(f"所有编码尝试都失败，将使用UTF-8并忽略错误来解码远程文件 {url}")
+                content = raw_content.decode('utf-8', errors='ignore')
             
             # 计算请求耗时
             elapsed_time = time.time() - start_time
@@ -175,9 +229,9 @@ def fetch_content(url: str, retries: Optional[int] = None, timeout: Optional[int
             # 缓存结果
             if use_cache and NETWORK_CONFIG.get('enable_cache', True):
                 cache_key = hashlib.md5(url.encode()).hexdigest()
-                _cache.set(cache_key, response.text)
+                _cache.set(cache_key, content)
             
-            return response.text
+            return content
             
         except requests.exceptions.Timeout:
             logger.error(f"请求超时 {url} (尝试 {attempt+1}/{retries})")
@@ -200,11 +254,11 @@ def fetch_content(url: str, retries: Optional[int] = None, timeout: Optional[int
         except Exception as e:
             log_exception(logger, f"请求发生未知错误 {url} (尝试 {attempt+1}/{retries})")
         
-        # 指数退避
+        # 使用配置的重试延迟
         if attempt < retries - 1:
-            backoff_time = 2 ** attempt
-            logger.info(f"等待 {backoff_time}秒后重试...")
-            time.sleep(backoff_time)
+            retry_delay = NETWORK_CONFIG.get('retry_delay', 2)
+            logger.info(f"等待 {retry_delay}秒后重试...")
+            time.sleep(retry_delay)
     
     logger.error(f"所有重试都失败了 {url}")
     return None
@@ -279,8 +333,8 @@ async def async_fetch_content(url: str, session: aiohttp.ClientSession, **kwargs
     # 针对特定域名的特殊处理
     if 'ghfast.top' in url:
         # 对ghfast.top域名设置更长的超时时间以处理大文件
-        timeout = 15
-        retries = 3
+        timeout = 30
+        retries = NETWORK_CONFIG.get('max_retries', 5)  # 使用配置的重试次数
     
     for attempt in range(retries):
         try:
@@ -315,11 +369,11 @@ async def async_fetch_content(url: str, session: aiohttp.ClientSession, **kwargs
         except Exception as e:
             log_exception(logger, f"异步请求发生未知错误 {url} (尝试 {attempt+1}/{retries})")
             
-        # 指数退避
+        # 使用配置的重试延迟
         if attempt < retries - 1:
-            backoff_time = 2 ** attempt
-            logger.info(f"等待 {backoff_time}秒后重试...")
-            await asyncio.sleep(backoff_time)
+            retry_delay = NETWORK_CONFIG.get('retry_delay', 2)
+            logger.info(f"等待 {retry_delay}秒后重试...")
+            await asyncio.sleep(retry_delay)
     
     logger.error(f"所有重试都失败了 {url}")
     return None

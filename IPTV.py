@@ -11,29 +11,20 @@ support：手动更新和通过GitHub Actions工作流定时更新
 """
 
 import sys
-
 import io
-
+import traceback
 
 
 # 设置标准输出编码为UTF-8，解决UnicodeEncodeError问题
-
 sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8')
-
 sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding='utf-8')
 
 
-
 import asyncio
-
 import os
-
 import re
-
 import time
-
 import requests
-
 import datetime
 
 
@@ -846,18 +837,6 @@ def get_urls_from_file(file_path):
 
 
 
-# 检查URL是否有效
-
-def check_url(url, timeout=5):
-
-    """检查URL是否可访问"""
-
-    result = check_url_availability(url, timeout=timeout)
-
-    return result['available']
-
-
-
 # 格式化时间间隔
 
 def format_interval(seconds):
@@ -975,12 +954,17 @@ def extract_channels_from_m3u(content):
             
 
             # 提取频道名称
-
             channel_name = ""
-
             if ',' in info_line:
-
+                # 只提取最后一个逗号后面的内容作为频道名称
                 channel_name = info_line.split(',')[-1].strip()
+                # 移除可能包含的URL部分（修复：防止URL中的4K/8K信息被错误包含在频道名称中）
+                if 'http://' in channel_name or 'https://' in channel_name:
+                    # 只保留URL前面的内容作为频道名称
+                    if 'http://' in channel_name:
+                        channel_name = channel_name.split('http://')[0].strip()
+                    elif 'https://' in channel_name:
+                        channel_name = channel_name.split('https://')[0].strip()
 
             
 
@@ -1013,54 +997,22 @@ def extract_channels_from_m3u(content):
             
 
             # 为每个URL创建一个频道条目
-
             for url in urls:
-
-                # 首先检查原始频道名或URL中是否包含4K相关标识，无论是否能规范化
-                has_4k_in_name = ("4K" in channel_name or "4k" in channel_name or 
-                                  "8K" in channel_name or "8k" in channel_name or
-                                  "超高清" in channel_name or "2160" in channel_name)
-                has_4k_in_url = ("4K" in url or "4k" in url or 
-                                 "8K" in url or "8k" in url or
-                                 "2160" in url)
-                
-                if has_4k_in_name or has_4k_in_url:
-                    # 如果URL中包含4K但名称中没有，且是CCTV频道，尝试正确处理4K/8K标识
-                    if has_4k_in_url and not has_4k_in_name:
-                        # 检查是否是CCTV频道
-                        if re.match(r'^CCTV\d+$', channel_name):
-                            # 检查是否是CCTV4K或CCTV8K的特殊情况
-                            if re.search(r'cctv4k', url.lower()):
-                                channel_name = "CCTV4K"
-                            elif re.search(r'cctv8k', url.lower()):
-                                channel_name = "CCTV8K"
-                            elif re.search(r'4k', url.lower()):
-                                # 对于其他CCTV频道+4K的情况
-                                channel_name += "-4K"
-                            elif re.search(r'8k', url.lower()):
-                                # 对于其他CCTV频道+8K的情况
-                                channel_name += "-8K"
-                    
-                    # 使用规范化后的名称作为显示名称（如果能规范化的话）
-                    display_name = normalize_channel_name(channel_name) or channel_name
-                    channels["4K频道"].append((display_name, url))
-
+                # 规范化频道名称
+                normalized_name = normalize_channel_name(channel_name)
+                if normalized_name:
+                    # 使用get_channel_category函数统一获取频道分类，包括4K频道的判断
+                    category = get_channel_category(normalized_name)
+                    channels[category].append((normalized_name, url))
                 else:
-                        # 规范化频道名称
-                        normalized_name = normalize_channel_name(channel_name)
-                        if normalized_name:
-                            # 获取频道分类
-                            category = get_channel_category(normalized_name)
-                            channels[category].append((normalized_name, url))
-                        else:
-                            # 未规范化且不含4K的频道放在其他频道，但仍需进行繁简转换
-                            try:
-                                import core.chinese_conversion
-                                simplified_name = core.chinese_conversion.simplify_chinese(channel_name)
-                                channels.setdefault("其他", []).append((simplified_name, url))
-                            except:
-                                # 如果繁简转换失败，使用原始名称
-                                channels.setdefault("其他", []).append((channel_name, url))
+                    # 未规范化的频道放在其他频道，但仍需进行繁简转换
+                    try:
+                        import core.chinese_conversion
+                        simplified_name = core.chinese_conversion.simplify_chinese(channel_name)
+                        channels.setdefault("其他", []).append((simplified_name, url))
+                    except:
+                        # 如果繁简转换失败，使用原始名称
+                        channels.setdefault("其他", []).append((channel_name, url))
 
                     
 
@@ -1088,25 +1040,8 @@ for category, channels in CHANNEL_CATEGORIES.items():
 
 
 
-# 获取频道分类
-
-def get_channel_category(channel_name):
-
-    """获取频道所属的分类"""
-
-    # 首先检查是否包含4K/8K/超高清/2160数字，如果包含则直接归类为4K频道
-
-    if ('4K' in channel_name or '4k' in channel_name or 
-
-        '8K' in channel_name or '8k' in channel_name or
-
-        '超高清' in channel_name or '2160' in channel_name):
-
-        return "4K频道"
-
-    # 使用反向映射直接查找，提高效率
-
-    return CHANNEL_TO_CATEGORY.get(channel_name, "其他")
+# 获取频道分类 - 已移动到core/channel_utils.py
+from core.channel_utils import get_channel_category
 
 
 
@@ -1124,113 +1059,8 @@ for standard_name, aliases in CHANNEL_MAPPING.items():
 
 
 
-# 规范化频道名称
-
-def normalize_channel_name(name):
-
-    """将频道名称规范化为标准名称"""
-
-    if not name:
-
-        return None
-
-    
-    # 去除前后空格
-
-    name = name.strip()
-
-    
-    # 统一转换为简体中文
-    try:
-        import core.chinese_conversion
-        name = core.chinese_conversion.simplify_chinese(name)
-    except:
-        pass
-
-    
-    # 首先检查是否是CCTV4K或CCTV8K频道（名称中直接包含4K/8K）
-    if re.match(r'^[Cc][Cc][Tt][Vv]\s*4[Kk]$', name):
-        return "CCTV4K"
-    elif re.match(r'^[Cc][Cc][Tt][Vv]\s*8[Kk]$', name):
-        return "CCTV8K"
-    
-    # 检查是否是带4K/8K后缀的CCTV数字频道（如CCTV5-4K, CCTV5 8K, CCTV5_4K, CCTV5+4K等）
-    cctv_4k_match = re.search(r'^(CCTV|cctv)\s*(\d+)\s*[-_\.\s+]\s*(4[Kk]|8[Kk])\s*$', name, re.IGNORECASE)
-    if cctv_4k_match:
-        cctv_number = cctv_4k_match.group(2)
-        cctv_quality = cctv_4k_match.group(3).upper()
-        return f"CCTV{cctv_number}{cctv_quality}"
-    
-    # 替换常见的特殊字符和分隔符
-    name = re.sub(r'[\s_\-\.]+', ' ', name)
-
-    
-    # 去除多余的空格
-
-    name = re.sub(r'\s+', ' ', name).strip()
-
-    
-    # 处理CCTV频道名称中的错误别名（如CCTV4a, CCTV4A, CCTV4o等）
-    if re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(?:\d+)[AaOoMm]', name, re.IGNORECASE):
-        match = re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)', name, re.IGNORECASE)
-        if match:
-            # 提取CCTV和数字部分
-            base_name = f"CCTV{match.group(1)}"
-            # 检查是否有欧洲/美洲等后缀
-            if '欧洲' in name or '美洲' in name:
-                region = '欧洲' if '欧洲' in name else '美洲'
-                name = f"{base_name}{region}"
-            else:
-                name = base_name
-    
-    # 处理CCTV-数字格式（如CCTV-1, CCTV -1, CCTV- 1等）
-    elif re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)$', name, re.IGNORECASE):
-        match = re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)$', name, re.IGNORECASE)
-        if match:
-            # 提取CCTV和数字部分
-            name = f"CCTV{match.group(1)}"
-    
-    # 处理带中文的CCTV频道，如"CCTV-1综合"、"CCTV-2财经"等
-    chinese_cctv_match = re.search(r'^(?:CCTV|cctv)[\-_]?(4K|8K|\d+)(?:综合|财经|综艺|中文国际|体育|电影|国防军事|电视剧|纪录|科教|戏曲|社会与法|新闻|少儿|音乐|农业农村|奥林匹克)?', name, re.IGNORECASE)
-    if chinese_cctv_match:
-        cctv_part = chinese_cctv_match.group(1)
-        name = f"CCTV{cctv_part}"
-
-    
-
-    # 处理"CCTV-13"、"CCTV-14"这样的格式
-
-    dash_cctv_match = re.search(r'^(?:CCTV|cctv)[-](\d+)$', name, re.IGNORECASE)
-
-    if dash_cctv_match:
-
-        cctv_number = int(dash_cctv_match.group(1))
-
-        name = f"CCTV{cctv_number}"
-
-    
-
-    # 处理"CCTV4欧洲"、"CCTV4美洲"这样的格式，同时保留4K/8K标识
-
-    region_cctv_match = re.search(r'^(?:CCTV|cctv)(\d+(?:4K|8K)?)(?:欧洲|美洲|亚洲)?$', name, re.IGNORECASE)
-
-    if region_cctv_match:
-
-        cctv_part = region_cctv_match.group(1)
-        region = "欧洲" if "欧洲" in name else "美洲" if "美洲" in name else "亚洲" if "亚洲" in name else ""
-        name = f"CCTV{cctv_part}{region}"
-
-    
-
-    # 去除常见的前缀后缀
-    # 注意：保留4K/8K标识，不将其作为前缀后缀移除
-    prefixes = [r'[\s\[\(]*(高清|HD|标清|SD|超清|蓝光)[\s\]\)]*', r'[\s\[\(]*(直播|卫视|电视台|频道|台)[\s\]\)]*']
-
-    for prefix in prefixes:
-
-        name = re.sub(r'^' + prefix, '', name, flags=re.IGNORECASE)
-
-        name = re.sub(r'' + prefix + '$', '', name, flags=re.IGNORECASE)
+# 规范化频道名称 - 已移动到core/channel_utils.py
+from core.channel_utils import normalize_channel_name
 
     
 
@@ -1664,50 +1494,12 @@ def extract_channels_from_txt(file_path_or_content):
                 if not url.startswith(('http://', 'https://')):
                     continue
                 
-                # 首先检查原始频道名或URL中是否包含4K相关标识，无论是否能规范化
-                has_4k_in_name = ("4K" in channel_name or "4k" in channel_name or 
-                                  "8K" in channel_name or "8k" in channel_name or
-                                  "超高清" in channel_name or "2160" in channel_name)
-                has_4k_in_url = ("4K" in url or "4k" in url or 
-                                 "8K" in url or "8k" in url or
-                                 "2160" in url)
+                # 规范化频道名称
+                normalized_name = normalize_channel_name(channel_name) or channel_name
                 
-                if has_4k_in_name or has_4k_in_url:
-                    # 如果URL中包含4K但名称中没有，且是CCTV频道，尝试正确处理4K/8K标识
-                    if has_4k_in_url and not has_4k_in_name:
-                        # 检查是否是CCTV频道
-                        if re.match(r'^CCTV\d+$', channel_name):
-                            # 检查是否是CCTV4K或CCTV8K的特殊情况
-                            if re.search(r'cctv4k', url.lower()):
-                                channel_name = "CCTV4K"
-                            elif re.search(r'cctv8k', url.lower()):
-                                channel_name = "CCTV8K"
-                            elif re.search(r'4k', url.lower()):
-                                # 对于其他CCTV频道+4K的情况
-                                channel_name += "-4K"
-                            elif re.search(r'8k', url.lower()):
-                                # 对于其他CCTV频道+8K的情况
-                                channel_name += "-8K"
-                    
-                    # 使用规范化后的名称作为显示名称（如果能规范化的话）
-                    display_name = normalize_channel_name(channel_name) or channel_name
-                    channels["4K频道"].append((display_name, url))
-                else:
-                        # 规范化频道名称
-                        normalized_name = normalize_channel_name(channel_name)
-                        if normalized_name:
-                            # 获取频道分类
-                            category = get_channel_category(normalized_name)
-                            channels[category].append((normalized_name, url))
-                        else:
-                            # 未规范化且不含4K的频道放在其他，但仍需进行繁简转换
-                            try:
-                                import core.chinese_conversion
-                                simplified_name = core.chinese_conversion.simplify_chinese(channel_name)
-                                channels["其他"].append((simplified_name, url))
-                            except:
-                                # 如果繁简转换失败，使用原始名称
-                                channels["其他"].append((channel_name, url))
+                # 获取频道分类（包含4K频道判断）
+                category = get_channel_category(normalized_name)
+                channels[category].append((normalized_name, url))
     except Exception as e:
         logger.error(f"解析{source_info}时出错: {e}")
     
@@ -1839,134 +1631,97 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def update_iptv_sources():
-
     """更新IPTV直播源"""
-
     logger.info("🚀 IPTV直播源自动生成工具")
-
     logger.info(f"📅 运行时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-
     logger.info("=" * 50)
-
     
+    try:
+        # 合并所有直播源
+        all_sources = default_sources + user_sources
+        logger.info(f"📡 正在获取{len(all_sources)}个远程直播源...")
+        logger.info(f"💻 正在读取{len(default_local_sources)}个本地直播源文件...")
+        
+        start_time = time.time()
+        channels_data = merge_sources(all_sources, default_local_sources)
 
-    # 合并所有直播源
+        # 统计过滤前的频道数量
+        logger.info(f"过滤前 - 合并频道: {sum(len(chans) for group, chans in channels_data['all'].items())} 个")
+        logger.info(f"过滤前 - IPv4频道: {sum(len(chans) for group, chans in channels_data['ipv4'].items())} 个")
+        logger.info(f"过滤前 - IPv6频道: {sum(len(chans) for group, chans in channels_data['ipv6'].items())} 个")
 
-    all_sources = default_sources + user_sources
-
-    logger.info(f"📡 正在获取{len(all_sources)}个远程直播源...")
-
-    logger.info(f"💻 正在读取{len(default_local_sources)}个本地直播源文件...")
-
-    
-
-    start_time = time.time()
-
-    channels_data = merge_sources(all_sources, default_local_sources)
-
-    
-
-    # 统计过滤前的频道数量
-
-    logger.info(f"过滤前 - 合并频道: {sum(len(chans) for group, chans in channels_data['all'].items())} 个")
-
-    logger.info(f"过滤前 - IPv4频道: {sum(len(chans) for group, chans in channels_data['ipv4'].items())} 个")
-
-    logger.info(f"过滤前 - IPv6频道: {sum(len(chans) for group, chans in channels_data['ipv6'].items())} 个")
-
-    
-
-    # 过滤各个版本的频道
-
-    filtered_channels_all = filter_channels(channels_data['all'])
-
-    filtered_channels_ipv4 = filter_channels(channels_data['ipv4'])
-
-    filtered_channels_ipv6 = filter_channels(channels_data['ipv6'])
+        # 过滤各个版本的频道
+        filtered_channels_all = filter_channels(channels_data['all'])
+        filtered_channels_ipv4 = filter_channels(channels_data['ipv4'])
+        filtered_channels_ipv6 = filter_channels(channels_data['ipv6'])
 
     
 
     # 统计过滤后的频道数量
 
-    logger.info(f"过滤后 - 合并频道: {sum(len(chans) for group, chans in filtered_channels_all.items())} 个")
+        logger.info(f"过滤后 - 合并频道: {sum(len(chans) for group, chans in filtered_channels_all.items())} 个")
 
-    logger.info(f"过滤后 - IPv4频道: {sum(len(chans) for group, chans in filtered_channels_ipv4.items())} 个")
+        logger.info(f"过滤后 - IPv4频道: {sum(len(chans) for group, chans in filtered_channels_ipv4.items())} 个")
 
-    logger.info(f"过滤后 - IPv6频道: {sum(len(chans) for group, chans in filtered_channels_ipv6.items())} 个")
+        logger.info(f"过滤后 - IPv6频道: {sum(len(chans) for group, chans in filtered_channels_ipv6.items())} 个")
 
     
 
     # 统计频道数量
 
-    total_channels_all = sum(len(channel_list) for channel_list in filtered_channels_all.values())
+        total_channels_all = sum(len(channel_list) for channel_list in filtered_channels_all.values())
 
-    total_channels_ipv4 = sum(len(channel_list) for channel_list in filtered_channels_ipv4.values())
+        total_channels_ipv4 = sum(len(channel_list) for channel_list in filtered_channels_ipv4.values())
 
-    total_channels_ipv6 = sum(len(channel_list) for channel_list in filtered_channels_ipv6.values())
+        total_channels_ipv6 = sum(len(channel_list) for channel_list in filtered_channels_ipv6.values())
 
-    total_groups = len(filtered_channels_all)
+        total_groups = len(filtered_channels_all)
 
     
 
-    logger.info("=" * 50)
+        logger.info("=" * 50)
 
-    logger.info("📊 统计信息:")
+        logger.info("📊 统计信息:")
 
-    logger.info(f"📡 直播源数量: {len(all_sources)}")
+        logger.info(f"📡 直播源数量: {len(all_sources)}")
 
-    logger.info(f"📺 频道组数: {total_groups}")
+        logger.info(f"📺 频道组数: {total_groups}")
 
-    logger.info(f"📚 总频道数(合并): {total_channels_all}")
+        logger.info(f"📚 总频道数(合并): {total_channels_all}")
 
-    logger.info(f"📚 IPv4频道数: {total_channels_ipv4}")
+        logger.info(f"📚 IPv4频道数: {total_channels_ipv4}")
 
-    logger.info(f"📚 IPv6频道数: {total_channels_ipv6}")
+        logger.info(f"📚 IPv6频道数: {total_channels_ipv6}")
 
-    logger.info(f"⏱️  耗时: {format_interval(time.time() - start_time)}")
+        logger.info(f"⏱️  耗时: {format_interval(time.time() - start_time)}")
 
-    logger.info("=" * 50)
+        logger.info("=" * 50)
 
     
 
     # 生成所有版本的文件
 
-    output_config = get_config('output', {})
+        output_config = get_config('output', {})
 
     
 
-    def generate_files(channels, m3u_filename, txt_filename, version_name):
-
-        """生成指定版本的M3U和TXT文件"""
-
-        file_success = True
-
-        
-
-        if generate_m3u_file(channels, m3u_filename):
-
-            logger.info(f"✅ 成功生成{version_name}M3U文件: {m3u_filename}")
-
-        else:
-
-            logger.error(f"❌ 生成{version_name}M3U文件失败: {m3u_filename}")
-
-            file_success = False
-
-        
-
-        if generate_txt_file(channels, txt_filename):
-
-            logger.info(f"✅ 成功生成{version_name}TXT文件: {txt_filename}")
-
-        else:
-
-            logger.error(f"❌ 生成{version_name}TXT文件失败: {txt_filename}")
-
-            file_success = False
-
-        
-
-        return file_success
+        def generate_files(channels, m3u_filename, txt_filename, version_name):
+            """生成指定版本的M3U和TXT文件"""
+            file_success = True
+            
+            if generate_m3u_file(channels, m3u_filename):
+                logger.info(f"✅ 成功生成{version_name}M3U文件: {m3u_filename}")
+            else:
+                logger.error(f"❌ 生成{version_name}M3U文件失败: {m3u_filename}")
+                file_success = False
+            
+            if generate_txt_file(channels, txt_filename):
+                logger.info(f"✅ 成功生成{version_name}TXT文件: {txt_filename}")
+            else:
+                logger.error(f"❌ 生成{version_name}TXT文件失败: {txt_filename}")
+                file_success = False
+            
+            return file_success
 
     
 
@@ -1974,80 +1729,59 @@ def update_iptv_sources():
 
     # 检查配置文件中使用的键名
 
-    if 'm3u_file' in output_config:
-
-        # 使用配置文件中的完整路径
-
-        output_file_m3u_all = output_config['m3u_file']
-
-        output_file_txt_all = output_config['txt_file']
-
-    else:
-
-        # 否则使用默认键名和OUTPUT_DIR
-
-        output_file_m3u_all = os.path.join(OUTPUT_DIR, output_config.get('m3u_filename', "iptv.m3u"))
-
-        output_file_txt_all = os.path.join(OUTPUT_DIR, output_config.get('txt_filename', "channels.txt"))
+        if 'm3u_file' in output_config:
+            # 使用配置文件中的完整路径
+            output_file_m3u_all = output_config['m3u_file']
+            output_file_txt_all = output_config['txt_file']
+        else:
+            # 否则使用默认键名和OUTPUT_DIR
+            output_file_m3u_all = os.path.join(OUTPUT_DIR, output_config.get('m3u_filename', "iptv.m3u"))
+            output_file_txt_all = os.path.join(OUTPUT_DIR, output_config.get('txt_filename', "channels.txt"))
 
     
 
     # IPv4版本
 
-    output_file_m3u_ipv4 = output_file_m3u_all.replace('.m3u', '_ipv4.m3u')
+        output_file_m3u_ipv4 = output_file_m3u_all.replace('.m3u', '_ipv4.m3u')
 
-    output_file_txt_ipv4 = output_file_txt_all.replace('.txt', '_ipv4.txt')
+        output_file_txt_ipv4 = output_file_txt_all.replace('.txt', '_ipv4.txt')
 
     
 
     # IPv6版本
 
-    output_file_m3u_ipv6 = output_file_m3u_all.replace('.m3u', '_ipv6.m3u')
+        output_file_m3u_ipv6 = output_file_m3u_all.replace('.m3u', '_ipv6.m3u')
 
-    output_file_txt_ipv6 = output_file_txt_all.replace('.txt', '_ipv6.txt')
+        output_file_txt_ipv6 = output_file_txt_all.replace('.txt', '_ipv6.txt')
 
     
 
     # 生成所有文件
 
-    success = True
+        success = True
 
-    
+        # 合并版本
+        if not generate_files(filtered_channels_all, output_file_m3u_all, output_file_txt_all, "合并版"):
+            success = False
 
-    # 合并版本
+        # IPv4版本
+        if not generate_files(filtered_channels_ipv4, output_file_m3u_ipv4, output_file_txt_ipv4, "IPv4版"):
+            success = False
 
-    if not generate_files(filtered_channels_all, output_file_m3u_all, output_file_txt_all, "合并版"):
+        # IPv6版本
+        if not generate_files(filtered_channels_ipv6, output_file_m3u_ipv6, output_file_txt_ipv6, "IPv6版"):
+            success = False
 
-        success = False
-
-    
-
-    # IPv4版本
-
-    if not generate_files(filtered_channels_ipv4, output_file_m3u_ipv4, output_file_txt_ipv4, "IPv4版"):
-
-        success = False
-
-    
-
-    # IPv6版本
-
-    if not generate_files(filtered_channels_ipv6, output_file_m3u_ipv6, output_file_txt_ipv6, "IPv6版"):
-
-        success = False
-
-    
-
-    if success:
-
-        logger.info("🎉 任务完成！共生成6个文件")
-
-        return True
-
-    else:
-
-        logger.error("💥 部分文件生成失败！")
-
+        if success:
+            logger.info("🎉 任务完成！共生成6个文件")
+            return True
+        else:
+            logger.error("💥 部分文件生成失败！")
+            return False
+            
+    except Exception as e:
+        logger.error(f"❌ 程序执行出错: {str(e)}")
+        logger.error(f"堆栈跟踪: {traceback.format_exc()}")
         return False
 
 

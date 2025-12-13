@@ -14,33 +14,22 @@ run_test.bat
 simple_test.py
 direct_test.py
 
-# 临时测试和验证脚本（仅忽略根目录）
-/test_*.py
-/analyze_*.py
-/check_*.py
-/fix_*.py
-/verify_*.py
+# 输出文件目录（GitHub上不需要上传生成的输出文件）
+output/
 
-# tests目录下的测试文件不忽略
-tests/
+# 临时文件（GitHub上不需要）
+temp_live.txt
+test_4k.txt
+wrong_4k_channels.txt
 
-# 输出和临时文件
-run_output.txt
-temp.txt
-
-# 自动生成的日志文件
-get_cgq_sources.log
-logs/
-output.log
-
-# 输出文件目录
-# output/
-
-# 本地源文件
+# 本地源文件（GitHub上不需要）
 ipzyauto.m3u
 ipzyauto.txt
 ipzy_channels.txt
 channel_aliases_to_add.txt
+
+# 日志目录
+logs/
 
 # 操作系统文件
 .DS_Store
@@ -62,3 +51,18 @@ Thumbs.db
 .env.local
 .env.production.local
 .env.development.local
+
+# 测试相关（保留tests目录，但忽略测试输出）
+*.test_output
+*.test_result
+
+# Python测试和缓存
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# 详细日志文件
+*.log
+*.txt
+!README.md

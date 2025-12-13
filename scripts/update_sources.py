@@ -15,10 +15,10 @@ python update_sources.py
 import json
 import os
 import re
-import sys
 
 # 导入核心模块
 from core.logging_config import setup_logging, get_logger
+from core import read_file, write_file, file_exists
 
 # 设置日志
 setup_logging()
@@ -38,8 +38,11 @@ SCRIPTS_TO_UPDATE = [
 
 def read_sources_from_json():
     """从JSON文件读取播放源列表"""
-    with open(SOURCES_JSON, 'r', encoding='utf-8') as f:
-        data = json.load(f)
+    content = read_file(SOURCES_JSON)
+    if not content:
+        logger.error(f"❌ 无法读取 {SOURCES_JSON} 文件")
+        return [], []
+    data = json.loads(content)
     
     # 过滤出启用的播放源
     enabled_sources = [source for source in data['sources'] if source['enabled']]
@@ -78,20 +81,17 @@ SOURCES_WITH_NAMES = [
     content = content.format(urls=urls_str, sources_with_names=sources_with_names_str)
     
     # 写入文件
-    with open(UNIFIED_SOURCES_PY, 'w', encoding='utf-8') as f:
-        f.write(content)
-    
-    logger.info(f"✅ 已生成 {UNIFIED_SOURCES_PY}")
+    if write_file(UNIFIED_SOURCES_PY, content):
+        logger.info(f"✅ 已生成 {UNIFIED_SOURCES_PY}")
+    else:
+        logger.error(f"❌ 生成 {UNIFIED_SOURCES_PY} 失败")
 
 
 def update_script(script_path):
     """更新单个脚本中的播放源"""
-    try:
-        # 使用utf-8-sig编码读取文件，自动处理BOM字符
-        with open(script_path, 'r', encoding='utf-8-sig') as f:
-            content = f.read()
-    except Exception as e:
-        logger.error(f"❌ 读取文件 {script_path} 失败: {e}")
+    content = read_file(script_path)
+    if not content:
+        logger.error(f"❌ 读取文件 {script_path} 失败")
         return
     
     # 检查文件中是否已经导入了unified_sources
@@ -151,14 +151,11 @@ urls = UNIFIED_SOURCES'''
             logger.warning(f"⚠️  未知的数据源格式，跳过 {script_path}")
             return
     
-    try:
-        # 写入更新后的内容
-        with open(script_path, 'w', encoding='utf-8') as f:
-            f.write(content)
-        logger.info(f"✅ 已更新 {script_path}")
-    except Exception as e:
-        logger.error(f"❌ 写入文件 {script_path} 失败: {e}")
-        return
+    if write_file(script_path, content):
+            logger.info(f"✅ 已更新 {script_path}")
+        else:
+            logger.error(f"❌ 写入文件 {script_path} 失败")
+            return
 
 
 def main():
@@ -166,7 +163,7 @@ def main():
     logger.info("=== 播放源自动更新脚本 ===")
     
     # 检查sources.json是否存在
-    if not os.path.exists(SOURCES_JSON):
+    if not file_exists(SOURCES_JSON):
         logger.error(f"❌ 找不到 {SOURCES_JSON} 文件")
         return
     
@@ -182,7 +179,7 @@ def main():
     # 更新所有脚本
     logger.info("🔄 更新所有脚本...")
     for script in SCRIPTS_TO_UPDATE:
-        if os.path.exists(script):
+        if file_exists(script):
             update_script(script)
         else:
             logger.error(f"❌ 找不到 {script} 文件")

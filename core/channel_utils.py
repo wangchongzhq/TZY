@@ -111,7 +111,8 @@ def deduplicate_channels(channels: List[ChannelInfo], by_name: bool = True, by_u
                     # 简单的质量评估
                     score = 0
                     
-                    # URL中包含高清标记的加分
+                    # URL中包含高清标记的加分（仅用于质量排序，不用于频道分类）
+                    # 注意：频道清晰度分类必须仅基于频道名称，不考虑URL内容
                     if 'hd' in channel.url.lower() or '1080' in channel.url.lower():
                         score += 20
                     if '4k' in channel.url.lower():
@@ -393,13 +394,13 @@ def evaluate_channel_quality(channel: ChannelInfo, timeout: int = 5) -> Dict[str
     
     return quality
 
-def batch_evaluate_quality(channels: List[ChannelInfo], max_workers: int = 10, timeout: int = 5, update_channels: bool = False) -> List[Dict[str, Any]]:
+def batch_evaluate_quality(channels: List[ChannelInfo], max_workers: int = None, timeout: int = 5, update_channels: bool = False) -> List[Dict[str, Any]]:
     """
     批量评估频道质量
     
     参数:
         channels: 频道信息列表
-        max_workers: 最大并发数
+        max_workers: 最大并发数（默认从配置读取）
         timeout: 检查超时时间（秒）
         update_channels: 是否将质量评估结果更新到频道对象中
         
@@ -413,7 +414,13 @@ def batch_evaluate_quality(channels: List[ChannelInfo], max_workers: int = 10, t
     
     results = []
     
-    logger.info(f"开始批量评估 {len(channels)} 个频道的质量")
+    # 从配置获取默认并发数
+    if max_workers is None:
+        max_workers = get_config('network', {}).get('max_workers', 20)
+    
+    logger.info(f"开始批量评估 {len(channels)} 个频道的质量，最大并发数: {max_workers}")
+    
+    start_time = time.time()
     
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         # 提交所有任务
@@ -439,12 +446,15 @@ def batch_evaluate_quality(channels: List[ChannelInfo], max_workers: int = 10, t
             except Exception as e:
                 logger.error(f"频道质量评估异常 {i}/{len(channels)}: {channel.name}: {e}")
     
-    logger.info(f"批量频道质量评估完成")
+    elapsed_time = time.time() - start_time
+    logger.info(f"批量频道质量评估完成，耗时: {elapsed_time:.2f}秒")
+    log_performance(logger, "批量频道质量评估", elapsed_time, channel_count=len(channels), max_workers=max_workers)
+    
     return results
 
 def get_channel_statistics(channels: List[ChannelInfo]) -> Dict[str, Any]:
     """
-    获取频道统计信息
+    获取频道统计信息（优化版：一次遍历完成所有统计）
     
     参数:
         channels: 频道信息列表
@@ -460,40 +470,80 @@ def get_channel_statistics(channels: List[ChannelInfo]) -> Dict[str, Any]:
             'cctv_channels': 0,
             'cctv_ratio': 0,
             'average_name_length': 0,
-            'average_url_length': 0
+            'average_url_length': 0,
+            'available_channels': 0,
+            'streaming_channels': 0,
+            '4k_count': 0,
+            'hd_count': 0
         }
     
-    # 分组统计
-    grouped = group_channels(channels)
-    
-    # 计算平均长度
-    total_name_length = sum(len(channel.name) for channel in channels)
-    total_url_length = sum(len(channel.url) for channel in channels)
-    
-    # 统计CCTV频道数量
+    # 一次遍历完成所有统计
+    total_channels = len(channels)
+    groups = {}
+    total_name_length = 0
+    total_url_length = 0
     cctv_count = 0
+    available_count = 0
+    streaming_count = 0
+    count_4k = 0
+    count_hd = 0
+    
+    start_time = time.time()
+    
     for channel in channels:
+        # 分组统计
+        group_name = channel.group or '未分组'
+        groups[group_name] = groups.get(group_name, 0) + 1
+        
+        # 计算长度总和
+        total_name_length += len(channel.name)
+        total_url_length += len(channel.url)
+        
+        # CCTV统计
         if 'CCTV' in channel.name.upper():
             cctv_count += 1
+        
+        # 可用性统计
+        if hasattr(channel, 'is_available') and channel.is_available:
+            available_count += 1
+        
+        # 流媒体统计
+        if hasattr(channel, 'is_streaming') and channel.is_streaming:
+            streaming_count += 1
+        
+        # 4K频道统计
+        if '4K' in channel.name.upper():
+            count_4k += 1
+        
+        # HD频道统计
+        if 'HD' in channel.name.upper():
+            count_hd += 1
     
-    cctv_ratio = cctv_count / len(channels) if len(channels) > 0 else 0
+    cctv_ratio = cctv_count / total_channels if total_channels > 0 else 0
     
     stats = {
-        'total_channels': len(channels),
-        'total_groups': len(grouped),
-        'groups': {group: len(channels) for group, channels in grouped.items()},
+        'total_channels': total_channels,
+        'total_groups': len(groups),
+        'groups': groups,
         'cctv_channels': cctv_count,
         'cctv_ratio': cctv_ratio,
-        'average_name_length': total_name_length / len(channels),
-        'average_url_length': total_url_length / len(channels)
+        'average_name_length': total_name_length / total_channels,
+        'average_url_length': total_url_length / total_channels,
+        'available_channels': available_count,
+        'available_ratio': available_count / total_channels if total_channels > 0 else 0,
+        'streaming_channels': streaming_count,
+        'streaming_ratio': streaming_count / total_channels if total_channels > 0 else 0,
+        '4k_count': count_4k,
+        'hd_count': count_hd
     }
     
-    logger.info(f"获取频道统计信息完成")
+    elapsed_time = time.time() - start_time
+    logger.info(f"获取频道统计信息完成，耗时: {elapsed_time:.2f}秒")
     return stats
 
 def search_channels(channels: List[ChannelInfo], keyword: str, search_in_name: bool = True, search_in_group: bool = False) -> List[ChannelInfo]:
     """
-    搜索频道
+    搜索频道（优化版：使用更高效的字符串搜索和预编译正则表达式）
     
     参数:
         channels: 频道信息列表
@@ -510,19 +560,26 @@ def search_channels(channels: List[ChannelInfo], keyword: str, search_in_name: b
     keyword = keyword.lower()
     matched_channels = []
     
+    # 预编译正则表达式以提高性能
+    import re
+    keyword_pattern = re.compile(re.escape(keyword), re.IGNORECASE)
+    
+    start_time = time.time()
+    
     for channel in channels:
         match = False
         
-        if search_in_name and keyword in channel.name.lower():
-            match = True
+        if search_in_name:
+            match = match or bool(keyword_pattern.search(channel.name))
         
-        if search_in_group and keyword in (channel.group.lower() if channel.group else ''):
-            match = True
+        if search_in_group and channel.group:
+            match = match or bool(keyword_pattern.search(channel.group))
         
         if match:
             matched_channels.append(channel)
     
-    logger.info(f"频道搜索完成，关键词: '{keyword}'，找到 {len(matched_channels)} 个匹配结果")
+    elapsed_time = time.time() - start_time
+    logger.info(f"频道搜索完成，关键词: '{keyword}'，找到 {len(matched_channels)} 个匹配结果，耗时: {elapsed_time:.2f}秒")
     return matched_channels
 
 def get_video_resolution_ffmpeg(url: str, timeout: int = 5) -> Optional[Tuple[int, int]]:
@@ -749,16 +806,23 @@ def normalize_channel_name(name: str) -> str:
     返回:
         标准化后的频道名称
     """
+    if not name or not isinstance(name, str):
+        return None
+    
+    # 去除前后空格
+    name = name.strip()
+    
+    # 处理空字符串
     if not name:
-        return ''
+        return None
     
     # 保存原始名称用于调试
     original_name = name
     
     # 第一步：统一转换为简体中文
     try:
-        import core.chinese_conversion
-        name = core.chinese_conversion.traditional_to_simplified(name)
+        from core.chinese_conversion import simplify_chinese
+        name = simplify_chinese(name)
     except Exception as e:
         # 如果转换失败，继续处理
         pass
@@ -766,21 +830,34 @@ def normalize_channel_name(name: str) -> str:
     # 第二步：去除前后空格
     name = name.strip()
     
-    # 第三步：替换常见的特殊字符和分隔符为空格
+    # 第三步：检查是否是CCTV4K或CCTV8K频道（名称中直接包含4K/8K）
+    # 支持CCTV 4K超高清这样的格式
+    if re.match(r'^[Cc][Cc][Tt][Vv]\s*4[Kk].*', name):
+        return "CCTV4K"
+    elif re.match(r'^[Cc][Cc][Tt][Vv]\s*8[Kk].*', name):
+        return "CCTV8K"
+    
+    # 检查是否是带4K/8K后缀的CCTV数字频道（如CCTV5-4K, CCTV5 8K, CCTV5_4K, CCTV5+4K等）
+    cctv_4k_match = re.search(r'^(CCTV|cctv)\s*(\d+)\s*[-_\.\s+]\s*(4[Kk]|8[Kk])\s*$', name, re.IGNORECASE)
+    if cctv_4k_match:
+        cctv_number = cctv_4k_match.group(2)
+        cctv_quality = cctv_4k_match.group(3).upper()
+        return f"CCTV{cctv_number}{cctv_quality}"
+    
+    # 第四步：替换常见的特殊字符和分隔符为空格
     name = re.sub(r'[\s_\-\.]+', ' ', name)
     
-    # 第四步：去除多余的空格
+    # 第五步：去除多余的空格
     name = re.sub(r'\s+', ' ', name).strip()
     
-    # 第五步：转换为小写用于匹配
+    # 第六步：转换为小写用于匹配
     name_lower = name.lower()
     
-    # 第六步：处理CCTV频道名称 - 优先处理，避免被其他逻辑影响
-    # 先处理CCTV频道，处理完成后直接返回结果
+    # 第七步：处理CCTV频道名称 - 优先处理，避免被其他逻辑影响
     if name_lower.startswith('cctv'):
         # 匹配所有CCTV格式，包括带空格、带后缀、带区域等
         # 提取CCTV后面的4K/8K或数字和可能的加号
-        cctv_pattern = re.compile(r'cctv\s*(4k|8k|\d+)\s*([+]?)', re.IGNORECASE)
+        cctv_pattern = re.compile(r'cctv\s*(4k|8k|\d+)\s*(\+)?', re.IGNORECASE)
         cctv_match = cctv_pattern.search(name_lower)
         
         if cctv_match:
@@ -796,6 +873,8 @@ def normalize_channel_name(name: str) -> str:
                 region = '欧洲'
             elif '美洲' in name_lower:
                 region = '美洲'
+            elif '亚洲' in name_lower:
+                region = '亚洲'
             
             # 构建标准化名称
             if has_plus:
@@ -814,9 +893,127 @@ def normalize_channel_name(name: str) -> str:
     cctv_alias_match = cctv_alias_pattern.match(name)
     if cctv_alias_match:
         cctv_number = cctv_alias_match.group(1)
-        return f"CCTV{cctv_number}"
+        # 检查是否有欧洲/美洲等后缀
+        if '欧洲' in name or '美洲' in name or '亚洲' in name:
+            region = '欧洲' if '欧洲' in name else '美洲' if '美洲' in name else '亚洲'
+            return f"CCTV{cctv_number}{region}"
+        else:
+            return f"CCTV{cctv_number}"
     
-    # 处理CCTV-13、CCTV-14等格式
+    # 处理CCTV-数字格式（如CCTV-1, CCTV -1, CCTV- 1等）
+    elif re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)$', name, re.IGNORECASE):
+        match = re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)$', name, re.IGNORECASE)
+        if match:
+            # 提取CCTV和数字部分
+            name = f"CCTV{match.group(1)}"
+    
+    # 处理带中文的CCTV频道，如"CCTV-1综合"、"CCTV-2财经"等
+    chinese_cctv_match = re.search(r'^(?:CCTV|cctv)[\-_]?(4K|8K|\d+)(?:综合|财经|综艺|中文国际|体育|电影|国防军事|电视剧|纪录|科教|戏曲|社会与法|新闻|少儿|音乐|农业农村|奥林匹克)?', name, re.IGNORECASE)
+    if chinese_cctv_match:
+        cctv_part = chinese_cctv_match.group(1)
+        name = f"CCTV{cctv_part}"
+    
+    # 处理"CCTV-13"、"CCTV-14"这样的格式
+    dash_cctv_match = re.search(r'^(?:CCTV|cctv)[-](\d+)$', name, re.IGNORECASE)
+    if dash_cctv_match:
+        cctv_number = int(dash_cctv_match.group(1))
+        name = f"CCTV{cctv_number}"
+    
+    # 处理"CCTV4欧洲"、"CCTV4美洲"这样的格式，同时保留4K/8K标识
+    region_cctv_match = re.search(r'^(?:CCTV|cctv)(\d+(?:4K|8K)?)(?:欧洲|美洲|亚洲)?$', name, re.IGNORECASE)
+    if region_cctv_match:
+        cctv_part = region_cctv_match.group(1)
+        region = "欧洲" if "欧洲" in name else "美洲" if "美洲" in name else "亚洲" if "亚洲" in name else ""
+        name = f"CCTV{cctv_part}{region}"
+    
+
+    
+    # 特殊处理：将以"台"结尾的频道名称转换为"卫视"，但保留4K/8K/HD等标识
+    # 匹配所有以"台"结尾或"台"后接4K/8K/HD等的情况
+    if '台' in name:
+        # 先处理"台"后接4K/8K/HD等的情况
+        if re.search(r'台(?=4K|8K|HD|高清|标清|超清|蓝光)', name, re.IGNORECASE):
+            match = re.search(r'(台)(4K|8K|HD|高清|标清|超清|蓝光)', name, re.IGNORECASE)
+            if match:
+                suffix = match.group(2)
+                name = re.sub(r'台(4K|8K|HD|高清|标清|超清|蓝光)', f'卫视{suffix}', name, flags=re.IGNORECASE)
+        # 确保字符串末尾没有空格
+        name = name.rstrip()
+        
+        # 再处理"台"直接结束的情况 - 使用字符串方法而不是正则表达式
+        if name.endswith('台'):
+            name = name[:-1] + '卫视'
+    
+    # 先处理括号内的HD、高清等后缀
+    name = re.sub(r'\s*[\(\)\[\]【】][^\(\)\[\]【】]*?(HD|高清|标清|超清|蓝光)[^\(\)\[\]【】]*?[\)\(\]\[】【]\s*$', '', name, flags=re.IGNORECASE)
+    
+    # 再处理普通的HD、高清等后缀
+    name = re.sub(r'\s*(HD|高清|标清|超清|蓝光)\s*$', '', name, flags=re.IGNORECASE)
+    name = re.sub(r'\s*[-_\.](HD|高清|标清|超清|蓝光)\s*$', '', name, flags=re.IGNORECASE)
+    
+    # 去除常见的前缀
+    common_prefixes = [
+        r'^[\s\[\(]*直播[\s\]\)]*',
+        r'^[\s\[\(]*正在直播[\s\]\)]*',
+        r'^[\s\[\(]*电视台[\s\]\)]*'
+    ]
+    
+    for prefix in common_prefixes:
+        name = re.sub(prefix, '', name, flags=re.IGNORECASE)
+    
+    # 去除常见的后缀
+    common_suffixes = [
+        r'[\s\[\(]*直播[\s\]\)]*$',
+        r'[\s\[\(]*电视台[\s\]\)]*$'
+    ]
+    
+    for suffix in common_suffixes:
+        name = re.sub(suffix, '', name, flags=re.IGNORECASE)
+    
+    # 去除多余的空格和特殊字符
+    name = re.sub(r'[\s_\-\.\(\)\[\]【】]+', ' ', name)
+    name = name.strip()
+    
+    # 处理空字符串情况
+    if not name:
+        return None
+    
+    return name
+
+def get_channel_category(channel_name: str) -> str:
+    """
+    获取频道所属的分类
+    
+    最近改进：
+    - 统一了4K频道判断逻辑，确保M3U和TXT解析函数使用相同的判断标准
+    - 改进了4K/8K/超高清/2160标识的匹配方式，使用更灵活的正则表达式
+    - 修复了分组标题错误分类为4K频道的问题，仅根据频道名称判断
+    - 添加了否定词过滤，避免将"不包含4K"等字符串误判为4K频道
+    """
+    if not channel_name:
+        return "其他"
+    
+    # 首先检查是否包含4K/8K/超高清/2160数字，如果包含则直接归类为4K频道
+    # 注意：频道清晰度分类必须仅基于频道名称，不考虑URL链接中的内容
+    # 避免将"不包含4K关键词"这样的字符串误判为4K频道
+    if re.search(r'(4[Kk]|8[Kk]|超高清|2160)', channel_name) and not re.search(r'不(包含|是)', channel_name):
+        return "4K频道"
+    
+    # 标准化频道名称
+    channel_name = normalize_channel_name(channel_name)
+    
+    # 检查是否是高清频道
+    if re.search(r'(高清|HD|FHD|1080[Pp])', channel_name, re.IGNORECASE):
+        return "高清"
+    
+    # 检查是否是标清频道
+    elif re.search(r'(标清|SD|480[Pp])', channel_name, re.IGNORECASE):
+        return "标清"
+    
+    # 其他情况
+    else:
+        return "其他"
+
     cctv_dash_pattern = re.compile(r'^[Cc][Cc][Tt][Vv][-](\d+)', re.IGNORECASE)
     cctv_dash_match = cctv_dash_pattern.match(name)
     if cctv_dash_match:
@@ -824,14 +1021,22 @@ def normalize_channel_name(name: str) -> str:
         return f"CCTV{cctv_number}"
     
     # 处理卫视频道，如"山东卫视高清"、"浙江卫视直播"等
-    sat_pattern = re.compile(r'^(.+?)(?:卫视|卫视台|电视台|频道|台)(?:高清|HD|标清|SD|超清|直播)?$')
+    # 注意：要保留4K/8K标识
+    # 先检查是否是卫视频道格式
+    sat_pattern = re.compile(r'^(.+?)(卫视|卫视台|电视台|频道|台)(.*)$')
     sat_match = sat_pattern.match(name)
     if sat_match:
-        name = f"{sat_match.group(1)}卫视"
+        channel_base = sat_match.group(1)
+        channel_type = sat_match.group(2)
+        suffix = sat_match.group(3) or ""
+        
+        # 将其他类型统一为"卫视"
+        name = f"{channel_base}卫视{suffix}"
     
     # 去除常见的前缀后缀
-    # 注意：保留4K/8K标识，不将其作为前缀后缀移除
-    prefixes = [r'[\s\[\(]*(高清|HD|标清|SD|超清|蓝光)[\s\]\)]*', r'[\s\[\(]*(直播|卫视|电视台|频道|台)[\s\]\)]*']
+    # 注意：保留卫视、4K/8K、HD、直播等重要标识，不将其作为前缀后缀移除
+    # 只移除不需要的前缀后缀，如"电视台"、"频道"、"台"等
+    prefixes = [r'[\s\[\(]*(电视台|频道|台)[\s\]\)]*']
     for prefix in prefixes:
         name = re.sub(r'^' + prefix, '', name, flags=re.IGNORECASE)
         name = re.sub(r'' + prefix + '$', '', name, flags=re.IGNORECASE)

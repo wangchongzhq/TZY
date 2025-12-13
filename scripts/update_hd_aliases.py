@@ -11,7 +11,8 @@ def update_hd_aliases():
     """
     为config.json中的所有频道添加HD格式别名
     """
-    config_path = os.path.join(os.path.dirname(__file__), 'config', 'config.json')
+    # 项目根目录下的config文件路径
+    config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'config', 'config.json')
     
     # 读取配置文件
     with open(config_path, 'r', encoding='utf-8') as f:

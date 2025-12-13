@@ -169,6 +169,35 @@ class TestChannelUtils(unittest.TestCase):
         self.assertEqual(categorize_channel("体育频道"), "体育")
         self.assertEqual(categorize_channel("新闻频道"), "新闻")
         self.assertEqual(categorize_channel("未知频道"), "其他")
+    
+    def test_get_channel_statistics(self):
+        """测试频道统计功能"""
+        from core.channel_utils import get_channel_statistics
+        
+        # 准备测试数据，包含4K和高清频道
+        test_channels = [
+            ChannelInfo(name="CCTV-1", url="http://example.com/cctv1", tvg_id="cctv1", tvg_name="CCTV1", tvg_logo="", group="央视"),
+            ChannelInfo(name="CCTV4K", url="http://example.com/cctv4k", tvg_id="cctv4k", tvg_name="CCTV4K", tvg_logo="", group="央视"),
+            ChannelInfo(name="北京卫视", url="http://example.com/btv1", tvg_id="btv1", tvg_name="BTV1", tvg_logo="", group="卫视"),
+            ChannelInfo(name="北京卫视HD", url="http://example.com/btv1_hd", tvg_id="btv1_hd", tvg_name="BTV1-HD", tvg_logo="", group="卫视"),
+            ChannelInfo(name="上海东方卫视4K", url="http://example.com/dftv_4k", tvg_id="dftv_4k", tvg_name="DFTV4K", tvg_logo="", group="卫视"),
+        ]
+        
+        # 获取统计信息
+        stats = get_channel_statistics(test_channels)
+        
+        # 验证基本统计
+        self.assertEqual(stats["total_channels"], 5)
+        
+        # 验证分组统计
+        self.assertEqual(stats["groups"]["央视"], 2)
+        self.assertEqual(stats["groups"]["卫视"], 3)
+        
+        # 验证4K频道统计
+        self.assertEqual(stats["4k_count"], 2)
+        
+        # 验证高清频道统计
+        self.assertEqual(stats["hd_count"], 1)
 
 
 if __name__ == '__main__':

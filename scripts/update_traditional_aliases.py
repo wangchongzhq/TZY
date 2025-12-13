@@ -9,7 +9,8 @@ import sys
 # 添加项目根目录到模块搜索路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.chinese_conversion import add_traditional_aliases, traditionalize_chinese
+from core import read_file, write_file, file_exists
+from core.chinese_conversion import add_traditional_aliases
 
 # 配置文件路径
 CONFIG_FILE_PATH = 'config/config.json'
@@ -20,14 +21,17 @@ def update_config_traditional_aliases():
     更新config.json文件，为频道别名添加繁体中文版本
     """
     # 检查配置文件是否存在
-    if not os.path.exists(CONFIG_FILE_PATH):
+    if not file_exists(CONFIG_FILE_PATH):
         print(f"错误: 配置文件 {CONFIG_FILE_PATH} 不存在")
         return False
     
     try:
         # 读取配置文件
-        with open(CONFIG_FILE_PATH, 'r', encoding='utf-8') as f:
-            config = json.load(f)
+        content = read_file(CONFIG_FILE_PATH)
+        if not content:
+            print(f"错误: 无法读取配置文件 {CONFIG_FILE_PATH}")
+            return False
+        config = json.loads(content)
         
         print("✓ 成功读取配置文件")
         
@@ -48,8 +52,10 @@ def update_config_traditional_aliases():
         config['channels']['name_mappings'] = updated_aliases
         
         # 保存更新后的配置文件
-        with open(CONFIG_FILE_PATH, 'w', encoding='utf-8-sig') as f:
-            json.dump(config, f, ensure_ascii=False, indent=2)
+        updated_content = json.dumps(config, ensure_ascii=False, indent=2)
+        if not write_file(CONFIG_FILE_PATH, updated_content):
+            print(f"错误: 无法保存配置文件 {CONFIG_FILE_PATH}")
+            return False
         
         print(f"✓ 成功保存更新后的配置文件到 {CONFIG_FILE_PATH}")
         print(f"✓ 总共有 {len(updated_aliases)} 个频道别名配置已更新")

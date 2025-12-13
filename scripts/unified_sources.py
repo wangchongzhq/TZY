@@ -15,19 +15,11 @@ UNIFIED_SOURCES = [
     "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u",
     "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u",
     "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u",
-    "https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u",
     "https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u",
-    "https://ghfast.top/https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/global.m3u",
-    "https://ghfast.top/https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u",
     "https://ghproxy.it/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u",
     "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u",
     "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv4.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u",
-    "https://ghfast.top/https://raw.githubusercontent.com/iptv666/iptv/main/ipv6.m3u",
-    "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ipv6.m3u"
+    "https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u"
 ]
 
 # 带名称的播放源列表（用于ipzyauto.py）
@@ -43,17 +35,9 @@ SOURCES_WITH_NAMES = [
     ("iptv-org-streams-cn", "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u"),
     ("iptv-org-streams-hk", "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u"),
     ("iptv-org-streams-tw", "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u"),
-    ("LongLiveTheKing", "https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt"),
-    ("HeJiawen01", "https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u"),
     ("XIU2", "https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt"),
-    ("chenjie", "https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt"),
-    ("chnadsl", "https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u"),
-    ("fanmingming", "https://ghfast.top/https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/global.m3u"),
-    ("free-iptv", "https://ghfast.top/https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u"),
     ("moonkeyhoo", "https://ghproxy.it/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u"),
     ("kakaxi-ipv6", "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u"),
     ("kakaxi-ipv4", "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv4.txt"),
-    ("Heiwk", "https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u"),
-    ("iptv666-ipv6", "https://ghfast.top/https://raw.githubusercontent.com/iptv666/iptv/main/ipv6.m3u"),
-    ("iptv-ipv6", "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ipv6.m3u")
+    ("Heiwk", "https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u")
 ]

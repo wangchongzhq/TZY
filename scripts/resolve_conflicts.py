@@ -4,14 +4,19 @@
 import os
 import re
 
+# 导入核心模块
+from core import file_exists, read_file, write_file
+
 def resolve_conflicts(file_path):
     """解决单个文件中的Git冲突"""
-    if not os.path.exists(file_path):
+    if not file_exists(file_path):
         print(f"文件不存在: {file_path}")
         return
         
-    with open(file_path, 'r', encoding='utf-8') as f:
-        content = f.read()
+    content = read_file(file_path)
+    if not content:
+        print(f"无法读取文件: {file_path}")
+        return
     
     # 替换所有冲突块，保留HEAD内容
     # 匹配冲突模式：
@@ -20,10 +25,10 @@ def resolve_conflicts(file_path):
     pattern = r'<<<<<<< HEAD(?::.*?)?\n(.*?)\n=======.*?\n>>>>>>> [0-9a-f]+'
     resolved_content = re.sub(pattern, r'\1', content, flags=re.DOTALL)
     
-    with open(file_path, 'w', encoding='utf-8-sig') as f:
-        f.write(resolved_content)
-    
-    print(f"已解决{file_path}中的所有冲突")
+    if write_file(file_path, resolved_content):
+        print(f"已解决{file_path}中的所有冲突")
+    else:
+        print(f"无法写入文件: {file_path}")
 
 if __name__ == "__main__":
     # 冲突文件列表

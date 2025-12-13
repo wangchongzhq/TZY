@@ -16,7 +16,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # 导入核心模块
 from core.config import get_config
 from core.logging_config import setup_logging, get_logger, log_exception
-from core.file_utils import read_file, write_file
+from core.file_utils import read_file, write_file, file_exists, get_file_size
 from core.parser import parse_m3u_content
 from core.channel_utils import group_channels, get_channel_statistics
 
@@ -50,7 +50,7 @@ class M3UConverter:
                 return False
             
             # 检查文件是否存在和为空
-            if not os.path.exists(m3u_file_path) or os.path.getsize(m3u_file_path) == 0:
+            if not file_exists(m3u_file_path) or get_file_size(m3u_file_path) == 0:
                 return False
             
             # 读取文件内容
@@ -127,7 +127,7 @@ def main():
         
         if all_m3u_files:
             # 检查每个文件是否为空
-            valid_m3u_files = [f for f in all_m3u_files if os.path.getsize(f) > 0]
+            valid_m3u_files = [f for f in all_m3u_files if file_exists(f) and get_file_size(f) > 0]
             
             if valid_m3u_files:
                 # 选择第一个有效文件
