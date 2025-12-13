@@ -1016,39 +1016,51 @@ def extract_channels_from_m3u(content):
 
             for url in urls:
 
-                # 首先检查原始频道名是否包含4K相关标识，无论是否能规范化
-
-                if ("4K" in channel_name or "4k" in channel_name or 
-
-                    "8K" in channel_name or "8k" in channel_name or
-
-                    "超高清" in channel_name or "2160" in channel_name):
-
+                # 首先检查原始频道名或URL中是否包含4K相关标识，无论是否能规范化
+                has_4k_in_name = ("4K" in channel_name or "4k" in channel_name or 
+                                  "8K" in channel_name or "8k" in channel_name or
+                                  "超高清" in channel_name or "2160" in channel_name)
+                has_4k_in_url = ("4K" in url or "4k" in url or 
+                                 "8K" in url or "8k" in url or
+                                 "2160" in url)
+                
+                if has_4k_in_name or has_4k_in_url:
+                    # 如果URL中包含4K但名称中没有，且是CCTV频道，尝试正确处理4K/8K标识
+                    if has_4k_in_url and not has_4k_in_name:
+                        # 检查是否是CCTV频道
+                        if re.match(r'^CCTV\d+$', channel_name):
+                            # 检查是否是CCTV4K或CCTV8K的特殊情况
+                            if re.search(r'cctv4k', url.lower()):
+                                channel_name = "CCTV4K"
+                            elif re.search(r'cctv8k', url.lower()):
+                                channel_name = "CCTV8K"
+                            elif re.search(r'4k', url.lower()):
+                                # 对于其他CCTV频道+4K的情况
+                                channel_name += "-4K"
+                            elif re.search(r'8k', url.lower()):
+                                # 对于其他CCTV频道+8K的情况
+                                channel_name += "-8K"
+                    
                     # 使用规范化后的名称作为显示名称（如果能规范化的话）
-
                     display_name = normalize_channel_name(channel_name) or channel_name
-
                     channels["4K频道"].append((display_name, url))
 
                 else:
-
-                    # 规范化频道名称
-
-                    normalized_name = normalize_channel_name(channel_name)
-
-                    if normalized_name:
-
-                        # 获取频道分类
-
-                        category = get_channel_category(normalized_name)
-
-                        channels[category].append((normalized_name, url))
-
-                    else:
-
-                        # 未规范化且不含4K的频道放在其他频道
-
-                        channels.setdefault("其他", []).append((channel_name, url))
+                        # 规范化频道名称
+                        normalized_name = normalize_channel_name(channel_name)
+                        if normalized_name:
+                            # 获取频道分类
+                            category = get_channel_category(normalized_name)
+                            channels[category].append((normalized_name, url))
+                        else:
+                            # 未规范化且不含4K的频道放在其他频道，但仍需进行繁简转换
+                            try:
+                                import core.chinese_conversion
+                                simplified_name = core.chinese_conversion.simplify_chinese(channel_name)
+                                channels.setdefault("其他", []).append((simplified_name, url))
+                            except:
+                                # 如果繁简转换失败，使用原始名称
+                                channels.setdefault("其他", []).append((channel_name, url))
 
                     
 
@@ -1123,88 +1135,66 @@ def normalize_channel_name(name):
         return None
 
     
-
     # 去除前后空格
 
     name = name.strip()
 
     
-
     # 统一转换为简体中文
-
     try:
-
         import core.chinese_conversion
-
-        name = core.chinese_conversion.traditional_to_simplified(name)
-
+        name = core.chinese_conversion.simplify_chinese(name)
     except:
-
         pass
 
     
-
+    # 首先检查是否是CCTV4K或CCTV8K频道（名称中直接包含4K/8K）
+    if re.match(r'^[Cc][Cc][Tt][Vv]\s*4[Kk]$', name):
+        return "CCTV4K"
+    elif re.match(r'^[Cc][Cc][Tt][Vv]\s*8[Kk]$', name):
+        return "CCTV8K"
+    
+    # 检查是否是带4K/8K后缀的CCTV数字频道（如CCTV5-4K, CCTV5 8K, CCTV5_4K, CCTV5+4K等）
+    cctv_4k_match = re.search(r'^(CCTV|cctv)\s*(\d+)\s*[-_\.\s+]\s*(4[Kk]|8[Kk])\s*$', name, re.IGNORECASE)
+    if cctv_4k_match:
+        cctv_number = cctv_4k_match.group(2)
+        cctv_quality = cctv_4k_match.group(3).upper()
+        return f"CCTV{cctv_number}{cctv_quality}"
+    
     # 替换常见的特殊字符和分隔符
-
     name = re.sub(r'[\s_\-\.]+', ' ', name)
 
     
-
     # 去除多余的空格
 
-    name = re.sub(r'\s+', ' ', name)
+    name = re.sub(r'\s+', ' ', name).strip()
 
     
-
     # 处理CCTV频道名称中的错误别名（如CCTV4a, CCTV4A, CCTV4o等）
-
-    if re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?\d+[AaOoMm]', name, re.IGNORECASE):
-
+    if re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(?:\d+)[AaOoMm]', name, re.IGNORECASE):
         match = re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)', name, re.IGNORECASE)
-
         if match:
-
             # 提取CCTV和数字部分
-
             base_name = f"CCTV{match.group(1)}"
-
             # 检查是否有欧洲/美洲等后缀
-
             if '欧洲' in name or '美洲' in name:
-
                 region = '欧洲' if '欧洲' in name else '美洲'
-
                 name = f"{base_name}{region}"
-
             else:
-
                 name = base_name
-
     
-
     # 处理CCTV-数字格式（如CCTV-1, CCTV -1, CCTV- 1等）
-
-    elif re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)', name, re.IGNORECASE):
-
-        match = re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)', name, re.IGNORECASE)
-
+    elif re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)$', name, re.IGNORECASE):
+        match = re.match(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)$', name, re.IGNORECASE)
         if match:
-
             # 提取CCTV和数字部分
-
             name = f"CCTV{match.group(1)}"
-
     
-
     # 处理带中文的CCTV频道，如"CCTV-1综合"、"CCTV-2财经"等
-
-    chinese_cctv_match = re.search(r'^(?:CCTV|cctv)[\-_]?(\d+)(?:综合|财经|综艺|中文国际|体育|电影|国防军事|电视剧|纪录|科教|戏曲|社会与法|新闻|少儿|音乐|农业农村|奥林匹克)?', name, re.IGNORECASE)
-
+    chinese_cctv_match = re.search(r'^(?:CCTV|cctv)[\-_]?(4K|8K|\d+)(?:综合|财经|综艺|中文国际|体育|电影|国防军事|电视剧|纪录|科教|戏曲|社会与法|新闻|少儿|音乐|农业农村|奥林匹克)?', name, re.IGNORECASE)
     if chinese_cctv_match:
-
-        cctv_number = int(chinese_cctv_match.group(1))
-
-        name = f"CCTV{cctv_number}"
+        cctv_part = chinese_cctv_match.group(1)
+        name = f"CCTV{cctv_part}"
 
     
 
@@ -1220,23 +1210,21 @@ def normalize_channel_name(name):
 
     
 
-    # 处理"CCTV4欧洲"、"CCTV4美洲"这样的格式
+    # 处理"CCTV4欧洲"、"CCTV4美洲"这样的格式，同时保留4K/8K标识
 
-    region_cctv_match = re.search(r'^(?:CCTV|cctv)(\d+)(?:欧洲|美洲|亚洲)?$', name, re.IGNORECASE)
+    region_cctv_match = re.search(r'^(?:CCTV|cctv)(\d+(?:4K|8K)?)(?:欧洲|美洲|亚洲)?$', name, re.IGNORECASE)
 
     if region_cctv_match:
 
-        cctv_number = int(region_cctv_match.group(1))
-
+        cctv_part = region_cctv_match.group(1)
         region = "欧洲" if "欧洲" in name else "美洲" if "美洲" in name else "亚洲" if "亚洲" in name else ""
-
-        name = f"CCTV{cctv_number}{region}"
+        name = f"CCTV{cctv_part}{region}"
 
     
 
     # 去除常见的前缀后缀
-
-    prefixes = [r'[\s\[\(]*(高清|HD|标清|SD|超清|4K|蓝光)[\s\]\)]*', r'[\s\[\(]*(直播|卫视|电视台|频道|台)[\s\]\)]*']
+    # 注意：保留4K/8K标识，不将其作为前缀后缀移除
+    prefixes = [r'[\s\[\(]*(高清|HD|标清|SD|超清|蓝光)[\s\]\)]*', r'[\s\[\(]*(直播|卫视|电视台|频道|台)[\s\]\)]*']
 
     for prefix in prefixes:
 
@@ -1509,69 +1497,56 @@ def filter_channels(channels):
 # 生成M3U文件
 
 def generate_m3u_file(channels, output_path):
-
     """生成M3U文件"""
-
     logger.info(f"正在生成 {output_path}...")
-
     
-
+    # 导入繁简转换模块
+    try:
+        import core.chinese_conversion
+        has_conversion = True
+    except:
+        has_conversion = False
+    
     # 生成文件内容
-
     content_lines = []
-
     
-
     # 写入文件头
-
     content_lines.append("#EXTM3U")
-
     
-
     # 按CHANNEL_CATEGORIES中定义的顺序写入分类
-
     for category in CHANNEL_CATEGORIES:
-
         if category in channels:
-
             for channel_name, url in channels[category]:
-
+                # 确保频道名称是简体中文
+                if has_conversion:
+                    try:
+                        channel_name = core.chinese_conversion.simplify_chinese(channel_name)
+                    except:
+                        pass
                 # 写入频道信息
-
                 content_lines.append(f"#EXTINF:-1 group-title=\"{category}\",{channel_name}")
-
                 content_lines.append(url)
-
     
-
     # 最后写入其他频道
-
     if "其他" in channels:
-
         for channel_name, url in channels["其他"]:
-
+            # 确保频道名称是简体中文
+            if has_conversion:
+                try:
+                    channel_name = core.chinese_conversion.simplify_chinese(channel_name)
+                except:
+                    pass
             # 写入频道信息
-
             content_lines.append(f"#EXTINF:-1 group-title=\"其他\",{channel_name}")
-
             content_lines.append(url)
-
     
-
     # 使用核心模块写入文件
-
     content = '\n'.join(content_lines)
-
     if write_file(output_path, content):
-
         logger.info(f"✅ 成功生成 {output_path}")
-
         return True
-
     else:
-
         logger.error(f"❌ 生成 {output_path} 失败")
-
         return False
 
 
@@ -1579,107 +1554,75 @@ def generate_m3u_file(channels, output_path):
 # 生成TXT文件
 
 def generate_txt_file(channels, output_path):
-
     """生成TXT文件"""
-
     logger.info(f"正在生成 {output_path}...")
-
     
-
+    # 导入繁简转换模块
+    try:
+        import core.chinese_conversion
+        has_conversion = True
+    except:
+        has_conversion = False
+    
     # 生成文件内容
-
     content_lines = []
-
     
-
     # 写入文件头注释
-
     content_lines.append("# IPTV直播源列表")
-
     content_lines.append(f"# 生成时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-
     content_lines.append("# 格式: 频道名称,播放URL")
-
     content_lines.append("# 按分组排列")
-
     content_lines.append("")
-
     
-
     # 写入频道分类说明（动态使用CHANNEL_CATEGORIES的顺序）
-
     categories_str = ",".join(list(CHANNEL_CATEGORIES.keys()))
-
     content_lines.append(f"# 频道分类: {categories_str}")
-
     content_lines.append("")
-
     
-
     # 按CHANNEL_CATEGORIES中定义的顺序写入分类
-
     for category in CHANNEL_CATEGORIES:
-
         if category in channels and channels[category]:
-
             # 写入分组标题，添加,#genre#后缀
-
             content_lines.append(f"#{category}#,#genre#")
-
             
-
             # 写入该分组下的所有频道
-
             for channel_name, url in channels[category]:
-
+                # 确保频道名称是简体中文
+                if has_conversion:
+                    try:
+                        channel_name = core.chinese_conversion.simplify_chinese(channel_name)
+                    except:
+                        pass
                 content_lines.append(f"{channel_name},{url}")
-
             
-
             # 分组之间添加空行
-
             content_lines.append("")
-
     
-
     # 最后写入其他频道
-
     if "其他" in channels and channels["其他"]:
-
         # 写入分组标题，添加,#genre#后缀
-
         content_lines.append("#其他#,#genre#")
-
         
-
         # 写入该分组下的所有频道
-
         for channel_name, url in channels["其他"]:
-
+            # 确保频道名称是简体中文
+            if has_conversion:
+                try:
+                    channel_name = core.chinese_conversion.simplify_chinese(channel_name)
+                except:
+                    pass
             content_lines.append(f"{channel_name},{url}")
-
         
-
         # 分组之间添加空行
-
         content_lines.append("")
-
     
-
     # 使用核心模块写入文件
-
     content = '\n'.join(content_lines)
-
     if write_file(output_path, content):
-
         logger.info(f"✅ 成功生成 {output_path}")
-
         return True
-
     else:
-
         logger.error(f"❌ 生成 {output_path} 失败")
-
         return False
 
 
@@ -1721,23 +1664,50 @@ def extract_channels_from_txt(file_path_or_content):
                 if not url.startswith(('http://', 'https://')):
                     continue
                 
-                # 首先检查原始频道名是否包含4K相关标识，无论是否能规范化
-                if ("4K" in channel_name or "4k" in channel_name or 
-                    "8K" in channel_name or "8k" in channel_name or
-                    "超高清" in channel_name or "2160" in channel_name):
+                # 首先检查原始频道名或URL中是否包含4K相关标识，无论是否能规范化
+                has_4k_in_name = ("4K" in channel_name or "4k" in channel_name or 
+                                  "8K" in channel_name or "8k" in channel_name or
+                                  "超高清" in channel_name or "2160" in channel_name)
+                has_4k_in_url = ("4K" in url or "4k" in url or 
+                                 "8K" in url or "8k" in url or
+                                 "2160" in url)
+                
+                if has_4k_in_name or has_4k_in_url:
+                    # 如果URL中包含4K但名称中没有，且是CCTV频道，尝试正确处理4K/8K标识
+                    if has_4k_in_url and not has_4k_in_name:
+                        # 检查是否是CCTV频道
+                        if re.match(r'^CCTV\d+$', channel_name):
+                            # 检查是否是CCTV4K或CCTV8K的特殊情况
+                            if re.search(r'cctv4k', url.lower()):
+                                channel_name = "CCTV4K"
+                            elif re.search(r'cctv8k', url.lower()):
+                                channel_name = "CCTV8K"
+                            elif re.search(r'4k', url.lower()):
+                                # 对于其他CCTV频道+4K的情况
+                                channel_name += "-4K"
+                            elif re.search(r'8k', url.lower()):
+                                # 对于其他CCTV频道+8K的情况
+                                channel_name += "-8K"
+                    
                     # 使用规范化后的名称作为显示名称（如果能规范化的话）
                     display_name = normalize_channel_name(channel_name) or channel_name
                     channels["4K频道"].append((display_name, url))
                 else:
-                    # 规范化频道名称
-                    normalized_name = normalize_channel_name(channel_name)
-                    if normalized_name:
-                        # 获取频道分类
-                        category = get_channel_category(normalized_name)
-                        channels[category].append((normalized_name, url))
-                    else:
-                        # 未规范化且不含4K的频道放在其他
-                        channels["其他"].append((channel_name, url))
+                        # 规范化频道名称
+                        normalized_name = normalize_channel_name(channel_name)
+                        if normalized_name:
+                            # 获取频道分类
+                            category = get_channel_category(normalized_name)
+                            channels[category].append((normalized_name, url))
+                        else:
+                            # 未规范化且不含4K的频道放在其他，但仍需进行繁简转换
+                            try:
+                                import core.chinese_conversion
+                                simplified_name = core.chinese_conversion.simplify_chinese(channel_name)
+                                channels["其他"].append((simplified_name, url))
+                            except:
+                                # 如果繁简转换失败，使用原始名称
+                                channels["其他"].append((channel_name, url))
     except Exception as e:
         logger.error(f"解析{source_info}时出错: {e}")
     

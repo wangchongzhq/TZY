@@ -779,12 +779,15 @@ def normalize_channel_name(name: str) -> str:
     # 先处理CCTV频道，处理完成后直接返回结果
     if name_lower.startswith('cctv'):
         # 匹配所有CCTV格式，包括带空格、带后缀、带区域等
-        # 提取CCTV后面的数字和可能的加号
-        cctv_pattern = re.compile(r'cctv\s*(\d+)\s*([+]?)', re.IGNORECASE)
+        # 提取CCTV后面的4K/8K或数字和可能的加号
+        cctv_pattern = re.compile(r'cctv\s*(4k|8k|\d+)\s*([+]?)', re.IGNORECASE)
         cctv_match = cctv_pattern.search(name_lower)
         
         if cctv_match:
-            cctv_number = cctv_match.group(1)
+            cctv_part = cctv_match.group(1)
+            # 将4K/8K转换为大写
+            if cctv_part in ['4k', '8k']:
+                cctv_part = cctv_part.upper()
             has_plus = cctv_match.group(2) == '+'
             
             # 检查是否有区域后缀
@@ -797,14 +800,14 @@ def normalize_channel_name(name: str) -> str:
             # 构建标准化名称
             if has_plus:
                 if region:
-                    return f"CCTV{cctv_number}+{region}"
+                    return f"CCTV{cctv_part}+{region}"
                 else:
-                    return f"CCTV{cctv_number}+"
+                    return f"CCTV{cctv_part}+"
             else:
                 if region:
-                    return f"CCTV{cctv_number}{region}"
+                    return f"CCTV{cctv_part}{region}"
                 else:
-                    return f"CCTV{cctv_number}"
+                    return f"CCTV{cctv_part}"
     
     # 处理CCTV频道名称中的错误别名（如CCTV4a, CCTV4A, CCTV4o等）
     cctv_alias_pattern = re.compile(r'^[Cc][Cc][Tt][Vv][\s\-]?(\d+)[AaOoMm]', re.IGNORECASE)
@@ -827,7 +830,8 @@ def normalize_channel_name(name: str) -> str:
         name = f"{sat_match.group(1)}卫视"
     
     # 去除常见的前缀后缀
-    prefixes = [r'[\s\[\(]*(高清|HD|标清|SD|超清|4K|蓝光)[\s\]\)]*', r'[\s\[\(]*(直播|卫视|电视台|频道|台)[\s\]\)]*']
+    # 注意：保留4K/8K标识，不将其作为前缀后缀移除
+    prefixes = [r'[\s\[\(]*(高清|HD|标清|SD|超清|蓝光)[\s\]\)]*', r'[\s\[\(]*(直播|卫视|电视台|频道|台)[\s\]\)]*']
     for prefix in prefixes:
         name = re.sub(r'^' + prefix, '', name, flags=re.IGNORECASE)
         name = re.sub(r'' + prefix + '$', '', name, flags=re.IGNORECASE)
