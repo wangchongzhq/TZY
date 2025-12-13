@@ -41,12 +41,12 @@ jobs:
     - name: Check configuration format
       run: |
         echo "检查配置文件格式..."
-        python check_config.py
+        python scripts/check_config.py
 
     - name: 生成 M3U 文件
       run: |
         echo "开始生成M3U文件..."
-        python ipzyauto.py
+        python scripts/ipzyauto.py
         echo "=== M3U文件生成完成 ==="
         echo "当前目录下的M3U文件:"
         ls -la *.m3u

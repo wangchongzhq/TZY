@@ -56,7 +56,7 @@ class TestFileUtils(unittest.TestCase):
         
         # 验证结果
         self.assertTrue(result)
-        mock_file.assert_called_once_with(self.test_file_path, 'w', encoding='utf-8')
+        mock_file.assert_called_once_with(self.test_file_path, 'w', encoding='utf-8-sig')
         mock_file().write.assert_called_once_with(self.test_content)
     
     @patch('builtins.open', new_callable=mock_open)
@@ -72,7 +72,7 @@ class TestFileUtils(unittest.TestCase):
         
         # 验证结果
         self.assertTrue(result)
-        mock_file.assert_called_once_with(self.test_file_path, 'a', encoding='utf-8')
+        mock_file.assert_called_once_with(self.test_file_path, 'a', encoding='utf-8-sig')
         mock_file().write.assert_called_once_with(self.test_content)
     
     @patch('os.remove')

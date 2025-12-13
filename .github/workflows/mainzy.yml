@@ -50,7 +50,7 @@ jobs:
       run: ls -la
 
     - name: Run script to generate m3u
-      run: python ipzyauto.py
+      run: python scripts/ipzyauto.py
 
     - name: Debug - List generated files after execution
       run: ls -la output/
@@ -76,7 +76,7 @@ jobs:
         echo "本地仓库已重置为远程最新状态"
         
         # 重新执行脚本确保生成最新文件
-        python ipzyauto.py
+        python scripts/ipzyauto.py
         
         # 添加文件
         echo "添加更改的文件..."

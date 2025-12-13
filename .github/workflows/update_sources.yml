@@ -46,8 +46,8 @@ jobs:
       
       - name: 运行播放源更新脚本
         run: |
-          chmod +x ./update_sources.py
-          python ./update_sources.py
+          chmod +x ./scripts/update_sources.py
+          python ./scripts/update_sources.py
       
       - name: 检查是否有更改
         id: check_changes
@@ -82,18 +82,18 @@ jobs:
           
           # 重新执行更新脚本确保生成最新文件
           echo "重新执行更新脚本生成最新文件..."
-          python ./update_sources.py
+          python ./scripts/update_sources.py
           
           # 检查文件是否存在
-          if [ ! -f "./unified_sources.py" ]; then
+          if [ ! -f "./scripts/unified_sources.py" ]; then
             echo "::error::错误：unified_sources.py文件未生成"
             exit 1
           fi
           
           # 添加所有更改的文件
           echo "添加更改的文件..."
-          git add ./unified_sources.py
-          git add ./*.py  # 添加所有Python脚本文件
+          git add ./scripts/unified_sources.py
+          git add ./scripts/*.py  # 添加所有Python脚本文件
           git add ./*.txt || true  # 添加输出文件（如果有）
           
           # 检查是否有更改
