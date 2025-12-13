@@ -30,7 +30,7 @@ UNIFIED_SOURCES_PY = 'unified_sources.py'
 
 # 需要更新的脚本列表
 SCRIPTS_TO_UPDATE = [
-    'IP-TV.py',
+    'IPTV.py',
     'ipzyauto.py',
     'scripts/convert_m3u_to_txt.py'
 ]
@@ -112,7 +112,7 @@ GITHUB_SOURCES = UNIFIED_SOURCES'''
                 logger.debug(f"使用GITHUB_SOURCES模式更新 {script_path}")
         
         if 'default_sources' in content and 'user_sources' in content:
-            # 处理IP-TV.py类型的脚本
+            # 处理IPTV.py类型的脚本
             # 分别匹配default_sources和user_sources，不要求它们紧挨着
             default_sources_pattern = r'default_sources\s*=\s*\[.*?\]'
             user_sources_pattern = r'user_sources\s*=\s*\[.*?\]'

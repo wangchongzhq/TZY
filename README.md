@@ -48,8 +48,8 @@ python update_sources.py
 ### 4. 运行主要脚本
 
 ```bash
-# 运行IP-TV直播源处理脚本
-python IP-TV.py
+# 运行IPTV直播源处理脚本
+python IPTV.py
 
 # 运行IP直播源收集脚本
 python ipzyauto.py
@@ -89,7 +89,7 @@ python ipzyauto.py
 ├── update_sources.py      # 播放源自动更新脚本
 ├── unified_sources.py     # 生成的统一播放源文件（请勿手动修改）
 
-├── IP-TV.py               # IP-TV直播源处理脚本
+├── IPTV.py               # IPTV直播源处理脚本
 ├── ipzyauto.py            # IP直播源自动生成脚本
 ├── scripts/               # 辅助脚本目录
 │   ├── convert_m3u_to_txt.py  # M3U转TXT格式转换脚本
@@ -139,14 +139,14 @@ python update_sources.py
 
 ### 主要脚本功能
 
-#### 1. IP-TV.py - IP-TV直播源处理脚本
+#### 1. IPTV.py - IPTV直播源处理脚本
 
 **功能**：处理IP-TV格式的直播源，支持多种格式转换和源合并
 
 **使用方法**：
 
 ```bash
-python IP-TV.py
+python IPTV.py
 ```
 
 **输出**：自动生成IP-TV格式的直播源文件
