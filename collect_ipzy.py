@@ -3,26 +3,19 @@ import re
 from datetime import datetime
 import time
 from collections import defaultdict
+import concurrent.futures
+import multiprocessing
 
-# 数据源列表
-SOURCES = [
-    {"name": "iptv-org-cn", "url": "https://iptv-org.github.io/iptv/countries/cn.m3u"},
-    {"name": "iptv-org-hk", "url": "https://iptv-org.github.io/iptv/countries/hk.m3u"},
-    {"name": "iptv-org-mo", "url": "https://iptv-org.github.io/iptv/countries/mo.m3u"},
-    {"name": "iptv-org-tw", "url": "https://iptv-org.github.io/iptv/countries/tw.m3u"},
-    {"name": "iptv-org-all", "url": "https://iptv-org.github.io/iptv/index.m3u"},
-    {"name": "fanmingming", "url": "https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/global.m3u"},
-    {"name": "free-iptv", "url": "https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u"},
-    {"name": "moonkeyhoo", "url": "https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u"},
-    {"name": "kakaxi-ipv6", "url": "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv6.m3u"},
-    {"name": "kakaxi-ipv4", "url": "https://ghfast.top/https://raw.githubusercontent.com/kakaxi-1/IPTV/main/ipv4.txt"},
-    {"name": "2025", "url": "http://106.53.99.30/2025.txt"},
-    {"name": "9390107", "url": "http://tv.html-5.me/i/9390107.txt"},
-    {"name": "Supprise0901", "url": "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt"},
-    {"name": "ffmking", "url": "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt"},
-    {"name": "qingtingjjjjjjj", "url": "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt"},
-    {"name": "Heiwk", "url": "https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u"},
-    ]
+# 从统一播放源文件导入
+from unified_sources import SOURCES_WITH_NAMES
+
+# 将元组列表转换为字典列表，保持与原有代码兼容
+SOURCES = [{"name": name, "url": url} for name, url in SOURCES_WITH_NAMES]
+
+# 动态计算最优并发数
+def get_optimal_workers():
+    """动态计算最优并发数"""
+    return min(32, multiprocessing.cpu_count() * 4)
 
 # 分类规则
 CATEGORY_RULES = {
@@ -30,7 +23,7 @@ CATEGORY_RULES = {
         r'CCTV', r'中央电视台', r'CGTN', r'央视'
     ],
     "卫视": [
-        r'卫视', r'湖南卫视', r'浙江卫视', r'东方卫视', r'北京卫视', r'江苏卫视',
+        r'湖南卫视', r'浙江卫视', r'东方卫视', r'北京卫视', r'江苏卫视',
         r'安徽卫视', r'重庆卫视', r'东南卫视', r'甘肃卫视', r'广东卫视',
         r'广西卫视', r'贵州卫视', r'海南卫视', r'河北卫视', r'黑龙江卫视',
         r'河南卫视', r'湖北卫视', r'江西卫视', r'吉林卫视', r'辽宁卫视',
@@ -336,6 +329,9 @@ def write_output_file(channels_by_category):
     total_channels = sum(len(channels) for channels in channels_by_category.values())
     total_urls = sum(sum(len(channel['urls']) for channel in channels) for channels in channels_by_category.values())
     
+    category_order = ["央视", "卫视", "港澳台", "影视剧", "4K", "音乐", "其他"]
+    
+    # 生成 ipzy_channels.txt
     with open('ipzy_channels.txt', 'w', encoding='utf-8') as f:
         f.write(f"# 中国境内电视直播线路 (仅限1080p高清以上)\n")
         f.write(f"# 更新时间: {timestamp}\n")
@@ -344,8 +340,6 @@ def write_output_file(channels_by_category):
         f.write(f"# 线路总数: {total_urls}\n")
         f.write(f"# 清晰度要求: 仅保留1080p高清及以上线路\n")
         f.write("#" * 60 + "\n\n")
-        
-        category_order = ["央视", "卫视", "港澳台", "影视剧", "4K", "音乐", "其他"]
         
         for category in category_order:
             if category in channels_by_category and channels_by_category[category]:
@@ -364,6 +358,43 @@ def write_output_file(channels_by_category):
         f.write("# 自动生成 - 每日北京时间为2点更新\n")
         f.write("# 仅保留1080p高清及以上清晰度线路\n")
         f.write("# 每个频道至少10条线路，最多30条线路\n")
+    
+    # 生成 ipzyauto.txt
+    with open('ipzyauto.txt', 'w', encoding='utf-8') as f:
+        f.write("# IPTV直播源列表\n")
+        f.write(f"# 生成时间: {timestamp}\n")
+        f.write("# 格式: 频道名称,播放URL\n")
+        f.write("# 按分组排列\n\n")
+        
+        # 写入频道分类信息
+        all_categories = [cat for cat in category_order if cat in channels_by_category and channels_by_category[cat]]
+        f.write(f"# 频道分类: {','.join(all_categories)}\n\n")
+        
+        for category in category_order:
+            if category in channels_by_category and channels_by_category[category]:
+                f.write(f"#{category}#,genre#\n")
+                
+                sorted_channels = sorted(channels_by_category[category], key=lambda x: x['name'])
+                
+                for channel in sorted_channels:
+                    for url in channel['urls']:
+                        f.write(f"{channel['name']},{url}\n")
+                
+                f.write("\n")
+
+def process_single_source(source):
+    """处理单个数据源"""
+    print(f"处理源: {source['name']}")
+    content = download_m3u(source['url'])
+    if content:
+        channels = parse_m3u_content(content, source['name'])
+        channel_count = len(channels)
+        url_count = sum(len(c['urls']) for c in channels.values())
+        print(f"  从 {source['name']} 获取了 {channel_count} 个频道，{url_count} 条线路")
+        return channels
+    else:
+        print(f"  无法从 {source['name']} 获取数据")
+        return None
 
 def main():
     """主函数"""
@@ -374,20 +405,18 @@ def main():
     all_channels_dicts = []
     successful_sources = 0
     
-    for source in SOURCES:
-        print(f"处理源: {source['name']}")
-        content = download_m3u(source['url'])
-        if content:
-            channels = parse_m3u_content(content, source['name'])
-            channel_count = len(channels)
-            url_count = sum(len(c['urls']) for c in channels.values())
-            all_channels_dicts.append(channels)
-            print(f"  从 {source['name']} 获取了 {channel_count} 个频道，{url_count} 条线路")
-            successful_sources += 1
-        else:
-            print(f"  无法从 {source['name']} 获取数据")
+    # 使用并发处理数据源
+    max_workers = get_optimal_workers()
+    print(f"使用 {max_workers} 个并发线程处理数据源...")
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_source = {executor.submit(process_single_source, source): source for source in SOURCES}
         
-        time.sleep(0.5)
+        for future in concurrent.futures.as_completed(future_to_source):
+            result = future.result()
+            if result:
+                all_channels_dicts.append(result)
+                successful_sources += 1
     
     print(f"成功从 {successful_sources}/{len(SOURCES)} 个数据源获取数据")
     

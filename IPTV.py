@@ -14,7 +14,7 @@ import datetime
 import threading
 import logging
 from collections import defaultdict
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # 配置日志
 logging.basicConfig(
@@ -304,17 +304,33 @@ def normalize_channel_name(name):
     return None
 
 # 从URL获取M3U内容
-def fetch_m3u_content(url):
-    """从URL获取M3U内容"""
-    try:
-        print(f"正在获取: {url}")
-        # 添加verify=False参数来跳过SSL证书验证
-        response = requests.get(url, timeout=30, verify=False)
-        response.raise_for_status()
-        return response.text
-    except Exception as e:
-        print(f"获取 {url} 时出错: {e}")
-        return None
+def fetch_m3u_content(url, max_retries=3, timeout=30):
+    """从URL或本地文件获取M3U内容，支持超时和重试机制"""
+    # 处理本地文件路径
+    if url.startswith('file://'):
+        file_path = url[7:]  # 移除file://前缀
+        try:
+            print(f"正在读取本地文件: {file_path}")
+            with open(file_path, 'r', encoding='utf-8') as f:
+                return f.read()
+        except Exception as e:
+            print(f"读取本地文件 {file_path} 时出错: {e}")
+            return None
+    
+    # 处理远程URL
+    for attempt in range(max_retries):
+        try:
+            print(f"正在获取: {url} (尝试 {attempt+1}/{max_retries})")
+            # 添加verify=False参数来跳过SSL证书验证
+            response = requests.get(url, timeout=timeout, verify=False)
+            response.raise_for_status()
+            return response.text
+        except Exception as e:
+            print(f"获取 {url} 时出错: {e}")
+            if attempt < max_retries - 1:
+                print(f"3秒后重试...")
+                time.sleep(3)
+    return None
 
 # 从本地文件获取M3U内容
 def fetch_local_m3u_content(file_path):
@@ -332,17 +348,26 @@ def generate_m3u_file(channels, output_path):
     """生成M3U文件"""
     print(f"正在生成 {output_path}...")
     
+    print(f"📝 开始写入文件: {output_path} 时间: {datetime.datetime.now()}")
+    print(f"📊 写入前文件大小: {os.path.getsize(output_path) if os.path.exists(output_path) else 0} 字节")
+    print(f"📊 写入前文件修改时间: {datetime.datetime.fromtimestamp(os.path.getmtime(output_path)) if os.path.exists(output_path) else '不存在'}")
+    
     with open(output_path, 'w', encoding='utf-8') as f:
         # 写入文件头
         f.write("#EXTM3U x-tvg-url=\"https://kakaxi-1.github.io/IPTV/epg.xml\"\n")
         
+        # 写入当前时间作为标记
+        f.write(f"# 生成时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}\n")
+        
         # 按CHANNEL_CATEGORIES中定义的顺序写入分类
+        written_count = 0
         for category in CHANNEL_CATEGORIES:
             if category in channels:
                 for channel_name, url in channels[category]:
                     # 写入频道信息
                     f.write(f"#EXTINF:-1 tvg-name=\"{channel_name}\" group-title=\"{category}\",{channel_name}\n")
                     f.write(f"{url}\n")
+                    written_count += 1
         
         # 最后写入其他频道
         if "其他频道" in channels:
@@ -350,8 +375,12 @@ def generate_m3u_file(channels, output_path):
                 # 写入频道信息
                 f.write(f"#EXTINF:-1 tvg-name=\"{channel_name}\" group-title=\"其他频道\",{channel_name}\n")
                 f.write(f"{url}\n")
+                written_count += 1
     
-    print(f"✅ 成功生成 {output_path}")
+    print(f"📝 完成写入文件: {output_path} 时间: {datetime.datetime.now()}")
+    print(f"📊 写入后文件大小: {os.path.getsize(output_path)} 字节")
+    print(f"📊 写入后文件修改时间: {datetime.datetime.fromtimestamp(os.path.getmtime(output_path))}")
+    print(f"📊 实际写入频道数: {written_count}")
     return True
 
 # 生成TXT文件
@@ -439,34 +468,93 @@ def extract_channels_from_txt(file_path):
     
     return channels
 
+# 动态计算最优并发数
+def get_optimal_workers():
+    """动态计算最优并发数"""
+    import multiprocessing
+    return min(32, multiprocessing.cpu_count() * 4)
+
+# 处理单个远程直播源
+def process_single_source(source_url):
+    """处理单个远程直播源或本地文件"""
+    content = fetch_m3u_content(source_url)
+    if content:
+        # 根据内容判断格式
+        if content.strip().startswith('#EXTM3U'):
+            # M3U格式
+            return extract_channels_from_m3u(content)
+        else:
+            # TXT格式（保存到临时文件再解析）
+            import tempfile
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False, encoding='utf-8') as f:
+                f.write(content)
+                temp_file_path = f.name
+            try:
+                return extract_channels_from_txt(temp_file_path)
+            finally:
+                import os
+                os.unlink(temp_file_path)
+    return None
+
 # 合并直播源
 def merge_sources(sources, local_files):
     """合并多个直播源"""
     all_channels = defaultdict(list)
     seen = set()
     
-    # 处理远程直播源
-    for source_url in sources:
-        content = fetch_m3u_content(source_url)
-        if content:
-            channels = extract_channels_from_m3u(content)
-            for group_title, channel_list in channels.items():
-                for channel_name, url in channel_list:
-                    # 去重
-                    if (channel_name, url) not in seen:
-                        all_channels[group_title].append((channel_name, url))
-                        seen.add((channel_name, url))
+    print(f"🔍 开始合并直播源: {datetime.datetime.now()}")
+    print(f"📡 远程直播源数量: {len(sources)}")
+    print(f"💻 本地直播源数量: {len(local_files)}")
+    
+    # 处理远程直播源（并发）
+    remote_channel_count = 0
+    if sources:
+        max_workers = get_optimal_workers()
+        print(f"使用 {max_workers} 个并发线程处理远程直播源...")
+        
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_source = {executor.submit(process_single_source, source_url): source_url for source_url in sources}
+            
+            for future in as_completed(future_to_source):
+                result = future.result()
+                if result:
+                    source_url = future_to_source[future]
+                    source_channels = sum(len(clist) for _, clist in result.items())
+                    remote_channel_count += source_channels
+                    print(f"✅ 远程源 {source_url} 获取到 {source_channels} 个频道")
+                    
+                    for group_title, channel_list in result.items():
+                        for channel_name, url in channel_list:
+                            # 去重
+                            if (channel_name, url) not in seen:
+                                all_channels[group_title].append((channel_name, url))
+                                seen.add((channel_name, url))
+                else:
+                    source_url = future_to_source[future]
+                    print(f"❌ 远程源 {source_url} 获取失败")
+    
+    print(f"📊 远程直播源获取总数: {remote_channel_count} 个频道")
     
     # 处理本地直播源文件
+    local_channel_count = 0
     for file_path in local_files:
         if os.path.exists(file_path):
             local_channels = extract_channels_from_txt(file_path)
+            file_channel_count = sum(len(clist) for _, clist in local_channels.items())
+            local_channel_count += file_channel_count
+            print(f"✅ 本地文件 {file_path} 获取到 {file_channel_count} 个频道")
+            
             for group_title, channel_list in local_channels.items():
                 for channel_name, url in channel_list:
                     # 去重
                     if (channel_name, url) not in seen:
                         all_channels[group_title].append((channel_name, url))
                         seen.add((channel_name, url))
+        else:
+            print(f"❌ 本地文件 {file_path} 不存在")
+    
+    print(f"📊 本地直播源获取总数: {local_channel_count} 个频道")
+    print(f"📊 合并后总频道数: {sum(len(clist) for _, clist in all_channels.items())} 个频道")
     
     return all_channels
 
@@ -488,6 +576,12 @@ def update_iptv_sources():
     
     start_time = time.time()
     all_channels = merge_sources(all_sources, default_local_sources)
+    
+    # 添加调试日志
+    logger.info(f"🔍 合并后获取到的频道组数量: {len(all_channels)}")
+    if not all_channels:
+        logger.error("❌ 没有获取到任何频道内容！")
+        return False
     
     # 统计频道数量
     total_channels = sum(len(channel_list) for channel_list in all_channels.values())
@@ -511,8 +605,31 @@ def update_iptv_sources():
     # 生成TXT文件
     output_file_txt = "jieguo.txt"  # 新增TXT格式输出文件
     
-    if generate_m3u_file(all_channels, output_file_m3u) and generate_txt_file(all_channels, output_file_txt):
+    logger.info(f"📁 准备生成文件: {output_file_m3u} 和 {output_file_txt}")
+    logger.info(f"📊 准备写入的频道总数: {sum(len(channel_list) for channel_list in all_channels.values())}")
+    
+    # 打印前几个频道作为示例
+    if all_channels:
+        first_group = list(all_channels.keys())[0]
+        if all_channels[first_group]:
+            logger.info(f"📺 示例频道: {all_channels[first_group][0][0]} - {all_channels[first_group][0][1]}")
+    
+    success_m3u = generate_m3u_file(all_channels, output_file_m3u)
+    logger.info(f"📝 M3U文件生成结果: {'成功' if success_m3u else '失败'}")
+    
+    success_txt = generate_txt_file(all_channels, output_file_txt)
+    logger.info(f"📝 TXT文件生成结果: {'成功' if success_txt else '失败'}")
+    
+    if success_m3u and success_txt:
         logger.info(f"🎉 任务完成！")
+        # 检查文件是否真的更新了
+        import os
+        if os.path.exists(output_file_m3u):
+            mtime = os.path.getmtime(output_file_m3u)
+            logger.info(f"📅 {output_file_m3u} 最后修改时间: {datetime.datetime.fromtimestamp(mtime)}")
+        if os.path.exists(output_file_txt):
+            mtime = os.path.getmtime(output_file_txt)
+            logger.info(f"📅 {output_file_txt} 最后修改时间: {datetime.datetime.fromtimestamp(mtime)}")
         return True
     else:
         logger.error("💥 生成文件失败！")
@@ -520,7 +637,7 @@ def update_iptv_sources():
 
 
 def check_ip_tv_syntax():
-    """检查IP-TV.py文件的语法错误"""
+    """检查IPTV.py文件的语法错误"""
     import ast
     import os
     
@@ -531,7 +648,7 @@ def check_ip_tv_syntax():
         
         # 尝试解析整个文件
         ast.parse(content)
-        print('✓ IP-TV.py: 语法正确')
+        print('✓ IPTV.py: 语法正确')
         return True
         
     except SyntaxError as e:
@@ -558,7 +675,7 @@ def check_ip_tv_syntax():
 
 
 def fix_ip_tv_chars():
-    """修复IP-TV.py文件中的不可打印字符"""
+    """修复IPTV.py文件中的不可打印字符"""
     import re
     import os
     
@@ -575,7 +692,7 @@ def fix_ip_tv_chars():
         with open(__file__, 'w', encoding='utf-8') as f:
             f.write(cleaned_content)
         
-        print('✓ IP-TV.py文件中的不可打印字符已移除')
+        print('✓ IPTV.py文件中的不可打印字符已移除')
         return True
         
     except Exception as e:
@@ -602,8 +719,8 @@ def main():
             # 显示帮助信息
             print("未知参数，请使用以下参数：")
             print("  --update       # 立即手动更新直播源")
-            print("  --check-syntax # 检查IP-TV.py文件语法错误")
-            print("  --fix-chars    # 修复IP-TV.py文件中的不可打印字符")
+            print("  --check-syntax # 检查IPTV.py文件语法错误")
+            print("  --fix-chars    # 修复IPTV.py文件中的不可打印字符")
     else:
         # 显示帮助信息
         print("=" * 60)
@@ -613,13 +730,13 @@ def main():
         print("  1. 从多个来源获取IPTV直播源")
         print("  2. 生成M3U和TXT格式的直播源文件")
         print("  3. 支持手动更新和通过GitHub Actions工作流定时更新")
-        print("  4. 检查IP-TV.py文件语法错误")
-        print("  5. 修复IP-TV.py文件中的不可打印字符")
+        print("  4. 检查IPTV.py文件语法错误")
+        print("  5. 修复IPTV.py文件中的不可打印字符")
         print("")
         print("使用方法：")
-        print("  python IP-TV.py --update       # 立即手动更新直播源")
-        print("  python IP-TV.py --check-syntax # 检查语法错误")
-        print("  python IP-TV.py --fix-chars    # 修复不可打印字符")
+        print("  python IPTV.py --update       # 立即手动更新直播源")
+        print("  python IPTV.py --check-syntax # 检查语法错误")
+        print("  python IPTV.py --fix-chars    # 修复不可打印字符")
         print("")
         print("输出文件：")
         print("  - jieguo.m3u   # M3U格式的直播源文件")

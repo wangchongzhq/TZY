@@ -33,9 +33,7 @@ else:
 # 需要更新的脚本列表
 SCRIPTS_TO_UPDATE = [
     'tvzy.py',
-    'tvzy_simplified.py',
-    'IP-TV.py',
-    'IP-TV_simplified.py',
+    'IPTV.py',
     'collect_ipzy.py'
 ]
 
@@ -110,7 +108,7 @@ SOURCES = SOURCES_WITH_NAMES'''
 from unified_sources import UNIFIED_SOURCES
 GITHUB_SOURCES = UNIFIED_SOURCES'''
             elif 'default_sources' in content and 'user_sources' in content:
-                # 处理IP-TV.py类型的脚本
+                # 处理IPTV.py类型的脚本
                 # 分别匹配default_sources和user_sources，不要求它们紧挨着
                 default_sources_pattern = r'default_sources\s*=\s*\[.*?\]'
                 user_sources_pattern = r'user_sources\s*=\s*\[.*?\]'

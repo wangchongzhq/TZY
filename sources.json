@@ -8,23 +8,23 @@
       "enabled": true
     },
     {
-      "name": "test_new_source",
-      "url": "https://example.com/test_source.txt",
-      "enabled": true
-    },
-    {
       "name": "Supprise0901",
       "url": "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
       "enabled": true
     },
     {
       "name": "ffmking",
-      "url": "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
+      "url": "https://ghproxy.it/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
       "enabled": true
     },
     {
       "name": "qingtingjjjjjjj",
       "url": "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
+      "enabled": true
+    },
+    {
+      "name": "qingtingjjjjjjj_local",
+      "url": "file://c:/Users/Administrator/Documents/GitHub/TZY/temp_live.txt",
       "enabled": true
     },
     {
@@ -78,43 +78,13 @@
       "enabled": true
     },
     {
-      "name": "LongLiveTheKing",
-      "url": "https://ghfast.top/https://raw.githubusercontent.com/LongLiveTheKing/web-data/master/data/ip.txt",
-      "enabled": true
-    },
-    {
-      "name": "HeJiawen01",
-      "url": "https://ghfast.top/https://raw.githubusercontent.com/HeJiawen01/IPTV/main/IPTV.m3u",
-      "enabled": true
-    },
-    {
       "name": "XIU2",
       "url": "https://ghfast.top/https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ip.txt",
       "enabled": true
     },
     {
-      "name": "chenjie",
-      "url": "https://ghfast.top/https://raw.githubusercontent.com/chenjie/ip.txt/master/ip.txt",
-      "enabled": true
-    },
-    {
-      "name": "chnadsl",
-      "url": "https://ghfast.top/https://raw.githubusercontent.com/chnadsl/IPTV/main/IPTV.m3u",
-      "enabled": true
-    },
-    {
-      "name": "fanmingming",
-      "url": "https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/global.m3u",
-      "enabled": true
-    },
-    {
-      "name": "free-iptv",
-      "url": "https://raw.githubusercontent.com/Free-IPTV/Countries/master/China.m3u",
-      "enabled": true
-    },
-    {
       "name": "moonkeyhoo",
-      "url": "https://ghfast.top/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u",
+      "url": "https://ghproxy.it/https://raw.githubusercontent.com/moonkeyhoo/iptv-api/master/output/result.m3u",
       "enabled": true
     },
     {

@@ -1,26 +1,37 @@
-# 多平台直播源处理工具集
+# IPTV 直播源自动生成工具
 
 ## 📋 项目介绍
 
-一个功能完整的直播源处理解决方案，能够自动提取、合并、转换和更新各类直播源，支持多种格式处理，提供完整的自动化工作流程。
+一个功能强大的 IPTV 直播源自动化处理工具集，支持多格式输出、质量筛选、智能分类和定时更新。主要包含 `IPTV.py`、`tvzy.py` 和 `collect_ipzy.py` 三个核心脚本，用于满足不同场景的直播源处理需求。
 
 ## ✨ 功能特性
 
-- **统一管理**：通过`sources.json`集中管理所有播放源
-- **自动更新**：一键更新所有相关脚本的播放源配置
-- **多格式支持**：支持M3U、TXT等多种直播源格式
-- **自动分类**：智能分类央视频道、卫视频道、4K频道等
-- **质量筛选**：自动筛选可用的高质量直播源，支持清晰度过滤
-- **自动化工作流**：GitHub Actions实现定时和手动触发更新（7个工作流文件）
-- **IP直播源处理**：专门的IP直播源收集和处理功能
-- **格式转换**：支持M3U到TXT格式的转换
-- **语法检查**：提供脚本语法检查和字符修复功能
+### 核心功能
+- **多格式支持**：生成 M3U 播放列表和 TXT 格式直播源
+- **智能分类**：自动将频道分类为央视频道、卫视频道、4K 频道等
+- **质量控制**：支持筛选高清（HD）和 4K 直播源
+- **并发处理**：使用线程池实现高效的网络请求处理
+- **本地文件支持**：支持 `file://` 协议读取本地直播源文件
+- **重试机制**：网络请求失败时自动重试，提高可靠性
+- **定时更新**：通过 GitHub Actions 实现每日自动更新
+
+### 三个核心脚本的区别
+
+| 特性 | IPTV.py | tvzy.py | collect_ipzy.py |
+|------|---------|---------|-----------------|
+| **主要用途** | 全功能直播源生成工具 | 专注于高质量（HD/4K）直播源 | 生成按分类分组的IPZY直播源 |
+| **输出格式** | M3U + TXT | TXT 格式 | TXT 格式 |
+| **频道范围** | 所有可用频道 | 仅高质量（HD/4K）频道 | 所有可用频道 |
+| **分类方式** | 基于频道名称 | 基于频道名称 | 基于频道名称和分类规则 |
+| **文件名称** | `jieguo.m3u` 和 `jieguo.txt` | `tzydauto.txt` | `ipzy_channels.txt` 和 `ipzyauto.txt` |
+| **质量过滤** | 无特定过滤 | 通过正则表达式过滤 HD/4K 流 | 无特定过滤 |
+| **分组功能** | 基础分类 | 无 | 按分类（央视、卫视、4K等）分组排列 |
 
 ## 📋 环境要求
 
 - Python 3.6 或更高版本
 - Git 版本控制工具
-- GitHub账号（用于使用自动化工作流）
+- GitHub 账号（用于自动化工作流）
 
 ## 🚀 快速开始
 
@@ -37,221 +48,185 @@ cd TZY
 pip install -r requirements.txt
 ```
 
-### 3. 更新播放源
+### 3. 运行核心脚本
 
+#### 运行 collect_ipzy.py（生成按分类分组的频道列表）
 ```bash
-python update_sources.py
+python collect_ipzy.py
+```
+
+#### 运行 tvzy.py（仅生成高质量频道）
+```bash
+python tvzy.py
+```
+
+#### 运行 IPTV.py（全功能直播源生成工具）
+```bash
+python IPTV.py --update
 ```
 
 ## 📁 项目结构
 
 ```
-├── .github/workflows/     # GitHub Actions工作流配置
-│   ├── Convert M3U to TXT Daily.yml
-│   ├── IPZYTXT.yml
-│   ├── mainzy.yml
-│   ├── tvzy_update.yml
-│   ├── update_ip-tv.yml
-│   ├── update_ipzy.yml
-│   └── update_sources.yml
-├── sources.json           # 统一播放源配置文件
-├── update_sources.py      # 播放源自动更新脚本
-├── unified_sources.py     # 生成的统一播放源文件（请勿手动修改）
-├── tvzy.py                # 主要直播源处理脚本
-├── IP-TV.py               # IP-TV直播源处理脚本
-├── collect_ipzy.py        # IP直播源收集脚本
-├── convert_m3u_to_txt.py  # M3U转TXT格式转换脚本
-├── check_all_syntax.py    # 语法检查脚本
-├── check_ip_tv_syntax.py  # IP-TV语法检查脚本
-├── fix_ip_tv_chars.py     # IP-TV字符修复脚本
-├── .gitignore             # Git忽略文件配置
-└── README.md              # 项目说明文档
+├── .github/workflows/           # GitHub Actions 工作流配置
+├── IPTV.py                      # 核心直播源生成工具（全功能）
+├── tvzy.py                      # 高质量直播源生成工具（HD/4K）
+├── collect_ipzy.py              # 按分类分组的IPZY直播源生成工具
+├── unified_sources.py           # 统一直播源配置
+├── update_sources.py            # 直播源更新脚本
+├── convert_m3u_to_txt.py        # M3U 转 TXT 工具
+├── check_files.py               # 文件状态检查工具
+├── check_all_syntax.py          # 语法检查工具
+├── validate_workflows.py        # GitHub Actions 工作流验证工具
+├── requirements.txt             # 依赖包列表
+├── ipzy_channels.txt            # collect_ipzy.py 输出的完整频道列表
+├── ipzyauto.txt                 # collect_ipzy.py 输出的按分类分组频道列表
+├── tzydauto.txt                 # tvzy.py 输出的高质量频道列表
+├── README.md                    # 项目说明文档
+├── REPOSITORY_OPTIMIZATION_REPORT.md  # 仓库优化报告
+└── 项目文件关联关系.md          # 项目文件依赖关系文档
 ```
 
 ## 🎯 使用指南
 
-### 播放源管理
-
-1. **修改播放源配置**：编辑`sources.json`文件
-
-```json
-{
-  "version": "1.0",
-  "description": "统一播放源列表",
-  "sources": [
-    {
-      "name": "播放源名称",
-      "url": "https://example.com/source.txt",
-      "enabled": true  // true: 启用，false: 禁用
-    },
-    // 更多播放源...
-  ]
-}
-```
-
-2. **更新所有脚本**：运行更新脚本
+### 1. 检查输出文件状态
 
 ```bash
-python update_sources.py
+python check_files.py
 ```
 
-该命令会：
-- 读取`sources.json`中的启用播放源
-- 生成`unified_sources.py`统一播放源文件
-- 更新所有相关脚本中的播放源配置
+### 2. 自定义直播源
 
-### 主要脚本功能
+您可以直接在 `unified_sources.py` 中添加自定义直播源：
 
-#### 1. tvzy.py - 主要直播源处理脚本
+```python
+UNIFIED_SOURCES = [
+    "https://iptv-org.github.io/iptv/countries/cn.m3u",
+    # 添加本地文件直播源
+    "file:///path/to/your/local/live.txt",
+    # 或直接添加单个直播源URL
+    "http://example.com/custom-channel",
+]
+```
 
-**功能**：提取、合并、分类直播源，支持质量筛选和格式转换
+### 3. 验证生成结果
 
-**使用方法**：
+运行脚本后，检查输出文件是否成功生成：
 
 ```bash
-python tvzy.py
+# 查看输出文件状态
+python check_files.py
+
+# 检查特定频道是否存在（以CCTV1为例）
+grep -n "CCTV1" ipzyauto.txt
 ```
 
-**输出**：自动生成分类的直播源文件（默认：tzydauto.txt）
+### 4. 配置直播源
 
-#### 2. IP-TV.py - IP-TV直播源处理脚本
+编辑 `unified_sources.py` 文件，添加或修改直播源：
 
-**功能**：处理IP-TV格式的直播源，支持多种格式转换和源合并
-
-**使用方法**：
-
-```bash
-python IP-TV.py
+```python
+UNIFIED_SOURCES = [
+    "https://iptv-org.github.io/iptv/countries/cn.m3u",
+    "file://c:/Users/Administrator/Documents/GitHub/TZY/temp_live.txt",
+    # 添加更多直播源...
+]
 ```
-
-**输出**：自动生成IP-TV格式的直播源文件
-
-#### 3. collect_ipzy.py - IP直播源收集脚本
-
-**功能**：从多个源收集IP直播源，自动筛选高清线路，智能分类
-
-**使用方法**：
-
-```bash
-python collect_ipzy.py
-```
-
-**输出**：自动生成分类的IP直播源文件（默认：ipzy.txt）
-
-#### 4. convert_m3u_to_txt.py - M3U转TXT格式转换
-
-**功能**：将M3U格式的直播源转换为TXT格式
-
-**使用方法**：
-
-```bash
-python convert_m3u_to_txt.py input.m3u output.txt
-```
-
-#### 5. update_sources.py - 播放源自动更新脚本
-
-**功能**：统一更新所有脚本的播放源配置
-
-**使用方法**：
-
-```bash
-python update_sources.py
-```
-
-**作用**：
-- 读取`sources.json`中的启用播放源
-- 生成`unified_sources.py`统一播放源文件
-- 更新所有相关脚本中的播放源配置
 
 ## 🤖 自动化工作流
 
-### GitHub Actions工作流配置
+项目配置了多个 GitHub Actions 工作流，支持自动定时更新：
 
-项目配置了7个自动化工作流，支持定时和手动触发：
+- **update_ip-tv.yml**: 定时更新 IPTV.py 生成的直播源
+- **tvzy_update.yml**: 定时更新 tvzy.py 生成的高质量直播源
+- **update_sources.yml**: 定时更新统一直播源配置
 
-#### 1. Convert M3U to TXT Daily.yml
-- **功能**：每日自动将M3U格式转换为TXT格式
-- **触发方式**：定时执行
+### 手动触发工作流
 
-#### 2. IPZYTXT.yml
-- **功能**：IPZY直播源TXT文件更新
-- **触发方式**：定时执行和手动触发
+1. 打开 GitHub 仓库页面
+2. 点击 "Actions" 标签
+3. 选择对应的工作流
+4. 点击 "Run workflow" 按钮
 
-#### 3. mainzy.yml
-- **功能**：主要直播源处理工作流
-- **触发方式**：定时执行和手动触发
+## 🔧 最近修复与改进
 
-#### 4. tvzy_update.yml
-- **功能**：tvzy直播源定时更新
-- **触发方式**：定时执行
+### collect_ipzy.py 修复与改进
+- ✅ 实现了按分类分组的频道列表生成功能
+- ✅ 支持生成 `ipzyauto.txt` 格式的分组频道列表
+- ✅ 按分类（央视、卫视、4K等）对频道进行分组排列
+- ✅ 频道名称自动排序，方便用户查找
 
-#### 5. update_ip-tv.yml
-- **功能**：IP-TV直播源定时更新
-- **触发方式**：定时执行
+### IPTV.py 修复
+- ✅ 添加了 `file://` 协议支持，可读取本地直播源文件
+- ✅ 实现了动态格式检测，根据内容自动区分 M3U 和 TXT 格式
+- ✅ 优化了频道合并逻辑，提高了生成速度
+- ✅ 修复了远程源请求失败导致的文件不更新问题
+- ✅ 添加了详细的日志记录，便于故障排查
 
-#### 6. update_ipzy.yml
-- **功能**：IPZY直播源定时更新
-- **触发方式**：定时执行
-
-#### 7. update_sources.yml
-- **功能**：统一播放源配置更新
-- **触发方式**：定时执行和手动触发
-
-### 工作流执行流程
-
-1. 检出代码仓库
-2. 设置Python环境
-3. 安装依赖包
-4. 运行`update_sources.py`更新播放源
-5. 执行相关脚本处理直播源
-6. 生成输出文件
-7. 提交并推送更新
-
-### 触发方式
-
-- **定时更新**：根据配置的时间自动运行
-- **手动触发**：在GitHub Actions页面点击"Run workflow"按钮
-- **代码推送**：当推送到主分支时自动触发（部分工作流）
+### tvzy.py 修复
+- ✅ 修复了缺少 `import time` 导致的脚本错误
+- ✅ 修改了 `should_exclude_url` 函数，允许所有 HTTP/HTTPS URL
+- ✅ 优化了高质量频道过滤逻辑
 
 ## ⚠️ 注意事项
 
-1. **请勿手动修改** `unified_sources.py`文件，该文件由`update_sources.py`自动生成
-2. 建议定期更新播放源以确保可用性
-3. 部分直播源可能存在版权问题，请合法使用
-4. 如遇到播放源失效，请在`sources.json`中禁用或替换
-5. 使用GitHub Actions时，请确保仓库有正确的权限设置
-6. 执行脚本前，请确保已安装所有依赖包（`pip install -r requirements.txt`）
-7. 部分脚本可能需要网络访问权限，请确保网络连接正常
+1. 部分直播源可能存在版权问题，请合法使用
+2. 网络不稳定可能导致部分远程直播源获取失败
+3. 建议定期运行脚本更新直播源列表
+4. 如遇到播放源失效问题，可在 `unified_sources.py` 中替换或移除
 
-## 📝 更新日志
+## 📝 输出文件说明
 
-### 最新更新
-- 修复了`collect_ipzy.py`中的正则表达式转义问题
-- 更新了README.md文档，使其与当前项目结构保持一致
-- 优化了自动化工作流配置，支持更多触发方式
-- 增强了IP直播源收集功能，提高了线路筛选质量
+### collect_ipzy.py 输出
+- **ipzy_channels.txt**: 完整的频道列表，包含所有收集到的直播源
+- **ipzyauto.txt**: 按分类分组的频道列表，包含央视、卫视、4K等分类
 
-### 主要功能更新
-- 实现统一播放源管理系统(`sources.json`)
-- 开发自动更新脚本(`update_sources.py`)
-- 配置GitHub Actions自动化工作流(7个工作流文件)
-- 支持M3U、TXT等多种直播源格式处理
-- 实现智能分类和质量筛选功能
-- 提供IP直播源收集和处理功能
-- 开发M3U转TXT格式转换工具
+### tvzy.py 输出
+- **tzydauto.txt**: 仅包含高质量（HD/4K）频道的 TXT 格式列表
+
+### IPTV.py 输出
+- **jieguo.m3u**: M3U 格式播放列表
+- **jieguo.txt**: TXT 格式直播源列表
+
+## 🛠️ 故障排查
+
+### 检查文件是否更新
+```bash
+python check_files.py
+```
+
+### 查看脚本运行情况
+```bash
+# 直接运行脚本查看输出
+python collect_ipzy.py
+
+# 或查看文件生成状态
+python check_files.py
+```
+
+### 常见问题及解决方案
+
+#### 问题：输出文件没有更新
+- **原因1**: 远程直播源请求失败（网络问题或403/404错误）
+- **解决方案1**: 检查网络连接，或更换直播源
+- **原因2**: 本地测试文件缺失
+- **解决方案2**: 创建 `temp_live.txt` 并添加测试频道
+
+#### 问题：测试频道未出现在输出中
+- **原因**: 文件格式检测错误
+- **解决方案**: 确保脚本正确区分 M3U 和 TXT 格式内容
 
 ## 📄 免责声明
 
-本项目仅供学习交流用途，接口数据均来源于网络，如有侵权，请联系删除
+本项目仅供学习交流用途，接口数据均来源于网络，如有侵权，请联系删除。
 
-本工具仅用于技术研究和学习目的，请勿用于商业用途。 使用本工具获取的播放源时，请确保您已获得合法授权。 使用者应对使用内容的合法性负责，作者不对任何法律责任负责。 继续使用即表示您同意自行承担所有风险和责任。
+本工具仅用于技术研究和学习目的，请勿用于商业用途。使用本工具获取的播放源时，请确保您已获得合法授权。使用者应对使用内容的合法性负责，作者不对任何法律责任负责。
 
-使用规范
+## 📧 联系方式
 
-🔒 合法使用：请在法律允许范围内使用
+如有问题或建议，欢迎提交 Issue 或 Pull Request。
 
-📺 版权尊重：仅使用拥有合法授权的播放源
+---
 
-⚖️ 责任自负：使用者需自行承担相关法律责任
-
-🚫 非商用：禁止将本工具用于商业盈利目的
+**更新时间**: 2025-12-16
+**版本**: 1.5.0

@@ -42,7 +42,7 @@ jobs:
 
     - name: 运行IP-TV脚本
       run: |
-        python IP-TV.py --update
+        python IPTV.py --update
 
     - name: 检查文件变更
       id: check_changes
@@ -73,7 +73,7 @@ jobs:
         
         # 重新执行脚本确保生成最新文件
         echo "重新执行脚本生成最新文件..."
-        python IP-TV.py --update
+        python IPTV.py --update
         
         # 检查文件是否存在
         if [ ! -f "jieguo.m3u" ] || [ ! -f "jieguo.txt" ]; then
