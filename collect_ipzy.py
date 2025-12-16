@@ -331,34 +331,6 @@ def write_output_file(channels_by_category):
     
     category_order = ["央视", "卫视", "港澳台", "影视剧", "4K", "音乐", "其他"]
     
-    # 生成 ipzy_channels.txt
-    with open('ipzy_channels.txt', 'w', encoding='utf-8') as f:
-        f.write(f"# 中国境内电视直播线路 (仅限1080p高清以上)\n")
-        f.write(f"# 更新时间: {timestamp}\n")
-        f.write(f"# 数据来源: 多个GitHub IPTV项目\n")
-        f.write(f"# 频道总数: {total_channels}\n")
-        f.write(f"# 线路总数: {total_urls}\n")
-        f.write(f"# 清晰度要求: 仅保留1080p高清及以上线路\n")
-        f.write("#" * 60 + "\n\n")
-        
-        for category in category_order:
-            if category in channels_by_category and channels_by_category[category]:
-                f.write(f"{category},#genre#\n")
-                
-                sorted_channels = sorted(channels_by_category[category], key=lambda x: x['name'])
-                
-                for channel in sorted_channels:
-                    for url in channel['urls']:
-                        f.write(f"{channel['name']},{url}\n")
-                
-                category_url_count = sum(len(channel['urls']) for channel in sorted_channels)
-                avg_urls = category_url_count / len(sorted_channels) if sorted_channels else 0
-                f.write(f"# 共 {len(sorted_channels)} 个频道，{category_url_count} 条线路 (平均{avg_urls:.1f}条/频道)\n\n")
-        
-        f.write("# 自动生成 - 每日北京时间为2点更新\n")
-        f.write("# 仅保留1080p高清及以上清晰度线路\n")
-        f.write("# 每个频道至少10条线路，最多30条线路\n")
-    
     # 生成 ipzyauto.txt
     with open('ipzyauto.txt', 'w', encoding='utf-8') as f:
         f.write("# IPTV直播源列表\n")

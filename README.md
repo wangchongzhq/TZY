@@ -23,7 +23,7 @@
 | **输出格式** | M3U + TXT | TXT 格式 | TXT 格式 |
 | **频道范围** | 所有可用频道 | 仅高质量（HD/4K）频道 | 所有可用频道 |
 | **分类方式** | 基于频道名称 | 基于频道名称 | 基于频道名称和分类规则 |
-| **文件名称** | `jieguo.m3u` 和 `jieguo.txt` | `tzydauto.txt` | `ipzy_channels.txt` 和 `ipzyauto.txt` |
+| **文件名称** | `jieguo.m3u` 和 `jieguo.txt` | `tzydauto.txt` | `ipzyauto.txt` |
 | **质量过滤** | 无特定过滤 | 通过正则表达式过滤 HD/4K 流 | 无特定过滤 |
 | **分组功能** | 基础分类 | 无 | 按分类（央视、卫视、4K等）分组排列 |
 
@@ -79,7 +79,6 @@ python IPTV.py --update
 ├── check_all_syntax.py          # 语法检查工具
 ├── validate_workflows.py        # GitHub Actions 工作流验证工具
 ├── requirements.txt             # 依赖包列表
-├── ipzy_channels.txt            # collect_ipzy.py 输出的完整频道列表
 ├── ipzyauto.txt                 # collect_ipzy.py 输出的按分类分组频道列表
 ├── tzydauto.txt                 # tvzy.py 输出的高质量频道列表
 ├── README.md                    # 项目说明文档
@@ -178,7 +177,6 @@ UNIFIED_SOURCES = [
 ## 📝 输出文件说明
 
 ### collect_ipzy.py 输出
-- **ipzy_channels.txt**: 完整的频道列表，包含所有收集到的直播源
 - **ipzyauto.txt**: 按分类分组的频道列表，包含央视、卫视、4K等分类
 
 ### tvzy.py 输出

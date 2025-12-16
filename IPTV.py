@@ -192,7 +192,6 @@ default_sources = UNIFIED_SOURCES
 
 # 本地直播源文件
 default_local_sources = [
-    "ipzy_channels.txt",
     "ipzyauto.txt",
     "4K_uhd_channels.txt",
 ]
