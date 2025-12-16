@@ -137,7 +137,7 @@ UNIFIED_SOURCES = [
 
 项目配置了多个 GitHub Actions 工作流，支持自动定时更新：
 
-- **update_ip-tv.yml**: 定时更新 IPTV.py 生成的直播源
+- **update_iptv.yml**: 定时更新 IPTV.py 生成的直播源
 - **tvzy_update.yml**: 定时更新 tvzy.py 生成的高质量直播源
 - **update_sources.yml**: 定时更新统一直播源配置
 
