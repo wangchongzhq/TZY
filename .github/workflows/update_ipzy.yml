@@ -40,7 +40,7 @@ jobs:
     - name: 检查文件变更
       id: check_changes
       run: |
-        git add ipzy_channels.txt
+        git add ipzyauto.txt
         git diff --staged --quiet || echo "changes=true" >> $GITHUB_OUTPUT
 
     - name: 提交更新
@@ -69,14 +69,14 @@ jobs:
         python collect_ipzy.py
         
         # 检查文件是否存在
-        if [ ! -f "ipzy_channels.txt" ]; then
-          echo "::error::错误：ipzy_channels.txt文件未生成"
+        if [ ! -f "ipzyauto.txt" ]; then
+          echo "::error::错误：ipzyauto.txt文件未生成"
           exit 1
         fi
         
         # 添加文件
         echo "添加更改的文件..."
-        git add ipzy_channels.txt
+        git add ipzyauto.txt
         
         # 检查是否有更改
         if git diff --staged --quiet; then
