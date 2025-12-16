@@ -59,15 +59,8 @@ jobs:
         # 重新执行脚本确保生成最新文件
         echo "ipzyauto.py已被删除，跳过此步骤"
         
-        # 检查文件是否存在
-        if [ ! -f "ipzy.m3u" ]; then
-          echo "ipzy.m3u文件未生成，跳过提交"
-          exit 0
-        fi
-        
         # 添加文件
         echo "添加更改的文件..."
-        git add ipzy.m3u
         
         # 检查是否有更改
         if git diff --staged --quiet; then

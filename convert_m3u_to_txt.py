@@ -170,9 +170,9 @@ def main():
     converter = M3UConverter()
     
     # 尝试找到M3U文件
-    possible_m3u_files = ["ipzy.m3u", "iptv.m3u", "cn.m3u", "4K.m3u", "ipvym3a", "iptv.m3a"]
+    possible_m3u_files = ["iptv.m3u", "cn.m3u", "4K.m3u", "ipvym3a", "iptv.m3a"]
     m3u_file = None
-    txt_file = "ipzy.txt"
+    txt_file = "output.txt"
     
     # 检查命令行参数
     if len(sys.argv) == 3:
@@ -187,15 +187,17 @@ def main():
             valid_m3u_files = [f for f in all_m3u_files if os.path.getsize(f) > 0]
             
             if valid_m3u_files:
-                # 优先选择ipzy.m3u，如果存在的话
-                if "ipzy.m3u" in valid_m3u_files:
-                    m3u_file = "ipzy.m3u"
-                else:
-                    # 否则选择第一个有效文件
-                    m3u_file = valid_m3u_files[0]
+                # 选择第一个有效文件
+                m3u_file = valid_m3u_files[0]
     
     if not m3u_file:
         sys.exit(1)
+    
+    # 根据输入文件自动生成输出文件名
+    if m3u_file:
+        txt_file = f"{os.path.splitext(m3u_file)[0]}.txt"
+    else:
+        txt_file = "output.txt"
     
     # 执行转换
     success = converter.convert_m3u_to_txt(m3u_file, txt_file)

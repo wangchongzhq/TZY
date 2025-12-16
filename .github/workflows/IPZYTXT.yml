@@ -80,7 +80,7 @@ jobs:
         
         # 添加文件
           echo "添加更改的文件..."
-          git add ipzy.m3u ipzyauto.txt
+          git add ipzyauto.txt
           
           # 检查是否有更改
         if git diff --staged --quiet; then
