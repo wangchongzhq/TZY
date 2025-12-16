@@ -1,4 +1,4 @@
-name: IP-TV Update Workflow
+name: IPTV Update Workflow
 
 on:
   schedule:
@@ -40,7 +40,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests schedule
 
-    - name: 运行IP-TV脚本
+    - name: 运行IPTV脚本
       run: |
         python IPTV.py --update
 
@@ -93,7 +93,7 @@ jobs:
         
         # 提交更改
         echo "提交更改..."
-        git commit -m "自动更新IP-TV频道列表 [$(date +'%Y-%m-%d %H:%M:%S')]"
+        git commit -m "自动更新IPTV频道列表 [$(date +'%Y-%m-%d %H:%M:%S')]"
         
         # 推送到远程仓库
         echo "尝试推送更改到远程仓库..."
