@@ -19,6 +19,10 @@ import tempfile
 import ast
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from opencc import OpenCC
+
+# 初始化OpenCC，用于将繁体中文转换为简体中文
+cc = OpenCC('t2s')  # t2s 表示繁体转简体
 
 # 配置日志
 logging.basicConfig(
@@ -488,16 +492,18 @@ def generate_m3u_file(channels, output_path):
         for category in CHANNEL_CATEGORIES:
             if category in channels:
                 for channel_name, url in channels[category]:
-                    # 写入频道信息
-                    f.write(f"#EXTINF:-1 tvg-name=\"{channel_name}\" group-title=\"{category}\",{channel_name}\n")
+                    # 写入频道信息，将频道名称转换为简体中文
+                    simplified_channel_name = cc.convert(channel_name)
+                    f.write(f"#EXTINF:-1 tvg-name=\"{simplified_channel_name}\" group-title=\"{category}\",{simplified_channel_name}\n")
                     f.write(f"{url}\n")
                     written_count += 1
         
         # 最后写入其他频道
         if "其他频道" in channels:
             for channel_name, url in channels["其他频道"]:
-                # 写入频道信息
-                f.write(f"#EXTINF:-1 tvg-name=\"{channel_name}\" group-title=\"其他频道\",{channel_name}\n")
+                # 写入频道信息，将频道名称转换为简体中文
+                simplified_channel_name = cc.convert(channel_name)
+                f.write(f"#EXTINF:-1 tvg-name=\"{simplified_channel_name}\" group-title=\"其他频道\",{simplified_channel_name}\n")
                 f.write(f"{url}\n")
                 written_count += 1
     
@@ -513,26 +519,16 @@ def generate_txt_file(channels, output_path):
     print(f"正在生成 {output_path}...")
     
     with open(output_path, 'w', encoding='utf-8') as f:
-        # 写入文件头注释
-        f.write(f"# IPTV直播源列表\n")
-        f.write(f"# 生成时间: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')}\n")
-        f.write("# 格式: 频道名称,播放URL\n")
-        f.write("# 按分组排列\n")
-        f.write("\n")
-        
-        # 写入频道分类说明
-        f.write("# 频道分类: 4K频道,央视频道,卫视频道,北京专属频道,山东专属频道,港澳频道,电影频道,儿童频道,iHOT频道,综合频道,体育频道,剧场频道,其他频道\n")
-        f.write("\n")
-        
         # 按CHANNEL_CATEGORIES中定义的顺序写入分类
         for category in CHANNEL_CATEGORIES:
             if category in channels and channels[category]:
                 # 写入分组标题，添加,#genre#后缀
                 f.write(f"#{category}#,genre#\n")
                 
-                # 写入该分组下的所有频道
+                # 写入该分组下的所有频道，将频道名称转换为简体中文
                 for channel_name, url in channels[category]:
-                    f.write(f"{channel_name},{url}\n")
+                    simplified_channel_name = cc.convert(channel_name)
+                    f.write(f"{simplified_channel_name},{url}\n")
                 
                 # 分组之间添加空行
                 f.write("\n")
@@ -542,12 +538,27 @@ def generate_txt_file(channels, output_path):
             # 写入分组标题，添加,#genre#后缀
             f.write("#其他频道#,#genre#\n")
             
-            # 写入该分组下的所有频道
+            # 写入该分组下的所有频道，将频道名称转换为简体中文
             for channel_name, url in channels["其他频道"]:
-                f.write(f"{channel_name},{url}\n")
+                simplified_channel_name = cc.convert(channel_name)
+                f.write(f"{simplified_channel_name},{url}\n")
             
             # 分组之间添加空行
             f.write("\n")
+        
+        # 将说明内容移到文件末尾
+        f.write("\n")
+        # 添加说明行
+        f.write("说明,#genre#\n")
+        # 写入文件头注释
+        f.write(f"# IPTV直播源列表\n")
+        f.write(f"# 生成时间: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write("# 格式: 频道名称,播放URL\n")
+        f.write("# 按分组排列\n")
+        f.write("\n")
+        
+        # 写入频道分类说明
+        f.write("# 频道分类: 4K频道,央视频道,卫视频道,北京专属频道,山东专属频道,港澳频道,电影频道,儿童频道,iHOT频道,综合频道,体育频道,剧场频道,其他频道\n")
     
     print(f"✅ 成功生成 {output_path}")
     return True
