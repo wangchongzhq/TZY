@@ -378,21 +378,27 @@ def fetch_content(url, timeout=10, max_retries=3):
 
 def is_high_quality(line):
     """判断线路是否为高清线路（1080P以上）"""
-    # 优先检查是否明确包含1080p或更高清的标识
-    high_def_patterns = re.compile(r'(1080[pdi]|1440[pdi]|2160[pdi]|[48]k|fhd|uhd|超高清|4k)', re.IGNORECASE)
-    if high_def_patterns.search(line):
+    # 从line中提取频道名称（假设格式为：频道名称 URL）
+    if 'http://' in line or 'https://' in line:
+        # 只提取URL之前的部分作为频道名称
+        channel_name = line.split('http://')[0].split('https://')[0].strip()
+    else:
+        channel_name = line.strip()
+    
+    # 仅检查频道名称中的高清标识，不考虑URL内容
+    high_def_patterns = re.compile(r'(1080[pdi]|1440[pdi]|2160[pdi]|fhd|uhd|超高清)', re.IGNORECASE)
+    if high_def_patterns.search(channel_name):
         return True
     
-    # 其次检查是否包含其他高清标识
-    if HD_REGEX.search(line):
-        # 排除一些可能误判的情况
-        low_quality_patterns = re.compile(r'(360|480|576|标清|sd|low)', re.IGNORECASE)
-        if not low_quality_patterns.search(line):
-            return True
+    # 检查其他高清标识
+    channel_name_lower = channel_name.lower()
+    # 高清标识列表
+    hd_keywords = ['高清', '超清', 'hd', 'high definition', 'high def']
+    # 低质量标识列表
+    low_quality_keywords = ['360', '480', '576', '标清', 'sd', 'low']
     
-    # 检查URL中是否包含特定的高清参数
-    url_high_patterns = re.compile(r'(\bhd\b|quality=high|res=[1-9]\d{3}|bitrate=[8-9]\d{2}|bitrate=\d{4,})', re.IGNORECASE)
-    if url_high_patterns.search(line):
+    # 检查是否包含高清标识且不包含低质量标识
+    if any(hd in channel_name_lower for hd in hd_keywords) and not any(low in channel_name_lower for low in low_quality_keywords):
         return True
     
     return False
@@ -533,37 +539,37 @@ def process_source(source_url):
 
 def sort_and_limit_lines(lines):
     """排序并限制线路数量，确保优先保留高质量线路"""
-    # 更精确的清晰度排序函数
+    # 更精确的清晰度排序函数，仅基于频道名称判断
     def sort_key(line):
         name, url = line
-        combined = (name + ' ' + url).lower()
+        channel_name_lower = name.lower()
         
-        # 4K及以上 (最高优先级)
-        if any(keyword in combined for keyword in ['4k', '2160p', '2160i', 'uhd', '超高清']):
-            return (0, len(combined))  # 长度作为次要排序条件，更简洁的URL可能更好
+        # 4K及以上 (最高优先级) - 仅检查频道名称
+        if any(keyword in channel_name_lower for keyword in ['4k', '2160p', '2160i', 'uhd', '超高清']):
+            return (0, len(url))  # URL长度作为次要排序条件，更简洁的URL可能更好
         
         # 2K (第二优先级)
-        elif any(keyword in combined for keyword in ['1440p', 'qhd', '2k']):
-            return (1, len(combined))
+        elif any(keyword in channel_name_lower for keyword in ['1440p', 'qhd', '2k']):
+            return (1, len(url))
         
         # 1080p/i (第三优先级)
-        elif any(keyword in combined for keyword in ['1080p', '1080i', '1080d', 'fhd']):
+        elif any(keyword in channel_name_lower for keyword in ['1080p', '1080i', '1080d', 'fhd']):
             # 进一步细分：1080p优先于1080i
-            if '1080p' in combined:
-                return (2, 0, len(combined))
+            if '1080p' in channel_name_lower:
+                return (2, 0, len(url))
             else:
-                return (2, 1, len(combined))
+                return (2, 1, len(url))
         
         # 高清 (第四优先级)
-        elif any(keyword in combined for keyword in ['高清', 'hd', 'high definition']):
-            return (3, len(combined))
+        elif any(keyword in channel_name_lower for keyword in ['高清', 'hd', 'high definition']):
+            return (3, len(url))
         
         # 其他高清标识 (第五优先级)
-        elif any(keyword in combined for keyword in ['超清', '蓝光', 'blue-ray']):
-            return (4, len(combined))
+        elif any(keyword in channel_name_lower for keyword in ['超清', '蓝光', 'blue-ray']):
+            return (4, len(url))
         
         # 普通线路 (最低优先级)
-        return (5, len(combined))
+        return (5, len(url))
     
     # 排序
     sorted_lines = sorted(lines, key=sort_key)
