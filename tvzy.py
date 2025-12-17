@@ -4,6 +4,7 @@ import requests
 import concurrent.futures
 import multiprocessing
 import time
+import datetime
 
 # 配置参数
 def get_optimal_workers():
@@ -11,7 +12,7 @@ def get_optimal_workers():
     return min(32, multiprocessing.cpu_count() * 4)
 
 MAX_WORKERS = get_optimal_workers()
-TIMEOUT = 10
+TIMEOUT = 120  # 增加超时时间到120秒，确保能处理慢响应的直播源
 MIN_LINES_PER_CHANNEL = 10
 MAX_LINES_PER_CHANNEL = 90
 # 默认输出文件名
@@ -381,17 +382,19 @@ def should_exclude_url(url):
     
     return False
 
-def fetch_content(url, timeout=10, max_retries=3):
+def fetch_content(url, timeout=TIMEOUT, max_retries=3):
     """获取URL内容，支持超时和重试"""
     retries = 0
     while retries < max_retries:
         try:
-            response = requests.get(url, timeout=timeout, headers=HEADERS)
+            # 禁用SSL验证，增加超时时间，提高成功率
+            response = requests.get(url, timeout=timeout, headers=HEADERS, verify=False)
             response.raise_for_status()  # 如果状态码不是200，抛出异常
             return response.text
-        except requests.RequestException:
+        except requests.RequestException as e:
             retries += 1
             if retries >= max_retries:
+                print(f"获取URL内容失败，重试次数已用尽: {url}，错误: {str(e)}")
                 return None
             time.sleep(2)  # 重试前等待2秒
 
@@ -664,6 +667,13 @@ def write_output_file(category_channels):
             
             # 在类别之间添加空行
             output_lines.append("")
+        
+        # 添加生成时间信息（北京时间UTC+8）
+        beijing_time = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))
+        output_lines.append("")
+        output_lines.append(f"# 生成时间: {beijing_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        output_lines.append(f"# 生成工具: tvzy.py")
+        output_lines.append(f"# 频道总数: {sum(len(lines) for category in category_channels for channel, lines in category_channels[category].items())}")
         
         # 写入文件
         with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:

@@ -31,6 +31,11 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# 请求头设置
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+}
+
 # 频道分类
 CHANNEL_CATEGORIES = {
     "4K频道": ['CCTV4K', 'CCTV8K', 'CCTV16 4K', '北京卫视4K', '北京IPTV4K', '湖南卫视4K', '山东卫视4K','广东卫视4K', '四川卫视4K', '浙江卫视4K', '江苏卫视4K', '东方卫视4K', '深圳卫视4K', '河北卫视4K', '峨眉电影4K', '求索4K', '咪视界4K', '欢笑剧场4K', '苏州4K', '至臻视界4K', '南国都市4K', '翡翠台4K', '百事通电影4K', '百事通少儿4K', '百事通纪实4K', '华数爱上4K'],
@@ -432,7 +437,7 @@ def normalize_channel_name(name):
     return None
 
 # 从URL获取M3U内容
-def fetch_m3u_content(url, max_retries=3, timeout=30):
+def fetch_m3u_content(url, max_retries=3, timeout=120):
     """从URL或本地文件获取M3U内容，支持超时和重试机制"""
     # 处理本地文件路径
     if url.startswith('file://'):
@@ -449,8 +454,8 @@ def fetch_m3u_content(url, max_retries=3, timeout=30):
     for attempt in range(max_retries):
         try:
             print(f"正在获取: {url} (尝试 {attempt+1}/{max_retries})")
-            # 添加verify=False参数来跳过SSL证书验证
-            response = requests.get(url, timeout=timeout, verify=False)
+            # 添加verify=False参数来跳过SSL证书验证，并使用自定义headers
+            response = requests.get(url, timeout=timeout, headers=HEADERS, verify=False)
             response.raise_for_status()
             return response.text
         except Exception as e:
@@ -467,7 +472,7 @@ def generate_m3u_file(channels, output_path):
     """生成M3U文件"""
     print(f"正在生成 {output_path}...")
     
-    print(f"📝 开始写入文件: {output_path} 时间: {datetime.datetime.now()}")
+    print(f"📝 开始写入文件: {output_path} 时间: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))}")
     print(f"📊 写入前文件大小: {os.path.getsize(output_path) if os.path.exists(output_path) else 0} 字节")
     print(f"📊 写入前文件修改时间: {datetime.datetime.fromtimestamp(os.path.getmtime(output_path)) if os.path.exists(output_path) else '不存在'}")
     
@@ -475,8 +480,8 @@ def generate_m3u_file(channels, output_path):
         # 写入文件头
         f.write("#EXTM3U x-tvg-url=\"https://kakaxi-1.github.io/IPTV/epg.xml\"\n")
         
-        # 写入当前时间作为标记
-        f.write(f"# 生成时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}\n")
+        # 写入当前时间作为标记（北京时间UTC+8）
+        f.write(f"# 生成时间: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S.%f')}\n")
         
         # 按CHANNEL_CATEGORIES中定义的顺序写入分类
         written_count = 0
@@ -496,7 +501,7 @@ def generate_m3u_file(channels, output_path):
                 f.write(f"{url}\n")
                 written_count += 1
     
-    print(f"📝 完成写入文件: {output_path} 时间: {datetime.datetime.now()}")
+    print(f"📝 完成写入文件: {output_path} 时间: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))}")
     print(f"📊 写入后文件大小: {os.path.getsize(output_path)} 字节")
     print(f"📊 写入后文件修改时间: {datetime.datetime.fromtimestamp(os.path.getmtime(output_path))}")
     print(f"📊 实际写入频道数: {written_count}")
@@ -510,7 +515,7 @@ def generate_txt_file(channels, output_path):
     with open(output_path, 'w', encoding='utf-8') as f:
         # 写入文件头注释
         f.write(f"# IPTV直播源列表\n")
-        f.write(f"# 生成时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(f"# 生成时间: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')}\n")
         f.write("# 格式: 频道名称,播放URL\n")
         f.write("# 按分组排列\n")
         f.write("\n")
@@ -632,7 +637,7 @@ def merge_sources(sources, local_files):
     all_channels = defaultdict(list)
     seen = set()
     
-    print(f"🔍 开始合并直播源: {datetime.datetime.now()}")
+    print(f"🔍 开始合并直播源: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))}")
     
     # 将本地文件转换为file:// URL
     local_sources = [f"file://{os.path.abspath(file_path)}" for file_path in local_files if os.path.exists(file_path)]
@@ -697,7 +702,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 def update_iptv_sources():
     """更新IPTV直播源"""
     logger.info("🚀 IPTV直播源自动生成工具")
-    logger.info(f"📅 运行时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    logger.info(f"📅 运行时间: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')}")
     logger.info("=" * 50)
     
     # 合并所有直播源
