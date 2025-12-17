@@ -19,6 +19,10 @@ OUTPUT_FILE = 'tzydauto.txt'
 # 允许的直播源域名列表
 ALLOWED_DOMAINS = ['http://example.com/']
 
+# 分辨率过滤配置
+open_filter_resolution = True  # 开启分辨率过滤
+min_resolution = (1920, 1080)  # 最小分辨率要求 (宽, 高)
+
 # 请求头
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -359,8 +363,23 @@ def should_exclude_url(url):
     """检查是否应该排除特定URL"""
     if not url:
         return True
-    # 允许所有有效的HTTP/HTTPS URL
-    return not (url.startswith('http://') or url.startswith('https://'))
+    
+    # 检查是否是HTTP/HTTPS URL
+    if not (url.startswith('http://') or url.startswith('https://')):
+        return True
+    
+    # 测试频道过滤：过滤example、demo、sample等关键词
+    test_patterns = ['example', 'demo', 'sample', 'samples']
+    url_lower = url.lower()
+    for pattern in test_patterns:
+        if pattern in url_lower:
+            return True
+    
+    # 过滤example域名
+    if 'example.com' in url_lower or 'example.org' in url_lower:
+        return True
+    
+    return False
 
 def fetch_content(url, timeout=10, max_retries=3):
     """获取URL内容，支持超时和重试"""
@@ -378,14 +397,17 @@ def fetch_content(url, timeout=10, max_retries=3):
 
 def is_high_quality(line):
     """判断线路是否为高清线路（1080P以上）"""
-    # 从line中提取频道名称（假设格式为：频道名称 URL）
+    # 从line中提取频道名称和URL
     if 'http://' in line or 'https://' in line:
-        # 只提取URL之前的部分作为频道名称
+        # 提取URL之前的部分作为频道名称
         channel_name = line.split('http://')[0].split('https://')[0].strip()
+        # 提取URL部分
+        url_part = line[len(channel_name):].strip()
     else:
         channel_name = line.strip()
+        url_part = ''
     
-    # 仅检查频道名称中的高清标识，不考虑URL内容
+    # 检查频道名称中的高清标识
     high_def_patterns = re.compile(r'(1080[pdi]|1440[pdi]|2160[pdi]|fhd|uhd|超高清)', re.IGNORECASE)
     if high_def_patterns.search(channel_name):
         return True
@@ -400,6 +422,31 @@ def is_high_quality(line):
     # 检查是否包含高清标识且不包含低质量标识
     if any(hd in channel_name_lower for hd in hd_keywords) and not any(low in channel_name_lower for low in low_quality_keywords):
         return True
+    
+    # 分辨率过滤：如果开启了分辨率过滤，检查是否满足最小分辨率要求
+    if open_filter_resolution:
+        # 尝试从URL中提取分辨率信息
+        resolution_match = re.search(r'resolution=([1-9]\d+)x?([1-9]\d+)', url_part, re.IGNORECASE)
+        if resolution_match:
+            try:
+                width = int(resolution_match.group(1))
+                height = int(resolution_match.group(2))
+                # 检查分辨率是否满足要求
+                if width >= min_resolution[0] and height >= min_resolution[1]:
+                    return True
+            except (ValueError, IndexError):
+                pass
+        
+        # 尝试从频道名称或URL中提取类似1080p、2160p这样的分辨率标识
+        res_pattern = re.search(r'(\d{3,4})[pdi]', channel_name + ' ' + url_part, re.IGNORECASE)
+        if res_pattern:
+            try:
+                res_value = int(res_pattern.group(1))
+                # 对于垂直分辨率（如1080p），直接比较高度
+                if res_value >= min_resolution[1]:
+                    return True
+            except (ValueError, IndexError):
+                pass
     
     return False
 
@@ -526,6 +573,12 @@ def process_source(source_url):
             # 过滤高清线路
             combined = name + ' ' + url
             if not is_high_quality(combined):
+                continue
+            
+            # 购物频道过滤
+            channel_name_lower = name.lower()
+            shopping_keywords = ['购物', '导购', '电视购物']
+            if any(keyword in channel_name_lower for keyword in shopping_keywords):
                 continue
             
             # 标准化频道名称

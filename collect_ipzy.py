@@ -47,19 +47,34 @@ CATEGORY_RULES = {
     ]
 }
 
+# 分辨率过滤配置
+open_filter_resolution = True  # 开启分辨率过滤
+min_resolution = (1920, 1080)  # 最小分辨率要求 (宽, 高)
+
 # 高清关键词
 HD_KEYWORDS = [
     r'1080', r'1080p', r'1080P', r'高清', r'HD', r'High Definition', 
     r'FHD', r'Full HD', r'超清', r'4K', r'4k', r'UHD', r'2160'
 ]
 
+# 购物频道关键词
+SHOPPING_KEYWORDS = [
+    '购物', '导购', '电视购物'
+]
+
 # 排除规则 - 排除包含特定字符的URL
 def should_exclude_url(url):
     """
     判断是否应该排除该URL
-    排除规则：URL中包含"example"或"demo"字符
+    排除规则：URL中包含"example"、"demo"、"sample"或"samples"字符
     """
-    return "example" in url.lower() or "demo" in url.lower()
+    url_lower = url.lower()
+    return ("example" in url_lower or 
+            "demo" in url_lower or 
+            "sample" in url_lower or 
+            "samples" in url_lower or
+            "example.com" in url_lower or
+            "example.org" in url_lower)
 
 def download_m3u(url, retries=2):
     """下载M3U文件"""
@@ -140,12 +155,14 @@ def is_hd_channel(channel_info):
     name = channel_info.get('name', '').lower()
     tvg_name = channel_info.get('tvg_name', '').lower()
     group = channel_info.get('group', '').lower()
+    url = channel_info.get('url', '')
+    
+    # 合并所有信息用于检查
+    all_info = name + ' ' + tvg_name + ' ' + group + ' ' + url
     
     # 检查是否包含高清关键词
     for keyword in HD_KEYWORDS:
-        if (keyword.lower() in name or 
-            keyword.lower() in tvg_name or 
-            keyword.lower() in group):
+        if keyword.lower() in all_info:
             return True
     
     # 对于央视和卫视，默认认为是高清
@@ -156,6 +173,30 @@ def is_hd_channel(channel_info):
         re.search(satellite_pattern, name) or
         re.search(satellite_pattern, tvg_name)):
         return True
+    
+    # 如果开启了分辨率过滤，检查是否满足最小分辨率要求
+    if open_filter_resolution:
+        # 尝试从所有信息中提取分辨率
+        res_pattern = re.search(r'(\d{3,4})[pdi]', all_info, re.IGNORECASE)
+        if res_pattern:
+            try:
+                res_value = int(res_pattern.group(1))
+                # 对于垂直分辨率（如1080p），直接比较高度
+                if res_value >= min_resolution[1]:
+                    return True
+            except ValueError:
+                pass
+        
+        # 尝试提取宽度x高度格式的分辨率
+        width_height_pattern = re.search(r'(\d{3,4})[x×](\d{3,4})', all_info, re.IGNORECASE)
+        if width_height_pattern:
+            try:
+                width = int(width_height_pattern.group(1))
+                height = int(width_height_pattern.group(2))
+                if width >= min_resolution[0] and height >= min_resolution[1]:
+                    return True
+            except ValueError:
+                pass
     
     return False
 
@@ -176,24 +217,29 @@ def parse_m3u_content(content, source_name):
             if current_channel:
                 current_channel['url'] = line
                 
-                # 初步筛选高清频道
-                if is_hd_channel(current_channel):
-                    channel_name = normalize_channel_name(current_channel['name'])
-                    
-                    if channel_name not in channels:
-                        channels[channel_name] = {
-                            'name': channel_name,
-                            'tvg_name': current_channel.get('tvg_name', channel_name),
-                            'group': current_channel.get('group', '默认分组'),
-                            'logo': current_channel.get('logo', ''),
-                            'urls': [],
-                            'sources': set()
-                        }
-                    
-                    # 检查URL是否应该被排除
-                    if not should_exclude_url(line) and line not in channels[channel_name]['urls']:
-                        channels[channel_name]['urls'].append(line)
-                        channels[channel_name]['sources'].add(source_name)
+                # 检查是否为购物频道
+                channel_name_lower = current_channel['name'].lower()
+                is_shopping_channel = any(keyword in channel_name_lower for keyword in SHOPPING_KEYWORDS)
+                
+                if not is_shopping_channel:
+                    # 初步筛选高清频道
+                    if is_hd_channel(current_channel):
+                        channel_name = normalize_channel_name(current_channel['name'])
+                        
+                        if channel_name not in channels:
+                            channels[channel_name] = {
+                                'name': channel_name,
+                                'tvg_name': current_channel.get('tvg_name', channel_name),
+                                'group': current_channel.get('group', '默认分组'),
+                                'logo': current_channel.get('logo', ''),
+                                'urls': [],
+                                'sources': set()
+                            }
+                        
+                        # 检查URL是否应该被排除
+                        if not should_exclude_url(line) and line not in channels[channel_name]['urls']:
+                            channels[channel_name]['urls'].append(line)
+                            channels[channel_name]['sources'].add(source_name)
                 
                 current_channel = {}
     

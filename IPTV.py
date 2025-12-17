@@ -202,6 +202,47 @@ default_local_sources = [
 # 用户自定义直播源URL（可在本地添加）
 user_sources = []
 
+# 分辨率过滤配置
+open_filter_resolution = True  # 开启分辨率过滤
+min_resolution = (1920, 1080)  # 最小分辨率要求 (宽, 高)
+
+# 清晰度正则表达式 - 用于识别高清线路
+HD_PATTERNS = [
+    # 4K及以上
+    r'[48]k',
+    r'2160[pdi]',
+    r'uhd',
+    r'超高清',
+    r'4k',
+    # 2K
+    r'1440[pdi]',
+    r'qhd',
+    # 1080P及以上
+    r'1080[pdi]',
+    r'fhd',
+    # 其他高清标识
+    r'高清',
+    r'超清',
+    r'hd',
+    r'high.?definition',
+    r'high.?def',
+    # 特定的高清标识
+    r'hdmi',
+    r'蓝光',
+    r'blue.?ray',
+    r'hd.?live',
+    # 码率标识
+    r'[89]m',
+    r'[1-9]\d+m',
+    # 特定的URL参数标识
+    r'quality=high',
+    r'resolution=[1-9]\d{3}',
+    r'hd=true',
+    r'fhd=true'
+]
+
+HD_REGEX = re.compile('|'.join(HD_PATTERNS), re.IGNORECASE)
+
 # 获取URL列表
 def get_urls_from_file(file_path):
     """从文件中读取URL列表"""
@@ -213,6 +254,81 @@ def get_urls_from_file(file_path):
         except Exception as e:
             print(f"读取URL文件时出错: {e}")
     return urls
+
+# 测试频道过滤
+def should_exclude_url(url):
+    """检查是否应该排除特定URL（测试频道过滤）"""
+    if not url:
+        return True
+    
+    # 测试频道过滤：过滤example、demo、sample等关键词
+    test_patterns = ['example', 'demo', 'sample', 'samples']
+    url_lower = url.lower()
+    for pattern in test_patterns:
+        if pattern in url_lower:
+            return True
+    
+    # 过滤example域名
+    if 'example.com' in url_lower or 'example.org' in url_lower:
+        return True
+    
+    return False
+
+# 分辨率过滤
+def is_high_quality(line):
+    """判断线路是否为高清线路（1080P以上）"""
+    # 从line中提取频道名称和URL
+    if 'http://' in line or 'https://' in line:
+        # 提取URL之前的部分作为频道名称
+        channel_name = line.split('http://')[0].split('https://')[0].strip()
+        # 提取URL部分
+        url_part = line[len(channel_name):].strip()
+    else:
+        channel_name = line.strip()
+        url_part = ''
+    
+    # 检查频道名称中的高清标识
+    high_def_patterns = re.compile(r'(1080[pdi]|1440[pdi]|2160[pdi]|fhd|uhd|超高清)', re.IGNORECASE)
+    if high_def_patterns.search(channel_name):
+        return True
+    
+    # 检查其他高清标识
+    channel_name_lower = channel_name.lower()
+    # 高清标识列表
+    hd_keywords = ['高清', '超清', 'hd', 'high definition', 'high def']
+    # 低质量标识列表
+    low_quality_keywords = ['360', '480', '576', '标清', 'sd', 'low']
+    
+    # 检查是否包含高清标识且不包含低质量标识
+    if any(hd in channel_name_lower for hd in hd_keywords) and not any(low in channel_name_lower for low in low_quality_keywords):
+        return True
+    
+    # 分辨率过滤：如果开启了分辨率过滤，检查是否满足最小分辨率要求
+    if open_filter_resolution:
+        # 尝试从URL中提取分辨率信息
+        resolution_match = re.search(r'resolution=([1-9]\d+)x?([1-9]\d+)', url_part, re.IGNORECASE)
+        if resolution_match:
+            try:
+                width = int(resolution_match.group(1))
+                height = int(resolution_match.group(2))
+                # 检查分辨率是否满足要求
+                if width >= min_resolution[0] and height >= min_resolution[1]:
+                    return True
+            except (ValueError, IndexError):
+                pass
+        
+        # 尝试从频道名称或URL中提取类似1080p、2160p这样的分辨率标识
+        res_pattern = re.search(r'(\d{3,4})[pdi]', channel_name + ' ' + url_part, re.IGNORECASE)
+        if res_pattern:
+            try:
+                res_value = int(res_pattern.group(1))
+                # 对于垂直分辨率（如1080p），直接比较高度
+                if res_value >= min_resolution[1]:
+                    return True
+            except (ValueError, IndexError):
+                pass
+    
+    return False
 
 # 检查URL是否有效
 def check_url(url, timeout=5):
@@ -275,6 +391,12 @@ def extract_channels_from_m3u(content):
         
         # 检查频道名是否为纯数字
         if channel_name.isdigit():
+            continue
+        
+        # 购物频道过滤
+        channel_name_lower = channel_name.lower()
+        shopping_keywords = ['购物', '导购', '电视购物']
+        if any(keyword in channel_name_lower for keyword in shopping_keywords):
             continue
         
         # 规范化频道名称
@@ -455,6 +577,12 @@ def extract_channels_from_txt(file_path):
                     
                     # 检查频道名是否为纯数字
                     if channel_name.isdigit():
+                        continue
+                    
+                    # 购物频道过滤
+                    channel_name_lower = channel_name.lower()
+                    shopping_keywords = ['购物', '导购', '电视购物']
+                    if any(keyword in channel_name_lower for keyword in shopping_keywords):
                         continue
                     
                     # 跳过无效的URL
