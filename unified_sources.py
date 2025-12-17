@@ -8,7 +8,6 @@ UNIFIED_SOURCES = [
     "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
     "https://ghproxy.it/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
     "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
-    "file://c:/Users/Administrator/Documents/GitHub/TZY/temp_live.txt",
     "https://freetv.fun/test_channels_new.txt",
     "https://ghfast.top/https://github.com/kimwang1978/collect-txt/blob/main/bbxx.txt",
     "https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt",
@@ -26,13 +25,12 @@ UNIFIED_SOURCES = [
     "https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u"
 ]
 
-# 带名称的播放源列表（用于collect_ipzy.py）
+# 带名称的播放源列表
 SOURCES_WITH_NAMES = [
     ("9390107", "http://tv.html-5.me/i/9390107.txt"),
     ("Supprise0901", "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt"),
     ("ffmking", "https://ghproxy.it/raw.githubusercontent.com/ffmking/tv1/main/888.txt"),
     ("qingtingjjjjjjj", "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt"),
-    ("qingtingjjjjjjj_local", "file://c:/Users/Administrator/Documents/GitHub/TZY/temp_live.txt"),
     ("freetv", "https://freetv.fun/test_channels_new.txt"),
     ("kimwang1978", "https://ghfast.top/https://github.com/kimwang1978/collect-txt/blob/main/bbxx.txt"),
     ("Guovin", "https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt"),

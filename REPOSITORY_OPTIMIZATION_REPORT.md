@@ -47,16 +47,15 @@ TZY 仓库主要用于处理和更新直播电视源，提供了以下核心功�
 
 ### 1. 统一播放源引用
 
-**问题**：`tvzy.py` 和 `collect_ipzy.py` 中硬编码了播放源列表，导致维护困难。
+**问题**：`tvzy.py` 中硬编码了播放源列表，导致维护困难。
 
 **解决方案**：
 - 创建了 `unified_sources.py` 文件，统一管理所有播放源
-- 更新 `tvzy.py` 和 `collect_ipzy.py`，从 `unified_sources.py` 导入播放源
+- 更新 `tvzy.py`，从 `unified_sources.py` 导入播放源
 
 **修改文件**：
 - `unified_sources.py`：新增统一播放源管理文件
 - `tvzy.py`：导入统一播放源
-- `collect_ipzy.py`：导入统一播放源
 
 ### 2. 更新 `update_sources.py` 脚本
 
@@ -80,7 +79,6 @@ TZY 仓库主要用于处理和更新直播电视源，提供了以下核心功�
 
 **修改文件**：
 - `tvzy.py`：添加动态并发计算和重试机制
-- `collect_ipzy.py`：实现并发处理能力
 - `IPTV.py`：优化网络请求和并发处理
 
 ### 4. 更新项目结构文档
@@ -95,21 +93,11 @@ TZY 仓库主要用于处理和更新直播电视源，提供了以下核心功�
 **修改文件**：
 - `README.md`：更新项目文档
 
-### 5. 实现ipzyauto.txt频道分组功能
 
-**问题**：ipzyauto.txt文件缺少频道分组功能，用户难以按分类查找频道。
-
-**解决方案**：
-- 修改了`collect_ipzy.py`中的`write_output_file`函数，添加了生成ipzyauto.txt的逻辑
-- 确保生成的文件包含分类头部标识（如`#央视#,genre#`）和按名称排序的频道列表
-- 按分类规则组织频道列表，提高用户体验
-
-**修改文件**：
-- `collect_ipzy.py`：添加ipzyauto.txt生成逻辑
 
 ### 第一阶段优化结果
 
-✅ **统一播放源引用**：`tvzy.py` 和 `collect_ipzy.py` 现在从 `unified_sources.py` 获取播放源
+✅ **统一播放源引用**：`tvzy.py` 现在从 `unified_sources.py` 获取播放源
 
 ✅ **更新 `update_sources.py` 脚本**：移除了不存在的文件引用，脚本可以正常执行
 
@@ -122,11 +110,7 @@ TZY 仓库主要用于处理和更新直播电视源，提供了以下核心功�
 
 ✅ **语法检查**：所有 Python 文件都通过了语法验证
 
-✅ **实现ipzyauto.txt频道分组功能**：
-- 成功生成包含分类的ipzyauto.txt文件
-- 每个分类都有明确的头部标识（如`#央视#,genre#`）
-- 频道按名称排序，方便用户查找
-- 按分类规则组织频道列表，提高用户体验
+
 
 ## 第二阶段优化（待实施）
 

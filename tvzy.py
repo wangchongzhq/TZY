@@ -545,8 +545,8 @@ def extract_channels(content):
                         # 尝试从URL中提取名称
                         name = line.split('/')[-1].split('?')[0].split('#')[0]
                         channels.append((name, line))
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"提取频道信息时出错: {str(e)}")
     
     return channels
 
@@ -557,10 +557,12 @@ def process_source(source_url):
         url = source_url.strip('"`\' ')
         content = fetch_content(url)
         if not content:
+            print(f"无法获取数据源内容: {url}")
             return []
         
         channels = extract_channels(content)
         if not channels:
+            print(f"从数据源未提取到频道: {url}")
             return []
         
         # 过滤和标准化频道
@@ -587,7 +589,8 @@ def process_source(source_url):
                 processed_channels.append((normalized_name, url))
         
         return processed_channels
-    except Exception:
+    except Exception as e:
+        print(f"处理数据源 {source_url} 时出错: {str(e)}")
         return []
 
 def sort_and_limit_lines(lines):
@@ -678,11 +681,12 @@ def main():
         with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             future_to_source = {executor.submit(process_source, source): source for source in GITHUB_SOURCES}
             for future in concurrent.futures.as_completed(future_to_source):
+                source = future_to_source[future]
                 try:
                     channels = future.result()
                     all_channels.extend(channels)
-                except Exception:
-                    pass
+                except Exception as e:
+                    print(f"处理数据源 {source} 时出错: {str(e)}")
         
         # 按频道名称分组
         channel_map = {}
@@ -705,9 +709,10 @@ def main():
                 category_channels[category][channel_name] = lines
         
         # 写入输出文件
-        write_output_file(category_channels)
-    except Exception:
-        pass
+        if not write_output_file(category_channels):
+            print("写入输出文件时出错")
+    except Exception as e:
+        print(f"程序执行出错: {str(e)}")
 
 if __name__ == "__main__":
     main()

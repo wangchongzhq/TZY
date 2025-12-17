@@ -53,7 +53,7 @@ jobs:
           fi
           
           # 记录直播源URL数量
-          LIVE_SOURCES_COUNT=$(grep -o '"https://' ./tvzy.py | wc -l)
+          LIVE_SOURCES_COUNT=$(grep -o 'https://\|file://' ./unified_sources.py | wc -l)
           echo "直播源URL数量: $LIVE_SOURCES_COUNT" >> $GITHUB_STEP_SUMMARY
       
       - name: 提交和推送更新

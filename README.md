@@ -2,7 +2,7 @@
 
 ## 📋 项目介绍
 
-一个功能强大的 IPTV 直播源自动化处理工具集，支持多格式输出、质量筛选、智能分类和定时更新。主要包含 `IPTV.py`、`tvzy.py` 和 `collect_ipzy.py` 三个核心脚本，用于满足不同场景的直播源处理需求。
+一个功能强大的 IPTV 直播源自动化处理工具集，支持多格式输出、质量筛选、智能分类和定时更新。主要包含 `IPTV.py` 和 `tvzy.py` 两个核心脚本，用于满足不同场景的直播源处理需求。
 
 ## ✨ 功能特性
 
@@ -15,17 +15,17 @@
 - **重试机制**：网络请求失败时自动重试，提高可靠性
 - **定时更新**：通过 GitHub Actions 实现每日自动更新
 
-### 三个核心脚本的区别
+### 两个核心脚本的区别
 
-| 特性 | IPTV.py | tvzy.py | collect_ipzy.py |
-|------|---------|---------|-----------------|
-| **主要用途** | 全功能直播源生成工具 | 专注于高质量（HD/4K）直播源 | 生成按分类分组的IPZY直播源 |
-| **输出格式** | M3U + TXT | TXT 格式 | TXT 格式 |
-| **频道范围** | 所有可用频道 | 仅高质量（HD/4K）频道 | 所有可用频道 |
-| **分类方式** | 基于频道名称 | 基于频道名称 | 基于频道名称和分类规则 |
-| **文件名称** | `jieguo.m3u` 和 `jieguo.txt` | `tzydauto.txt` | `ipzyauto.txt` |
-| **质量过滤** | 无特定过滤 | 通过正则表达式过滤 HD/4K 流 | 无特定过滤 |
-| **分组功能** | 基础分类 | 无 | 按分类（央视、卫视、4K等）分组排列 |
+| 特性 | IPTV.py | tvzy.py |
+|------|---------|---------|
+| **主要用途** | 全功能直播源生成工具 | 专注于高质量（HD/4K）直播源 |
+| **输出格式** | M3U + TXT | TXT 格式 |
+| **频道范围** | 所有可用频道 | 仅高质量（HD/4K）频道 |
+| **分类方式** | 基于频道名称 | 基于频道名称 |
+| **文件名称** | `jieguo.m3u` 和 `jieguo.txt` | `tzydauto.txt` |
+| **质量过滤** | 无特定过滤 | 通过正则表达式过滤 HD/4K 流 |
+| **分组功能** | 基础分类 | 无 |
 
 ## 📋 环境要求
 
@@ -50,11 +50,6 @@ pip install -r requirements.txt
 
 ### 3. 运行核心脚本
 
-#### 运行 collect_ipzy.py（生成按分类分组的频道列表）
-```bash
-python collect_ipzy.py
-```
-
 #### 运行 tvzy.py（仅生成高质量频道）
 ```bash
 python tvzy.py
@@ -71,7 +66,6 @@ python IPTV.py --update
 ├── .github/workflows/           # GitHub Actions 工作流配置
 ├── IPTV.py                      # 核心直播源生成工具（全功能）
 ├── tvzy.py                      # 高质量直播源生成工具（HD/4K）
-├── collect_ipzy.py              # 按分类分组的IPZY直播源生成工具
 ├── unified_sources.py           # 统一直播源配置
 ├── update_sources.py            # 直播源更新脚本
 ├── convert_m3u_to_txt.py        # M3U 转 TXT 工具
@@ -79,7 +73,6 @@ python IPTV.py --update
 ├── check_all_syntax.py          # 语法检查工具
 ├── validate_workflows.py        # GitHub Actions 工作流验证工具
 ├── requirements.txt             # 依赖包列表
-├── ipzyauto.txt                 # collect_ipzy.py 输出的按分类分组频道列表
 ├── tzydauto.txt                 # tvzy.py 输出的高质量频道列表
 ├── README.md                    # 项目说明文档
 ├── REPOSITORY_OPTIMIZATION_REPORT.md  # 仓库优化报告
@@ -117,7 +110,7 @@ UNIFIED_SOURCES = [
 python check_files.py
 
 # 检查特定频道是否存在（以CCTV1为例）
-grep -n "CCTV1" ipzyauto.txt
+# 例如: grep -n "CCTV1" tzydauto.txt 或 grep -n "CCTV1" jieguo.txt
 ```
 
 ### 4. 配置直播源
@@ -149,12 +142,6 @@ UNIFIED_SOURCES = [
 
 ## 🔧 最近修复与改进
 
-### collect_ipzy.py 修复与改进
-- ✅ 实现了按分类分组的频道列表生成功能
-- ✅ 支持生成 `ipzyauto.txt` 格式的分组频道列表
-- ✅ 按分类（央视、卫视、4K等）对频道进行分组排列
-- ✅ 频道名称自动排序，方便用户查找
-
 ### IPTV.py 修复
 - ✅ 添加了 `file://` 协议支持，可读取本地直播源文件
 - ✅ 实现了动态格式检测，根据内容自动区分 M3U 和 TXT 格式
@@ -176,9 +163,6 @@ UNIFIED_SOURCES = [
 
 ## 📝 输出文件说明
 
-### collect_ipzy.py 输出
-- **ipzyauto.txt**: 按分类分组的频道列表，包含央视、卫视、4K等分类
-
 ### tvzy.py 输出
 - **tzydauto.txt**: 仅包含高质量（HD/4K）频道的 TXT 格式列表
 
@@ -196,7 +180,7 @@ python check_files.py
 ### 查看脚本运行情况
 ```bash
 # 直接运行脚本查看输出
-python collect_ipzy.py
+# 例如: python tvzy.py 或 python IPTV.py
 
 # 或查看文件生成状态
 python check_files.py

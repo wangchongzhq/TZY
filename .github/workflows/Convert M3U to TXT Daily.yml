@@ -6,8 +6,6 @@ on:
   workflow_dispatch:      # 允许手动触发
   push:
     paths:
-      - 'ipvym3a'
-      - 'iptv.m3a'
       - 'convert_m3u_to_txt.py'
 
 jobs:
@@ -38,10 +36,10 @@ jobs:
         echo "生成的文件:"
         ls -la *.txt
         echo "=== 文件内容统计 ==="
-        ls -la *.txt | grep -v "ipzy_channels.txt" | grep -v "ipzyauto.txt" | awk '{print $9}' | xargs wc -l 2>/dev/null || echo "无法统计行数"
+        ls -la *.txt | grep -v "ipzy_channels.txt" | awk '{print $9}' | xargs wc -l 2>/dev/null || echo "无法统计行数"
         echo "=== 前20行预览 ==="
         for file in *.txt; do
-          if [ "$file" != "ipzy_channels.txt" ] && [ "$file" != "ipzyauto.txt" ]; then
+          if [ "$file" != "ipzy_channels.txt" ]; then
             echo "$file:"
             head -n 5 "$file" || echo "无法预览文件"
             echo "---"
@@ -84,7 +82,7 @@ jobs:
         # 添加所有新生成的TXT文件，但排除已有的特定文件
         git add *.txt
         # 恢复不需要提交的文件
-        git restore --staged ipzyauto.txt tzydauto.txt
+        git restore --staged tzydauto.txt
         
         # 检查是否有更改
         if git diff --staged --quiet; then

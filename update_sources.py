@@ -33,8 +33,7 @@ else:
 # 需要更新的脚本列表
 SCRIPTS_TO_UPDATE = [
     'tvzy.py',
-    'IPTV.py',
-    'collect_ipzy.py'
+    'IPTV.py'
 ]
 
 
@@ -62,7 +61,7 @@ UNIFIED_SOURCES = [
 {urls}
 ]
 
-# 带名称的播放源列表（用于collect_ipzy.py）
+# 带名称的播放源列表
 SOURCES_WITH_NAMES = [
 {sources_with_names}
 ]
@@ -93,45 +92,37 @@ def update_script(script_path):
     
     # 检查文件中是否已经导入了unified_sources
     if 'from unified_sources import' not in content:
-        # 根据不同脚本类型进行处理
-        if script_path == 'collect_ipzy.py':
-            # 替换SOURCES列表
-            sources_pattern = r'SOURCES\s*=\s*\[.*?\]'  # 匹配SOURCES = [ ... ]
+        # 替换GITHUB_SOURCES或其他数据源列表
+        if 'GITHUB_SOURCES' in content:
+            pattern = r'GITHUB_SOURCES\s*=\s*\[.*?\]'  # 匹配GITHUB_SOURCES = [ ... ]
             replacement = '''# 从统一播放源文件导入
-from unified_sources import SOURCES_WITH_NAMES
-SOURCES = SOURCES_WITH_NAMES'''
-        else:
-            # 替换GITHUB_SOURCES或其他数据源列表
-            if 'GITHUB_SOURCES' in content:
-                pattern = r'GITHUB_SOURCES\s*=\s*\[.*?\]'  # 匹配GITHUB_SOURCES = [ ... ]
-                replacement = '''# 从统一播放源文件导入
 from unified_sources import UNIFIED_SOURCES
 GITHUB_SOURCES = UNIFIED_SOURCES'''
-            elif 'default_sources' in content and 'user_sources' in content:
-                # 处理IPTV.py类型的脚本
-                # 分别匹配default_sources和user_sources，不要求它们紧挨着
-                default_sources_pattern = r'default_sources\s*=\s*\[.*?\]'
-                user_sources_pattern = r'user_sources\s*=\s*\[.*?\]'
-                
-                # 先替换default_sources
-                content = re.sub(default_sources_pattern, '''# 从统一播放源文件导入
+        elif 'default_sources' in content and 'user_sources' in content:
+            # 处理IPTV.py类型的脚本
+            # 分别匹配default_sources和user_sources，不要求它们紧挨着
+            default_sources_pattern = r'default_sources\s*=\s*\[.*?\]'
+            user_sources_pattern = r'user_sources\s*=\s*\[.*?\]'
+            
+            # 先替换default_sources
+            content = re.sub(default_sources_pattern, '''# 从统一播放源文件导入
 from unified_sources import UNIFIED_SOURCES
 default_sources = UNIFIED_SOURCES''', content, flags=re.DOTALL)
-                
-                # 然后替换user_sources
-                content = re.sub(user_sources_pattern, '''user_sources = []''', content, flags=re.DOTALL)
-            elif 'urls' in content:
-                # 处理其他直接使用urls变量的脚本
-                pattern = r'urls\s*=\s*\[.*?\]'
-                replacement = '''# 从统一播放源文件导入
+            
+            # 然后替换user_sources
+            content = re.sub(user_sources_pattern, '''user_sources = []''', content, flags=re.DOTALL)
+        elif 'urls' in content:
+            # 处理其他直接使用urls变量的脚本
+            pattern = r'urls\s*=\s*\[.*?\]'
+            replacement = '''# 从统一播放源文件导入
 from unified_sources import UNIFIED_SOURCES
 urls = UNIFIED_SOURCES'''
-                
-                # 使用多行匹配进行替换
-                content = re.sub(pattern, replacement, content, flags=re.DOTALL)
-            else:
-                print(f"⚠️  未知的数据源格式，跳过 {script_path}")
-                return
+            
+            # 使用多行匹配进行替换
+            content = re.sub(pattern, replacement, content, flags=re.DOTALL)
+        else:
+            print(f"⚠️  未知的数据源格式，跳过 {script_path}")
+            return
     
     # 写入更新后的内容
     with open(script_path, 'w', encoding='utf-8') as f:

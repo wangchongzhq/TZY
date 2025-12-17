@@ -195,9 +195,7 @@ from unified_sources import UNIFIED_SOURCES
 default_sources = UNIFIED_SOURCES
 
 # 本地直播源文件
-default_local_sources = [
-    "ipzyauto.txt",
-]
+default_local_sources = []
 
 # 用户自定义直播源URL（可在本地添加）
 user_sources = []
