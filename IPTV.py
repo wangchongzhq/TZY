@@ -327,7 +327,13 @@ user_sources = []
 
 # 分辨率过滤配置
 open_filter_resolution = True  # 开启分辨率过滤
-min_resolution = (1920, 1080)  # 最小分辨率要求 (宽, 高)
+min_resolution = (1920, 1080)  # 最低分辨率要求
+
+# URL测试配置
+enable_url_testing = True  # 启用URL有效性测试
+test_timeout = 2  # URL测试超时时间（秒）
+test_retries = 0  # URL测试重试次数
+test_workers = 64  # URL测试并发数 (宽, 高)
 
 # 清晰度正则表达式 - 用于识别高清线路
 HD_PATTERNS = [
@@ -454,13 +460,25 @@ def is_high_quality(line):
     return False
 
 # 检查URL是否有效
-def check_url(url, timeout=5):
-    """检查URL是否可访问"""
-    try:
-        response = requests.head(url, timeout=timeout, allow_redirects=True)
-        return response.status_code < 400
-    except:
-        return False
+def check_url(url, timeout=5, retries=1):
+    """检查URL是否可访问，支持重试机制"""
+    for attempt in range(retries + 1):
+        try:
+            # 使用HEAD请求以避免下载整个文件
+            response = requests.head(
+                url, 
+                timeout=timeout, 
+                allow_redirects=True, 
+                stream=True,  # 启用流式请求
+                headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+            )
+            # 检查状态码，2xx表示成功
+            return response.status_code < 400
+        except requests.exceptions.RequestException as e:
+            # 如果是最后一次尝试或者是特定错误，返回False
+            if attempt == retries:
+                return False
+            # 移除重试延迟以提高测试速度
 
 # 格式化时间间隔
 def format_interval(seconds):
@@ -715,6 +733,69 @@ def get_optimal_workers():
     """动态计算最优并发数"""
     return min(32, multiprocessing.cpu_count() * 4)
 
+# 测试频道URL有效性
+def test_channels(channels):
+    """测试所有频道的URL有效性"""
+    if not enable_url_testing:
+        print("📌 URL测试功能已禁用")
+        return channels
+    
+    print(f"🔍 开始测试频道URL有效性: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))}")
+    
+    # 收集所有需要测试的频道
+    all_channel_items = []
+    for category, channel_list in channels.items():
+        for channel_name, url in channel_list:
+            all_channel_items.append((category, channel_name, url))
+    
+    total_channels = len(all_channel_items)
+    print(f"📺 待测试频道总数: {total_channels}")
+    
+    if total_channels == 0:
+        return channels
+    
+    # 动态计算最优并发数
+    max_workers = test_workers if test_workers > 0 else get_optimal_workers()
+    print(f"⚡ 使用 {max_workers} 个并发线程测试URL...")
+    
+    # 测试结果
+    valid_channels = defaultdict(list)
+    tested_count = 0
+    valid_count = 0
+    invalid_count = 0
+    
+    # 测试单个频道URL
+    def test_single_channel(channel_item):
+        category, channel_name, url = channel_item
+        is_valid = check_url(url, timeout=test_timeout, retries=test_retries)
+        return (category, channel_name, url, is_valid)
+    
+    # 并发测试所有频道
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_channel = {executor.submit(test_single_channel, item): item for item in all_channel_items}
+        
+        for future in as_completed(future_to_channel):
+            category, channel_name, url, is_valid = future.result()
+            tested_count += 1
+            
+            if is_valid:
+                valid_channels[category].append((channel_name, url))
+                valid_count += 1
+            else:
+                invalid_count += 1
+            
+            # 每测试100个频道打印一次进度
+            if tested_count % 100 == 0 or tested_count == total_channels:
+                print(f"📊 测试进度: {tested_count}/{total_channels} ({valid_count}有效, {invalid_count}无效) - {tested_count/total_channels*100:.1f}%")
+    
+    print(f"✅ URL测试完成: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))}")
+    print(f"📊 测试结果: 共测试 {total_channels} 个频道")
+    print(f"📊 有效频道: {valid_count} 个")
+    print(f"📊 无效频道: {invalid_count} 个")
+    print(f"📊 有效率: {valid_count/total_channels*100:.1f}%")
+    
+    return valid_channels
+
 # 处理单个远程直播源
 def process_single_source(source_url):
     """处理单个远程直播源或本地文件"""
@@ -822,6 +903,26 @@ def update_iptv_sources():
     if not all_channels:
         logger.error("❌ 没有获取到任何频道内容！")
         return False
+    
+    # 测试频道URL有效性
+    if enable_url_testing:
+        logger.info("🔍 开始测试频道URL有效性...")
+        all_channels = test_channels(all_channels)
+        
+        # 重新统计频道数量
+        total_channels = sum(len(channel_list) for channel_list in all_channels.values())
+        total_groups = len(all_channels)
+        
+        logger.info("=" * 50)
+        logger.info(f"📊 URL测试后统计:")
+        logger.info(f"📺 有效频道组数: {total_groups}")
+        logger.info(f"📚 有效频道总数: {total_channels}")
+        logger.info(f"⏱️  耗时: {format_interval(time.time() - start_time)}")
+        logger.info("=" * 50)
+        
+        if total_channels == 0:
+            logger.error("❌ 所有频道URL测试均无效！")
+            return False
     
     # 统计频道数量
     total_channels = sum(len(channel_list) for channel_list in all_channels.values())
