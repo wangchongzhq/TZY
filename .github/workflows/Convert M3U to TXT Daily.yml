@@ -82,7 +82,7 @@ jobs:
         # 添加所有新生成的TXT文件，但排除已有的特定文件
         git add *.txt
         # 恢复不需要提交的文件
-        git restore --staged tzydauto.txt
+
         
         # 检查是否有更改
         if git diff --staged --quiet; then

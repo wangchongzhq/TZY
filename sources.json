@@ -23,6 +23,16 @@
       "enabled": true
     },
     {
+      "name": "qingtingjjjjjjj_local",
+      "url": "file://c:/Users/Administrator/Documents/GitHub/TZY/temp_live.txt",
+      "enabled": true
+    },
+    {
+      "name": "freetv",
+      "url": "https://freetv.fun/test_channels_new.txt",
+      "enabled": true
+    },
+    {
       "name": "kimwang1978",
       "url": "https://ghfast.top/https://github.com/kimwang1978/collect-txt/blob/main/bbxx.txt",
       "enabled": true
@@ -30,6 +40,26 @@
     {
       "name": "Guovin",
       "url": "https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt",
+      "enabled": true
+    },
+    {
+      "name": "xiao-ping2",
+      "url": "https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt",
+      "enabled": true
+    },
+    {
+      "name": "zxj",
+      "url": "https://codeberg.org/zxj/mao/raw/branch/main/live.txt",
+      "enabled": true
+    },
+    {
+      "name": "iptv-org-streams-cn",
+      "url": "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u",
+      "enabled": true
+    },
+    {
+      "name": "iptv-org-streams-tw",
+      "url": "https://ghfast.top/https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u",
       "enabled": true
     },
     {

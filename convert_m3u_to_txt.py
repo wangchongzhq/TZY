@@ -43,6 +43,7 @@ class M3UConverter:
         """解析M3U内容，提取频道信息"""
         group_channels = {}
         total_matches = 0
+        processed_entries = set()  # 跟踪已处理的频道URL组合，避免重复
         
         # 尝试不同的正则表达式模式
         for pattern in self.patterns:
@@ -90,11 +91,14 @@ class M3UConverter:
                     if group_title not in group_channels:
                         group_channels[group_title] = []
                     
-                    # 为每个URL创建一行，确保每个URL都包含对应的频道名称
+                    # 为每个URL创建一行，确保每个URL都包含对应的频道名称，避免重复
                     for url in urls:
                         url = url.strip()
                         if url:
-                            group_channels[group_title].append(f"{channel_name},{url}")
+                            entry_key = f"{channel_name},{url}"
+                            if entry_key not in processed_entries:
+                                group_channels[group_title].append(entry_key)
+                                processed_entries.add(entry_key)
         
         return group_channels, total_matches
     
