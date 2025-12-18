@@ -44,7 +44,7 @@ HEADERS = {
 CHANNEL_CATEGORIES = {
     "4K频道": ['CCTV4K', 'CCTV8K', 'CCTV16 4K', '北京卫视4K', '北京IPTV4K', '湖南卫视4K', '山东卫视4K','广东卫视4K', '四川卫视4K', '浙江卫视4K', '江苏卫视4K', '东方卫视4K', '深圳卫视4K', '河北卫视4K', '峨眉电影4K', '求索4K', '咪视界4K', '欢笑剧场4K', '苏州4K', '至臻视界4K', '南国都市4K', '翡翠台4K', '百事通电影4K', '百事通少儿4K', '百事通纪实4K', '华数爱上4K'],
 
-    "央视频道": ['CCTV1', 'CCTV2', 'CCTV3', 'CCTV4', 'CCTV4欧洲', 'CCTV4美洲', 'CCTV5', 'CCTV5+', 'CCTV6', 'CCTV7', 'CCTV8', 'CCTV9', 'CCTV10', 'CCTV11', 'CCTV12', 'CCTV13', 'CCTV14', 'CCTV15', 'CCTV16', 'CCTV17', 'CETV1', 'CETV2', 'CETV3', 'CETV4', '早期教育','兵器科技', '风云音乐', '风云足球', '风云剧场', '怀旧剧场', '第一剧场', '女性时尚', '世界地理', '央视台球', '高尔夫网球', '央视文化精品', '卫生健康','电视指南'],
+    "央视频道": ['CCTV1', 'CCTV2', 'CCTV3', 'CCTV4', 'CCTV4欧洲', 'CCTV4美洲', 'CCTV5', 'CCTV5+', 'CCTV6', 'CCTV7', 'CCTV8', 'CCTV9', 'CCTV10', 'CCTV11', 'CCTV12', 'CCTV13', 'CCTV14', 'CCTV15', 'CCTV16', 'CCTV17', 'CETV1', 'CETV2', 'CETV3', 'CETV4', '早期教育','兵器科技', '风云足球', '风云音乐', '风云剧场', '怀旧剧场', '第一剧场', '女性时尚', '世界地理', '央视台球', '高尔夫网球', '央视文化精品', '卫生健康','电视指南'],
 
     "卫视频道": ['山东卫视', '浙江卫视', '江苏卫视', '东方卫视', '深圳卫视', '北京卫视', '广东卫视', '广西卫视', '东南卫视', '海南卫视', '河北卫视', '河南卫视', '湖北卫视', '江西卫视', '四川卫视', '重庆卫视', '贵州卫视', '云南卫视', '天津卫视', '安徽卫视', '湖南卫视', '辽宁卫视', '黑龙江卫视', '吉林卫视', '内蒙古卫视', '宁夏卫视', '山西卫视', '陕西卫视', '甘肃卫视', '青海卫视', '新疆卫视', '西藏卫视', '三沙卫视', '厦门卫视', '兵团卫视', '延边卫视', '安多卫视', '康巴卫视', '农林卫视', '山东教育'],
 
@@ -72,7 +72,7 @@ CHANNEL_CATEGORIES = {
                  '爱情喜剧', '超级电视剧', '超级综艺', '金牌综艺', '武搏世界', '农业致富', '炫舞未来',
                  '精品体育', '精品大剧', '精品纪录', '精品萌宠', '怡伴健康'],
     
-    "音乐频道": ['CCTV音乐', '音乐Tai', '音乐台', 'MTV', 'MTV中文', '华语音乐', '流行音乐', '古典音乐'],
+
 }
 
 # 频道映射（别名 -> 规范名）
@@ -126,22 +126,23 @@ CHANNEL_MAPPING = {
     "CCTV15": ["CCTV-15", "CCTV-15 HD", "CCTV15 音乐", "CCTV-15 音乐"],
     "CCTV16": ["CCTV-16", "CCTV-16 HD", "CCTV-16 奥林匹克", "CCTV16 奥林匹克"],
     "CCTV17": ["CCTV-17", "CCTV-17 HD", "CCTV17 农业农村", "CCTV-17 农业农村"],
-    "CETV1": ["CETV-1", "中国教育1", "中国教育台1"],
-    "CETV2": ["CETV-2", "中国教育2", "中国教育台2"],
-    "CETV3": ["CETV-3", "中国教育3", "中国教育台3"],
-    "CETV4": ["CETV-4", "中国教育4", "中国教育台4"],
-    "早期教育": ["CETV-早期教育", "中国教育台-早期教育"],
+    "CETV1": ["CETV-1", "中国教育1", "中国教育台1", "中国教育-1", "中国教育电视台1"],
+    "CETV2": ["CETV-2", "中国教育2", "中国教育台2", "中国教育-2", "中国教育电视台2"],
+    "CETV3": ["CETV-3", "中国教育3", "中国教育台3", "中国教育-3", "中国教育电视台3"],
+    "CETV4": ["CETV-4", "中国教育4", "中国教育台4", "中国教育-4", "中国教育电视台4"],
+    "早期教育": ["CETV-早期教育", "中国教育台-早期教育", "早教", "幼儿教育"],
     "兵器科技": ["CCTV-兵器科技", "CCTV兵器科技"],
-    "风云音乐": ["CCTV-风云音乐", "CCTV风云音乐"],
+
     "风云足球": ["CCTV-风云足球", "CCTV风云足球"],
+    "风云音乐": ["CCTV-风云音乐", "CCTV风云音乐", "风云音乐HD", "风云音乐 HD"],
     "风云剧场": ["CCTV-风云剧场", "CCTV风云剧场"],
     "怀旧剧场": ["CCTV-怀旧剧场", "CCTV怀旧剧场"],
     "第一剧场": ["CCTV-第一剧场", "CCTV第一剧场"],
     "女性时尚": ["CCTV-女性时尚", "CCTV女性时尚"],
     "世界地理": ["CCTV-世界地理", "CCTV世界地理"],
     "央视台球": ["CCTV-央视台球", "CCTV央视台球"],
-    "高尔夫网球": ["CCTV-高尔夫网球", "CCTV高尔夫网球"],
-    "央视文化精品": ["CCTV-央视文化精品", "CCTV央视文化精品"],
+    "高尔夫网球": ["CCTV-高尔夫网球", "CCTV高尔夫网球", "CCTV央视高网", "央视高网"],
+    "央视文化精品": ["CCTV-央视文化精品", "CCTV央视文化精品", "CCTV文化精品", "央视文化精品"],
     "卫生健康": ["CCTV-卫生健康", "CCTV卫生健康"],
     "电视指南": ["CCTV-电视指南", "CCTV电视指南"],
     
@@ -155,7 +156,7 @@ CHANNEL_MAPPING = {
     "广东卫视": ["广东卫视 HD", "广东台", "广东卫视高清"],
     "广西卫视": ["广西卫视 HD", "广西台", "广西卫视高清"],
     "东南卫视": ["东南卫视 HD", "东南台", "福建东南卫视", "东南卫视高清"],
-    "海南卫视": ["海南卫视 HD", "海南台", "海南卫视高清"],
+    "海南卫视": ["海南卫视 HD", "海南台", "海南卫视高清", "旅游卫视", "旅游卫视 HD"],
     "河北卫视": ["河北卫视 HD", "河北台", "河北卫视高清"],
     "河南卫视": ["河南卫视 HD", "河南台", "河南卫视高清"],
     "湖北卫视": ["湖北卫视 HD", "湖北台", "湖北卫视高清"],
@@ -186,16 +187,133 @@ CHANNEL_MAPPING = {
     "康巴卫视": ["康巴卫视 HD", "康巴台", "康巴卫视高清"],
     "农林卫视": ["农林卫视 HD", "农林台", "农林卫视高清"],
     "山东教育": ["山东教育台", "山东教育卫视"],
-    
-    # 音乐频道
-    "CCTV音乐": ["CCTV-音乐", "CCTV 音乐"],
-    "音乐Tai": ["音乐Tai", "音乐台"],
-    "音乐台": ["音乐台 HD", "音乐台HD"],
-    "MTV": ["MTV", "音乐电视"],
-    "MTV中文": ["MTV中文", "中文MTV"],
-    "华语音乐": ["华语音乐", "华语"],
-    "流行音乐": ["流行音乐", "流行"],
-    "古典音乐": ["古典音乐", "古典"]
+
+    # 北京专属频道映射
+    "北京财经": ["北京财经", "BTV财经", "BTV-财经"],
+    "北京纪实": ["北京纪实", "BTV纪实", "BTV-纪实"],
+    "北京生活": ["北京生活", "BTV生活", "BTV-生活"],
+    "北京体育休闲": ["北京体育休闲", "BTV体育休闲", "BTV-体育休闲"],
+    "北京国际": ["北京国际", "BTV国际", "BTV-国际"],
+    "北京文艺": ["北京文艺", "BTV文艺", "BTV-文艺"],
+    "北京新闻": ["北京新闻", "BTV新闻", "BTV-新闻"],
+    "北京淘电影": ["北京淘电影", "BTV淘电影"],
+    "北京淘剧场": ["北京淘剧场", "BTV淘剧场"],
+    "北京淘4K": ["北京淘4K", "BTV淘4K"],
+    "北京淘娱乐": ["北京淘娱乐", "BTV淘娱乐"],
+    "北京淘BABY": ["北京淘BABY", "BTV淘BABY"],
+    "北京萌宠TV": ["北京萌宠TV", "BTV萌宠TV"],
+    "北京卡酷少儿": ["北京卡酷少儿", "卡酷少儿", "卡酷"],
+
+    # 山东专属频道映射
+    "山东齐鲁": ["山东齐鲁", "齐鲁频道"],
+    "山东综艺": ["山东综艺", "综艺频道"],
+    "山东少儿": ["山东少儿", "少儿频道"],
+    "山东生活": ["山东生活", "生活频道"],
+    "山东新闻": ["山东新闻", "新闻频道"],
+    "山东国际": ["山东国际", "国际频道"],
+    "山东体育": ["山东体育", "体育频道"],
+    "山东文旅": ["山东文旅", "文旅频道"],
+    "山东农科": ["山东农科", "农科频道"],
+
+    # 港澳频道映射
+    "凤凰中文": ["凤凰中文", "凤凰卫视中文台"],
+    "凤凰资讯": ["凤凰资讯", "凤凰卫视资讯台"],
+    "凤凰香港": ["凤凰香港", "凤凰卫视香港台"],
+    "凤凰电影": ["凤凰电影", "凤凰卫视电影台"],
+
+    # 电影频道映射
+    "CHC动作电影": ["CHC动作电影", "动作电影"],
+    "CHC家庭影院": ["CHC家庭影院", "家庭影院"],
+    "CHC影迷电影": ["CHC影迷电影", "影迷电影"],
+    "淘电影": ["淘电影", "电影"],
+    "淘精彩": ["淘精彩", "精彩"],
+    "淘剧场": ["淘剧场", "剧场"],
+    "星空卫视": ["星空卫视", "星空"],
+    "黑莓电影": ["黑莓电影", "电影"],
+    "东北热剧": ["东北热剧", "热剧"],
+    "中国功夫": ["中国功夫", "功夫"],
+    "动作电影": ["动作电影", "电影动作"],
+    "超级电影": ["超级电影", "电影超级"],
+
+    # 儿童频道映射
+    "动漫秀场": ["动漫秀场", "动漫"],
+    "哒啵电竞": ["哒啵电竞", "电竞"],
+    "黑莓动画": ["黑莓动画", "动画"],
+    "卡酷少儿": ["卡酷少儿", "卡酷"],
+    "金鹰卡通": ["金鹰卡通", "金鹰"],
+    "优漫卡通": ["优漫卡通", "优漫"],
+    "哈哈炫动": ["哈哈炫动", "哈哈"],
+    "嘉佳卡通": ["嘉佳卡通", "嘉佳"],
+
+    # iHOT频道映射
+    "iHOT爱喜剧": ["iHOT爱喜剧", "爱喜剧"],
+    "iHOT爱科幻": ["iHOT爱科幻", "爱科幻"],
+    "iHOT爱院线": ["iHOT爱院线", "爱院线"],
+    "iHOT爱悬疑": ["iHOT爱悬疑", "爱悬疑"],
+    "iHOT爱历史": ["iHOT爱历史", "爱历史"],
+    "iHOT爱谍战": ["iHOT爱谍战", "爱谍战"],
+    "iHOT爱旅行": ["iHOT爱旅行", "爱旅行"],
+    "iHOT爱幼教": ["iHOT爱幼教", "爱幼教"],
+    "iHOT爱玩具": ["iHOT爱玩具", "爱玩具"],
+    "iHOT爱体育": ["iHOT爱体育", "爱体育"],
+    "iHOT爱赛车": ["iHOT爱赛车", "爱赛车"],
+    "iHOT爱浪漫": ["iHOT爱浪漫", "爱浪漫"],
+    "iHOT爱奇谈": ["iHOT爱奇谈", "爱奇谈"],
+    "iHOT爱科学": ["iHOT爱科学", "爱科学"],
+    "iHOT爱动漫": ["iHOT爱动漫", "爱动漫"],
+
+    # 综合频道映射
+    "重温经典": ["重温经典", "经典"],
+    "CHANNEL[V]": ["CHANNEL[V]", "Channel V"],
+    "求索纪录": ["求索纪录", "纪录"],
+    "求索科学": ["求索科学", "科学"],
+    "求索生活": ["求索生活", "生活"],
+    "求索动物": ["求索动物", "动物"],
+    "睛彩青少": ["睛彩青少", "青少"],
+    "睛彩竞技": ["睛彩竞技", "竞技"],
+    "睛彩篮球": ["睛彩篮球", "篮球"],
+    "睛彩广场舞": ["睛彩广场舞", "广场舞"],
+    "金鹰纪实": ["金鹰纪实", "纪实"],
+    "快乐垂钓": ["快乐垂钓", "垂钓"],
+    "茶频道": ["茶频道", "茶"],
+    "军事评论": ["军事评论", "军事"],
+    "军旅剧场": ["军旅剧场", "军旅"],
+    "乐游": ["乐游", "旅游"],
+    "生活时尚": ["生活时尚", "时尚"],
+    "都市剧场": ["都市剧场", "都市"],
+    "欢笑剧场": ["欢笑剧场", "欢笑"],
+    "游戏风云": ["游戏风云", "游戏"],
+    "金色学堂": ["金色学堂", "学堂"],
+    "法治天地": ["法治天地", "法治"],
+    "哒啵赛事": ["哒啵赛事", "赛事"],
+
+    # 体育频道映射
+    "天元围棋": ["天元围棋", "围棋"],
+    "魅力足球": ["魅力足球", "足球"],
+    "五星体育": ["五星体育", "五星"],
+    "劲爆体育": ["劲爆体育", "劲爆"],
+    "超级体育": ["超级体育", "超级"],
+
+    # 剧场频道映射
+    "古装剧场": ["古装剧场", "古装"],
+    "家庭剧场": ["家庭剧场", "家庭"],
+    "惊悚悬疑": ["惊悚悬疑", "悬疑"],
+    "明星大片": ["明星大片", "大片"],
+    "欢乐剧场": ["欢乐剧场", "欢乐"],
+    "海外剧场": ["海外剧场", "海外"],
+    "潮妈辣婆": ["潮妈辣婆", "潮妈"],
+    "爱情喜剧": ["爱情喜剧", "爱情"],
+    "超级电视剧": ["超级电视剧", "电视剧"],
+    "超级综艺": ["超级综艺", "综艺"],
+    "金牌综艺": ["金牌综艺", "金牌"],
+    "武搏世界": ["武搏世界", "武搏"],
+    "农业致富": ["农业致富", "农业"],
+    "炫舞未来": ["炫舞未来", "炫舞"],
+    "精品体育": ["精品体育", "精品"],
+    "精品大剧": ["精品大剧", "大剧"],
+    "精品纪录": ["精品纪录", "纪录"],
+    "精品萌宠": ["精品萌宠", "萌宠"],
+    "怡伴健康": ["怡伴健康", "健康"]
  }
 
 # 默认直播源URL
@@ -338,13 +456,89 @@ def is_high_quality(line):
     return False
 
 # 检查URL是否有效
-def check_url(url, timeout=5):
-    """检查URL是否可访问"""
+def check_url(url, timeout=4):
+    """检查URL是否可访问，并返回详细信息"""
+    result = {
+        'is_valid': False,
+        'status_code': None,
+        'response_time': None,
+        'content_type': None,
+        'error': None
+    }
+    
     try:
-        response = requests.head(url, timeout=timeout, allow_redirects=True)
-        return response.status_code < 400
+        start_time = time.time()
+        response = requests.head(url, timeout=timeout, headers=HEADERS, allow_redirects=True, verify=False)
+        response_time = time.time() - start_time
+        
+        result['status_code'] = response.status_code
+        result['response_time'] = response_time
+        result['content_type'] = response.headers.get('Content-Type', '')
+        result['is_valid'] = response.status_code < 400
+    except requests.exceptions.Timeout:
+        result['error'] = 'Timeout'
+    except requests.exceptions.ConnectionError:
+        result['error'] = 'ConnectionError'
+    except requests.exceptions.RequestException as e:
+        result['error'] = str(e)
+    except Exception as e:
+        result['error'] = f'UnknownError: {str(e)}'
+    
+    return result
+
+# 辅助函数：将分辨率转换为1080P、2160P等格式
+def resolution_to_p_format(resolution):
+    """将分辨率元组(width, height)转换为P格式字符串"""
+    if not resolution or len(resolution) != 2:
+        return None
+    
+    width, height = resolution
+    
+    # 根据高度确定P格式
+    if height >= 2160:
+        return "2160P"
+    elif height >= 1440:
+        return "1440P"
+    elif height >= 1080:
+        return "1080P"
+    elif height >= 720:
+        return "720P"
+    elif height >= 480:
+        return "480P"
+    elif height >= 360:
+        return "360P"
+    else:
+        return f"{height}P"
+
+# 从URL中提取分辨率信息
+def get_resolution_from_url(url, timeout=5):
+    """从URL或响应内容中提取分辨率信息，支持多种格式"""
+    try:
+        # 首先尝试从URL本身提取分辨率信息
+        url_res_pattern = r'([1-9]\d+)x([1-9]\d+)'  # 匹配类似1920x1080的分辨率
+        url_match = re.search(url_res_pattern, url, re.IGNORECASE)
+        if url_match:
+            width = int(url_match.group(1))
+            height = int(url_match.group(2))
+            return (width, height)
+        
+        # 如果URL中没有，尝试从响应内容中提取
+        response = requests.get(url, timeout=timeout, headers=HEADERS, verify=False)
+        response.raise_for_status()
+        content = response.text
+        
+        # 匹配M3U8中的分辨率信息，格式通常为 RESOLUTION=1920x1080
+        resolution_pattern = r'RESOLUTION=([1-9]\d+)x([1-9]\d+)'  
+        match = re.search(resolution_pattern, content)
+        
+        if match:
+            width = int(match.group(1))
+            height = int(match.group(2))
+            return (width, height)
+        
+        return None
     except:
-        return False
+        return None
 
 # 格式化时间间隔
 def format_interval(seconds):
@@ -404,6 +598,16 @@ def extract_channels_from_m3u(content):
         channel_name_lower = channel_name.lower()
         shopping_keywords = ['购物', '导购', '电视购物']
         if any(keyword in channel_name_lower for keyword in shopping_keywords):
+            continue
+        
+        # 音乐频道过滤：保留CCTV15和风云音乐等正规音乐电视频道，过滤非正规的歌曲和MTV频道
+        channel_name_lower = channel_name.lower()
+        music_keywords = ['mtv', 'music', '演唱会', '歌曲', 'k歌', '卡拉ok', '音乐台', '音乐tai']
+        # 保留的正规音乐电视频道
+        allowed_music_channels = ['cctv15', 'cctv-15', '风云音乐']
+        
+        # 检查是否包含音乐关键词，但排除允许的正规音乐频道
+        if any(keyword in channel_name_lower for keyword in music_keywords) and not any(allowed in channel_name_lower for allowed in allowed_music_channels):
             continue
         
         # 规范化频道名称
@@ -476,9 +680,9 @@ def generate_m3u_file(channels, output_path):
     """生成M3U文件"""
     print(f"正在生成 {output_path}...")
     
-    print(f"📝 开始写入文件: {output_path} 时间: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))}")
+    print(f"📝 开始写入文件: {output_path} 时间: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))} ")
     print(f"📊 写入前文件大小: {os.path.getsize(output_path) if os.path.exists(output_path) else 0} 字节")
-    print(f"📊 写入前文件修改时间: {datetime.datetime.fromtimestamp(os.path.getmtime(output_path)) if os.path.exists(output_path) else '不存在'}")
+    print(f"📊 写入前文件修改时间: {datetime.datetime.fromtimestamp(os.path.getmtime(output_path)) if os.path.exists(output_path) else '不存在'} ")
     
     with open(output_path, 'w', encoding='utf-8') as f:
         # 写入文件头
@@ -491,25 +695,57 @@ def generate_m3u_file(channels, output_path):
         written_count = 0
         for category in CHANNEL_CATEGORIES:
             if category in channels:
-                for channel_name, url in channels[category]:
+                for channel_data in channels[category]:
+                    # 处理不同的数据格式
+                    if len(channel_data) == 2:
+                        # 旧格式: (channel_name, url)
+                        channel_name, url = channel_data
+                        resolution = None
+                    elif len(channel_data) == 4:
+                        # 新格式: (channel_name, url, url_info, resolution)
+                        channel_name, url, _, resolution = channel_data
+                    else:
+                        continue
+                    
                     # 写入频道信息，将频道名称转换为简体中文
                     simplified_channel_name = cc.convert(channel_name)
+                    # 如果有分辨率信息，添加到频道名称中
+                    if resolution:
+                        p_format = resolution_to_p_format(resolution)
+                        if p_format:
+                            simplified_channel_name += f" [{p_format}]"
+                    
                     f.write(f"#EXTINF:-1 tvg-name=\"{simplified_channel_name}\" group-title=\"{category}\",{simplified_channel_name}\n")
                     f.write(f"{url}\n")
                     written_count += 1
         
         # 最后写入其他频道
         if "其他频道" in channels:
-            for channel_name, url in channels["其他频道"]:
+            for channel_data in channels["其他频道"]:
+                # 处理不同的数据格式
+                if len(channel_data) == 2:
+                    # 旧格式: (channel_name, url)
+                    channel_name, url = channel_data
+                    resolution = None
+                elif len(channel_data) == 4:
+                    # 新格式: (channel_name, url, url_info, resolution)
+                    channel_name, url, _, resolution = channel_data
+                else:
+                    continue
+                    
                 # 写入频道信息，将频道名称转换为简体中文
                 simplified_channel_name = cc.convert(channel_name)
+                # 如果有分辨率信息，添加到频道名称中
+                if resolution:
+                    simplified_channel_name += f" [{resolution[0]}x{resolution[1]}]"
+                    
                 f.write(f"#EXTINF:-1 tvg-name=\"{simplified_channel_name}\" group-title=\"其他频道\",{simplified_channel_name}\n")
                 f.write(f"{url}\n")
                 written_count += 1
     
-    print(f"📝 完成写入文件: {output_path} 时间: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))}")
+    print(f"📝 完成写入文件: {output_path} 时间: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))} ")
     print(f"📊 写入后文件大小: {os.path.getsize(output_path)} 字节")
-    print(f"📊 写入后文件修改时间: {datetime.datetime.fromtimestamp(os.path.getmtime(output_path))}")
+    print(f"📊 写入后文件修改时间: {datetime.datetime.fromtimestamp(os.path.getmtime(output_path))} ")
     print(f"📊 实际写入频道数: {written_count}")
     return True
 
@@ -526,8 +762,24 @@ def generate_txt_file(channels, output_path):
                 f.write(f"#{category}#,genre#\n")
                 
                 # 写入该分组下的所有频道，将频道名称转换为简体中文
-                for channel_name, url in channels[category]:
+                for channel_data in channels[category]:
+                    # 处理不同的数据格式
+                    if len(channel_data) == 2:
+                        # 旧格式: (channel_name, url)
+                        channel_name, url = channel_data
+                        resolution = None
+                    elif len(channel_data) == 4:
+                        # 新格式: (channel_name, url, url_info, resolution)
+                        channel_name, url, _, resolution = channel_data
+                    else:
+                        continue
+                    
                     simplified_channel_name = cc.convert(channel_name)
+                    # 如果有分辨率信息，添加到频道名称中
+                if resolution:
+                    p_format = resolution_to_p_format(resolution)
+                    if p_format:
+                        simplified_channel_name += f" [{p_format}]"
                     f.write(f"{simplified_channel_name},{url}\n")
                 
                 # 分组之间添加空行
@@ -539,8 +791,22 @@ def generate_txt_file(channels, output_path):
             f.write("#其他频道#,#genre#\n")
             
             # 写入该分组下的所有频道，将频道名称转换为简体中文
-            for channel_name, url in channels["其他频道"]:
+            for channel_data in channels["其他频道"]:
+                # 处理不同的数据格式
+                if len(channel_data) == 2:
+                    # 旧格式: (channel_name, url)
+                    channel_name, url = channel_data
+                    resolution = None
+                elif len(channel_data) == 4:
+                    # 新格式: (channel_name, url, url_info, resolution)
+                    channel_name, url, _, resolution = channel_data
+                else:
+                    continue
+                
                 simplified_channel_name = cc.convert(channel_name)
+                # 如果有分辨率信息，添加到频道名称中
+                if resolution:
+                    simplified_channel_name += f" [{resolution[0]}x{resolution[1]}]"
                 f.write(f"{simplified_channel_name},{url}\n")
             
             # 分组之间添加空行
@@ -620,7 +886,8 @@ def extract_channels_from_txt(file_path):
 # 动态计算最优并发数
 def get_optimal_workers():
     """动态计算最优并发数"""
-    return min(32, multiprocessing.cpu_count() * 4)
+    # 增加最大并发数，考虑到网络请求的高延迟特性
+    return min(64, multiprocessing.cpu_count() * 8)
 
 # 处理单个远程直播源
 def process_single_source(source_url):
@@ -641,6 +908,85 @@ def process_single_source(source_url):
             finally:
                 os.unlink(temp_file_path)
     return None
+
+# 批量测试URL有效性
+def batch_test_urls(channels, max_workers=None):
+    """批量测试所有频道URL的有效性和分辨率"""
+    if max_workers is None:
+        max_workers = get_optimal_workers()
+    
+    print(f"🔍 开始批量测试URL有效性: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))} ")
+    
+    # 准备所有要测试的频道
+    all_tasks = []
+    for category, channel_list in channels.items():
+        for channel_name, url in channel_list:
+            all_tasks.append((category, channel_name, url))
+    
+    print(f"📋 待测试频道数量: {len(all_tasks)}")
+    
+    # 用于存储测试结果
+    valid_channels = defaultdict(list)
+    invalid_count = 0
+    valid_count = 0
+    resolution_count = 0
+    filtered_by_resolution_count = 0
+    
+    # 定义测试单个频道的函数
+    def test_single_channel(task):
+        category, channel_name, url = task
+        url_info = check_url(url)
+        resolution = None
+        
+        # 如果URL有效，尝试获取分辨率（支持多种格式）
+        if url_info['is_valid']:
+            resolution = get_resolution_from_url(url)
+        
+        return category, channel_name, url, url_info, resolution
+    
+    # 开始并发测试
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_task = {executor.submit(test_single_channel, task): task for task in all_tasks}
+        
+        for i, future in enumerate(as_completed(future_to_task), 1):
+            category, channel_name, url, url_info, resolution = future.result()
+            
+            if url_info['is_valid']:
+                valid_count += 1
+                if resolution:
+                    resolution_count += 1
+                
+                # 检查是否需要根据分辨率过滤
+                need_filter = False
+                if open_filter_resolution and resolution:
+                    if resolution[0] < min_resolution[0] or resolution[1] < min_resolution[1]:
+                        need_filter = True
+                        filtered_by_resolution_count += 1
+                
+                # 如果不需要过滤，将频道信息和测试结果一起保存
+                if not need_filter:
+                    valid_channels[category].append((channel_name, url, url_info, resolution))
+                    
+                    # 打印测试结果
+                    status = "✅"
+                    res_info = f" 分辨率: {resolution[0]}x{resolution[1]}" if resolution else ""
+                    print(f"{i}/{len(all_tasks)} {status} {category} - {channel_name} {res_info}")
+                else:
+                    # 打印被过滤的结果
+                    status = "⚠️"
+                    res_info = f" 分辨率: {resolution[0]}x{resolution[1]} (低于要求)"
+                    print(f"{i}/{len(all_tasks)} {status} {category} - {channel_name} {res_info}")
+            else:
+                invalid_count += 1
+                status = "❌"
+                error_info = f" 错误: {url_info['error']}" if url_info['error'] else f" 状态码: {url_info['status_code']}"
+                print(f"{i}/{len(all_tasks)} {status} {category} - {channel_name}{error_info}")
+    
+    print(f"📊 测试完成: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))} ")
+    print(f"📊 测试结果: 有效: {valid_count}, 无效: {invalid_count}, 已获取分辨率: {resolution_count}, 分辨率过滤: {filtered_by_resolution_count}")
+    print(f"📊 最终保留频道数: {sum(len(clist) for clist in valid_channels.values())}")
+    
+    return valid_channels
 
 # 合并直播源
 def merge_sources(sources, local_files):
@@ -723,6 +1069,10 @@ def update_iptv_sources():
     
     start_time = time.time()
     all_channels = merge_sources(all_sources, default_local_sources)
+    
+    # 批量测试URL有效性和分辨率
+    if all_channels:
+        all_channels = batch_test_urls(all_channels)
     
     # 添加调试日志
     logger.info(f"🔍 合并后获取到的频道组数量: {len(all_channels)}")
