@@ -1,7 +1,14 @@
 # 临时文件
 *.log
-*.m3u
-*.txt
+
+# 虚拟环境
+venv/
+env/
+.env/
+
+# 输出文件（保留）
+# jieguo.m3u 和 jieguo.txt 是项目的主要输出文件，需要提交
+# 其他临时生成的.txt文件可以单独添加到忽略列表
 
 # IDE文件
 .vscode/

@@ -139,7 +139,7 @@ CHANNEL_MAPPING = {
     "世界地理": ["CCTV-世界地理", "CCTV世界地理"],
     "央视台球": ["CCTV-央视台球", "CCTV央视台球"],
     "高尔夫网球": ["CCTV-高尔夫网球", "CCTV央视高网", "CCTV高尔夫网球", "央视高网"],
-    "央视文化精品": ["CCTV-央视文化精品", "CCTV央视文化精品", "CCTV文化精品"],
+    "央视文化精品": ["CCTV-央视文化精品", "CCTV央视文化精品", "CCTV文化精品", "央视文化精品"],
     "卫生健康": ["CCTV-卫生健康", "CCTV卫生健康"],
     "电视指南": ["CCTV-电视指南", "CCTV电视指南"],
     
@@ -199,7 +199,7 @@ CHANNEL_MAPPING = {
     "北京淘娱乐": ["BTV淘娱乐"],
     "北京淘BABY": ["BTV淘BABY"],
     "北京萌宠TV": ["BTV萌宠TV"],
-    "北京卡酷少儿": ["卡酷少儿"],
+    "北京卡酷少儿": ["卡酷少儿", "卡酷"],
 
     # 山东专属频道映射
     "山东齐鲁": ["齐鲁频道"],
@@ -222,11 +222,11 @@ CHANNEL_MAPPING = {
     "CHC动作电影": ["动作电影"],
     "CHC家庭影院": ["家庭影院"],
     "CHC影迷电影": ["影迷电影"],
-    "淘电影": [],
+    "淘电影": ["电影"],
     "淘精彩": ["精彩"],
     "淘剧场": ["剧场"],
     "星空卫视": ["星空"],
-    "黑莓电影": [],
+    "黑莓电影": ["电影"],
     "东北热剧": ["热剧"],
     "中国功夫": ["功夫"],
     "动作电影": ["电影动作"],
@@ -262,7 +262,7 @@ CHANNEL_MAPPING = {
     # 综合频道映射
     "重温经典": ["经典"],
     "CHANNEL[V]": ["Channel V"],
-    "求索纪录": [],
+    "求索纪录": ["纪录"],
     "求索科学": ["科学"],
     "求索生活": ["生活"],
     "求索动物": ["动物"],
@@ -308,7 +308,7 @@ CHANNEL_MAPPING = {
     "炫舞未来": ["炫舞"],
     "精品体育": ["精品"],
     "精品大剧": ["大剧"],
-    "精品纪录": [],
+    "精品纪录": ["纪录"],
     "精品萌宠": ["萌宠"],
     "怡伴健康": ["健康"]
  }
@@ -527,10 +527,9 @@ def extract_channels_from_m3u(content):
         if normalized_name:
             # 获取频道分类
             category = get_channel_category(normalized_name)
-            channels[category].append((normalized_name, url))
-        else:
-            # 未规范化的频道放在其他频道
-            channels["其他频道"].append((channel_name, url))
+            # 只添加CHANNEL_CATEGORIES中定义的频道
+            if category != "其他频道":
+                channels[category].append((normalized_name, url))
     
     return channels
 
@@ -627,17 +626,6 @@ def generate_txt_file(channels, output_path):
     print(f"正在生成 {output_path}...")
     
     with open(output_path, 'w', encoding='utf-8') as f:
-        # 写入文件头注释
-        f.write(f"# IPTV直播源列表\n")
-        f.write(f"# 生成时间: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')}\n")
-        f.write("# 格式: 频道名称,播放URL\n")
-        f.write("# 按分组排列\n")
-        f.write("\n")
-        
-        # 写入频道分类说明
-        f.write("# 频道分类: 4K频道,央视频道,卫视频道,北京专属频道,山东专属频道,港澳频道,电影频道,儿童频道,iHOT频道,综合频道,体育频道,剧场频道,其他频道\n")
-        f.write("\n")
-        
         # 按CHANNEL_CATEGORIES中定义的顺序写入分类
         for category in CHANNEL_CATEGORIES:
             if category in channels and channels[category]:
@@ -652,6 +640,19 @@ def generate_txt_file(channels, output_path):
                 f.write("\n")
         
         # 不写入其他频道，只包含CHANNEL_CATEGORIES中定义的频道
+        
+        # 在文件末尾添加说明行
+        f.write("\n说明,#genre#\n")
+        
+        # 写入文件头注释到文件末尾
+        f.write(f"# IPTV直播源列表\n")
+        f.write(f"# 生成时间: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write("# 格式: 频道名称,播放URL\n")
+        f.write("# 按分组排列\n")
+        f.write("\n")
+        
+        # 写入频道分类说明
+        f.write("# 频道分类: 4K频道,央视频道,卫视频道,北京专属频道,山东专属频道,港澳频道,电影频道,儿童频道,iHOT频道,综合频道,体育频道,剧场频道,其他频道\n")
     
     print(f"✅ 成功生成 {output_path}")
     return True
@@ -701,10 +702,9 @@ def extract_channels_from_txt(file_path):
                     if normalized_name:
                         # 获取频道分类
                         category = get_channel_category(normalized_name)
-                        channels[category].append((normalized_name, url))
-                    else:
-                        # 未规范化的频道放在其他频道
-                        channels["其他频道"].append((channel_name, url))
+                        # 只添加CHANNEL_CATEGORIES中定义的频道
+                        if category != "其他频道":
+                            channels[category].append((normalized_name, url))
     except Exception as e:
         print(f"解析本地文件 {file_path} 时出错: {e}")
     
