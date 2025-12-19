@@ -330,10 +330,11 @@ user_sources = []
 # 分辨率过滤配置
 open_filter_resolution = True  # 开启分辨率过滤
 min_resolution = (1920, 1080)  # 最低分辨率要求
+filter_4k = False  # 是否只获取4K频道
 
 # URL测试配置
 enable_url_testing = True  # 启用URL有效性测试
-test_timeout = 1  # URL测试超时时间（秒）
+test_timeout = 2  # URL测试超时时间（秒） - 普通高清频道超时2秒
 test_retries = 0  # URL测试重试次数
 test_workers = 128  # URL测试并发数 (宽, 高)
 
@@ -384,6 +385,33 @@ HD_PATTERNS = [
 
 HD_REGEX = re.compile('|'.join(HD_PATTERNS), re.IGNORECASE)
 
+# 预编译常用正则表达式
+URL_REGEX = re.compile(r'https?://', re.IGNORECASE)
+
+# 预编译分辨率和质量相关的正则表达式
+HIGH_DEF_PATTERNS = re.compile(r'(1080[pdi]|1440[pdi]|2160[pdi]|fhd|uhd|超高清)', re.IGNORECASE)
+RES_PATTERNS = [
+    re.compile(r'(\d{3,4})[pdi]'),  # 如1080p, 2160i
+    re.compile(r'(\d+)x(\d+)'),     # 如1920x1080, 3840x2160
+    re.compile(r'(\d+)_(\d+)'),     # 如1920_1080
+    re.compile(r'res=([1-9]\d+)'),       # 如res=1080
+    re.compile(r'resolution=([1-9]\d+)x?([1-9]\d+)'),  # 如resolution=1920x1080
+    re.compile(r'width=([1-9]\d+).*?height=([1-9]\d+)'),  # 如width=1920 height=1080
+]
+
+# 预编译4K相关的正则表达式
+K4_PATTERNS = re.compile(r'(2160[pdi]|4k|8k|uhd|3840x2160|7680x4320|超高清)', re.IGNORECASE)
+K4_RES_PATTERNS = [
+    re.compile(r'(\d{3,4})[pdi]'),  # 如2160p
+    re.compile(r'(\d+)x(\d+)'),     # 如3840x2160
+]
+
+# 预编译M3U频道提取正则表达式
+M3U_CHANNEL_PATTERN = re.compile(r'#EXTINF:.*?tvg-name="([^"]*)".*?(?:group-title="([^"]*)")?,([^\n]+)\n(http[^\n]+)', re.DOTALL)
+
+# 预编译内容清理正则表达式
+CLEAN_CONTENT_PATTERN = re.compile(r'[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f-\x9f\u20ac\ue000-\uf8ff]')
+
 # 获取URL列表
 def get_urls_from_file(file_path):
     """从文件中读取URL列表"""
@@ -416,6 +444,7 @@ def should_exclude_url(url):
     return False
 
 # 分辨率过滤
+
 def is_high_quality(line):
     """判断线路是否为高清线路（1080P以上）"""
     # 从line中提取频道名称和URL
@@ -429,8 +458,7 @@ def is_high_quality(line):
         url_part = ''
     
     # 检查频道名称中的高清标识
-    high_def_patterns = re.compile(r'(1080[pdi]|1440[pdi]|2160[pdi]|fhd|uhd|超高清)', re.IGNORECASE)
-    if high_def_patterns.search(channel_name):
+    if HIGH_DEF_PATTERNS.search(channel_name):
         return True
     
     # 检查其他高清标识
@@ -447,20 +475,10 @@ def is_high_quality(line):
     # 分辨率过滤：如果开启了分辨率过滤，检查是否满足最小分辨率要求
     if open_filter_resolution:
         # 增强的分辨率检测
-        # 1. 增加更多分辨率标识的支持
-        res_patterns = [
-            r'(\d{3,4})[pdi]',  # 如1080p, 2160i
-            r'(\d+)x(\d+)',     # 如1920x1080, 3840x2160
-            r'(\d+)_(\d+)',     # 如1920_1080
-            r'res=([1-9]\d+)',       # 如res=1080
-            r'resolution=([1-9]\d+)x?([1-9]\d+)',  # 如resolution=1920x1080
-            r'width=([1-9]\d+).*?height=([1-9]\d+)',  # 如width=1920 height=1080
-        ]
-        
         combined_text = channel_name + ' ' + url_part
         
-        for pattern in res_patterns:
-            res_match = re.search(pattern, combined_text, re.IGNORECASE)
+        for pattern in RES_PATTERNS:
+            res_match = pattern.search(combined_text)
             if res_match:
                 try:
                     if len(res_match.groups()) == 1:
@@ -479,9 +497,48 @@ def is_high_quality(line):
     
     return False
 
+def is_4k(channel_name, url):
+    """判断频道是否为4K频道"""
+    
+    # 检查频道名称和URL中的4K标识
+    combined_text = channel_name + ' ' + url
+    
+    # 检查是否包含4K标识
+    if K4_PATTERNS.search(combined_text):
+        return True
+    
+    # 检查频道分类
+    if get_channel_category(channel_name) == "4K频道":
+        return True
+    
+    # 检查分辨率
+    for pattern in K4_RES_PATTERNS:
+        res_match = pattern.search(combined_text)
+        if res_match:
+            try:
+                if len(res_match.groups()) == 1:
+                    # 垂直分辨率（如2160p）
+                    res_value = int(res_match.group(1))
+                    if res_value >= 2160:
+                        return True
+                elif len(res_match.groups()) == 2:
+                    # 完整分辨率（如3840x2160）
+                    width = int(res_match.group(1))
+                    height = int(res_match.group(2))
+                    if width >= 3840 and height >= 2160:
+                        return True
+            except ValueError:
+                pass
+    
+    return False
+
 # 检查URL是否有效
-def check_url(url, timeout=5, retries=1):
+def check_url(url, timeout=1, retries=0):
     """检查URL是否可访问，支持重试机制"""
+    # 先检查URL格式是否正确
+    if not URL_REGEX.match(url):
+        return False
+    
     for attempt in range(retries + 1):
         try:
             # 使用HEAD请求以避免下载整个文件
@@ -535,8 +592,7 @@ def check_ipv6_support():
 def extract_channels_from_m3u(content):
     """从M3U内容中提取频道信息"""
     channels = defaultdict(list)
-    pattern = r'#EXTINF:.*?tvg-name="([^"]*)".*?(?:group-title="([^"]*)")?,([^\n]+)\n(http[^\n]+)'
-    matches = re.findall(pattern, content, re.DOTALL)
+    matches = re.findall(M3U_CHANNEL_PATTERN, content)
     
     for match in matches:
         tvg_name = match[0].strip() if match[0] else match[2].strip()
@@ -618,7 +674,7 @@ def fetch_m3u_content(url, max_retries=3, timeout=120):
     for attempt in range(max_retries):
         try:
             # 添加verify=False参数来跳过SSL证书验证，并使用自定义headers
-            response = requests.get(url, timeout=timeout, headers=HEADERS, verify=False)
+            response = session.get(url, timeout=timeout, verify=False)
             response.raise_for_status()
             content = response.text
             
@@ -778,10 +834,11 @@ def get_optimal_workers():
     # 根据任务类型动态调整并发数
     if enable_url_testing:
         # URL测试是I/O密集型任务，可使用更高的并发数
-        return min(128, cpu_count * 8)
+        # 对于普通系统，CPU核心数 * 2 到 * 4 是比较合理的范围
+        return min(64, cpu_count * 4)
     else:
         # 直播源获取是混合任务，使用适中的并发数
-        return min(32, cpu_count * 4)
+        return min(32, cpu_count * 2)
 
 # 测试频道URL有效性
 def test_channels(channels):
@@ -817,7 +874,9 @@ def test_channels(channels):
     # 测试单个频道URL
     def test_single_channel(channel_item):
         category, channel_name, url = channel_item
-        is_valid = check_url(url, timeout=test_timeout, retries=test_retries)
+        # 对于4K频道使用更长的超时时间
+        timeout = 5 if is_4k(channel_name, url) else test_timeout
+        is_valid = check_url(url, timeout=timeout, retries=test_retries)
         return (category, channel_name, url, is_valid)
     
     # 并发测试所有频道
@@ -912,6 +971,9 @@ def merge_sources(sources, local_files):
                 
                 for group_title, channel_list in result.items():
                     for channel_name, url in channel_list:
+                        # 4K过滤
+                        if filter_4k and not is_4k(channel_name, url):
+                            continue
                         # 去重
                         if (channel_name, url) not in seen:
                             all_channels[group_title].append((channel_name, url))
@@ -1070,7 +1132,7 @@ def fix_ip_tv_chars():
         
         # 移除所有不可打印字符，包括欧元符号和其他特殊字符
         # 保留ASCII可打印字符和常见的中文、日文、韩文等Unicode字符
-        cleaned_content = re.sub(r'[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f-\x9f\u20ac\ue000-\uf8ff]', '', content)
+        cleaned_content = CLEAN_CONTENT_PATTERN.sub('', content)
         
         # 将清理后的内容写回文件
         with open(__file__, 'w', encoding='utf-8') as f:
@@ -1099,12 +1161,18 @@ def main():
         elif sys.argv[1] == "--fix-chars":
             # 修复不可打印字符
             fix_ip_tv_chars()
+        elif sys.argv[1] == "--filter-4k":
+            # 只获取4K频道模式
+            global filter_4k
+            filter_4k = True
+            update_iptv_sources()
         else:
             # 显示帮助信息
             print("未知参数，请使用以下参数：")
             print("  --update       # 立即手动更新直播源")
             print("  --check-syntax # 检查IPTV.py文件语法错误")
             print("  --fix-chars    # 修复IPTV.py文件中的不可打印字符")
+            print("  --filter-4k    # 只获取4K频道")
     else:
         # 显示帮助信息
         print("=" * 60)
@@ -1116,11 +1184,13 @@ def main():
         print("  3. 支持手动更新和通过GitHub Actions工作流定时更新")
         print("  4. 检查IPTV.py文件语法错误")
         print("  5. 修复IPTV.py文件中的不可打印字符")
+        print("  6. 支持只获取4K频道")
         print("")
         print("使用方法：")
         print("  python IPTV.py --update       # 立即手动更新直播源")
         print("  python IPTV.py --check-syntax # 检查语法错误")
         print("  python IPTV.py --fix-chars    # 修复不可打印字符")
+        print("  python IPTV.py --filter-4k    # 只获取4K频道")
         print("")
         print("输出文件：")
         print("  - jieguo.m3u   # M3U格式的直播源文件")
