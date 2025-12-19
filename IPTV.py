@@ -337,6 +337,10 @@ test_timeout = 1  # URL测试超时时间（秒）
 test_retries = 0  # URL测试重试次数
 test_workers = 128  # URL测试并发数 (宽, 高)
 
+# 直播源内容缓存配置
+source_cache = {}  # 缓存字典，格式：{url: (cached_time, content)}
+cache_expiry_time = 3600  # 缓存有效期（秒）
+
 # 创建全局Session对象以提高请求性能
 session = requests.Session()
 session.headers.update(HEADERS)
@@ -442,28 +446,36 @@ def is_high_quality(line):
     
     # 分辨率过滤：如果开启了分辨率过滤，检查是否满足最小分辨率要求
     if open_filter_resolution:
-        # 尝试从URL中提取分辨率信息
-        resolution_match = re.search(r'resolution=([1-9]\d+)x?([1-9]\d+)', url_part, re.IGNORECASE)
-        if resolution_match:
-            try:
-                width = int(resolution_match.group(1))
-                height = int(resolution_match.group(2))
-                # 检查分辨率是否满足要求
-                if width >= min_resolution[0] and height >= min_resolution[1]:
-                    return True
-            except (ValueError, IndexError):
-                pass
+        # 增强的分辨率检测
+        # 1. 增加更多分辨率标识的支持
+        res_patterns = [
+            r'(\d{3,4})[pdi]',  # 如1080p, 2160i
+            r'(\d+)x(\d+)',     # 如1920x1080, 3840x2160
+            r'(\d+)_(\d+)',     # 如1920_1080
+            r'res=([1-9]\d+)',       # 如res=1080
+            r'resolution=([1-9]\d+)x?([1-9]\d+)',  # 如resolution=1920x1080
+            r'width=([1-9]\d+).*?height=([1-9]\d+)',  # 如width=1920 height=1080
+        ]
         
-        # 尝试从频道名称或URL中提取类似1080p、2160p这样的分辨率标识
-        res_pattern = re.search(r'(\d{3,4})[pdi]', channel_name + ' ' + url_part, re.IGNORECASE)
-        if res_pattern:
-            try:
-                res_value = int(res_pattern.group(1))
-                # 对于垂直分辨率（如1080p），直接比较高度
-                if res_value >= min_resolution[1]:
-                    return True
-            except (ValueError, IndexError):
-                pass
+        combined_text = channel_name + ' ' + url_part
+        
+        for pattern in res_patterns:
+            res_match = re.search(pattern, combined_text, re.IGNORECASE)
+            if res_match:
+                try:
+                    if len(res_match.groups()) == 1:
+                        # 垂直分辨率（如1080p）
+                        res_value = int(res_match.group(1))
+                        if res_value >= min_resolution[1]:
+                            return True
+                    elif len(res_match.groups()) == 2:
+                        # 完整分辨率（如1920x1080）
+                        width = int(res_match.group(1))
+                        height = int(res_match.group(2))
+                        if width >= min_resolution[0] and height >= min_resolution[1]:
+                            return True
+                except ValueError:
+                    pass
     
     return False
 
@@ -592,19 +604,45 @@ def fetch_m3u_content(url, max_retries=3, timeout=120):
             print(f"读取本地文件 {file_path} 时出错: {e}")
             return None
     
+    # 检查缓存
+    if url in source_cache:
+        cached_time, content = source_cache[url]
+        if time.time() - cached_time < cache_expiry_time:
+            print(f"正在从缓存获取: {url}")
+            return content
+    
+    # 缓存不存在或已过期，重新获取
+    print(f"正在获取: {url}")
+    
     # 处理远程URL
     for attempt in range(max_retries):
         try:
-            print(f"正在获取: {url} (尝试 {attempt+1}/{max_retries})")
             # 添加verify=False参数来跳过SSL证书验证，并使用自定义headers
             response = requests.get(url, timeout=timeout, headers=HEADERS, verify=False)
             response.raise_for_status()
-            return response.text
+            content = response.text
+            
+            # 更新缓存
+            source_cache[url] = (time.time(), content)
+            return content
+        except requests.exceptions.ConnectionError:
+            # 连接错误，重试间隔增加
+            wait_time = 2 ** attempt  # 指数退避
+            print(f"连接错误，{wait_time}秒后重试...")
+            time.sleep(wait_time)
+        except requests.exceptions.Timeout:
+            # 超时错误，增加超时时间后重试
+            timeout = min(timeout * 1.5, 300)  # 最大超时5分钟
+            wait_time = 2 ** attempt
+            print(f"请求超时，{wait_time}秒后重试（新超时时间：{timeout}秒）...")
+            time.sleep(wait_time)
         except Exception as e:
+            # 其他错误
             print(f"获取 {url} 时出错: {e}")
-            if attempt < max_retries - 1:
-                print(f"3秒后重试...")
-                time.sleep(3)
+            wait_time = 2 ** attempt if attempt < max_retries - 1 else 0
+            if wait_time > 0:
+                print(f"{wait_time}秒后重试...")
+                time.sleep(wait_time)
     return None
 
 
@@ -735,8 +773,15 @@ def extract_channels_from_txt(file_path):
 
 # 动态计算最优并发数
 def get_optimal_workers():
-    """动态计算最优并发数"""
-    return min(32, multiprocessing.cpu_count() * 4)
+    """动态计算最优并发数，考虑系统资源和任务特性"""
+    cpu_count = multiprocessing.cpu_count()
+    # 根据任务类型动态调整并发数
+    if enable_url_testing:
+        # URL测试是I/O密集型任务，可使用更高的并发数
+        return min(128, cpu_count * 8)
+    else:
+        # 直播源获取是混合任务，使用适中的并发数
+        return min(32, cpu_count * 4)
 
 # 测试频道URL有效性
 def test_channels(channels):
