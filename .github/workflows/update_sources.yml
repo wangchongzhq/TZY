@@ -85,7 +85,7 @@ jobs:
           echo "添加更改的文件..."
           git add ./unified_sources.py
           git add ./*.py  # 添加所有Python脚本文件
-          git add ./*.txt || true  # 添加输出文件（如果有）
+          git add jieguo.txt || true  # 只添加实际生成的TXT文件
           
           # 检查是否有更改
           if git diff --staged --quiet; then
