@@ -36,6 +36,8 @@ HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 }
 
+
+
 # 频道分类
 CHANNEL_CATEGORIES = {
     "4K频道": ['CCTV4K', 'CCTV8K', 'CCTV16 4K', '北京卫视4K', '北京IPTV4K', '湖南卫视4K', '山东卫视4K','广东卫视4K', '四川卫视4K', '浙江卫视4K', '江苏卫视4K', '东方卫视4K', '深圳卫视4K', '河北卫视4K', '峨眉电影4K', '求索4K', '咪视界4K', '欢笑剧场4K', '苏州4K', '至臻视界4K', '南国都市4K', '翡翠台4K', '百事通电影4K', '百事通少儿4K', '百事通纪实4K', '华数爱上4K'],
@@ -331,9 +333,15 @@ min_resolution = (1920, 1080)  # 最低分辨率要求
 
 # URL测试配置
 enable_url_testing = True  # 启用URL有效性测试
-test_timeout = 2  # URL测试超时时间（秒）
+test_timeout = 1  # URL测试超时时间（秒）
 test_retries = 0  # URL测试重试次数
-test_workers = 64  # URL测试并发数 (宽, 高)
+test_workers = 128  # URL测试并发数 (宽, 高)
+
+# 创建全局Session对象以提高请求性能
+session = requests.Session()
+session.headers.update(HEADERS)
+session.mount('http://', requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=test_workers, max_retries=0))
+session.mount('https://', requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=test_workers, max_retries=0))
 
 # 清晰度正则表达式 - 用于识别高清线路
 HD_PATTERNS = [
@@ -465,20 +473,17 @@ def check_url(url, timeout=5, retries=1):
     for attempt in range(retries + 1):
         try:
             # 使用HEAD请求以避免下载整个文件
-            response = requests.head(
+            response = session.head(
                 url, 
                 timeout=timeout, 
-                allow_redirects=True, 
-                stream=True,  # 启用流式请求
-                headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+                allow_redirects=False,  # 禁用重定向以提高速度
             )
-            # 检查状态码，2xx表示成功
+            # 检查状态码，2xx或3xx表示成功（即使禁用了重定向，3xx也可能是有效的）
             return response.status_code < 400
         except requests.exceptions.RequestException as e:
             # 如果是最后一次尝试或者是特定错误，返回False
             if attempt == retries:
                 return False
-            # 移除重试延迟以提高测试速度
 
 # 格式化时间间隔
 def format_interval(seconds):
