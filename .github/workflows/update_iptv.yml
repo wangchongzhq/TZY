@@ -47,7 +47,8 @@ jobs:
     - name: 检查文件变更
       id: check_changes
       run: |
-        git add jieguo.m3u jieguo.txt
+        # 检查所有可能的输出文件名
+        git add jieguo.m3u jieguo.txt iptv_channels.m3u iptv_channels.txt
         git diff --staged --quiet || echo "changes=true" >> $GITHUB_OUTPUT
 
     - name: 提交更新
@@ -75,15 +76,15 @@ jobs:
         echo "重新执行脚本生成最新文件..."
         python IPTV.py --update
         
-        # 检查文件是否存在
-        if [ ! -f "jieguo.m3u" ] || [ ! -f "jieguo.txt" ]; then
-          echo "::error::错误：生成的文件未找到"
+        # 检查文件是否存在（检查所有可能的输出文件名）
+        if [ ! -f "jieguo.m3u" ] && [ ! -f "iptv_channels.m3u" ] && [ ! -f "jieguo.txt" ] && [ ! -f "iptv_channels.txt" ]; then
+          echo "::error::错误：未找到任何生成的文件"
           exit 1
         fi
         
         # 添加文件
         echo "添加更改的文件..."
-        git add jieguo.m3u jieguo.txt
+        git add jieguo.m3u jieguo.txt iptv_channels.m3u iptv_channels.txt
         
         # 检查是否有更改
         if git diff --staged --quiet; then
