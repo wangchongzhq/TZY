@@ -332,7 +332,7 @@ DEFAULT_CONFIG = {
         "enable": True,    # 启用URL有效性测试
         "timeout": 2,      # URL测试超时时间（秒）
         "retries": 0,      # URL测试重试次数
-        "workers": 128     # URL测试并发数
+        "workers": 32     # URL测试并发数（降低并发数避免资源耗尽）
     },
     "cache": {
         "expiry_time": 3600,  # 缓存有效期（秒）
@@ -678,12 +678,14 @@ def check_url(url, timeout=2, retries=0):
     for attempt in range(retries + 1):
         try:
             # 使用HEAD请求以避免下载整个文件（仅适用于HTTP/HTTPS）
+            # 添加Range头减少流量，只请求文件的第一个字节
             response = session.head(
                 url, 
                 timeout=timeout, 
-                allow_redirects=False,  # 禁用重定向以提高速度
+                allow_redirects=True,  # 允许重定向以提高测试准确性
+                headers={'Range': 'bytes=0-0'}  # 请求部分内容减少流量
             )
-            # 检查状态码，2xx或3xx表示成功（即使禁用了重定向，3xx也可能是有效的）
+            # 检查状态码，2xx表示成功
             return response.status_code < 400
         except requests.exceptions.RequestException as e:
             # 如果是最后一次尝试或者是特定错误，返回False
@@ -1038,9 +1040,10 @@ def test_channels(channels):
     if total_channels == 0:
         return channels
     
-    # 动态计算最优并发数
+    # 计算测试所需的参数
     test_workers = config["url_testing"]["workers"]
-    max_workers = test_workers if test_workers > 0 else get_optimal_workers()
+    # 限制最大线程数为16，与IPTVTXT.py保持一致
+    max_workers = min(16, test_workers if test_workers > 0 else get_optimal_workers(), len(all_channel_items))
     print(f"⚡ 使用 {max_workers} 个并发线程测试URL...")
     
     # 测试结果
@@ -1057,23 +1060,44 @@ def test_channels(channels):
         is_valid = check_url(url, timeout=timeout, retries=config["url_testing"]["retries"])
         return (category, channel_name, url, is_valid)
     
+    # 计算总超时时间（基于每个任务的超时时间和任务数量）
+    total_tested = len(all_channel_items)
+    base_timeout = config["url_testing"]["timeout"]
+    total_timeout = total_tested * 2  # 每个任务平均2秒的超时时间
+    
     # 并发测试所有频道
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_channel = {executor.submit(test_single_channel, item): item for item in all_channel_items}
         
-        for future in as_completed(future_to_channel):
-            category, channel_name, url, is_valid = future.result()
-            tested_count += 1
-            
-            if is_valid:
-                valid_channels[category].append((channel_name, url))
-                valid_count += 1
-            else:
-                invalid_count += 1
-            
-            # 每测试100个频道打印一次进度
-            if tested_count % 100 == 0 or tested_count == total_channels:
-                print(f"📊 测试进度: {tested_count}/{total_channels} ({valid_count}有效, {invalid_count}无效) - {tested_count/total_channels*100:.1f}%")
+        try:
+            for future in as_completed(future_to_channel, timeout=total_timeout):
+                category, channel_name, url = future_to_channel[future]
+                try:
+                    # 为单个future.result()添加超时时间
+                    result = future.result(timeout=base_timeout + 1)
+                    category, channel_name, url, is_valid = result
+                except concurrent.futures.TimeoutError:
+                    print(f"⚠️  频道 {channel_name} 测试超时")
+                    is_valid = False
+                except Exception as e:
+                    print(f"⚠️  测试频道 {channel_name} 时出错: {e}")
+                    is_valid = False
+                
+                tested_count += 1
+                
+                if is_valid:
+                    valid_channels[category].append((channel_name, url))
+                    valid_count += 1
+                else:
+                    invalid_count += 1
+                
+                # 每测试100个频道打印一次进度
+                if tested_count % 100 == 0 or tested_count == total_channels:
+                    print(f"📊 测试进度: {tested_count}/{total_channels} ({valid_count}有效, {invalid_count}无效) - {tested_count/total_channels*100:.1f}%")
+        except concurrent.futures.TimeoutError:
+            print(f"⚠️  URL测试总超时，还有 {len(future_to_channel) - tested_count} 个频道未测试完成")
+        except Exception as e:
+            print(f"⚠️  URL测试过程中发生错误: {e}")
     
     print(f"✅ URL测试完成: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))}")
     print(f"📊 测试结果: 共测试 {total_channels} 个频道")

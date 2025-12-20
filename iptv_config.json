@@ -5,10 +5,10 @@
     "only_4k": false
   },
   "url_testing": {
-    "enable": true,
-    "timeout": 2,
+    "enable": false,
+    "timeout": 1,
     "retries": 0,
-    "workers": 64
+    "workers": 128
   },
   "cache": {
     "expiry_time": 7200,
