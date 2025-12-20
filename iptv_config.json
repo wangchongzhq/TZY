@@ -1,0 +1,21 @@
+{
+  "filter": {
+    "resolution": true,
+    "min_resolution": [1920, 1080],
+    "only_4k": false
+  },
+  "url_testing": {
+    "enable": true,
+    "timeout": 2,
+    "retries": 0,
+    "workers": 64
+  },
+  "cache": {
+    "expiry_time": 7200,
+    "file": "source_cache.json"
+  },
+  "output": {
+    "m3u_file": "iptv_channels.m3u",
+    "txt_file": "iptv_channels.txt"
+  }
+}
