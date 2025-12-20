@@ -15,7 +15,7 @@
     "file": "source_cache.json"
   },
   "output": {
-    "m3u_file": "iptv_channels.m3u",
-    "txt_file": "iptv_channels.txt"
+    "m3u_file": "jieguo_txt.m3u",
+    "txt_file": "jieguo_txt.txt"
   }
 }
