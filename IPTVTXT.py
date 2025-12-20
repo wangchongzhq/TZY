@@ -29,8 +29,47 @@ HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 }
 
+# 默认配置
+DEFAULT_CONFIG = {
+    "sources": {
+        "default": [],  # 从unified_sources导入，可在配置文件中覆盖
+        "local": [],    # 本地直播源文件列表
+        "custom": []    # 用户自定义直播源URL列表
+    },
+    "filter": {
+        "resolution": True,    # 开启分辨率过滤
+        "min_resolution": [1920, 1080],  # 最低分辨率要求
+        "only_4k": False       # 是否只获取4K频道
+    },
+    "url_testing": {
+        "enable": True,    # 启用URL有效性测试
+        "timeout": 2,      # URL测试超时时间（秒）
+        "retries": 0,      # URL测试重试次数
+        "workers": 128     # URL测试并发数
+    },
+    "cache": {
+        "expiry_time": 3600,  # 缓存有效期（秒）
+        "file": "source_cache.json"  # 缓存文件路径
+    },
+    "output": {
+        "m3u_file": "jieguo_txt.m3u",  # M3U输出文件
+        "txt_file": "jieguo_txt.txt"   # TXT输出文件
+    }
+}
+
+# 配置文件路径
+CONFIG_FILE = "iptv_config.json"
+
 # 从统一播放源文件导入
-from unified_sources import UNIFIED_SOURCES
+try:
+    from unified_sources import UNIFIED_SOURCES
+    # 将UNIFIED_SOURCES设置为默认直播源
+    DEFAULT_CONFIG["sources"]["default"] = UNIFIED_SOURCES
+except ImportError:
+    print("警告: 无法导入unified_sources模块，默认直播源为空")
+
+# 全局配置变量
+config = DEFAULT_CONFIG.copy()
 
 # 创建全局Session对象以提高请求性能
 session = requests.Session()
@@ -301,9 +340,127 @@ CHANNEL_MAPPING = {
     "怡伴健康": ["健康"]
 }
 
-# 分辨率过滤配置
-open_filter_resolution = True  # 开启分辨率过滤
-min_resolution = (1920, 1080)  # 最低分辨率要求
+# 配置文件相关函数
+import json
+
+# 加载配置文件
+def load_config():
+    """加载配置文件"""
+    global config
+    try:
+        if os.path.exists(CONFIG_FILE):
+            with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+                user_config = json.load(f)
+                
+                # 合并配置（用户配置覆盖默认配置）
+                def merge_dicts(default, user):
+                    for key, value in user.items():
+                        if key in default and isinstance(default[key], dict) and isinstance(value, dict):
+                            merge_dicts(default[key], value)
+                        else:
+                            default[key] = value
+                    return default
+                
+                config = merge_dicts(config, user_config)
+                logger.info(f"✅ 从配置文件加载了用户设置")
+                
+                # 更新全局变量
+                update_global_vars_from_config()
+        else:
+            # 创建默认配置文件
+            save_config()
+            logger.info(f"✅ 创建了默认配置文件: {CONFIG_FILE}")
+        return True
+    except Exception as e:
+        logger.error(f"加载配置文件失败: {e}")
+        config = DEFAULT_CONFIG.copy()
+        update_global_vars_from_config()
+        return False
+
+# 保存配置文件
+def save_config():
+    """保存配置文件"""
+    try:
+        with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+            json.dump(config, f, ensure_ascii=False, indent=2)
+        return True
+    except Exception as e:
+        logger.error(f"保存配置文件失败: {e}")
+        return False
+
+# 更新全局变量
+def update_global_vars_from_config():
+    """从配置更新全局变量"""
+    global CACHE_FILE, cache_expiry_time, open_filter_resolution, min_resolution
+    
+    # 更新缓存设置
+    CACHE_FILE = config["cache"]["file"]
+    cache_expiry_time = config["cache"]["expiry_time"]
+    
+    # 更新过滤设置
+    open_filter_resolution = config["filter"]["resolution"]
+    min_resolution = tuple(config["filter"]["min_resolution"])
+
+# 直播源内容缓存配置
+import hashlib
+
+# 缓存字典，格式：{url: (cached_time, content, etag, last_modified)}
+source_cache = {}
+
+# 初始化全局变量
+CACHE_FILE = DEFAULT_CONFIG["cache"]["file"]
+cache_expiry_time = DEFAULT_CONFIG["cache"]["expiry_time"]
+open_filter_resolution = DEFAULT_CONFIG["filter"]["resolution"]
+min_resolution = tuple(DEFAULT_CONFIG["filter"]["min_resolution"])
+
+# 保存缓存到文件
+def save_cache():
+    """将缓存保存到文件"""
+    try:
+        with open(CACHE_FILE, 'w', encoding='utf-8') as f:
+            # 转换为可序列化的格式
+            serializable_cache = {}
+            for url, (cached_time, content, etag, last_modified) in source_cache.items():
+                serializable_cache[url] = {
+                    'cached_time': cached_time,
+                    'content': content,
+                    'etag': etag,
+                    'last_modified': last_modified
+                }
+            json.dump(serializable_cache, f, ensure_ascii=False, indent=2)
+        return True
+    except Exception as e:
+        logger.error(f"保存缓存失败: {e}")
+        return False
+
+# 从文件加载缓存
+def load_cache():
+    """从文件加载缓存"""
+    global source_cache
+    try:
+        if os.path.exists(CACHE_FILE):
+            with open(CACHE_FILE, 'r', encoding='utf-8') as f:
+                serializable_cache = json.load(f)
+                # 转换回原始格式
+                source_cache = {}
+                for url, data in serializable_cache.items():
+                    source_cache[url] = (
+                        data['cached_time'],
+                        data['content'],
+                        data.get('etag'),
+                        data.get('last_modified')
+                    )
+            logger.info(f"✅ 从缓存文件加载了 {len(source_cache)} 个缓存条目")
+        return True
+    except Exception as e:
+        logger.error(f"加载缓存失败: {e}")
+        source_cache = {}
+        return False
+
+# 计算内容的MD5哈希值
+def calculate_md5(content):
+    """计算字符串的MD5哈希值"""
+    return hashlib.md5(content.encode('utf-8')).hexdigest()
 
 # 命令行参数处理
 import argparse
@@ -313,8 +470,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description='IPTV高清直播源提取工具（仅使用.txt格式源）')
     
     # 输出文件路径参数
-    parser.add_argument('--m3u-output', default='jieguo_txt.m3u', help='M3U文件输出路径')
-    parser.add_argument('--txt-output', default='jieguo_txt.txt', help='TXT文件输出路径')
+    parser.add_argument('--m3u-output', default=config["output"]["m3u_file"], help='M3U文件输出路径')
+    parser.add_argument('--txt-output', default=config["output"]["txt_file"], help='TXT文件输出路径')
     
     # 日志级别参数
     parser.add_argument('--log-level', default='INFO', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
@@ -322,7 +479,9 @@ def parse_args():
     
     # 分辨率过滤参数
     parser.add_argument('--no-resolution-filter', action='store_true', help='禁用分辨率过滤')
-    parser.add_argument('--min-resolution', default='1920x1080', help='最低分辨率要求（格式：1920x1080）')
+    parser.add_argument('--min-resolution', default=f"{config['filter']['min_resolution'][0]}x{config['filter']['min_resolution'][1]}", 
+                        help='最低分辨率要求（格式：1920x1080）')
+    parser.add_argument('--filter-4k', action='store_true', help='只获取4K频道')
     
     # 其他参数
     parser.add_argument('--timeout', type=int, default=10, help='请求超时时间（秒）')
@@ -334,15 +493,30 @@ URL_REGEX = re.compile(r'(?:https?|udp|rtsp|rtmp|mms|rtp)://', re.IGNORECASE)
 
 # URL规范化函数，用于去重相同来源的不同URL
 def normalize_url(url):
-    """直接返回原始URL，不进行规范化处理
+    """规范化URL，用于去重相同来源的不同URL
     
     参数:
         url: 要处理的URL
     
     返回:
-        str: 原始URL
+        str: 规范化后的URL
     """
-    return url
+    from urllib.parse import urlparse, urlunparse
+    
+    # 解析URL
+    parsed = urlparse(url)
+    
+    # 移除查询参数和片段
+    normalized = urlunparse((
+        parsed.scheme,
+        parsed.netloc.lower(),  # 域名转为小写
+        parsed.path,
+        '',  # params
+        '',  # query
+        ''   # fragment
+    ))
+    
+    return normalized
 
 # 高清检测的正则表达式模式（只针对URL）
 HD_PATTERNS = [
@@ -426,6 +600,9 @@ ULTRA_HD_REGEX = re.compile('|'.join(ULTRA_HD_PATTERNS), re.IGNORECASE)
 # 预编译常用的分辨率检测正则表达式
 VERTICAL_RES_PATTERN = re.compile(r'(\d{3,4})[pdi]', re.IGNORECASE)
 WH_RES_PATTERN = re.compile(r'(\d+)x(\d+)', re.IGNORECASE)
+UNDERSCORE_RES_PATTERN = re.compile(r'(\d+)_(\d+)', re.IGNORECASE)
+RES_PARAM_PATTERN = re.compile(r'res=(\d+)', re.IGNORECASE)
+RESOLUTION_PARAM_PATTERN = re.compile(r'resolution=(\d+)x?(\d*)', re.IGNORECASE)
 
 # 分辨率检测的正则表达式模式（只针对URL）
 RESOLUTION_PATTERNS = [
@@ -451,8 +628,7 @@ def is_high_quality_channel_line(url):
         return True
     
     # 检查垂直分辨率（如1080p, 720i）
-    vertical_res_pattern = re.compile(r'(\d{3,4})[pdi]', re.IGNORECASE)
-    vertical_match = vertical_res_pattern.search(url)
+    vertical_match = VERTICAL_RES_PATTERN.search(url)
     if vertical_match:
         try:
             res_value = int(vertical_match.group(1))
@@ -464,8 +640,7 @@ def is_high_quality_channel_line(url):
             logger.debug("垂直分辨率解析失败")
     
     # 检查宽高分辨率（如1920x1080, 1280x720）
-    wh_res_pattern = re.compile(r'(\d+)x(\d+)', re.IGNORECASE)
-    wh_match = wh_res_pattern.search(url)
+    wh_match = WH_RES_PATTERN.search(url)
     if wh_match:
         try:
             width = int(wh_match.group(1))
@@ -478,8 +653,7 @@ def is_high_quality_channel_line(url):
             logger.debug("宽高分辨率解析失败")
     
     # 检查下划线分隔的分辨率（如1920_1080）
-    underscore_res_pattern = re.compile(r'(\d+)_(\d+)', re.IGNORECASE)
-    underscore_match = underscore_res_pattern.search(url)
+    underscore_match = UNDERSCORE_RES_PATTERN.search(url)
     if underscore_match:
         try:
             width = int(underscore_match.group(1))
@@ -492,8 +666,7 @@ def is_high_quality_channel_line(url):
             logger.debug("下划线分隔分辨率解析失败")
     
     # 检查res参数（如res=1080）
-    res_param_pattern = re.compile(r'res=(\d+)', re.IGNORECASE)
-    res_param_match = res_param_pattern.search(url)
+    res_param_match = RES_PARAM_PATTERN.search(url)
     if res_param_match:
         try:
             res_value = int(res_param_match.group(1))
@@ -505,8 +678,7 @@ def is_high_quality_channel_line(url):
             logger.debug("res参数解析失败")
     
     # 检查resolution参数（如resolution=1920x1080）
-    resolution_param_pattern = re.compile(r'resolution=(\d+)x?(\d*)', re.IGNORECASE)
-    resolution_param_match = resolution_param_pattern.search(url)
+    resolution_param_match = RESOLUTION_PARAM_PATTERN.search(url)
     if resolution_param_match:
         try:
             if resolution_param_match.group(2):
@@ -649,16 +821,28 @@ def extract_channels_from_txt(content):
             
             # 检测是否为高清频道
             if is_high_quality_channel_line(url):
-                normalized_name = normalize_channel_name(channel_name)
-                category = get_channel_category(normalized_name)
-                # 只添加有分类的频道（不在CHANNEL_CATEGORIES中的频道会被舍弃）
-                if category:
-                    channels[category].append((normalized_name, url))
-                    logger.debug(f"添加高清频道: {normalized_name} -> {url} (分类: {category})")
+                # 检查是否只需要4K频道
+                if config["filter"]["only_4k"]:
+                    if is_ultra_high_quality(url, channel_name):
+                        normalized_name = normalize_channel_name(channel_name)
+                        category = get_channel_category(normalized_name)
+                        # 只添加有分类的频道（不在CHANNEL_CATEGORIES中的频道会被舍弃）
+                        if category:
+                            channels[category].append((normalized_name, url))
+                            logger.debug(f"添加4K频道: {normalized_name} -> {url} (分类: {category})")
+                        else:
+                            logger.debug(f"舍弃未分类4K频道: {normalized_name} -> {url}")
                 else:
-                    logger.debug(f"舍弃未分类频道: {normalized_name} -> {url}")
+                    normalized_name = normalize_channel_name(channel_name)
+                    category = get_channel_category(normalized_name)
+                    # 只添加有分类的频道（不在CHANNEL_CATEGORIES中的频道会被舍弃）
+                    if category:
+                        channels[category].append((normalized_name, url))
+                        logger.debug(f"添加高清频道: {normalized_name} -> {url} (分类: {category})")
+                    else:
+                        logger.debug(f"舍弃未分类频道: {normalized_name} -> {url}")
     
-    logger.info(f"提取完成，共获取 {sum(len(channels_list) for channels_list in channels.values())} 个高清频道")
+    logger.info(f"提取完成，共获取 {sum(len(channels_list) for channels_list in channels.values())} 个{'4K ' if config['filter']['only_4k'] else '高清 '}频道")
     return channels
 
 # 过滤.txt直播源的函数
@@ -750,24 +934,29 @@ def generate_txt_file(channels, output_file='jieguo_txt.txt'):
 # 更新全局配置的函数
 def update_global_config(args):
     """根据命令行参数更新全局配置"""
-    global open_filter_resolution, min_resolution
+    global config, open_filter_resolution, min_resolution
     
     # 更新日志级别
     numeric_level = getattr(logging, args.log_level.upper(), logging.INFO)
     logging.getLogger().setLevel(numeric_level)
     
+    # 更新4K过滤配置
+    if args.filter_4k:
+        config["filter"]["only_4k"] = True
+        logger.info("启用4K频道过滤")
+    
     # 更新分辨率过滤配置
     if args.no_resolution_filter:
-        open_filter_resolution = False
+        config["filter"]["resolution"] = False
     else:
-        open_filter_resolution = True
+        config["filter"]["resolution"] = True
         # 解析最低分辨率
         try:
             width, height = map(int, args.min_resolution.split('x'))
-            min_resolution = (width, height)
-            logger.info(f"设置最低分辨率: {min_resolution[0]}x{min_resolution[1]}")
+            config["filter"]["min_resolution"] = [width, height]
+            logger.info(f"设置最低分辨率: {width}x{height}")
         except ValueError:
-            logger.warning(f"无效的分辨率格式: {args.min_resolution}，使用默认值: {min_resolution[0]}x{min_resolution[1]}")
+            logger.warning(f"无效的分辨率格式: {args.min_resolution}，使用默认值: {config['filter']['min_resolution'][0]}x{config['filter']['min_resolution'][1]}")
     
     # 更新请求超时时间
     global session
@@ -775,17 +964,67 @@ def update_global_config(args):
     session.headers.update(HEADERS)
     session.mount('http://', requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=128, max_retries=0))
     session.mount('https://', requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=128, max_retries=0))
+    
+    # 更新全局变量
+    update_global_vars_from_config()
 
 # 从.txt源获取内容的函数
 def fetch_txt_content(source_url, timeout=10):
-    """从指定的URL获取.txt内容"""
+    """从指定的URL获取.txt内容，支持缓存和条件请求"""
     logger.info(f"正在获取 {source_url} 的内容...")
+    
+    # 检查缓存是否存在且未过期
+    current_time = time.time()
+    if source_url in source_cache:
+        cached_time, cached_content, etag, last_modified = source_cache[source_url]
+        if current_time - cached_time < cache_expiry_time:
+            logger.info(f"使用缓存的内容 (缓存时间: {cached_time})")
+            return cached_content
+    
+    # 准备条件请求头
+    headers = {}
+    if source_url in source_cache:
+        _, _, etag, last_modified = source_cache[source_url]
+        if etag:
+            headers['If-None-Match'] = etag
+        if last_modified:
+            headers['If-Modified-Since'] = last_modified
+    
     try:
-        response = session.get(source_url, timeout=timeout)
-        response.raise_for_status()
-        return response.text
+        # 发送请求
+        response = session.get(source_url, timeout=timeout, headers=headers)
+        
+        if response.status_code == 304:
+            # 内容未修改，使用缓存内容
+            logger.info(f"内容未修改，使用缓存")
+            if source_url in source_cache:
+                # 更新缓存时间
+                cached_time, cached_content, etag, last_modified = source_cache[source_url]
+                source_cache[source_url] = (current_time, cached_content, etag, last_modified)
+                save_cache()
+                return cached_content
+            else:
+                # 缓存中没有内容但返回304，重新请求
+                response = session.get(source_url, timeout=timeout)
+                response.raise_for_status()
+        elif response.status_code == 200:
+            # 内容已修改，更新缓存
+            content = response.text
+            etag = response.headers.get('ETag')
+            last_modified = response.headers.get('Last-Modified')
+            source_cache[source_url] = (current_time, content, etag, last_modified)
+            save_cache()
+            logger.info(f"获取成功，已更新缓存")
+            return content
+        else:
+            # 其他状态码
+            response.raise_for_status()
     except requests.exceptions.RequestException as e:
         logger.error(f"获取 {source_url} 失败: {e}")
+        # 如果请求失败但缓存中有内容，返回缓存内容
+        if source_url in source_cache:
+            logger.info(f"请求失败，使用缓存内容")
+            return source_cache[source_url][1]
         return None
 
 # 主函数
@@ -794,7 +1033,13 @@ def main():
     # 解析命令行参数
     args = parse_args()
     
-    # 更新全局配置
+    # 加载配置文件
+    load_config()
+    
+    # 加载缓存
+    load_cache()
+    
+    # 更新全局配置（命令行参数优先级高于配置文件）
     update_global_config(args)
     
     logger.info("=== IPTVTXT 高清直播源提取工具开始运行 ===")
@@ -848,7 +1093,7 @@ def main():
                     if is_ultra_high_quality(url, channel_name):
                         timeout = 5  # 4K频道超时5秒
                     else:
-                        timeout = 2  # 普通高清频道超时2秒
+                        timeout = config["url_testing"]["timeout"]  # 使用配置中的超时时间
                     test_items.append((category, channel_name, url, timeout))
         
         # 并发测试URL
@@ -857,14 +1102,12 @@ def main():
         valid_count = 0
         seen_valid_items = set()
         
-        # 计算动态线程池大小
-        import os
-        cpu_count = os.cpu_count() or 4
-        max_workers = min(100, cpu_count * 10)  # 最大线程数不超过100
+        # 使用配置中的线程数
+        max_workers = config["url_testing"]["workers"]
         
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
             # 提交所有测试任务，future_to_test直接包含完整信息
-            future_to_test = {executor.submit(check_url, url, timeout, 0): (category, channel_name, url) 
+            future_to_test = {executor.submit(check_url, url, timeout, config["url_testing"]["retries"]): (category, channel_name, url) 
                              for category, channel_name, url, timeout in test_items}
             
             # 收集测试结果
@@ -897,7 +1140,7 @@ def main():
             logger.error("生成M3U文件失败")
             return 3
     
-    # 生成TXT文件
+        # 生成TXT文件
         txt_result = generate_txt_file(tested_channels, output_file=args.txt_output)
         if not txt_result:
             logger.error("生成TXT文件失败")
