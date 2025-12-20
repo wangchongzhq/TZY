@@ -1258,10 +1258,10 @@ def update_iptv_sources():
     for group_title, channel_list in all_channels.items():
         logger.info(f"   {group_title}: {len(channel_list)}个频道")
     
-    # 生成M3U文件
-    output_file_m3u = config["output"]["m3u_file"]
-    # 生成TXT文件
-    output_file_txt = config["output"]["txt_file"]
+    # 生成M3U文件（使用固定的旧输出文件名）
+    output_file_m3u = "jieguo.m3u"
+    # 生成TXT文件（使用固定的旧输出文件名）
+    output_file_txt = "jieguo.txt"
     
     logger.info(f"📁 准备生成文件: {output_file_m3u} 和 {output_file_txt}")
     logger.info(f"📊 准备写入的频道总数: {sum(len(channel_list) for channel_list in all_channels.values())}")
