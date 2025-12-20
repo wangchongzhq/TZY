@@ -1,18 +1,29 @@
 # 临时文件
 *.log
+*.tmp
+*.temp
 
 # 虚拟环境
 venv/
 env/
 .env/
+.venv/
 
 # 输出文件（保留）
-# jieguo.m3u 和 jieguo.txt 是项目的主要输出文件，需要提交
-# 其他临时生成的.txt文件可以单独添加到忽略列表
+# jieguo.m3u 和 jieguo.txt 是IPTV.py的主要输出文件，需要提交
+# jieguo_txt.m3u 和 jieguo_txt.txt 是IPTVTXT.py的主要输出文件，需要提交
+
+# 临时测试文件
+_test*.txt
+_test*.m3u
+*.bak
 
 # IDE文件
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
 # 操作系统文件
 Thumbs.db
@@ -21,3 +32,13 @@ Thumbs.db
 # Python缓存
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# 测试文件
+.pytest_cache/
+.test_results/
+
+# 日志文件
+logs/
+*.log.*

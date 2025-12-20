@@ -11,6 +11,7 @@ import logging
 import requests
 import concurrent.futures
 from collections import defaultdict
+from urllib.parse import urlparse
 
 # 配置日志
 logging.basicConfig(
@@ -328,8 +329,20 @@ def parse_args():
     
     return parser.parse_args()
 
-# URL格式验证正则表达式
-URL_REGEX = re.compile(r'https?://', re.IGNORECASE)
+# URL格式验证正则表达式（支持http, https, udp, rtsp, rtmp, mms, rtp等常见流媒体协议）
+URL_REGEX = re.compile(r'(?:https?|udp|rtsp|rtmp|mms|rtp)://', re.IGNORECASE)
+
+# URL规范化函数，用于去重相同来源的不同URL
+def normalize_url(url):
+    """直接返回原始URL，不进行规范化处理
+    
+    参数:
+        url: 要处理的URL
+    
+    返回:
+        str: 原始URL
+    """
+    return url
 
 # 高清检测的正则表达式模式（只针对URL）
 HD_PATTERNS = [
@@ -369,7 +382,7 @@ HD_PATTERNS = [
 HD_REGEX = re.compile('|'.join(HD_PATTERNS), re.IGNORECASE)
 
 # URL测试函数
-def check_url(url, timeout=1, retries=0):
+def check_url(url, timeout=2, retries=0):
     """测试URL是否可用
     
     参数:
@@ -383,9 +396,17 @@ def check_url(url, timeout=1, retries=0):
     if not URL_REGEX.match(url):
         return False
     
+    # 对于非HTTP/HTTPS协议的URL，直接返回True（这些协议无法通过HTTP请求验证）
+    if not url.startswith(('http://', 'https://')):
+        return True
+    
     try:
-        # 使用head请求快速测试URL是否存在
+        # 先尝试HEAD请求
         response = session.head(url, timeout=timeout, allow_redirects=True)
+        if response.status_code < 400:
+            return True
+        # 如果HEAD请求失败，尝试GET请求
+        response = session.get(url, timeout=timeout, allow_redirects=True, stream=True)
         return response.status_code < 400
     except requests.exceptions.RequestException:
         return False
@@ -423,6 +444,11 @@ def is_high_quality_channel_line(url):
         return True
     
     logger.debug(f"检查URL分辨率: {url}")
+    
+    # 首先检查URL中是否包含高清标识
+    if HD_REGEX.search(url):
+        logger.debug(f"URL包含高清标识: {url}")
+        return True
     
     # 检查垂直分辨率（如1080p, 720i）
     vertical_res_pattern = re.compile(r'(\d{3,4})[pdi]', re.IGNORECASE)
@@ -505,17 +531,22 @@ def is_high_quality_channel_line(url):
     return False
 
 # 超清频道检测函数
-def is_ultra_high_quality(url):
+def is_ultra_high_quality(url, channel_name=""):
     """判断频道是否为超清（4K及以上）质量
     
     参数:
         url: 要检测的URL
+        channel_name: 频道名称（可选）
     
     返回:
         bool: 是否为超清频道
     """
-    # 检查是否包含超清标识
+    # 检查URL中是否包含超清标识
     if ULTRA_HD_REGEX.search(url):
+        return True
+    
+    # 检查频道名称中是否包含4K标识
+    if channel_name and ULTRA_HD_REGEX.search(channel_name):
         return True
     
     # 检查垂直分辨率是否为2160及以上
@@ -598,17 +629,19 @@ def extract_channels_from_txt(content):
         if not line or line.startswith('#'):
             continue
         
-        # 检测URL
-        if 'http://' in line or 'https://' in line:
+        # 检测URL（支持http, https, udp, rtsp, rtmp, mms, rtp等常见流媒体协议）
+        protocols = ['http://', 'https://', 'udp://', 'rtsp://', 'rtmp://', 'mms://', 'rtp://']
+        found_protocol = None
+        for protocol in protocols:
+            if protocol in line:
+                found_protocol = protocol
+                break
+        
+        if found_protocol:
             # 分离频道名称和URL
-            if 'http://' in line:
-                parts = line.split('http://')
-                channel_name = parts[0].strip()
-                url = 'http://' + parts[1].strip()
-            else:
-                parts = line.split('https://')
-                channel_name = parts[0].strip()
-                url = 'https://' + parts[1].strip()
+            parts = line.split(found_protocol)
+            channel_name = parts[0].strip()
+            url = found_protocol + parts[1].strip()
             
             # 处理空频道名称
             if not channel_name:
@@ -656,7 +689,9 @@ def generate_m3u_file(channels, output_file='jieguo_txt.m3u'):
             written_count = 0
             for category in CHANNEL_CATEGORIES:
                 if category in channels:
-                    for channel_name, url in channels[category]:
+                    # 对当前类别的频道按名称升序排序
+                    sorted_channels = sorted(channels[category], key=lambda x: x[0])
+                    for channel_name, url in sorted_channels:
                         # 写入频道信息
                         f.write(f"#EXTINF:-1 tvg-name=\"{channel_name}\" group-title=\"{category}\",{channel_name}\n")
                         f.write(f"{url}\n")
@@ -685,8 +720,10 @@ def generate_txt_file(channels, output_file='jieguo_txt.txt'):
                     # 写入分组标题，添加,#genre#后缀
                     f.write(f"#{category}#,genre#\n")
                     
+                    # 对当前类别的频道按名称升序排序
+                    sorted_channels = sorted(channels[category], key=lambda x: x[0])
                     # 写入该分组下的所有频道
-                    for channel_name, url in channels[category]:
+                    for channel_name, url in sorted_channels:
                         f.write(f"{channel_name},{url}\n")
                     
                     # 分组之间添加空行
@@ -779,13 +816,14 @@ def main():
                 for category, category_channels in channels.items():
                     all_channels[category].extend(category_channels)
         
-        # 去重处理
+        # 去重处理 - 使用URL规范化
         unique_channels = defaultdict(list)
         seen = set()
         for category, channels in all_channels.items():
             for channel_name, url in channels:
-                if url not in seen:
-                    seen.add(url)
+                normalized = normalize_url(url)
+                if normalized not in seen:
+                    seen.add(normalized)
                     unique_channels[category].append((channel_name, url))
 
         if not unique_channels:
@@ -799,40 +837,53 @@ def main():
         
         # 准备需要测试的频道
         test_items = []
+        seen_items = set()  # 用于跟踪已经添加的URL
         for category, channels in unique_channels.items():
             for channel_name, url in channels:
                 # 判断是否为超清频道，设置不同的超时时间
-                if is_ultra_high_quality(url):
-                    timeout = 5  # 超清频道超时5秒
-                else:
-                    timeout = 2  # 普通高清频道超时2秒
-                test_items.append((category, channel_name, url, timeout))
+                # 检查是否已经添加过这个URL（使用规范化URL）
+                normalized = normalize_url(url)
+                if (category, channel_name, normalized) not in seen_items:
+                    seen_items.add((category, channel_name, normalized))
+                    if is_ultra_high_quality(url, channel_name):
+                        timeout = 5  # 4K频道超时5秒
+                    else:
+                        timeout = 2  # 普通高清频道超时2秒
+                    test_items.append((category, channel_name, url, timeout))
         
         # 并发测试URL
         tested_channels = defaultdict(list)
         total_tested = len(test_items)
         valid_count = 0
+        seen_valid_items = set()
         
-        # 使用ThreadPoolExecutor并发处理，最大工作线程数为50
-        with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
-            # 提交所有测试任务
-            future_to_test = {executor.submit(check_url, url, timeout, 0): (category, channel_name) 
+        # 计算动态线程池大小
+        import os
+        cpu_count = os.cpu_count() or 4
+        max_workers = min(100, cpu_count * 10)  # 最大线程数不超过100
+        
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            # 提交所有测试任务，future_to_test直接包含完整信息
+            future_to_test = {executor.submit(check_url, url, timeout, 0): (category, channel_name, url) 
                              for category, channel_name, url, timeout in test_items}
             
             # 收集测试结果
             for future in concurrent.futures.as_completed(future_to_test):
-                category, channel_name = future_to_test[future]
+                category, channel_name, url = future_to_test[future]
                 try:
                     is_valid = future.result()
                     if is_valid:
-                        url = [item[2] for item in test_items if item[1] == channel_name and item[0] == category][0]
-                        tested_channels[category].append((channel_name, url))
-                        valid_count += 1
-                        logger.debug(f"频道可用: {channel_name} -> {url}")
+                        # 检查是否已经添加过这个URL（使用规范化URL）
+                        normalized = normalize_url(url)
+                        if (category, channel_name, normalized) not in seen_valid_items:
+                            seen_valid_items.add((category, channel_name, normalized))
+                            tested_channels[category].append((channel_name, url))
+                            valid_count += 1
+                            logger.debug(f"频道可用: {channel_name} -> {url}")
                     else:
-                        logger.debug(f"频道不可用: {channel_name}")
+                        logger.debug(f"频道不可用: {channel_name} -> {url}")
                 except Exception as e:
-                    logger.error(f"测试频道 {channel_name} 时出错: {e}")
+                    logger.error(f"测试频道 {channel_name} -> {url} 时出错: {e}")
 
         if not tested_channels:
             logger.error("没有测试通过的频道")

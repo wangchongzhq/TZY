@@ -386,7 +386,7 @@ HD_PATTERNS = [
 HD_REGEX = re.compile('|'.join(HD_PATTERNS), re.IGNORECASE)
 
 # 预编译常用正则表达式
-URL_REGEX = re.compile(r'https?://', re.IGNORECASE)
+URL_REGEX = re.compile(r'(?:https?|udp|rtsp|rtmp|mms|rtp)://', re.IGNORECASE)
 
 # 预编译分辨率和质量相关的正则表达式
 HIGH_DEF_PATTERNS = re.compile(r'(1080[pdi]|1440[pdi]|2160[pdi]|fhd|uhd|超高清)', re.IGNORECASE)
@@ -533,15 +533,19 @@ def is_4k(channel_name, url):
     return False
 
 # 检查URL是否有效
-def check_url(url, timeout=1, retries=0):
+def check_url(url, timeout=2, retries=0):
     """检查URL是否可访问，支持重试机制"""
     # 先检查URL格式是否正确
     if not URL_REGEX.match(url):
         return False
     
+    # 对于非HTTP/HTTPS协议的URL，直接返回True（这些协议无法通过HEAD请求验证）
+    if not url.startswith(('http://', 'https://')):
+        return True
+    
     for attempt in range(retries + 1):
         try:
-            # 使用HEAD请求以避免下载整个文件
+            # 使用HEAD请求以避免下载整个文件（仅适用于HTTP/HTTPS）
             response = session.head(
                 url, 
                 timeout=timeout, 
@@ -723,7 +727,9 @@ def generate_m3u_file(channels, output_path):
         written_count = 0
         for category in CHANNEL_CATEGORIES:
             if category in channels:
-                for channel_name, url in channels[category]:
+                # 对当前类别的频道按名称升序排序
+                sorted_channels = sorted(channels[category], key=lambda x: x[0])
+                for channel_name, url in sorted_channels:
                     # 写入频道信息
                     f.write(f"#EXTINF:-1 tvg-name=\"{channel_name}\" group-title=\"{category}\",{channel_name}\n")
                     f.write(f"{url}\n")
@@ -749,8 +755,10 @@ def generate_txt_file(channels, output_path):
                 # 写入分组标题，添加,#genre#后缀
                 f.write(f"#{category}#,genre#\n")
                 
+                # 对当前类别的频道按名称升序排序
+                sorted_channels = sorted(channels[category], key=lambda x: x[0])
                 # 写入该分组下的所有频道
-                for channel_name, url in channels[category]:
+                for channel_name, url in sorted_channels:
                     f.write(f"{channel_name},{url}\n")
                 
                 # 分组之间添加空行
@@ -810,8 +818,8 @@ def extract_channels_from_txt(file_path):
                     if any(keyword in channel_name_lower for keyword in shopping_keywords):
                         continue
                     
-                    # 跳过无效的URL
-                    if not url.startswith(('http://', 'https://')):
+                    # 跳过无效的URL（允许http, https, udp, rtsp, rtmp等常见流媒体协议）
+                    if not url.startswith(('http://', 'https://', 'udp://', 'rtsp://', 'rtmp://', 'mms://', 'rtp://')):
                         continue
                     
                     # 规范化频道名称
