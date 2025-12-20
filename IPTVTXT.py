@@ -42,11 +42,11 @@ DEFAULT_CONFIG = {
         "only_4k": False       # 是否只获取4K频道
     },
     "url_testing": {
-        "enable": True,    # 启用URL有效性测试
-        "timeout": 2,      # URL测试超时时间（秒）
-        "retries": 0,      # URL测试重试次数
-        "workers": 128     # URL测试并发数
-    },
+            "enable": True,    # 启用URL有效性测试
+            "timeout": 2,      # URL测试超时时间（秒）
+            "retries": 0,      # URL测试重试次数
+            "workers": 32      # URL测试并发数（降低并发数避免资源耗尽）
+        },
     "cache": {
         "expiry_time": 3600,  # 缓存有效期（秒）
         "file": "source_cache.json"  # 缓存文件路径
@@ -575,14 +575,18 @@ def check_url(url, timeout=2, retries=0):
         return True
     
     try:
-        # 先尝试HEAD请求
-        response = session.head(url, timeout=timeout, allow_redirects=True)
-        if response.status_code < 400:
-            return True
-        # 如果HEAD请求失败，尝试GET请求
-        response = session.get(url, timeout=timeout, allow_redirects=True, stream=True)
+        # 只使用HEAD请求，减少网络流量和服务器负担
+        response = session.head(url, timeout=timeout, allow_redirects=True, 
+                                headers={'Range': 'bytes=0-0'})  # 添加Range头，请求只返回部分内容
         return response.status_code < 400
+    except requests.exceptions.ConnectionError:
+        # 连接错误直接返回False
+        return False
+    except requests.exceptions.Timeout:
+        # 超时错误直接返回False
+        return False
     except requests.exceptions.RequestException:
+        # 其他请求错误返回False
         return False
 
 # 超清（4K及以上）检测的正则表达式模式
@@ -1102,31 +1106,45 @@ def main():
         valid_count = 0
         seen_valid_items = set()
         
-        # 使用配置中的线程数
-        max_workers = config["url_testing"]["workers"]
+        # 如果没有需要测试的项目，直接返回
+        if not test_items:
+            logger.info("没有需要测试的频道")
+            return 0
         
-        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-            # 提交所有测试任务，future_to_test直接包含完整信息
-            future_to_test = {executor.submit(check_url, url, timeout, config["url_testing"]["retries"]): (category, channel_name, url) 
-                             for category, channel_name, url, timeout in test_items}
-            
-            # 收集测试结果
-            for future in concurrent.futures.as_completed(future_to_test):
-                category, channel_name, url = future_to_test[future]
-                try:
-                    is_valid = future.result()
-                    if is_valid:
-                        # 检查是否已经添加过这个URL（使用规范化URL）
-                        normalized = normalize_url(url)
-                        if (category, channel_name, normalized) not in seen_valid_items:
-                            seen_valid_items.add((category, channel_name, normalized))
-                            tested_channels[category].append((channel_name, url))
-                            valid_count += 1
-                            logger.debug(f"频道可用: {channel_name} -> {url}")
-                    else:
-                        logger.debug(f"频道不可用: {channel_name} -> {url}")
-                except Exception as e:
-                    logger.error(f"测试频道 {channel_name} -> {url} 时出错: {e}")
+        # 使用配置中的线程数
+        max_workers = min(config["url_testing"]["workers"], len(test_items))  # 确保线程数不超过任务数
+        
+        try:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+                # 提交所有测试任务，future_to_test直接包含完整信息
+                future_to_test = {executor.submit(check_url, url, timeout, config["url_testing"]["retries"]): (category, channel_name, url) 
+                                 for category, channel_name, url, timeout in test_items}
+                
+                # 收集测试结果
+                for future in concurrent.futures.as_completed(future_to_test):
+                    category, channel_name, url = future_to_test[future]
+                    try:
+                        is_valid = future.result()
+                        if is_valid:
+                            # 检查是否已经添加过这个URL（使用规范化URL）
+                            normalized = normalize_url(url)
+                            if (category, channel_name, normalized) not in seen_valid_items:
+                                seen_valid_items.add((category, channel_name, normalized))
+                                tested_channels[category].append((channel_name, url))
+                                valid_count += 1
+                                logger.debug(f"频道可用: {channel_name} -> {url}")
+                        else:
+                            logger.debug(f"频道不可用: {channel_name} -> {url}")
+                    except Exception as e:
+                        logger.error(f"测试频道 {channel_name} -> {url} 时出错: {e}")
+        except KeyboardInterrupt:
+            logger.info("用户中断了URL测试")
+            return 130
+        except Exception as e:
+            logger.error(f"URL测试过程中发生错误: {e}")
+            # 如果测试过程出错，使用未测试的频道列表
+            tested_channels = unique_channels
+            valid_count = sum(len(channels_list) for channels_list in tested_channels.values())
 
         if not tested_channels:
             logger.error("没有测试通过的频道")
