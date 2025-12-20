@@ -1111,8 +1111,9 @@ def main():
             logger.info("没有需要测试的频道")
             return 0
         
-        # 使用配置中的线程数
-        max_workers = min(config["url_testing"]["workers"], len(test_items))  # 确保线程数不超过任务数
+        # 进一步降低并发数，以适应GitHub Actions的资源限制
+        max_workers = min(16, config["url_testing"]["workers"], len(test_items))  # 最多16个线程
+        logger.info(f"使用 {max_workers} 个线程进行URL测试")
         
         try:
             with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -1120,11 +1121,12 @@ def main():
                 future_to_test = {executor.submit(check_url, url, timeout, config["url_testing"]["retries"]): (category, channel_name, url) 
                                  for category, channel_name, url, timeout in test_items}
                 
-                # 收集测试结果
-                for future in concurrent.futures.as_completed(future_to_test):
+                # 收集测试结果，设置超时，防止单个任务阻塞
+                for future in concurrent.futures.as_completed(future_to_test, timeout=total_tested * 2):
                     category, channel_name, url = future_to_test[future]
                     try:
-                        is_valid = future.result()
+                        # 为future.result()也设置超时，确保单个任务不会无限期等待
+                        is_valid = future.result(timeout=timeout + 1)
                         if is_valid:
                             # 检查是否已经添加过这个URL（使用规范化URL）
                             normalized = normalize_url(url)
@@ -1135,11 +1137,19 @@ def main():
                                 logger.debug(f"频道可用: {channel_name} -> {url}")
                         else:
                             logger.debug(f"频道不可用: {channel_name} -> {url}")
+                    except concurrent.futures.TimeoutError:
+                        logger.warning(f"测试频道 {channel_name} -> {url} 超时")
                     except Exception as e:
                         logger.error(f"测试频道 {channel_name} -> {url} 时出错: {e}")
         except KeyboardInterrupt:
             logger.info("用户中断了URL测试")
             return 130
+        except concurrent.futures.TimeoutError:
+            logger.warning("URL测试总时间超时，部分频道可能未完成测试")
+            # 超时情况下，使用已测试通过的频道和部分未测试的频道
+            if not tested_channels:
+                tested_channels = unique_channels
+            valid_count = sum(len(channels_list) for channels_list in tested_channels.values())
         except Exception as e:
             logger.error(f"URL测试过程中发生错误: {e}")
             # 如果测试过程出错，使用未测试的频道列表
