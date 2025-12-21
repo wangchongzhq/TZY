@@ -18,6 +18,10 @@ _test*.txt
 _test*.m3u
 *.bak
 
+# 验证工具生成的文件
+*_valid.m3u
+*_valid.txt
+
 # IDE文件
 .vscode/
 .idea/
