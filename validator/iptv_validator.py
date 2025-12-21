@@ -16,7 +16,7 @@ from urllib.parse import urlparse
 
 
 class IPTVValidator:
-    def __init__(self, input_file, output_file=None, max_workers=10, timeout=10):
+    def __init__(self, input_file, output_file=None, max_workers=20, timeout=5):
         self.input_file = input_file
         self.output_file = output_file or self._generate_output_filename()
         self.max_workers = max_workers
@@ -24,6 +24,7 @@ class IPTVValidator:
         self.channels = []
         self.categories = []
         self.file_type = self._detect_file_type()
+        self.ffprobe_available = self._check_ffprobe_availability()
 
     def _detect_file_type(self):
         """检测输入文件类型"""
@@ -33,6 +34,14 @@ class IPTVValidator:
             return 'txt'
         else:
             raise ValueError("不支持的文件格式，仅支持.m3u、.m3u8和.txt格式")
+
+    def _check_ffprobe_availability(self):
+        """检查ffprobe是否可用"""
+        try:
+            subprocess.run(['ffprobe', '-version'], capture_output=True, text=True, shell=False)
+            return True
+        except (subprocess.SubprocessError, FileNotFoundError):
+            return False
 
     def _generate_output_filename(self):
         """生成输出文件名"""
@@ -149,6 +158,10 @@ class IPTVValidator:
     def get_resolution(self, url):
         """获取视频分辨率"""
         try:
+            # 检查ffprobe是否可用
+            if not self.ffprobe_available:
+                return None
+
             # 只对支持的流格式进行分辨率检测
             if not (url.endswith('.m3u8') or 'm3u8' in url or url.startswith('rtsp://') or url.startswith('rtmp://')):
                 return None
@@ -252,6 +265,11 @@ class IPTVValidator:
         """运行验证流程"""
         print(f"开始验证文件: {self.input_file}")
         print(f"文件类型: {self.file_type}")
+        
+        # 检查ffprobe是否可用
+        if not self.ffprobe_available:
+            print("警告: 未检测到ffprobe，将跳过视频分辨率检测")
+            print("请安装FFmpeg并添加到系统PATH以启用分辨率检测功能")
 
         # 读取文件
         if self.file_type == 'm3u':
@@ -283,13 +301,13 @@ class IPTVValidator:
             return None
 
 
-def validate_file(input_file, output_file=None, max_workers=10, timeout=10):
+def validate_file(input_file, output_file=None, max_workers=20, timeout=5):
     """便捷函数：验证单个文件"""
     validator = IPTVValidator(input_file, output_file, max_workers, timeout)
     return validator.run()
 
 
-def validate_all_files(directory='.', max_workers=10, timeout=10):
+def validate_all_files(directory='.', max_workers=20, timeout=5):
     """便捷函数：验证目录下所有支持的文件"""
     supported_extensions = ('.m3u', '.m3u8', '.txt')
     files_to_validate = []
@@ -311,8 +329,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='直播源有效性验证工具')
     parser.add_argument('-i', '--input', required=True, help='输入文件路径')
     parser.add_argument('-o', '--output', help='输出文件路径')
-    parser.add_argument('-w', '--workers', type=int, default=10, help='并发工作线程数')
-    parser.add_argument('-t', '--timeout', type=int, default=10, help='超时时间(秒)')
+    parser.add_argument('-w', '--workers', type=int, default=20, help='并发工作线程数')
+    parser.add_argument('-t', '--timeout', type=int, default=5, help='超时时间(秒)')
     parser.add_argument('-a', '--all', action='store_true', help='验证当前目录下所有支持的文件')
 
     args = parser.parse_args()
