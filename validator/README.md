@@ -1,170 +1,173 @@
-# 直播源有效性验证工具
+# IPTV直播源验证工具
 
-这是一个用于验证直播源有效性的工具，支持M3U和TXT格式文件，可以检测视频分辨率并生成带有分辨率信息的有效直播源文件。
+一个功能强大的IPTV直播源验证工具，支持多协议（HTTP/HTTPS/RTSP/RTMP/MMS）验证，提供命令行和Web界面两种使用方式。
 
 ## 功能特性
 
-- ✅ 支持M3U和TXT格式直播源文件的解析
-- ✅ 并发验证直播源URL的有效性
-- ✅ 使用ffprobe检测视频分辨率
-- ✅ 在频道名称后添加分辨率信息（如"CCTV5[3840*2160]"）
-- ✅ 保留原始频道分类和排序顺序
-- ✅ 生成符合要求的输出文件
-- ✅ 所有输出文件统一保存到`output`目录
-- ✅ 支持多线程并发处理，提高验证效率
-- ✅ 支持自定义超时时间
+- **多协议支持**：验证HTTP/HTTPS、RTSP、RTMP、MMS协议的直播源
+- **批量验证**：支持M3U/M3U8/TXT格式文件的批量验证
+- **并发处理**：使用多线程加速验证过程
+- **智能验证**：
+  - HTTP/HTTPS协议：先尝试HEAD请求，失败自动回退到GET请求
+  - 支持所有2xx（成功）和3xx（重定向）状态码
+  - 其他协议：通过socket连接检查
+- **调试模式**：详细的调试输出，便于排查问题
+- **Web界面**：用户友好的Web界面，支持文件上传和手动URL验证
+- **分辨率检测**：自动检测视频流分辨率（需要FFmpeg）
 
 ## 安装依赖
 
-1. 确保已安装Python 3.7或更高版本
-2. 安装所需的Python库：
-   ```bash
-   pip install -r ../requirements.txt
-   ```
-3. 安装FFmpeg（用于视频分辨率检测）：
-   - Windows：从[Gyan.dev](https://www.gyan.dev/ffmpeg/builds/)下载并添加到系统PATH
-   - Linux：`sudo apt-get install ffmpeg`
-   - macOS：`brew install ffmpeg`
+```bash
+pip install requests flask
+```
+
+**可选依赖**：
+- FFmpeg：用于视频分辨率检测
 
 ## 使用方法
 
-### 命令行使用
+### 命令行界面（CLI）
 
-#### 验证单个M3U文件
 ```bash
-python iptv_validator.py -i ../jieguo.m3u -w 50 -t 5
-```
-
-#### 验证单个TXT文件
-```bash
-python iptv_validator.py -i ../jieguo.txt -w 50 -t 5
-```
-
-#### 批量验证当前目录下所有支持的文件
-```bash
-python iptv_validator.py -a -w 50 -t 5
+python iptv_validator.py -i <输入文件> [选项]
 ```
 
 #### 参数说明
-- `-i, --input`: 输入文件路径（必填）
-- `-o, --output`: 输出文件路径（可选，默认生成`原文件名_valid.扩展名`）
-- `-w, --workers`: 并发工作线程数（默认：10）
-- `-t, --timeout`: 超时时间（秒，默认：10）
-- `-a, --all`: 批量验证当前目录下所有支持的文件
 
-### 示例输出
+| 参数 | 描述 | 默认值 |
+|------|------|--------|
+| -i, --input | 输入文件路径（M3U/M3U8/TXT格式） | 必填 |
+| -o, --output | 输出文件路径 | output/[输入文件名]_valid.m3u |
+| -w, --workers | 线程数量 | 5 |
+| -t, --timeout | 超时时间（秒） | 5 |
+| -d, --debug | 启用调试模式 | False |
+| -a, --all | 验证所有URL，包括非标准协议 | False |
 
-```
-开始验证文件: ../jieguo.m3u
-文件类型: m3u
-共解析到 100 个频道，10 个分类
-验证完成，耗时 25.32 秒
-有效频道数: 78
-有效率: 78.00%
-输出文件已生成: output/jieguo_valid.m3u
-```
+#### 示例
 
-## 输出文件格式
+```bash
+# 基本用法
+python iptv_validator.py -i channels.m3u
 
-### M3U格式
-```
-#EXTM3U
-#EXTINF:-1 group-title="央视",CCTV1[1920*1080]
-https://example.com/cctv1.m3u8
-#EXTINF:-1 group-title="央视",CCTV5[3840*2160]
-https://example.com/cctv5.m3u8
-#EXTINF:-1 group-title="体育",NBA直播[1280*720]
-https://example.com/nba.m3u8
+# 启用调试模式，增加超时时间
+python iptv_validator.py -i channels.m3u -t 10 -d
+
+# 自定义输出文件和线程数
+python iptv_validator.py -i channels.m3u -o valid_channels.m3u -w 10
 ```
 
-### TXT格式
-```
-#央视#,genre#
-CCTV1[1920*1080],https://example.com/cctv1.m3u8
-CCTV5[3840*2160],https://example.com/cctv5.m3u8
-#体育#,genre#
-NBA直播[1280*720],https://example.com/nba.m3u8
-```
-
-## 在Python代码中使用
-
-```python
-from validator.iptv_validator import IPTVValidator
-
-# 创建验证器实例
-validator = IPTVValidator('input.m3u', max_workers=20, timeout=5)
-
-# 运行验证并生成输出文件
-output_file = validator.run()
-print(f"输出文件已生成: {output_file}")
-
-# 自定义输出文件路径示例
-validator2 = IPTVValidator('input.m3u', 'output/custom_output.m3u', max_workers=20, timeout=5)
-output_file2 = validator2.run()
-print(f"自定义路径输出文件已生成: {output_file2}")
-```
-
-## Web界面
-
-本项目已实现了基于Flask的Web界面，方便本地使用：
-
-### 启动Web界面
+### Web界面
 
 ```bash
 python web_app.py
 ```
 
-访问 `http://localhost:5000` 即可使用Web界面进行直播源验证。
+然后在浏览器中访问：`http://localhost:5000`
 
-### Web界面功能
+#### Web界面功能
 
-- ✅ 支持M3U和TXT格式文件上传
-- ✅ 支持手动输入多个直播源URL
-- ✅ 可配置并发线程数和超时时间
-- ✅ 显示验证结果和有效频道数量
-- ✅ 提供生成的有效直播源文件下载
-- ✅ 所有输出文件统一保存到`output`目录
+- **文件上传**：支持M3U/M3U8/TXT格式文件上传
+- **手动URL输入**：支持单个URL输入并配置分类
+- **参数配置**：可设置线程数和超时时间
+- **结果展示**：显示有效频道数和详细信息
+- **文件下载**：可下载验证后的有效直播源文件
 
-## 扩展建议
+## 文件格式支持
 
-### 本地Web界面（已实现）
+### M3U/M3U8格式
 
-已完成Web界面的开发，支持：
-- 文件上传
-- 手动输入直播源URL
-- 显示验证进度和结果
-- 提供生成的有效直播源文件下载
+```
+#EXTM3U
+#EXTINF:-1 group-title="新闻",CCTV-13新闻
+https://example.com/cctv13.m3u8
+#EXTINF:-1 group-title="综艺",湖南卫视
+http://example.com/hunan.m3u8
+```
 
-如需改进可以考虑：
-- 添加更多的直播源格式支持
-- 增加直播源分类管理功能
-- 添加更多的视频信息检测（如码率、帧率等）
+### TXT格式
 
-### GitHub部署方案
+```
+#新闻#,genre#
+CCTV-13新闻,https://example.com/cctv13.m3u8
 
-为了在GitHub上使用这些功能，可以考虑以下方案：
+#综艺#,genre#
+湖南卫视,http://example.com/hunan.m3u8
+```
 
-1. **GitHub Actions自动化**：
-   - 使用GitHub Actions定期验证直播源
-   - 将生成的有效直播源文件上传到GitHub Releases
-   - 提供下载链接
+## 故障排除
 
-2. **Web应用部署**：
-   - 使用Flask或Streamlit创建Web应用
-   - 部署到Vercel、Heroku或GitHub Pages
-   - 支持用户上传文件和输入URL
+### 常见问题
 
-3. **API服务**：
-   - 创建RESTful API接口
-   - 支持远程验证直播源
-   - 提供JSON格式的验证结果
+1. **没有找到有效的直播源**
+   - 检查网络连接是否正常
+   - 尝试增加超时时间：`-t 10`
+   - 启用调试模式查看详细错误信息：`-d`
+   - 验证URL是否可以在浏览器或播放器中正常访问
+   - **内部网络限制**：如果直播源是内部IP地址（如10.0.0.0/8、192.168.0.0/16），确保验证工具与直播源在同一网络段
+
+2. **连接被拒绝**
+   - 确保防火墙没有阻止程序访问网络
+   - 检查代理设置
+   - 对于RTSP/RTMP协议，确保目标服务器端口（默认554/1935）未被防火墙阻止
+
+3. **DNS解析失败**
+   - 检查网络连接
+   - 尝试使用IP地址代替域名
+
+4. **RTSP/RTMP流验证失败**
+   - 检查网络是否允许TCP连接到目标端口
+   - 确认服务器是否正常运行
+   - 内部网络的RTSP流需要在同一网络环境下验证
+
+### 调试模式输出说明
+
+调试模式下，程序会输出详细的验证过程：
+
+```
+[调试] 正在检查URL: http://example.com/stream.m3u8
+[调试] URL http://example.com/stream.m3u8 HEAD请求状态码: 200
+[调试] URL http://example.com/stream.m3u8 连接成功
+```
+
+## 开发说明
+
+### 核心功能
+
+- **URL验证**：`check_url_validity`方法负责验证URL有效性
+- **文件解析**：支持M3U/M3U8/TXT格式文件解析
+- **并发处理**：使用`concurrent.futures.ThreadPoolExecutor`实现多线程验证
+- **Web应用**：基于Flask的Web界面，支持文件上传和手动验证
+
+### 项目结构
+
+```
+validator/
+├── iptv_validator.py    # 核心验证逻辑
+├── web_app.py           # Web界面
+├── README.md            # 文档
+└── output/              # 输出文件目录
+```
+
+## 更新日志
+
+### v1.1
+- 增加调试模式
+- 支持所有2xx和3xx状态码
+- 改进错误处理
+- 更新Web界面
+
+### v1.0
+- 初始版本
+- 支持多协议验证
+- 命令行和Web界面
+- 批量验证功能
 
 ## 注意事项
 
-1. 验证速度取决于网络质量和直播源服务器响应速度
-2. 分辨率检测需要安装FFmpeg
-3. 某些直播源可能需要特殊的验证方法（如需要认证的流）
-4. 建议根据实际情况调整工作线程数和超时时间
+1. 某些直播源可能需要特定的User-Agent或Referer才能访问
+2. 频繁验证可能会导致IP被封禁，建议合理设置验证频率
+3. 分辨率检测需要安装FFmpeg
+4. 非HTTP/HTTPS协议的验证仅检查连接是否成功，不验证流的有效性
 
 ## 许可证
 

@@ -21,6 +21,8 @@ _test*.m3u
 # 验证工具生成的文件
 *_valid.m3u
 *_valid.txt
+validator/output/
+validator/web_validation.log
 
 # IDE文件
 .vscode/

@@ -6,8 +6,16 @@
 
 import os
 import tempfile
+import logging
 from flask import Flask, request, render_template_string, send_file, flash
 from iptv_validator import IPTVValidator, validate_file
+
+# 配置日志记录
+logging.basicConfig(
+    filename='web_validation.log',
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 # 创建Flask应用
 app = Flask(__name__)
@@ -230,31 +238,68 @@ def index():
                 file = request.files['file']
                 if file and allowed_file(file.filename):
                     # 创建临时文件
-                    with tempfile.NamedTemporaryFile(suffix=os.path.splitext(file.filename)[1], delete=False) as temp:
-                        file.save(temp.name)
-                        temp_path = temp.name
+                    temp_path = os.path.join(tempfile.gettempdir(), os.urandom(24).hex() + os.path.splitext(file.filename)[1])
+                    file.save(temp_path)
                     
                     try:
+                        # 确保output目录存在
+                        if not os.path.exists('output'):
+                            os.makedirs('output')
+                            app.logger.debug("已创建output目录")
+                        
                         # 获取参数
                         workers = int(request.form.get('workers', 20))
                         timeout = int(request.form.get('timeout', 5))
                         
                         # 生成输出文件路径到output目录
                         output_filename = os.path.join('output', f"{os.path.splitext(os.path.basename(file.filename))[0]}_valid{os.path.splitext(file.filename)[1]}")
+                        output_filename = os.path.abspath(output_filename)
                         
-                        # 验证文件
-                        output_file = validate_file(temp_path, output_filename, max_workers=workers, timeout=timeout)
+                        # 记录详细日志
+                        app.logger.debug(f"开始验证文件: {temp_path}")
+                        app.logger.debug(f"输出文件路径: {output_filename}")
+                        app.logger.debug(f"验证参数 - workers: {workers}, timeout: {timeout}")
+                        app.logger.debug(f"临时文件扩展名: {os.path.splitext(temp_path)[1]}")
+                        app.logger.debug(f"原始文件名: {file.filename}")
                         
-                        if output_file:
-                            # 生成下载链接
-                            flash(f'验证完成！有效频道数: {sum(1 for line in open(output_file) if not line.startswith("#") and line.strip())}', 'success')
-                            flash(f'<a href="/download/{os.path.basename(output_file)}" class="download-link">下载有效直播源文件</a>', 'success')
-                        else:
-                            flash('没有找到有效的直播源', 'error')
+                        # 查看临时文件内容的前几行
+                        try:
+                            with open(temp_path, 'r', encoding='utf-8', errors='ignore') as f:
+                                first_lines = f.readlines()[:20]
+                            app.logger.debug(f"临时文件前20行内容: {repr(first_lines)}")
+                        except Exception as e:
+                            app.logger.error(f"读取临时文件内容失败: {str(e)}")
+                        
+                        # 验证文件 - 启用调试模式
+                        try:
+                            output_file = validate_file(temp_path, output_filename, max_workers=workers, timeout=timeout, debug=True)
+                            
+                            app.logger.debug(f"验证完成，output_file: {output_file}")
+                            
+                            if output_file:
+                                # 统计有效频道数
+                                with open(output_file, 'r', encoding='utf-8', errors='ignore') as f:
+                                    valid_count = sum(1 for line in f if not line.startswith("#") and line.strip())
+                                app.logger.debug(f"有效频道数: {valid_count}")
+                                # 生成下载链接
+                                flash(f'验证完成！有效频道数: {valid_count}', 'success')
+                                flash(f'<a href="/download/{os.path.basename(output_file)}" class="download-link">下载有效直播源文件</a>', 'success')
+                            else:
+                                app.logger.debug("没有找到有效的直播源")
+                                flash('没有找到有效的直播源', 'error')
+                                # 添加调试信息
+                                flash('🔍 可能的原因：网络问题、URL已失效或格式错误', 'error')
+                                flash('💡 建议：检查网络连接，手动测试几个URL是否有效', 'error')
+                        except Exception as e:
+                            app.logger.error(f"验证过程中发生错误: {str(e)}")
+                            app.logger.exception(e)
+                            flash(f'验证过程中发生错误: {str(e)}', 'error')
+                            flash('💡 建议：请检查文件格式和编码，确保使用UTF-8编码', 'error')
                     finally:
                         # 清理临时文件
                         if os.path.exists(temp_path):
                             os.unlink(temp_path)
+                            app.logger.debug(f"已清理临时文件: {temp_path}")
                 else:
                     flash('不支持的文件格式，请上传.m3u、.m3u8或.txt文件', 'error')
             
@@ -268,33 +313,61 @@ def index():
                 if not urls_text.strip():
                     flash('请输入直播源URL', 'error')
                 else:
-                    # 创建临时M3U文件
-                    with tempfile.NamedTemporaryFile(suffix='.m3u', delete=False) as temp:
-                        temp.write(b'#EXTM3U\n')
-                        for line in urls_text.strip().split('\n'):
-                            line = line.strip()
-                            if line and ',' in line:
-                                name, url = line.split(',', 1)
-                                temp.write(f'#EXTINF:-1 group-title="{category}",{name.strip()}\n{url.strip()}\n'.encode('utf-8'))
-                        temp_path = temp.name
+                    # 确保output目录存在
+                    if not os.path.exists('output'):
+                        os.makedirs('output')
+                        app.logger.debug("已创建output目录")
                     
+                    # 创建临时M3U文件
+                    temp_path = os.path.join(tempfile.gettempdir(), os.urandom(24).hex() + '.m3u')
                     try:
+                        with open(temp_path, 'wb') as temp:
+                            temp.write(b'#EXTM3U\n')
+                            for line in urls_text.strip().split('\n'):
+                                line = line.strip()
+                                if line and ',' in line:
+                                    name, url = line.split(',', 1)
+                                    temp.write(f'#EXTINF:-1 group-title="{category}",{name.strip()}\n{url.strip()}\n'.encode('utf-8'))
+                        
                         # 生成输出文件路径到output目录
                         output_filename = os.path.join('output', 'custom_urls_valid.m3u')
+                        output_filename = os.path.abspath(output_filename)
                         
-                        # 验证文件
-                        output_file = validate_file(temp_path, output_filename, max_workers=workers, timeout=timeout)
+                        # 记录详细日志
+                        app.logger.debug(f"开始验证URL列表")
+                        app.logger.debug(f"临时文件路径: {temp_path}")
+                        app.logger.debug(f"输出文件路径: {output_filename}")
+                        app.logger.debug(f"验证参数 - workers: {workers}, timeout: {timeout}, category: {category}")
                         
-                        if output_file:
-                            # 生成下载链接
-                            flash(f'验证完成！有效频道数: {sum(1 for line in open(output_file) if not line.startswith("#") and line.strip())}', 'success')
-                            flash(f'<a href="/download/{os.path.basename(output_file)}" class="download-link">下载有效直播源文件</a>', 'success')
-                        else:
-                            flash('没有找到有效的直播源', 'error')
+                        # 验证文件 - 启用调试模式
+                        try:
+                            output_file = validate_file(temp_path, output_filename, max_workers=workers, timeout=timeout, debug=True)
+                            
+                            app.logger.debug(f"验证完成，output_file: {output_file}")
+                            
+                            if output_file:
+                                # 生成下载链接
+                                with open(output_file, 'r', encoding='utf-8', errors='ignore') as f:
+                                    valid_count = sum(1 for line in f if not line.startswith("#") and line.strip())
+                                app.logger.debug(f"有效频道数: {valid_count}")
+                                flash(f'验证完成！有效频道数: {valid_count}', 'success')
+                                flash(f'<a href="/download/{os.path.basename(output_file)}" class="download-link">下载有效直播源文件</a>', 'success')
+                            else:
+                                app.logger.debug("没有找到有效的直播源")
+                                flash('没有找到有效的直播源', 'error')
+                                # 添加调试信息
+                                flash('🔍 可能的原因：网络问题、URL已失效或格式错误', 'error')
+                                flash('💡 建议：检查网络连接，手动测试几个URL是否有效', 'error')
+                        except Exception as e:
+                            app.logger.error(f"验证过程中发生错误: {str(e)}")
+                            app.logger.exception(e)
+                            flash(f'验证过程中发生错误: {str(e)}', 'error')
+                            flash('💡 建议：请检查URL格式和编码，确保使用UTF-8编码', 'error')
                     finally:
                         # 清理临时文件
                         if os.path.exists(temp_path):
                             os.unlink(temp_path)
+                            app.logger.debug(f"已清理临时文件: {temp_path}")
         
         except Exception as e:
             flash(f'验证过程中发生错误: {str(e)}', 'error')
