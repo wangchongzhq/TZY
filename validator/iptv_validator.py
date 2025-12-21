@@ -170,7 +170,7 @@ class IPTVValidator:
         """检查URL的有效性"""
         try:
             parsed_url = urlparse(url)
-            if parsed_url.scheme not in ['http', 'https', 'rtsp', 'rtmp', 'mms']:
+            if parsed_url.scheme not in ['http', 'https', 'rtsp', 'rtmp', 'mms', 'udp', 'rtp']:
                 return False
 
             if parsed_url.scheme in ['http', 'https']:
@@ -209,6 +209,10 @@ class IPTVValidator:
                     port = parsed_url.port or 554
                 elif parsed_url.scheme == 'rtmp':
                     port = parsed_url.port or 1935
+                elif parsed_url.scheme == 'udp':
+                    port = parsed_url.port or 1234
+                elif parsed_url.scheme == 'rtp':
+                    port = parsed_url.port or 5004
                 else:
                     port = parsed_url.port or 80
 

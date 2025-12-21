@@ -1,10 +1,10 @@
 # IPTV直播源验证工具
 
-一个功能强大的IPTV直播源验证工具，支持多协议（HTTP/HTTPS/RTSP/RTMP/MMS）验证，提供命令行和Web界面两种使用方式。
+一个功能强大的IPTV直播源验证工具，支持多协议（HTTP/HTTPS/RTSP/RTMP/MMS/UDP/RTP）验证，提供命令行和Web界面两种使用方式。
 
 ## 功能特性
 
-- **多协议支持**：验证HTTP/HTTPS、RTSP、RTMP、MMS协议的直播源
+- **多协议支持**：验证HTTP/HTTPS、RTSP、RTMP、MMS、UDP、RTP协议的直播源
 - **批量验证**：支持M3U/M3U8/TXT格式文件的批量验证
 - **并发处理**：使用多线程加速验证过程
 - **智能验证**：

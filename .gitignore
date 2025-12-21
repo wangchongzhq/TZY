@@ -16,6 +16,8 @@ env/
 # 临时测试文件
 _test*.txt
 _test*.m3u
+test_*.txt
+test_*.m3u
 *.bak
 
 # 验证工具生成的文件

@@ -160,7 +160,7 @@ Web界面提供两个功能标签页：
 
 #### 1.1 URL有效性检测
 
-- 支持的协议：HTTP、HTTPS、RTSP、RTMP、MMS
+- 支持的协议：HTTP、HTTPS、RTSP、RTMP、MMS、UDP、RTP
 - 检测方法：
   - HTTP/HTTPS：发送HEAD请求，检查响应状态码（200、301、302）
   - 其他协议：尝试建立TCP连接
