@@ -239,8 +239,11 @@ def index():
                         workers = int(request.form.get('workers', 20))
                         timeout = int(request.form.get('timeout', 5))
                         
+                        # 生成输出文件路径到output目录
+                        output_filename = os.path.join('output', f"{os.path.splitext(os.path.basename(file.filename))[0]}_valid{os.path.splitext(file.filename)[1]}")
+                        
                         # 验证文件
-                        output_file = validate_file(temp_path, max_workers=workers, timeout=timeout)
+                        output_file = validate_file(temp_path, output_filename, max_workers=workers, timeout=timeout)
                         
                         if output_file:
                             # 生成下载链接
@@ -276,8 +279,11 @@ def index():
                         temp_path = temp.name
                     
                     try:
+                        # 生成输出文件路径到output目录
+                        output_filename = os.path.join('output', 'custom_urls_valid.m3u')
+                        
                         # 验证文件
-                        output_file = validate_file(temp_path, max_workers=workers, timeout=timeout)
+                        output_file = validate_file(temp_path, output_filename, max_workers=workers, timeout=timeout)
                         
                         if output_file:
                             # 生成下载链接
@@ -299,7 +305,7 @@ def index():
 def download_file(filename):
     # 确保只允许下载验证工具生成的有效文件
     safe_filename = os.path.basename(filename)  # 防止路径遍历攻击
-    file_path = os.path.join(os.getcwd(), safe_filename)
+    file_path = os.path.join('output', safe_filename)
     if os.path.exists(file_path) and (file_path.endswith('_valid.m3u') or file_path.endswith('_valid.txt')):
         return send_file(file_path, as_attachment=True, download_name=safe_filename)
     else:

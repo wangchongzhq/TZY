@@ -18,11 +18,18 @@ from urllib.parse import urlparse
 class IPTVValidator:
     def __init__(self, input_file, output_file=None, max_workers=20, timeout=5):
         self.input_file = input_file
-        self.output_file = output_file or self._generate_output_filename()
         self.max_workers = max_workers
         self.timeout = timeout
         self.channels = []
         self.categories = []
+        
+        # 确保输出目录存在
+        self._check_output_dir()
+        
+        # 生成输出文件名
+        self.output_file = output_file or self._generate_output_filename()
+        
+        # 检测文件类型和ffprobe可用性
         self.file_type = self._detect_file_type()
         self.ffprobe_available = self._check_ffprobe_availability()
 
@@ -43,10 +50,14 @@ class IPTVValidator:
         except (subprocess.SubprocessError, FileNotFoundError):
             return False
 
+    def _check_output_dir(self):
+        """确保输出目录存在"""
+        os.makedirs('output', exist_ok=True)
+
     def _generate_output_filename(self):
         """生成输出文件名"""
-        base_name, ext = os.path.splitext(self.input_file)
-        return f"{base_name}_valid{ext}"
+        base_name, ext = os.path.splitext(os.path.basename(self.input_file))
+        return os.path.join('output', f"{base_name}_valid{ext}")
 
     def read_m3u_file(self):
         """读取M3U格式文件，解析频道信息和分类"""
