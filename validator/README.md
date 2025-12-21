@@ -10,6 +10,7 @@
 - ✅ 在频道名称后添加分辨率信息（如"CCTV5[3840*2160]"）
 - ✅ 保留原始频道分类和排序顺序
 - ✅ 生成符合要求的输出文件
+- ✅ 所有输出文件统一保存到`output`目录
 - ✅ 支持多线程并发处理，提高验证效率
 - ✅ 支持自定义超时时间
 
@@ -60,7 +61,7 @@ python iptv_validator.py -a -w 50 -t 5
 验证完成，耗时 25.32 秒
 有效频道数: 78
 有效率: 78.00%
-输出文件已生成: ../jieguo_valid.m3u
+输出文件已生成: output/jieguo_valid.m3u
 ```
 
 ## 输出文件格式
@@ -91,29 +92,53 @@ NBA直播[1280*720],https://example.com/nba.m3u8
 from validator.iptv_validator import IPTVValidator
 
 # 创建验证器实例
-validator = IPTVValidator('input.m3u', 'output_valid.m3u', max_workers=20, timeout=5)
+validator = IPTVValidator('input.m3u', max_workers=20, timeout=5)
 
 # 运行验证并生成输出文件
 output_file = validator.run()
 print(f"输出文件已生成: {output_file}")
+
+# 自定义输出文件路径示例
+validator2 = IPTVValidator('input.m3u', 'output/custom_output.m3u', max_workers=20, timeout=5)
+output_file2 = validator2.run()
+print(f"自定义路径输出文件已生成: {output_file2}")
 ```
+
+## Web界面
+
+本项目已实现了基于Flask的Web界面，方便本地使用：
+
+### 启动Web界面
+
+```bash
+python web_app.py
+```
+
+访问 `http://localhost:5000` 即可使用Web界面进行直播源验证。
+
+### Web界面功能
+
+- ✅ 支持M3U和TXT格式文件上传
+- ✅ 支持手动输入多个直播源URL
+- ✅ 可配置并发线程数和超时时间
+- ✅ 显示验证结果和有效频道数量
+- ✅ 提供生成的有效直播源文件下载
+- ✅ 所有输出文件统一保存到`output`目录
 
 ## 扩展建议
 
-### 本地Web界面
+### 本地Web界面（已实现）
 
-为了更方便地在本地使用，可以添加一个Web界面：
+已完成Web界面的开发，支持：
+- 文件上传
+- 手动输入直播源URL
+- 显示验证进度和结果
+- 提供生成的有效直播源文件下载
 
-1. **安装Web框架**：
-   ```bash
-   pip install flask
-   ```
-
-2. **创建Web应用**：
-   - 支持文件上传
-   - 支持手动输入直播源URL
-   - 显示验证进度和结果
-   - 提供生成的有效直播源文件下载
+如需改进可以考虑：
+- 添加更多的直播源格式支持
+- 增加直播源分类管理功能
+- 添加更多的视频信息检测（如码率、帧率等）
 
 ### GitHub部署方案
 
