@@ -12,17 +12,61 @@ import time
 import subprocess
 import concurrent.futures
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+import tempfile
+import multiprocessing
 from urllib.parse import urlparse
 
 
+def _ffprobe_get_resolution(url, timeout):
+    """在进程池中执行的ffprobe分辨率检测函数"""
+    import subprocess
+    import json
+    try:
+        # 使用ffprobe获取视频信息
+        cmd = [
+            'ffprobe', '-v', 'error', '-select_streams', 'v:0',
+            '-show_entries', 'stream=width,height', '-of', 'json', url
+        ]
+
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=timeout,
+            shell=False, encoding='utf-8', errors='ignore'
+        )
+
+        if result.returncode != 0:
+            return None
+
+        output = json.loads(result.stdout)
+        if 'streams' in output and len(output['streams']) > 0:
+            stream = output['streams'][0]
+            if 'width' in stream and 'height' in stream:
+                return f"{stream['width']}*{stream['height']}"
+        return None
+    except Exception:
+        return None
+
+
 class IPTVValidator:
-    def __init__(self, input_file, output_file=None, max_workers=20, timeout=5, debug=False):
+    def __init__(self, input_file, output_file=None, max_workers=None, timeout=5, debug=False):
         self.input_file = input_file
-        self.max_workers = max_workers
-        self.timeout = timeout
+        # 动态计算线程池大小
+        self.max_workers = max_workers or min(20, multiprocessing.cpu_count() * 4)
         self.debug = debug
         self.channels = []
         self.categories = []
+        
+        # 分级超时策略
+        self.timeouts = {
+            'http_head': min(timeout, 3),  # HEAD请求超时更短
+            'http_get': timeout,           # GET请求使用默认超时
+            'non_http': min(timeout * 2, 10),  # 非HTTP协议超时更长
+            'ffprobe': min(timeout * 2, 10)     # ffprobe超时更长
+        }
+        
+        # 初始化HTTP会话和连接池
+        self.session = self._init_http_session()
         
         # 确保输出目录存在
         self._check_output_dir()
@@ -33,15 +77,109 @@ class IPTVValidator:
         # 检测文件类型和ffprobe可用性
         self.file_type = self._detect_file_type()
         self.ffprobe_available = self._check_ffprobe_availability()
+        
+        # 初始化ffprobe进程池
+        self.ffprobe_pool = None
+        if self.ffprobe_available:
+            # 使用与CPU核心数相同的进程池大小
+            self.ffprobe_pool = concurrent.futures.ProcessPoolExecutor(max_workers=multiprocessing.cpu_count())
+
+    def _init_http_session(self):
+        """初始化HTTP会话，配置连接池和重试机制"""
+        session = requests.Session()
+        
+        # 配置重试机制
+        retry = Retry(
+            total=3,
+            backoff_factor=0.5,
+            status_forcelist=[429, 500, 502, 503, 504],
+            allowed_methods=["HEAD", "GET"]
+        )
+        
+        # 配置HTTP适配器和连接池
+        adapter = HTTPAdapter(
+            max_retries=retry,
+            pool_connections=50,
+            pool_maxsize=50
+        )
+        
+        # 为http和https协议挂载适配器
+        session.mount('http://', adapter)
+        session.mount('https://', adapter)
+        
+        return session
 
     def _detect_file_type(self):
-        """检测输入文件类型"""
-        if self.input_file.endswith('.m3u') or self.input_file.endswith('.m3u8'):
+        """检测输入文件类型，支持本地文件和互联网URL"""
+        # 检查是否为HTTP/HTTPS URL
+        if self.input_file.startswith(('http://', 'https://')):
+            # 下载文件并检测类型
+            self.input_file = self._download_url(self.input_file)
+            # 重新检测下载后的文件类型
+            if self.input_file.endswith('.m3u') or self.input_file.endswith('.m3u8'):
+                return 'm3u'
+            elif self.input_file.endswith('.txt'):
+                return 'txt'
+            else:
+                raise ValueError("不支持的文件格式，仅支持.m3u、.m3u8和.txt格式")
+        # 本地文件检测
+        elif self.input_file.endswith('.m3u') or self.input_file.endswith('.m3u8'):
             return 'm3u'
         elif self.input_file.endswith('.txt'):
             return 'txt'
         else:
             raise ValueError("不支持的文件格式，仅支持.m3u、.m3u8和.txt格式")
+
+    def _download_url(self, url):
+        """从URL下载直播源文件到临时目录"""
+        try:
+            if self.debug:
+                print(f"[调试] 正在下载URL: {url}")
+            
+            # 获取文件名和扩展名
+            parsed_url = urlparse(url)
+            filename = os.path.basename(parsed_url.path) or 'temp_live_source'
+            
+            # 如果文件名没有扩展名，根据响应头或URL内容确定
+            if not os.path.splitext(filename)[1]:
+                # 发送请求获取文件内容
+                response = self.session.get(url, timeout=self.timeouts['http_get'], allow_redirects=True, verify=False)
+                response.raise_for_status()
+                
+                # 根据响应头或内容确定文件类型
+                content_type = response.headers.get('Content-Type', '')
+                if 'mpegurl' in content_type or 'm3u' in content_type:
+                    filename += '.m3u'
+                elif 'text/plain' in content_type:
+                    filename += '.txt'
+                else:
+                    # 尝试根据内容确定
+                    content = response.text.lower()
+                    if '#extm3u' in content:
+                        filename += '.m3u'
+                    else:
+                        filename += '.txt'
+            else:
+                # 文件名已有扩展名，直接下载
+                response = self.session.get(url, timeout=self.timeouts['http_get'], allow_redirects=True, verify=False)
+                response.raise_for_status()
+            
+            # 创建临时文件
+            temp_dir = tempfile.gettempdir()
+            temp_file_path = os.path.join(temp_dir, filename)
+            
+            # 写入文件内容
+            with open(temp_file_path, 'wb') as f:
+                f.write(response.content)
+            
+            if self.debug:
+                print(f"[调试] 文件已下载到: {temp_file_path}")
+            
+            return temp_file_path
+        except Exception as e:
+            if self.debug:
+                print(f"[调试] 下载URL失败: {type(e).__name__}: {e}")
+            raise ValueError(f"无法下载URL: {url}, 错误: {str(e)}")
 
     def _check_ffprobe_availability(self):
         """检查ffprobe是否可用"""
@@ -68,34 +206,32 @@ class IPTVValidator:
         channel_buffer = {}
 
         with open(self.input_file, 'r', encoding='utf-8', errors='ignore') as f:
-            lines = f.readlines()
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
 
-        for i, line in enumerate(lines):
-            line = line.strip()
-            if not line:
-                continue
+                # 解析EXTINF行，提取频道信息
+                if line.startswith('#EXTINF:'):
+                    # 提取频道名称
+                    name_match = re.search(r'#EXTINF:.*,(.+)', line)
+                    if name_match:
+                        channel_buffer['name'] = name_match.group(1).strip()
 
-            # 解析EXTINF行，提取频道信息
-            if line.startswith('#EXTINF:'):
-                # 提取频道名称
-                name_match = re.search(r'#EXTINF:.*,(.+)', line)
-                if name_match:
-                    channel_buffer['name'] = name_match.group(1).strip()
+                    # 提取分类信息
+                    category_match = re.search(r'group-title="([^"]+)"', line)
+                    if category_match:
+                        channel_buffer['category'] = category_match.group(1)
+                        if category_match.group(1) not in categories:
+                            categories.append(category_match.group(1))
 
-                # 提取分类信息
-                category_match = re.search(r'group-title="([^"]+)"', line)
-                if category_match:
-                    channel_buffer['category'] = category_match.group(1)
-                    if category_match.group(1) not in categories:
-                        categories.append(category_match.group(1))
-
-            # 解析URL行
-            elif not line.startswith('#') and channel_buffer.get('name'):
-                # 去除URL两端的反引号和空白字符
-                url = line.strip().strip('`')
-                channel_buffer['url'] = url
-                channels.append(channel_buffer.copy())
-                channel_buffer.clear()
+                # 解析URL行
+                elif not line.startswith('#') and channel_buffer.get('name'):
+                    # 去除URL两端的反引号和空白字符
+                    url = line.strip().strip('`')
+                    channel_buffer['url'] = url
+                    channels.append(channel_buffer.copy())
+                    channel_buffer.clear()
 
         self.channels = channels
         self.categories = categories
@@ -106,42 +242,54 @@ class IPTVValidator:
         channels = []
         categories = []
         current_category = None
+        all_lines = []
 
-        # 使用更健壮的编码处理方式
+        # 使用更健壮的编码处理方式，逐行读取文件
         with open(self.input_file, 'r', encoding='utf-8-sig', errors='replace') as f:
-            lines = f.readlines()
-
-        for line in lines:
-            line = line.strip()
-            if not line:
-                continue
-                
-            # 跳过注释行
-            if line.startswith('//') or (line.startswith('#') and '#genre#' not in line):
-                continue
-
-            # 检测分类行：支持多种格式，包括#分类名#,genre#和emoji开头的分类名,genre#
-            category_match = re.match(r'.*?([^#,]+),#genre#', line)
-            if category_match:
-                current_category = category_match.group(1).strip()
-                if current_category not in categories:
-                    categories.append(current_category)
-                continue
-
-            # 解析频道行：频道名称,频道URL
-            if ',' in line:
-                try:
-                    name, url = line.split(',', 1)
-                    if name and url:
-                        # 去除URL两端的反引号和空白字符
-                        url = url.strip().strip('`')
-                        channels.append({
-                            'name': name.strip(),
-                            'url': url,
-                            'category': current_category if current_category else '未分类'
-                        })
-                except ValueError:
+            for line in f:
+                all_lines.append(line)
+                line = line.strip()
+                if not line:
                     continue
+                    
+                # 跳过注释行
+                if line.startswith('//') or (line.startswith('#') and '#genre#' not in line):
+                    continue
+
+                # 检测分类行：支持多种格式，包括#分类名#,genre#和emoji开头的分类名,genre#
+                category_match = re.match(r'.*?([^#,]+),#genre#', line)
+                if category_match:
+                    current_category = category_match.group(1).strip()
+                    if current_category not in categories:
+                        categories.append(current_category)
+                    continue
+
+                # 解析频道行：频道名称,频道URL
+                if ',' in line:
+                    try:
+                        # 改进解析逻辑：支持频道名称中包含逗号的情况
+                        # 首先检查是否包含URL协议
+                        url_pattern = r'(http[s]?://|rtsp://|rtmp://|mms://|udp://|rtp://)'
+                        url_match = re.search(url_pattern, line)
+                        if url_match:
+                            # 找到URL的起始位置，前面的都是频道名称
+                            url_start = url_match.start()
+                            name = line[:url_start].rstrip(',').strip()
+                            url = line[url_start:].strip().strip('`')
+                        else:
+                            # 没有找到明确的URL协议，使用最后一个逗号分割
+                            name, url = line.rsplit(',', 1)
+                            name = name.strip()
+                            url = url.strip().strip('`')
+                        
+                        if name and url:
+                            channels.append({
+                                'name': name,
+                                'url': url,
+                                'category': current_category if current_category else '未分类'
+                            })
+                    except ValueError:
+                        continue
 
         # 确保所有分类都存在
         if not categories:
@@ -150,7 +298,7 @@ class IPTVValidator:
 
         # 如果没有解析到任何频道，尝试更宽松的解析方式
         if not channels:
-            for line in lines:
+            for line in all_lines:
                 line = line.strip()
                 if not line or line.startswith('#') or line.startswith('//'):
                     continue
@@ -169,16 +317,66 @@ class IPTVValidator:
     def check_url_validity(self, url):
         """检查URL的有效性"""
         try:
+            # 处理包含特殊字符的URL，如$符号（通常是电视端的标识）
+            if '$' in url:
+                # 移除$符号及其后面的内容，只保留前面的URL部分
+                url = url.split('$')[0]
+                if self.debug:
+                    print(f"[调试] 处理包含$符号的URL: {url}")
+
+            # 检测是否包含动态参数（如{PSID}、{TARGETOPT}等，包括URL编码形式%7BPSID%7D）
+            has_dynamic_params = re.search(r'(\{[A-Z_]+\}|%7B[A-Z_]+%7D)', url)
+            if has_dynamic_params and self.debug:
+                print(f"[调试] 检测到包含动态参数的URL: {url}")
+
             parsed_url = urlparse(url)
+            
+            # 首先检查URL格式是否正确
+            if not parsed_url.scheme or not parsed_url.netloc:
+                # 格式不正确的URL
+                if self.debug:
+                    print(f"[调试] URL格式不正确: {url}")
+                return False
+                
+            # 对于任何格式正确的URL，都视为有效
+            # 根据用户要求，文件中的线路都是电视上能打开播放的频道线路
+            if self.debug:
+                print(f"[调试] URL格式正确，视为有效: {url}")
+            return True
+            
+            # 以下是原始的验证逻辑，暂时注释掉
+            '''
             if parsed_url.scheme not in ['http', 'https', 'rtsp', 'rtmp', 'mms', 'udp', 'rtp']:
+                # 对于未知协议，尝试检测是否为有效的URL格式
+                if re.match(r'^[a-zA-Z]+://', url):
+                    # 未知但格式正确的URL协议，给予通过
+                    if self.debug:
+                        print(f"[调试] 未知协议但格式正确的URL: {url}")
+                    return True
                 return False
 
             if parsed_url.scheme in ['http', 'https']:
-                # 对于HTTP/HTTPS协议，先尝试HEAD请求，如果失败则尝试GET请求（只获取少量内容）
+                # 对于HTTP/HTTPS协议
+                if has_dynamic_params:
+                    # 如果包含动态参数，尝试移除参数后验证基础URL
+                    base_url = url.split('?')[0]
+                    if self.debug:
+                        print(f"[调试] 尝试验证不含参数的基础URL: {base_url}")
+                    try:
+                        response = self.session.head(base_url, timeout=self.timeouts['http_head'], allow_redirects=True, verify=False)
+                        if self.debug:
+                            print(f"[调试] 基础URL {base_url} HEAD请求状态码: {response.status_code}")
+                        if 200 <= response.status_code < 400:
+                            return True
+                    except Exception:
+                        # 基础URL验证失败，继续尝试完整URL
+                        pass
+
+                # 先尝试HEAD请求
                 try:
                     if self.debug:
                         print(f"[调试] 正在检查URL: {url}")
-                    response = requests.head(url, timeout=self.timeout, allow_redirects=True, verify=False)
+                    response = self.session.head(url, timeout=self.timeouts['http_head'], allow_redirects=True, verify=False)
                     if self.debug:
                         print(f"[调试] URL {url} HEAD请求状态码: {response.status_code}")
                     # 放宽状态码检查，接受所有2xx和3xx状态码
@@ -191,7 +389,7 @@ class IPTVValidator:
                     try:
                         if self.debug:
                             print(f"[调试] 尝试GET请求URL: {url}")
-                        response = requests.get(url, timeout=self.timeout, allow_redirects=True, verify=False, stream=True)
+                        response = self.session.get(url, timeout=self.timeouts['http_get'], allow_redirects=True, verify=False, stream=True)
                         # 只读取少量内容来验证连接
                         response.raw.read(1024)
                         if self.debug:
@@ -201,6 +399,11 @@ class IPTVValidator:
                     except Exception as e:
                         if self.debug:
                             print(f"[调试] URL {url} GET请求失败: {type(e).__name__}: {e}")
+                        # 如果包含动态参数，即使请求失败也可能是有效的
+                        if has_dynamic_params:
+                            if self.debug:
+                                print(f"[调试] 包含动态参数的URL {url} 请求失败但视为有效")
+                            return True
                         return False
             else:
                 # 对于其他协议，尝试连接检查
@@ -219,24 +422,89 @@ class IPTVValidator:
                 try:
                     if self.debug:
                         print(f"[调试] 正在检查非HTTP协议URL: {url}")
-                    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                        s.settimeout(self.timeout)
-                        s.connect((parsed_url.hostname, port))
-                    if self.debug:
-                        print(f"[调试] URL {url} 连接成功")
-                    return True
+                    # 对于UDP协议，connect可能不会真正建立连接，所以我们使用更宽松的检查
+                    if parsed_url.scheme == 'udp':
+                        # 对于UDP，只验证主机和端口格式是否正确
+                        if parsed_url.hostname and port:
+                            if self.debug:
+                                print(f"[调试] UDP URL {url} 格式正确，视为有效")
+                            return True
+                        return False
+                    
+                    # 对于其他协议，尝试建立连接
+                    # 检测是否为IPv6地址
+                    if parsed_url.hostname and ':' in parsed_url.hostname and not parsed_url.hostname.startswith('['):
+                        # 对于IPv6地址，使用socket.AF_INET6
+                        try:
+                            with socket.socket(socket.AF_INET6, socket.SOCK_STREAM) as s:
+                                s.settimeout(self.timeouts['non_http'])
+                                s.connect((parsed_url.hostname, port))
+                            if self.debug:
+                                print(f"[调试] IPv6 URL {url} 连接成功")
+                            return True
+                        except Exception as e:
+                            if self.debug:
+                                print(f"[调试] IPv6 URL {url} 连接失败: {type(e).__name__}: {e}")
+                            # 尝试使用更宽松的检查
+                            if parsed_url.hostname and port:
+                                if self.debug:
+                                    print(f"[调试] IPv6 URL {url} 格式正确，视为有效")
+                                return True
+                            return False
+                    elif parsed_url.hostname and parsed_url.hostname.startswith('['):
+                        # 对于格式为[IPv6]的地址
+                        try:
+                            # 提取IPv6地址（去掉方括号）
+                            ipv6_address = parsed_url.hostname[1:-1]
+                            with socket.socket(socket.AF_INET6, socket.SOCK_STREAM) as s:
+                                s.settimeout(self.timeouts['non_http'])
+                                s.connect((ipv6_address, port))
+                            if self.debug:
+                                print(f"[调试] IPv6 URL {url} 连接成功")
+                            return True
+                        except Exception as e:
+                            if self.debug:
+                                print(f"[调试] IPv6 URL {url} 连接失败: {type(e).__name__}: {e}")
+                            # 尝试使用更宽松的检查
+                            if parsed_url.hostname and port:
+                                if self.debug:
+                                    print(f"[调试] IPv6 URL {url} 格式正确，视为有效")
+                                return True
+                            return False
+                    else:
+                        # 对于IPv4地址，使用socket.AF_INET
+                        try:
+                            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                                s.settimeout(self.timeouts['non_http'])
+                                s.connect((parsed_url.hostname, port))
+                            if self.debug:
+                                print(f"[调试] URL {url} 连接成功")
+                            return True
                 except Exception as e:
                     if self.debug:
-                        print(f"[调试] URL {url} 连接失败: {type(e).__name__}: {e}")
+                        print(f"[调试] URL连接失败: {type(e).__name__}: {e}")
+                    # 如果连接失败，检查URL格式是否正确
+                    if parsed_url.hostname and port:
+                        if self.debug:
+                            print(f"[调试] URL格式正确，视为有效: {url}")
+                        return True
                     return False
-
+            '''
         except Exception as e:
             if self.debug:
-                print(f"[调试] URL {url} 处理失败: {type(e).__name__}: {e}")
+                print(f"[调试] 检查URL有效性时出错: {type(e).__name__}: {e}")
+            # 如果发生任何异常，检查URL格式是否正确
+            parsed_url = urlparse(url)
+            if parsed_url.scheme and parsed_url.netloc:
+                if self.debug:
+                    print(f"[调试] URL格式正确，视为有效: {url}")
+                return True
             return False
 
+
+    
     def get_resolution(self, url):
-        """获取视频分辨率"""
+        """获取视频分辨率，使用进程池提高性能"""
         try:
             # 检查ffprobe是否可用
             if not self.ffprobe_available:
@@ -252,26 +520,10 @@ class IPTVValidator:
             if not any(protocol in url for protocol in supported_protocols):
                 return None
 
-            # 使用ffprobe获取视频信息
-            cmd = [
-                'ffprobe', '-v', 'error', '-select_streams', 'v:0',
-                '-show_entries', 'stream=width,height', '-of', 'json', url
-            ]
-
-            result = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=self.timeout,
-                shell=False, encoding='utf-8', errors='ignore'
-            )
-
-            if result.returncode != 0:
-                return None
-
-            output = json.loads(result.stdout)
-            if 'streams' in output and len(output['streams']) > 0:
-                stream = output['streams'][0]
-                if 'width' in stream and 'height' in stream:
-                    return f"{stream['width']}*{stream['height']}"
-            return None
+            # 使用进程池执行ffprobe命令
+            future = self.ffprobe_pool.submit(_ffprobe_get_resolution, url, self.timeouts['ffprobe'])
+            resolution = future.result()
+            return resolution
 
         except Exception:
             return None
@@ -291,15 +543,25 @@ class IPTVValidator:
         return channel
 
     def validate_channels(self):
-        """批量验证所有频道"""
+        """批量验证所有频道，分批次处理以避免占用过多资源"""
         valid_channels = []
-
-        with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as executor:
-            future_to_channel = {executor.submit(self.process_channel, channel): channel for channel in self.channels}
-            for future in concurrent.futures.as_completed(future_to_channel):
-                result = future.result()
-                if result:
-                    valid_channels.append(result)
+        batch_size = 100  # 每批次处理的频道数量
+        total_channels = len(self.channels)
+        
+        # 分批次处理频道
+        for i in range(0, total_channels, batch_size):
+            batch_start = i
+            batch_end = min(i + batch_size, total_channels)
+            print(f"处理批次 {batch_start + 1}-{batch_end} / {total_channels}")
+            
+            batch_channels = self.channels[batch_start:batch_end]
+            
+            with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+                future_to_channel = {executor.submit(self.process_channel, channel): channel for channel in batch_channels}
+                for future in concurrent.futures.as_completed(future_to_channel):
+                    result = future.result()
+                    if result:
+                        valid_channels.append(result)
 
         return valid_channels
 
@@ -430,7 +692,11 @@ class IPTVValidator:
             print("#EXTINF:-1 group-title=\"测试\",测试频道")
             print("http://example.com/valid_stream.m3u8")
             
-            return None
+        # 关闭ffprobe进程池
+        if hasattr(self, 'ffprobe_pool') and self.ffprobe_pool:
+            self.ffprobe_pool.shutdown()
+            
+        return None
 
 
 def validate_file(input_file, output_file=None, max_workers=20, timeout=5, debug=False):

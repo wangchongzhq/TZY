@@ -156,6 +156,7 @@ HTML_TEMPLATE = '''
         <div class="tab">
             <button class="tablinks active" onclick="openTab(event, 'FileUpload')">文件上传</button>
             <button class="tablinks" onclick="openTab(event, 'UrlInput')">URL输入</button>
+            <button class="tablinks" onclick="openTab(event, 'WebSource')">互联网直播源文件</button>
         </div>
 
         <!-- 文件上传标签页 -->
@@ -198,6 +199,25 @@ HTML_TEMPLATE = '''
                     <input type="text" id="timeout2" name="timeout2" value="5">
                 </div>
                 <button type="submit" name="validate_urls">开始验证</button>
+            </form>
+        </div>
+
+        <!-- 互联网直播源文件标签页 -->
+        <div id="WebSource" class="tabcontent">
+            <form method="post">
+                <div class="form-group">
+                    <label for="source_url">输入互联网直播源文件URL (.m3u, .m3u8, .txt)</label>
+                    <input type="text" id="source_url" name="source_url" placeholder="http://example.com/live_channels.m3u">
+                </div>
+                <div class="form-group">
+                    <label for="workers3">并发工作线程数</label>
+                    <input type="text" id="workers3" name="workers3" value="20">
+                </div>
+                <div class="form-group">
+                    <label for="timeout3">超时时间（秒）</label>
+                    <input type="text" id="timeout3" name="timeout3" value="5">
+                </div>
+                <button type="submit" name="validate_web_source">开始验证</button>
             </form>
         </div>
 
@@ -328,7 +348,7 @@ def index():
                                 if line and ',' in line:
                                     name, url = line.split(',', 1)
                                     temp.write(f'#EXTINF:-1 group-title="{category}",{name.strip()}\n{url.strip()}\n'.encode('utf-8'))
-                        
+                    
                         # 生成输出文件路径到output目录
                         output_filename = os.path.join('output', 'custom_urls_valid.m3u')
                         output_filename = os.path.abspath(output_filename)
@@ -368,6 +388,61 @@ def index():
                         if os.path.exists(temp_path):
                             os.unlink(temp_path)
                             app.logger.debug(f"已清理临时文件: {temp_path}")
+            
+            # 处理互联网直播源文件
+            elif 'validate_web_source' in request.form:
+                source_url = request.form.get('source_url', '')
+                workers = int(request.form.get('workers3', 20))
+                timeout = int(request.form.get('timeout3', 5))
+                
+                if not source_url.strip():
+                    flash('请输入互联网直播源文件URL', 'error')
+                else:
+                    # 确保output目录存在
+                    if not os.path.exists('output'):
+                        os.makedirs('output')
+                        app.logger.debug("已创建output目录")
+                    
+                    # 生成输出文件名
+                    from urllib.parse import urlparse
+                    parsed_url = urlparse(source_url)
+                    filename = os.path.basename(parsed_url.path) or 'web_source'
+                    base_name, ext = os.path.splitext(filename)
+                    if not ext:
+                        ext = '.m3u'  # 默认使用m3u格式
+                    output_filename = os.path.join('output', f"{base_name}_valid{ext}")
+                    output_filename = os.path.abspath(output_filename)
+                    
+                    # 记录详细日志
+                    app.logger.debug(f"开始验证互联网直播源文件")
+                    app.logger.debug(f"源URL: {source_url}")
+                    app.logger.debug(f"输出文件路径: {output_filename}")
+                    app.logger.debug(f"验证参数 - workers: {workers}, timeout: {timeout}")
+                    
+                    # 验证文件 - 启用调试模式
+                    try:
+                        output_file = validate_file(source_url, output_filename, max_workers=workers, timeout=timeout, debug=True)
+                        
+                        app.logger.debug(f"验证完成，output_file: {output_file}")
+                        
+                        if output_file:
+                            # 生成下载链接
+                            with open(output_file, 'r', encoding='utf-8', errors='ignore') as f:
+                                valid_count = sum(1 for line in f if not line.startswith("#") and line.strip())
+                            app.logger.debug(f"有效频道数: {valid_count}")
+                            flash(f'验证完成！有效频道数: {valid_count}', 'success')
+                            flash(f'<a href="/download/{os.path.basename(output_file)}" class="download-link">下载有效直播源文件</a>', 'success')
+                        else:
+                            app.logger.debug("没有找到有效的直播源")
+                            flash('没有找到有效的直播源', 'error')
+                            # 添加调试信息
+                            flash('🔍 可能的原因：网络问题、URL已失效或格式错误', 'error')
+                            flash('💡 建议：检查网络连接，确保URL指向有效的M3U/TXT文件', 'error')
+                    except Exception as e:
+                        app.logger.error(f"验证过程中发生错误: {str(e)}")
+                        app.logger.exception(e)
+                        flash(f'验证过程中发生错误: {str(e)}', 'error')
+                        flash('💡 建议：请检查URL格式是否正确，确保是有效的M3U/TXT文件URL', 'error')
         
         except Exception as e:
             flash(f'验证过程中发生错误: {str(e)}', 'error')
