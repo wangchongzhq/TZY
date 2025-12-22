@@ -21,16 +21,17 @@
 
 ### 直播源验证工具（validator/）
 - **多协议支持**：验证 HTTP/HTTPS、RTSP、RTMP、MMS、UDP、RTP 协议的直播源
-- **批量验证**：支持 M3U/M3U8/TXT 格式文件的批量验证
-- **并发处理**：使用多线程加速验证过程
+- **批量验证**：支持 M3U/M3U8/TXT 格式文件的批量验证，每批次处理 100 个频道
+- **并发处理**：使用动态线程池（min(20, CPU 核心数 × 4)）加速验证过程
 - **智能验证**：
-  - HTTP/HTTPS 协议：先尝试 HEAD 请求，失败自动回退到 GET 请求
-  - 支持所有 2xx（成功）和 3xx（重定向）状态码
-  - 其他协议：通过 socket 连接检查
+  - 宽松验证逻辑：只要 URL 格式正确（包含有效协议和主机名），即视为有效
+  - 支持处理包含动态参数（如 {PSID}、{TARGETOPT}）的 URL
+  - 支持处理包含 $ 符号的电视端 URL
 - **调试模式**：详细的调试输出，便于排查问题
 - **Web 界面**：用户友好的 Web 界面，支持文件上传和手动 URL 验证
 - **智能过滤**：自动去除无效直播源，仅保留可播放的频道 URL
 - **分辨率检测**：自动检测视频流分辨率（需要 FFmpeg）
+- **频道比较工具**：`compare_channels.py` 用于比较原始文件和有效文件，找出被标记为无效的频道
 
 ## 📋 环境要求
 
@@ -76,6 +77,7 @@ pip install -r requirements.txt
 ├── validator/                   # 直播源验证工具目录
 │   ├── iptv_validator.py        # 验证工具核心脚本
 │   ├── web_app.py               # Web 界面应用
+│   ├── compare_channels.py      # 频道比较工具（找出无效频道）
 │   ├── README.md                # 验证工具详细文档
 │   └── output/                  # 验证工具输出目录
 ├── requirements.txt             # 依赖包列表
@@ -152,12 +154,32 @@ python validator/iptv_validator.py -i <输入文件> [选项]
 |------|------|--------|
 | -i, --input | 输入文件路径（M3U/M3U8/TXT格式） | 必填 |
 | -o, --output | 输出文件路径 | output/[输入文件名]_valid.m3u |
-| -w, --workers | 线程数量 | 5 |
+| -w, --workers | 线程数量 | min(20, CPU核心数×4) |
 | -t, --timeout | 超时时间（秒） | 5 |
 | -d, --debug | 启用调试模式 | False |
-| -a, --all | 验证所有URL，包括非标准协议 | False |
+| -a, --all | 验证当前目录下所有支持的文件 | False |
+
+#### 频道比较工具（compare_channels.py）
+
+用于比较原始文件和验证后的有效文件，找出被标记为无效的频道。
+
+```bash
+python validator/compare_channels.py <原始文件> <有效文件>
+```
 
 ##### 示例
+
+```bash
+python validator/compare_channels.py input.m3u output/input_valid.m3u
+```
+
+该工具会输出：
+- 原始频道总数
+- 有效频道总数
+- 无效频道总数
+- 详细的无效频道列表（包含频道名称和URL）
+
+#### 验证工具示例
 
 ```bash
 # 基本用法
@@ -168,6 +190,9 @@ python validator/iptv_validator.py -i validator/109 live 1205 直播源.txt -t 1
 
 # 自定义输出文件和线程数
 python validator/iptv_validator.py -i validator/109 live 1205 直播源.txt -o valid_channels.m3u -w 10
+
+# 验证当前目录下所有支持的文件
+python validator/iptv_validator.py -a
 ```
 
 #### Web界面
@@ -238,6 +263,11 @@ CCTV-13新闻,https://example.com/cctv13.m3u8
 - ✅ 优化了TXT文件解析，支持emoji前缀分类行
 - ✅ 添加了详细的调试模式，便于排查验证失败原因
 - ✅ 支持文件格式自动识别（M3U/M3U8/TXT）
+- ✅ 实现动态线程池（min(20, CPU核心数×4)），提高验证效率
+- ✅ 支持批处理验证（每批次100个频道），避免资源占用过多
+- ✅ 采用宽松验证逻辑：只要URL格式正确（包含有效协议和主机名），即视为有效
+- ✅ 支持处理包含动态参数（如{PSID}、{TARGETOPT}）和$符号的URL
+- ✅ 新增频道比较工具（compare_channels.py），用于找出被标记为无效的频道
 
 ## ⚠️ 注意事项
 
@@ -248,7 +278,8 @@ CCTV-13新闻,https://example.com/cctv13.m3u8
 5. 频繁验证可能会导致IP被封禁，建议合理设置验证频率
 6. 分辨率检测需要安装FFmpeg
 7. 某些直播源可能需要特定的User-Agent或Referer才能访问
-8. 非HTTP/HTTPS协议的验证仅检查连接是否成功，不验证流的有效性
+8. 当前验证工具采用宽松验证逻辑：只要URL格式正确（包含有效协议和主机名），即视为有效
+9. 频道比较工具（compare_channels.py）可用于详细分析哪些频道被标记为无效
 
 ## 📝 输出文件说明
 
@@ -349,5 +380,5 @@ python check_files.py
 
 ---
 
-**更新时间**: 2025-12-21
-**版本**: 1.6.0
+**更新时间**: 2025-12-22
+**版本**: 1.7.0
