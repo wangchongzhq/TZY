@@ -1,0 +1,108 @@
+---
+name: IPTV 直播源检测工作流
+
+on:
+  schedule:
+    # 北京时间每天早上5点运行 (UTC 20:00)
+    - cron: '0 20 * * *'
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: '日志级别'
+        required: true
+        default: 'info'
+        type: choice
+        options:
+          - info
+          - debug
+          - warn
+      inputFile:
+        description: '要检测的输入文件路径（可选，默认检测所有输出文件）'
+        required: false
+        type: string
+
+jobs:
+  validate-iptv:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+
+      steps:
+        - name: Checkout代码
+          uses: actions/checkout@v4
+          with:
+            repository: wangchongzhq/TZY
+            persist-credentials: true
+
+        - name: 设置Python环境
+          uses: actions/setup-python@v4
+          with:
+            python-version: '3.x'
+
+        - name: 安装依赖
+          run: |
+            python -m pip install --upgrade pip
+            pip install -r requirements.txt
+
+        - name: 检测所有直播源文件
+          if: github.event.inputs.inputFile == ''
+          run: |
+            for file in jieguo.m3u jieguo.txt iptv_channels.m3u iptv_channels.txt; do
+              if [ -f "$file" ]; then
+                echo "=== 验证文件: $file ==="
+                python validator/iptv_validator.py -i "$file" -w 20 -t 5 -d
+              fi
+            done
+
+        - name: 检测指定的直播源文件
+          if: github.event.inputs.inputFile != ''
+          run: |
+            echo "=== 验证文件: ${{ github.event.inputs.inputFile }} ==="
+            python validator/iptv_validator.py -i "${{ github.event.inputs.inputFile }}" -w 20 -t 5 -d
+
+        - name: 保存验证结果
+          run: |
+            mkdir -p validator/results
+            cp -f validator/output/*_valid.m3u validator/results/ 2>/dev/null || true
+            cp -f validator/output/*_valid.txt validator/results/ 2>/dev/null || true
+
+        - name: 检查验证结果变更
+          id: check_changes
+          run: |
+            git add validator/results/
+            git diff --staged --quiet || echo "changes=true" >> $GITHUB_OUTPUT
+
+        - name: 提交验证结果
+          if: steps.check_changes.outputs.changes == 'true'
+          run: |
+            git config --local user.email "github-actions[bot]@users.noreply.github.com"
+            git config --local user.name "GitHub Actions Bot"
+            git config --global pull.rebase false
+            git config --global core.autocrlf false
+
+            git remote -v
+            git fetch origin ${{ github.ref_name }}
+            git checkout ${{ github.ref_name }} || git checkout -b ${{ github.ref_name }}
+            git reset --hard origin/${{ github.ref_name }}
+
+            mkdir -p validator/results
+            cp -f validator/output/*_valid.m3u validator/results/ 2>/dev/null || true
+            cp -f validator/output/*_valid.txt validator/results/ 2>/dev/null || true
+
+            git add validator/results/
+
+            if git diff --staged --quiet; then
+              echo "没有检测到验证结果更改，跳过提交"
+              exit 0
+            fi
+
+            git commit -m "自动检测直播源: $(date +'%Y-%m-%d %H:%M:%S')"
+
+            git push origin ${{ github.ref_name }} || {
+              echo "推送失败，尝试使用--force-with-lease推送..."
+              git push --force-with-lease origin ${{ github.ref_name }} || {
+                echo "::error::所有推送方式均失败，请检查GitHub权限配置"
+                exit 1
+              }
+            }
