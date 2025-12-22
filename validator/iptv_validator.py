@@ -56,6 +56,8 @@ class IPTVValidator:
         self.debug = debug
         self.channels = []
         self.categories = []
+        # 批次大小，用于分批次处理频道
+        self.batch_size = 50
         
         # 分级超时策略
         self.timeouts = {
@@ -238,7 +240,7 @@ class IPTVValidator:
         return channels, categories
 
     def read_txt_file(self):
-        """读取TXT格式文件，解析频道信息和分类"""
+        """读取TXT格式文件，解析频道信息和分类，支持外部URL处理"""
         channels = []
         categories = []
         current_category = None
@@ -283,11 +285,19 @@ class IPTVValidator:
                             url = url.strip().strip('`')
                         
                         if name and url:
-                            channels.append({
-                                'name': name,
-                                'url': url,
-                                'category': current_category if current_category else '未分类'
-                            })
+                            # 检查URL是否为外部直播源文件
+                            if self._is_external_source_file(url):
+                                # 处理外部URL，下载并解析
+                                external_channels, external_categories = self._handle_external_url(url, current_category)
+                                channels.extend(external_channels)
+                                categories.extend([cat for cat in external_categories if cat not in categories])
+                            else:
+                                # 普通频道，直接添加
+                                channels.append({
+                                    'name': name,
+                                    'url': url,
+                                    'category': current_category if current_category else '未分类'
+                                })
                     except ValueError:
                         continue
 
@@ -304,15 +314,89 @@ class IPTVValidator:
                     continue
                 # 尝试直接匹配URL
                 if re.search(r'http[s]?://', line) or re.search(r'rtsp://', line) or re.search(r'rtmp://', line) or re.search(r'mms://', line):
-                    channels.append({
-                        'name': line.split(',')[0].strip() if ',' in line else '未命名频道',
-                        'url': line.split(',')[-1].strip() if ',' in line else line.strip(),
-                        'category': '未分类'
-                    })
+                    url = line.split(',')[-1].strip() if ',' in line else line.strip()
+                    name = line.split(',')[0].strip() if ',' in line else '未命名频道'
+                    
+                    # 检查URL是否为外部直播源文件
+                    if self._is_external_source_file(url):
+                        # 处理外部URL，下载并解析
+                        external_channels, external_categories = self._handle_external_url(url, '未分类')
+                        channels.extend(external_channels)
+                        categories.extend([cat for cat in external_categories if cat not in categories])
+                    else:
+                        # 普通频道，直接添加
+                        channels.append({
+                            'name': name,
+                            'url': url,
+                            'category': '未分类'
+                        })
 
         self.channels = channels
         self.categories = categories
         return channels, categories
+        
+    def _is_external_source_file(self, url):
+        """检查URL是否指向外部直播源文件"""
+        if not url.startswith(('http://', 'https://')):
+            return False
+            
+        # 检查URL是否以直播源文件扩展名结尾
+        url_lower = url.lower()
+        if url_lower.endswith(('.m3u', '.m3u8', '.txt')):
+            return True
+            
+        # 检查URL路径中是否包含直播源相关关键字
+        keywords = ['iptv', 'live', 'channel', 'stream', 'playlist']
+        for keyword in keywords:
+            if keyword in url_lower:
+                return True
+                
+        return False
+        
+    def _handle_external_url(self, url, default_category):
+        """处理外部URL，下载并解析直播源文件"""
+        external_channels = []
+        external_categories = []
+        
+        try:
+            if self.debug:
+                print(f"[调试] 处理外部URL: {url}")
+            
+            # 下载外部文件
+            temp_file = self._download_url(url)
+            
+            # 检测文件类型
+            file_ext = os.path.splitext(temp_file)[1].lower()
+            
+            if file_ext in ['.m3u', '.m3u8']:
+                # 使用read_m3u_file方法解析
+                temp_validator = IPTVValidator(temp_file, debug=self.debug)
+                temp_validator.file_type = 'm3u'
+                external_channels, external_categories = temp_validator.read_m3u_file()
+            elif file_ext == '.txt':
+                # 使用read_txt_file方法解析（递归）
+                temp_validator = IPTVValidator(temp_file, debug=self.debug)
+                temp_validator.file_type = 'txt'
+                external_channels, external_categories = temp_validator.read_txt_file()
+            
+            # 清理临时文件
+            os.remove(temp_file)
+            
+            # 如果外部文件没有分类信息，使用默认分类
+            for channel in external_channels:
+                if not channel.get('category'):
+                    channel['category'] = default_category
+            
+            if self.debug:
+                print(f"[调试] 从外部URL解析到 {len(external_channels)} 个频道")
+                
+        except Exception as e:
+            if self.debug:
+                print(f"[调试] 处理外部URL出错: {str(e)}")
+            # 外部URL处理失败，忽略该URL
+            pass
+            
+        return external_channels, external_categories
 
     def check_url_validity(self, url):
         """检查URL的有效性"""
@@ -528,41 +612,83 @@ class IPTVValidator:
         except Exception:
             return None
 
-    def process_channel(self, channel):
-        """处理单个频道：验证URL并检测分辨率"""
+    def process_channel(self, channel, thread_id):
+        """处理单个频道：验证URL并检测分辨率，包含线程号信息"""
+        result = {
+            'name': channel['name'],
+            'url': channel['url'],
+            'category': channel.get('category', '未分类'),
+            'thread_id': thread_id,
+            'valid': False,
+            'resolution': None
+        }
+        
         valid = self.check_url_validity(channel['url'])
         if not valid:
-            return None
+            return result
 
+        result['valid'] = True
+        
         # 检测分辨率
         resolution = self.get_resolution(channel['url'])
+        result['resolution'] = resolution
+        
         if resolution:
             # 在频道名称后添加分辨率
-            channel['name'] = f"{channel['name']}[{resolution}]"
+            result['name_with_resolution'] = f"{channel['name']}[{resolution}]"
+        else:
+            result['name_with_resolution'] = channel['name']
 
-        return channel
+        return result
 
-    def validate_channels(self):
+    def validate_channels(self, progress_callback=None):
         """批量验证所有频道，分批次处理以避免占用过多资源"""
+        all_results = []
         valid_channels = []
-        batch_size = 100  # 每批次处理的频道数量
         total_channels = len(self.channels)
+        processed_count = 0
         
         # 分批次处理频道
-        for i in range(0, total_channels, batch_size):
+        for i in range(0, total_channels, self.batch_size):
             batch_start = i
-            batch_end = min(i + batch_size, total_channels)
+            batch_end = min(i + self.batch_size, total_channels)
             print(f"处理批次 {batch_start + 1}-{batch_end} / {total_channels}")
             
             batch_channels = self.channels[batch_start:batch_end]
             
             with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as executor:
-                future_to_channel = {executor.submit(self.process_channel, channel): channel for channel in batch_channels}
+                future_to_channel = {executor.submit(self.process_channel, channel, thread_id + batch_start): channel for thread_id, channel in enumerate(batch_channels)}
                 for future in concurrent.futures.as_completed(future_to_channel):
                     result = future.result()
-                    if result:
+                    all_results.append(result)
+                    processed_count += 1
+                    
+                    # 发送实时进度
+                    if progress_callback:
+                        progress = int((processed_count / total_channels) * 100)
+                        progress_callback({
+                            'progress': progress,
+                            'total_channels': total_channels,
+                            'processed': processed_count,
+                            'channel': result,
+                            'status': 'processing'
+                        })
+                    
+                    if result['valid']:
                         valid_channels.append(result)
 
+        # 发送完成通知
+        if progress_callback:
+            progress_callback({
+                'progress': 100,
+                'total_channels': total_channels,
+                'processed': processed_count,
+                'valid_count': len(valid_channels),
+                'invalid_count': processed_count - len(valid_channels),
+                'status': 'completed'
+            })
+        
+        self.all_results = all_results
         return valid_channels
 
     def generate_m3u_output(self, valid_channels):
@@ -583,7 +709,7 @@ class IPTVValidator:
         content = ['#EXTM3U']
         for category in self.categories:
             for channel in channels_by_category[category]:
-                content.append(f"#EXTINF:-1 group-title=\"{channel['category']}\",{channel['name']}")
+                content.append(f"#EXTINF:-1 group-title=\"{channel['category']}\",{channel['name_with_resolution']}")
                 content.append(channel['url'])
 
         # 写入文件
@@ -618,13 +744,28 @@ class IPTVValidator:
             if category in channels_by_category and channels_by_category[category]:
                 content.append(f"#{category}#,genre#")
                 for channel in channels_by_category[category]:
-                    content.append(f"{channel['name']},{channel['url']}")
+                    content.append(f"{channel['name_with_resolution']},{channel['url']}")
 
         # 写入文件
         with open(self.output_file, 'w', encoding='utf-8') as f:
             f.write('\n'.join(content))
 
         return self.output_file
+        
+    def get_all_results(self):
+        """获取所有频道的验证结果，包括有效和无效的"""
+        return getattr(self, 'all_results', [])
+        
+    def generate_output_files(self):
+        """生成输出文件，根据文件类型选择合适的方法"""
+        # 获取有效频道
+        valid_channels = [channel for channel in self.all_results if channel['valid']]
+        
+        # 根据文件类型生成输出文件
+        if self.file_type == 'm3u':
+            return self.generate_m3u_output(valid_channels)
+        else:
+            return self.generate_txt_output(valid_channels)
 
     def run(self):
         """运行验证流程"""
@@ -702,7 +843,8 @@ class IPTVValidator:
 def validate_file(input_file, output_file=None, max_workers=20, timeout=5, debug=False):
     """便捷函数：验证单个文件"""
     validator = IPTVValidator(input_file, output_file, max_workers, timeout, debug)
-    return validator.run()
+    output_file = validator.run()
+    return output_file, validator.get_all_results()
 
 
 def validate_all_files(directory='.', max_workers=20, timeout=5, debug=False):
@@ -718,7 +860,7 @@ def validate_all_files(directory='.', max_workers=20, timeout=5, debug=False):
 
     for file_path in files_to_validate:
         print(f"\n{'='*50}")
-        validate_file(file_path, max_workers=max_workers, timeout=timeout, debug=debug)
+        output_file, _ = validate_file(file_path, max_workers=max_workers, timeout=timeout, debug=debug)
 
 
 if __name__ == "__main__":
@@ -737,4 +879,4 @@ if __name__ == "__main__":
     if args.all:
         validate_all_files('.', args.workers, args.timeout, args.debug)
     else:
-        validate_file(args.input, args.output, args.workers, args.timeout, args.debug)
+        output_file, _ = validate_file(args.input, args.output, args.workers, args.timeout, args.debug)

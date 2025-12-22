@@ -201,7 +201,7 @@ python validator/iptv_validator.py -a
 python validator/web_app.py
 ```
 
-然后在浏览器中访问：`http://localhost:5000`
+然后在浏览器中访问：`http://localhost:5001`
 
 ##### Web界面功能
 
