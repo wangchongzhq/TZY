@@ -3,13 +3,13 @@
 ## 1. 性能优化建议
 
 ### 1.1 并发处理优化
-- **动态线程池大小**：根据CPU核心数和网络条件自动调整线程池大小，避免固定20个线程可能导致的资源浪费或不足
+- ✅ **动态线程池大小**：根据CPU核心数和网络条件自动调整线程池大小，避免固定线程数可能导致的资源浪费或不足
   ```python
   import multiprocessing
   max_workers = min(20, multiprocessing.cpu_count() * 4)  # 动态计算合适的线程数
   ```
 
-- **分批次处理大型文件**：对于包含大量频道的文件，采用分批次验证策略，避免一次性占用过多内存和网络资源
+- ✅ **分批次处理大型文件**：对于包含大量频道的文件，采用分批次验证策略，避免一次性占用过多内存和网络资源
   ```python
   # 示例：分批次处理
   batch_size = 100
@@ -20,7 +20,7 @@
   ```
 
 ### 1.2 网络请求优化
-- **HTTP连接池**：为requests库配置连接池，减少建立和关闭连接的开销
+- ✅ **HTTP连接池**：为requests库配置连接池，减少建立和关闭连接的开销
   ```python
   import requests
   from urllib3.util.retry import Retry
@@ -33,7 +33,7 @@
   session.mount('https://', adapter)
   ```
 
-- **分级超时策略**：对不同协议和不同阶段设置不同的超时时间，提高验证效率
+- ✅ **分级超时策略**：对不同协议和不同阶段设置不同的超时时间，提高验证效率
   ```python
   # 示例：分级超时
   http_timeout = {'connect': 2, 'read': 3}  # 连接2秒，读取3秒
@@ -41,23 +41,46 @@
   ```
 
 ### 1.3 资源管理优化
-- **ffprobe进程池**：避免为每个分辨率检测都创建新的ffprobe进程，使用进程池重用进程
+- ✅ **ffprobe进程池**：避免为每个分辨率检测都创建新的ffprobe进程，使用进程池重用进程
   ```python
   from concurrent.futures import ProcessPoolExecutor
   
   # 创建ffprobe进程池
-  with ProcessPoolExecutor(max_workers=10) as ffprobe_executor:
+  with ProcessPoolExecutor(max_workers=multiprocessing.cpu_count()) as ffprobe_executor:
       # 提交分辨率检测任务
       future_to_resolution = {ffprobe_executor.submit(get_resolution, url): url for url in urls}
   ```
 
-- **内存优化**：对于大型文件，使用迭代器逐行读取，避免一次性加载整个文件到内存
+- ✅ **内存优化**：对于大型文件，使用迭代器逐行读取，避免一次性加载整个文件到内存
   ```python
   # 示例：逐行读取大文件
   with open(self.input_file, 'r', encoding='utf-8') as f:
       for line in f:
           # 处理每一行
           process_line(line)
+  ```
+
+### 1.4 验证逻辑优化
+- ✅ **动态参数处理**：支持包含动态参数（如{PSID}、{TARGETOPT}等，包括URL编码形式%7BPSID%7D）的URL
+  ```python
+  # 示例：检测动态参数
+  has_dynamic_params = re.search(r'({[A-Z_]+}|%7B[A-Z_]+%7D)', url)
+  ```
+
+- ✅ **特殊字符处理**：自动处理URL中的$符号和后续内容
+  ```python
+  # 示例：处理特殊字符
+  if '$' in url:
+      url = url.split('$')[0]
+  ```
+
+- ✅ **宽松验证逻辑**：URL格式有效（包含scheme和netloc）即标记为有效（用户确认的电视可播放链接）
+  ```python
+  # 示例：宽松验证
+  parsed_url = urlparse(url)
+  if parsed_url.scheme and parsed_url.netloc:
+      # 格式正确的URL，视为有效
+      return True
   ```
 
 ## 2. 用户体验优化建议

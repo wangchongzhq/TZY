@@ -7,11 +7,20 @@
 - **多协议支持**：验证HTTP/HTTPS、RTSP、RTMP、MMS、UDP、RTP协议的直播源
 - **批量验证**：支持M3U/M3U8/TXT格式文件的批量验证
 - **互联网直播源支持**：直接从HTTP/HTTPS URL下载并验证直播源文件
-- **并发处理**：使用多线程加速验证过程
+- **频道比较功能**：对比原始频道列表和验证后的有效频道列表，找出无效频道并进行分析
+- **智能并发处理**：
+  - 动态线程池：根据CPU核心数自动调整线程数（默认：CPU核心数×4，最大20）
+  - 批处理：每100个频道为一批进行验证，避免资源过载
+  - HTTP连接池：重用连接，减少连接建立开销（50个连接）
+  - ffprobe进程池：重用ffprobe进程，提高分辨率检测效率
 - **智能验证**：
   - HTTP/HTTPS协议：先尝试HEAD请求，失败自动回退到GET请求
   - 支持所有2xx（成功）和3xx（重定向）状态码
   - 其他协议：通过socket连接检查
+  - 增强URL验证：支持包含动态参数（如{PSID}或%7BPSID%7D）的URL
+  - 特殊字符处理：自动处理URL中的$符号和后续内容
+  - IPv6支持：支持IPv6地址（带或不带方括号）
+  - 宽松验证逻辑：URL格式有效（包含scheme和netloc）即标记为有效（用户确认的电视可播放链接）
 - **调试模式**：详细的调试输出，便于排查问题
 - **Web界面**：用户友好的Web界面，支持文件上传和手动URL验证
 - **分辨率检测**：自动检测视频流分辨率（需要FFmpeg）
@@ -29,6 +38,8 @@ pip install requests flask
 
 ### 命令行界面（CLI）
 
+#### 1. 直播源验证工具
+
 ```bash
 python iptv_validator.py -i <输入文件> [选项]
 ```
@@ -39,7 +50,7 @@ python iptv_validator.py -i <输入文件> [选项]
 |------|------|--------|
 | -i, --input | 输入文件路径（M3U/M3U8/TXT格式）或互联网直播源文件URL（HTTP/HTTPS协议） | 必填 |
 | -o, --output | 输出文件路径 | output/[输入文件名]_valid.m3u |
-| -w, --workers | 线程数量 | 5 |
+| -w, --workers | 线程数量 | CPU核心数×4（最大20） |
 | -t, --timeout | 超时时间（秒） | 5 |
 | -d, --debug | 启用调试模式 | False |
 | -a, --all | 验证所有URL，包括非标准协议 | False |
@@ -55,6 +66,34 @@ python iptv_validator.py -i channels.m3u -t 10 -d
 
 # 自定义输出文件和线程数
 python iptv_validator.py -i channels.m3u -o valid_channels.m3u -w 10
+```
+
+#### 2. 频道比较工具
+
+用于对比原始频道列表和验证后的有效频道列表，找出无效频道并进行分析。
+
+```bash
+python compare_channels.py <原始文件> <有效文件>
+```
+
+#### 示例
+
+```bash
+# 比较原始文件和有效文件，找出无效频道
+python compare_channels.py original_channels.txt valid_channels.m3u
+```
+
+输出示例：
+```
+原始频道数: 100
+有效频道数: 85
+无效频道数: 15
+
+无效频道列表:
+CCTV-1,http://example.com/cctv1.m3u8
+  格式检查: scheme=http, netloc=example.com
+湖南卫视频道,http://example.com/hunan.m3u8
+  格式检查: scheme=http, netloc=example.com
 ```
 
 ### Web界面
@@ -144,13 +183,25 @@ CCTV-13新闻,https://example.com/cctv13.m3u8
 
 ```
 validator/
-├── iptv_validator.py    # 核心验证逻辑
-├── web_app.py           # Web界面
-├── README.md            # 文档
-└── output/              # 输出文件目录
+├── iptv_validator.py     # 核心验证逻辑
+├── web_app.py            # Web界面
+├── compare_channels.py   # 频道比较工具
+├── README.md             # 文档
+├── OPTIMIZATION_SUGGESTIONS.md # 性能优化建议
+└── output/               # 输出文件目录
 ```
 
 ## 更新日志
+
+### v1.2
+- 新增频道比较工具（compare_channels.py）：对比原始频道列表和验证后的有效频道列表
+- 增强URL解析逻辑：支持包含动态参数（如{PSID}或%7BPSID%7D）的URL
+- 改进特殊字符处理：自动处理URL中的$符号和后续内容
+- 实现动态线程池：根据CPU核心数自动调整线程数（默认：CPU核心数×4，最大20）
+- 优化HTTP连接池：配置50个连接的连接池，减少连接开销
+- 新增批处理机制：每100个频道为一批进行验证，避免资源过载
+- 实现ffprobe进程池：重用ffprobe进程，提高分辨率检测效率
+- 改进宽松验证逻辑：URL格式有效（包含scheme和netloc）即标记为有效
 
 ### v1.1
 - 增加调试模式
