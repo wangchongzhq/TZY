@@ -11,7 +11,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from iptv_validator import IPTVValidator
 
 # 测试用户上传的文件
-test_file = "c:\Users\Administrator\Documents\GitHub\TZY\109  live 1205 直播源 -减.txt"
+test_file = "c:/Users/Administrator/Documents/GitHub/TZY/109  live 1205 直播源 -减.txt"
 
 print(f"测试文件: {test_file}")
 print(f"文件大小: {os.path.getsize(test_file)} 字节")

@@ -48,7 +48,7 @@ jobs:
       - name: 检测所有直播源文件
         if: github.event.inputs.inputFile == ''
         run: |
-          for file in jieguo.m3u jieguo.txt iptv_channels.m3u iptv_channels.txt; do
+          for file in jieguo.m3u jieguo.txt; do
             if [ -f "$file" ]; then
               echo "=== 验证文件: $file ==="
               python validator/iptv_validator.py -i "$file" -w 20 -t 5 -d

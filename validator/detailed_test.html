@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>详细JavaScript错误测试</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        // 全局错误捕获
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error('JavaScript错误:', message);
+            console.error('错误源:', source);
+            console.error('行号:', lineno);
+            console.error('列号:', colno);
+            console.error('错误对象:', error);
+            document.getElementById('js-errors').innerHTML += '<p>错误: ' + message + ' (行号: ' + lineno + ')</p>';
+            return true;
+        };
+        
+        // Promise错误捕获
+        window.onunhandledrejection = function(event) {
+            console.error('未处理的Promise错误:', event.reason);
+            document.getElementById('js-errors').innerHTML += '<p>Promise错误: ' + event.reason + '</p>';
+        };
+        
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，正在初始化SocketIO...');
+            
+            // 初始化Socket.io连接
+            const socket = io(window.location.origin);
+            
+            // 连接事件
+            socket.on('connect', function() {
+                console.log('SocketIO连接已建立');
+                document.getElementById('socket-status').innerHTML = '连接状态: 已连接';
+            });
+            
+            // 连接错误事件
+            socket.on('connect_error', function(error) {
+                console.error('SocketIO连接错误:', error);
+                document.getElementById('socket-status').innerHTML = '连接状态: 连接错误: ' + error.message;
+            });
+            
+            // 断开连接事件
+            socket.on('disconnect', function() {
+                console.log('SocketIO连接已断开');
+                document.getElementById('socket-status').innerHTML = '连接状态: 已断开';
+            });
+            
+            // 验证开始事件
+            socket.on('validation_started', function(data) {
+                console.log('收到validation_started事件:', data);
+                document.getElementById('events').innerHTML += '<p>验证开始: ' + data.message + '</p>';
+            });
+            
+            // 验证错误事件
+            socket.on('validation_error', function(data) {
+                console.log('收到validation_error事件:', data);
+                document.getElementById('events').innerHTML += '<p>验证错误: ' + data.message + '</p>';
+            });
+            
+            // 进度更新事件
+            socket.on('validation_progress', function(data) {
+                console.log('收到validation_progress事件:', data);
+                document.getElementById('events').innerHTML += '<p>进度更新: ' + JSON.stringify(data) + '</p>';
+            });
+            
+            // 验证完成事件
+            socket.on('validation_completed', function(data) {
+                console.log('收到validation_completed事件:', data);
+                document.getElementById('events').innerHTML += '<p>验证完成: ' + JSON.stringify(data) + '</p>';
+            });
+            
+            // 测试开始验证按钮点击事件
+            document.getElementById('test-start-btn').addEventListener('click', function() {
+                console.log('点击了开始验证按钮');
+                
+                try {
+                    // 禁用开始按钮，启用停止按钮
+                    document.getElementById('test-start-btn').setAttribute('disabled', 'disabled');
+                    document.getElementById('test-stop-btn').removeAttribute('disabled');
+                    
+                    // 发送开始验证事件
+                    console.log('发送start_validation事件...');
+                    socket.emit('start_validation', {
+                        type: 'url',
+                        urls: '测试频道,http://example.com/stream.m3u8',
+                        category: '测试',
+                        workers: 1,
+                        timeout: 1
+                    });
+                    
+                    document.getElementById('events').innerHTML += '<p>已发送start_validation事件</p>';
+                } catch (error) {
+                    console.error('开始验证按钮点击事件错误:', error);
+                    document.getElementById('js-errors').innerHTML += '<p>按钮点击错误: ' + error.message + '</p>';
+                    
+                    // 恢复按钮状态
+                    document.getElementById('test-start-btn').removeAttribute('disabled');
+                    document.getElementById('test-stop-btn').setAttribute('disabled', 'disabled');
+                }
+            });
+            
+            // 测试停止验证按钮点击事件
+            document.getElementById('test-stop-btn').addEventListener('click', function() {
+                console.log('点击了停止验证按钮');
+                
+                try {
+                    // 禁用停止按钮，启用开始按钮
+                    document.getElementById('test-stop-btn').setAttribute('disabled', 'disabled');
+                    document.getElementById('test-start-btn').removeAttribute('disabled');
+                    
+                    // 发送停止验证事件
+                    console.log('发送stop_validation事件...');
+                    socket.emit('stop_validation');
+                    
+                    document.getElementById('events').innerHTML += '<p>已发送stop_validation事件</p>';
+                } catch (error) {
+                    console.error('停止验证按钮点击事件错误:', error);
+                    document.getElementById('js-errors').innerHTML += '<p>停止按钮点击错误: ' + error.message + '</p>';
+                    
+                    // 恢复按钮状态
+                    document.getElementById('test-stop-btn').removeAttribute('disabled');
+                    document.getElementById('test-start-btn').setAttribute('disabled', 'disabled');
+                }
+            });
+            
+            // 测试文件上传功能
+            document.getElementById('file-upload-btn').addEventListener('click', function() {
+                console.log('点击了文件上传测试按钮');
+                
+                try {
+                    // 模拟文件选择
+                    const fileInput = document.getElementById('test-file');
+                    if (!fileInput.files.length) {
+                        alert('请选择文件');
+                        return;
+                    }
+                    
+                    const file = fileInput.files[0];
+                    console.log('选择的文件:', file);
+                    
+                    // 读取文件为Base64
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        console.log('文件读取完成');
+                        const fileContent = e.target.result.split(',')[1];
+                        const extension = '.' + file.name.split('.').pop();
+                        
+                        console.log('文件内容长度:', fileContent.length);
+                        console.log('文件扩展名:', extension);
+                        
+                        // 发送开始验证事件
+                        socket.emit('start_validation', {
+                            type: 'file',
+                            file_data: {
+                                content: fileContent,
+                                extension: extension
+                            },
+                            workers: 1,
+                            timeout: 1
+                        });
+                        
+                        document.getElementById('events').innerHTML += '<p>已发送文件验证请求</p>';
+                    };
+                    reader.onerror = function(e) {
+                        console.error('文件读取错误:', e);
+                        document.getElementById('js-errors').innerHTML += '<p>文件读取错误: ' + e + '</p>';
+                    };
+                    reader.readAsDataURL(file);
+                    
+                } catch (error) {
+                    console.error('文件上传测试错误:', error);
+                    document.getElementById('js-errors').innerHTML += '<p>文件上传错误: ' + error.message + '</p>';
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>详细JavaScript错误测试</h1>
+    
+    <h2>SocketIO连接状态</h2>
+    <div id="socket-status">连接状态: 正在连接...</div>
+    
+    <h2>按钮测试</h2>
+    <button id="test-start-btn">测试开始验证按钮</button>
+    <button id="test-stop-btn" disabled>测试停止验证按钮</button>
+    
+    <h2>文件上传测试</h2>
+    <input type="file" id="test-file" accept=".m3u,.m3u8,.txt,.json">
+    <button id="file-upload-btn">测试文件上传</button>
+    
+    <h2>JavaScript错误</h2>
+    <div id="js-errors"></div>
+    
+    <h2>事件日志</h2>
+    <div id="events"></div>
+</body>
+</html>

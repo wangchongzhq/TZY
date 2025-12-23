@@ -49,12 +49,12 @@ python iptv_validator.py -i <输入文件> [选项]
 
 | 参数 | 描述 | 默认值 |
 |------|------|--------|
-| -i, --input | 输入文件路径（M3U/M3U8/TXT格式）或互联网直播源文件URL（HTTP/HTTPS协议） | 必填 |
+| -i, --input | 输入文件路径（M3U/M3U8/TXT格式）或互联网直播源文件URL（HTTP/HTTPS协议） | 必填（与-a互斥） |
 | -o, --output | 输出文件路径 | output/[输入文件名]_valid.m3u |
 | -w, --workers | 线程数量 | CPU核心数×4（最大20） |
 | -t, --timeout | 超时时间（秒） | 5 |
 | -d, --debug | 启用调试模式 | False |
-| -a, --all | 验证所有URL，包括非标准协议 | False |
+| -a, --all | 验证当前目录下所有支持的文件 | False（与-i互斥） |
 
 #### 示例
 
@@ -67,6 +67,12 @@ python iptv_validator.py -i channels.m3u -t 10 -d
 
 # 自定义输出文件和线程数
 python iptv_validator.py -i channels.m3u -o valid_channels.m3u -w 10
+
+# 验证当前目录下所有支持的文件
+python iptv_validator.py -a
+
+# 验证当前目录下所有支持的文件并启用调试模式
+python iptv_validator.py -a -d -w 5
 ```
 
 #### 2. 频道比较工具
@@ -198,6 +204,13 @@ validator/
 ```
 
 ## 更新日志
+
+### v1.4
+- 改进参数解析：将-i/--input和-a/--all选项设置为互斥，解决--all选项使用问题
+- 优化验证流程：每次验证开始时清除已处理的外部URL缓存，确保验证结果准确
+- 增强WebSocket事件处理：使用validation_id隔离验证会话，解决UI状态保留问题
+- 修复GitHub Actions工作流：移除对已删除文件的引用
+- 修正客户端统计逻辑：确保无效频道计数准确
 
 ### v1.3
 - 增强的验证结果信息：验证结果包含频道名称、播放地址、线程号、有效性和视频分辨率

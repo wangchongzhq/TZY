@@ -50,3 +50,18 @@ __pycache__/
 # 日志文件
 logs/
 *.log.*
+
+# 源文件缓存
+source_cache.json
+sources.json
+
+# 临时数据文件
+invalid_channels.txt
+109  live 1205 直播源 -减.txt
+2025-12-yx.txt
+
+# 批处理脚本
+*.bat
+
+# 项目分析文件
+IPTV.py 功能分析

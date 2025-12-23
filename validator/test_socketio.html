@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SocketIO测试</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        // 初始化Socket.io连接
+        const socket = io('http://localhost:5001');
+        
+        // 连接事件
+        socket.on('connection_established', function(data) {
+            console.log('WebSocket连接已建立:', data.message);
+            document.getElementById('status').innerHTML = '连接状态: 已连接';
+        });
+        
+        // 连接错误事件
+        socket.on('connect_error', function(error) {
+            console.error('WebSocket连接错误:', error);
+            document.getElementById('status').innerHTML = '连接状态: 连接错误: ' + error.message;
+        });
+        
+        // 尝试发送开始验证事件
+        function testStartValidation() {
+            console.log('发送start_validation事件...');
+            socket.emit('start_validation', {
+                type: 'url',
+                urls: '测试频道,http://example.com/stream.m3u8',
+                category: '测试',
+                workers: 1,
+                timeout: 1
+            });
+        }
+        
+        // 监听验证开始事件
+        socket.on('validation_started', function(data) {
+            console.log('收到validation_started事件:', data);
+            document.getElementById('events').innerHTML += '<p>验证开始: ' + data.message + '</p>';
+        });
+        
+        // 监听验证错误事件
+        socket.on('validation_error', function(data) {
+            console.log('收到validation_error事件:', data);
+            document.getElementById('events').innerHTML += '<p>验证错误: ' + data.message + '</p>';
+        });
+    </script>
+</head>
+<body>
+    <h1>SocketIO连接测试</h1>
+    <div id="status">连接状态: 正在连接...</div>
+    <button onclick="testStartValidation()">测试发送start_validation事件</button>
+    <div id="events">
+        <h3>事件日志:</h3>
+    </div>
+</body>
+</html>

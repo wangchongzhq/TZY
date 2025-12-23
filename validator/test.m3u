@@ -1,5 +1,0 @@
-#EXTM3U
-#EXTINF:-1 group-title="测试",测试频道1
-http://example.com/stream1.m3u8
-#EXTINF:-1 group-title="测试",测试频道2
-http://example.com/stream2.m3u8
