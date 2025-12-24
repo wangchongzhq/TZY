@@ -1362,6 +1362,10 @@ class IPTVValidator:
 
 def validate_file(input_file, output_file=None, max_workers=20, timeout=5, debug=False, skip_resolution=False):
     """便捷函数：验证单个文件"""
+    # 确保输出目录存在，即使在创建validator实例之前
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    os.makedirs(os.path.join(script_dir, 'output'), exist_ok=True)
+    
     validator = IPTVValidator(input_file, output_file, max_workers, timeout, debug, skip_resolution=skip_resolution)
     output_file = validator.run()
     return output_file, validator.get_all_results()
@@ -1369,6 +1373,10 @@ def validate_file(input_file, output_file=None, max_workers=20, timeout=5, debug
 
 def validate_all_files(directory='.', max_workers=20, timeout=5, debug=False, skip_resolution=False):
     """便捷函数：验证目录下所有支持的文件"""
+    # 确保输出目录存在
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    os.makedirs(os.path.join(script_dir, 'output'), exist_ok=True)
+    
     supported_extensions = ('.m3u', '.m3u8', '.txt')
     files_to_validate = []
 
