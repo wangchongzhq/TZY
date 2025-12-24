@@ -1,0 +1,9 @@
+#CCTV#,genre#
+CCTV-1,http://example.com/cctv1
+CCTV-2,http://example.com/cctv2
+#卫视#,genre#
+湖南卫视,http://example.com/hunan
+浙江卫视,http://example.com/zhejiang
+#地方台#,genre#
+北京卫视,http://example.com/beijing
+上海卫视,http://example.com/shanghai

@@ -112,7 +112,7 @@ if __name__ == "__main__":
     
     if len(sys.argv) != 3:
         print("用法: python analyze_invalid_channels.py <原始文件> <有效文件>")
-        print("示例: python analyze_invalid_channels.py original.m3u output/original_valid.m3u")
+        print("示例: python analyze_invalid_channels.py original.m3u outputs/original_valid.m3u")
         sys.exit(1)
     
     original_file = sys.argv[1]

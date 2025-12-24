@@ -440,13 +440,24 @@ class IPTVValidator:
             if not line:
                 continue
             
-            # 跳过注释行
-            if line.startswith('//') or (line.startswith('#') and '#genre#' not in line):
+            # 跳过注释行，但保留分类行
+            if line.startswith('//'):
                 continue
+            # 对于#开头的行，如果不是分类行，才跳过
+            if line.startswith('#') and 'genre#' not in line:
+                continue
+            
+            # 调试输出：显示所有未被跳过的行
+            if self.debug:
+                print(f"[调试] 未跳过的行: {repr(line)}")
+            
+            # 调试输出：显示当前行是否被处理
+            if self.debug:
+                print(f"[调试] 当前行: {repr(line)}")
 
-            # 跳过分类行
-            if re.search(r'([^,]+),#genre#', line):
-                continue
+            # 不跳过分类行，因为在实际解析阶段需要处理它们
+            # if re.search(r'([^,]+),#genre#', line):
+            #     continue
 
             # 只处理包含英文逗号的行
             if ',' in line:
@@ -473,16 +484,52 @@ class IPTVValidator:
             if not line:
                 continue
                 
-            # 跳过注释行
-            if line.startswith('//') or (line.startswith('#') and '#genre#' not in line):
+            # 调试输出：显示实际解析阶段的当前行
+            if self.debug:
+                print(f"[调试] 实际解析阶段行: {repr(line)}")
+            
+            # 跳过注释行，但保留分类行
+            if line.startswith('//'):
+                if self.debug:
+                    print(f"[调试] 跳过注释行: {line}")
                 continue
+            # 对于#开头的行，如果不是分类行，才跳过
+            if line.startswith('#'):
+                # 使用简单的字符串检查，避免正则表达式的复杂性
+                has_genre = 'genre#' in line.lower()
+                # 调试输出：检查是否包含genre标记
+                if self.debug:
+                    print(f"[调试] 检查#line中是否包含genre标记: '{line}' -> has_genre = {has_genre}")
+                if has_genre:
+                    if self.debug:
+                        print(f"[调试] 保留分类行: {line}")
+                else:
+                    if self.debug:
+                        print(f"[调试] 跳过#注释行: {line}")
+                    continue
 
             # 检测分类行：支持多种格式，包括#分类名#,genre#和emoji开头的分类名,genre#
-            category_match = re.search(r'([^,]+),#genre#', line)
+            if self.debug:
+                print(f"[调试] 检查分类行: {repr(line)}")
+            category_match = re.search(r'(.+),genre#', line)
             if category_match:
                 current_category = category_match.group(1).strip()
+                # 调试输出：显示匹配到的分类
+                if self.debug:
+                    print(f"[调试] 匹配到分类: {current_category}")
+                # 移除分类名前后可能存在的#字符，确保统一格式
+                if current_category.startswith('#'):
+                    current_category = current_category[1:]
+                if current_category.endswith('#'):
+                    current_category = current_category[:-1]
+                # 调试输出：显示处理后的分类
+                if self.debug:
+                    print(f"[调试] 处理后的分类: {current_category}")
                 if current_category not in categories:
                     categories.append(current_category)
+                    # 调试输出：显示分类列表更新
+                    if self.debug:
+                        print(f"[调试] 分类列表更新: {categories}")
                 continue
 
             # 解析频道行：严格按照要求只处理英文逗号分隔的name,url格式
@@ -1165,7 +1212,7 @@ class IPTVValidator:
         content = ['#EXTM3U']
         for category in self.categories:
             for channel in channels_by_category[category]:
-                content.append(f"#EXTINF:-1 group-title=\"{channel['category']}\",{channel['name_with_resolution']}")
+                content.append(f"#EXTINF:-1 group-title=\"{category}\",{channel['name_with_resolution']}")
                 content.append(channel['url'])
 
         # 写入文件

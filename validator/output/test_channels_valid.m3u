@@ -1,0 +1,13 @@
+#EXTM3U
+#EXTINF:-1 group-title="CCTV",CCTV-1
+http://example.com/cctv1
+#EXTINF:-1 group-title="CCTV",CCTV-2
+http://example.com/cctv2
+#EXTINF:-1 group-title="卫视",湖南卫视
+http://example.com/hunan
+#EXTINF:-1 group-title="卫视",浙江卫视
+http://example.com/zhejiang
+#EXTINF:-1 group-title="地方台",北京卫视
+http://example.com/beijing
+#EXTINF:-1 group-title="地方台",上海卫视
+http://example.com/shanghai

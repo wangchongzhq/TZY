@@ -685,7 +685,7 @@ HTML_TEMPLATE = '''
             const fileContent = await readFileAsBase64(file);
             const extension = '.' + file.name.split('.').pop();
             
-            startValidation('file', { file_data: { content: fileContent, extension } }, workers, timeout);
+            startValidation('file', { file_data: { content: fileContent, extension, filename: file.name } }, workers, timeout);
         }
         
         // URL输入验证
@@ -1149,7 +1149,8 @@ def run_validation(data):
                 
             # 执行验证，将引用保存在局部变量中
             # 传递原始文件名，用于生成正确的输出文件名
-            local_validator = IPTVValidator(temp_path, max_workers=workers, timeout=timeout, original_filename=file_data['filename'])
+            original_filename = file_data.get('filename', f'uploaded{file_data["extension"]}')
+            local_validator = IPTVValidator(temp_path, max_workers=workers, timeout=timeout, original_filename=original_filename)
             global_validator = local_validator  # 更新全局引用
             
             # 根据文件类型解析文件内容
