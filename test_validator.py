@@ -32,7 +32,11 @@ def test_file_validation():
     def progress_callback(data):
         print(f"进度更新: {data['progress']}% - {data.get('message', '')}")
         if data.get('channel'):
-            print(f"  频道: {data['channel']['name']} - {data['channel']['url']}")
+            channel = data['channel']
+            if 'url' in channel:
+                print(f"  频道: {channel['name']} - {channel['url']}")
+            else:
+                print(f"  频道: {channel['name']}")
     
     try:
         # 解析文件

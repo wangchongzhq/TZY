@@ -49,8 +49,10 @@ def _ffprobe_get_resolution(url, timeout):
 
 
 class IPTVValidator:
-    def __init__(self, input_file, output_file=None, max_workers=None, timeout=5, debug=False):
+    def __init__(self, input_file, output_file=None, max_workers=None, timeout=5, debug=False, original_filename=None):
         self.input_file = input_file
+        # 保存原始文件名（如果提供）
+        self.original_filename = original_filename
         # 动态计算线程池大小
         self.max_workers = max_workers or min(20, multiprocessing.cpu_count() * 4)
         self.debug = debug
@@ -79,12 +81,12 @@ class IPTVValidator:
         # 确保输出目录存在
         self._check_output_dir()
         
-        # 生成输出文件名
-        self.output_file = output_file or self._generate_output_filename()
-        
         # 检测文件类型和ffprobe可用性
         self.file_type = self._detect_file_type()
         self.ffprobe_available = self._check_ffprobe_availability()
+        
+        # 生成输出文件名（在检测文件类型后，确保基于最终的input_file路径）
+        self.output_file = output_file or self._generate_output_filename()
         
         # 初始化ffprobe进程池
         self.ffprobe_pool = None
@@ -93,11 +95,40 @@ class IPTVValidator:
             self.ffprobe_pool = concurrent.futures.ProcessPoolExecutor(max_workers=multiprocessing.cpu_count())
             
     def stop(self):
-        """请求停止验证过程"""
+        """立即停止验证过程，终止所有线程和进程"""
         self.stop_requested = True
-        # 如果有ffprobe进程池，关闭它
+        
+        # 如果有ffprobe进程池，立即关闭它而不等待
         if self.ffprobe_pool:
+            # 取消所有未完成的ffprobe任务
+            for process in self.ffprobe_pool._processes.values():
+                try:
+                    process.terminate()
+                except Exception:
+                    pass
             self.ffprobe_pool.shutdown(wait=False)
+            self.ffprobe_pool = None  # 释放引用
+        
+        # 如果有HTTP会话，立即关闭它
+        if hasattr(self, 'session') and self.session:
+            try:
+                # 关闭所有连接
+                self.session.close()
+            except Exception:
+                pass
+            self.session = None  # 释放引用
+            
+        # 如果有验证线程池，尝试关闭它
+        if hasattr(self, '_validation_pool') and self._validation_pool:
+            try:
+                self._validation_pool.shutdown(wait=False)
+                self._validation_pool = None  # 释放引用
+            except Exception:
+                pass
+        
+        # 强制垃圾回收，释放资源
+        import gc
+        gc.collect()
 
     def _init_http_session(self):
         """初始化HTTP会话，配置连接池和重试机制"""
@@ -231,7 +262,13 @@ class IPTVValidator:
         """生成输出文件名"""
         # 获取当前脚本所在目录
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        base_name, ext = os.path.splitext(os.path.basename(self.input_file))
+        
+        # 如果提供了原始文件名，使用它；否则使用input_file的文件名
+        if self.original_filename:
+            base_name, ext = os.path.splitext(self.original_filename)
+        else:
+            base_name, ext = os.path.splitext(os.path.basename(self.input_file))
+            
         return os.path.join(script_dir, 'output', f"{base_name}_valid{ext}")
 
     def read_m3u_file(self, progress_callback=None):
@@ -289,14 +326,20 @@ class IPTVValidator:
                         if len(parts) > 1:
                             channel_buffer['name'] = parts[-1].strip()
                         else:
-                            channel_buffer['name'] = "未命名频道"
+                            # 如果无法提取有效的频道名称，则跳过此频道
+                            channel_buffer.clear()
+                            continue
                     # 处理空频道名称的情况，避免"no desc"显示
                     if not channel_buffer['name']:
-                        channel_buffer['name'] = "未命名频道"
+                        # 如果频道名称为空，则跳过此频道
+                        channel_buffer.clear()
+                        continue
                 
                 # 处理空频道名称的情况，避免"no desc"显示
                 if not channel_buffer.get('name'):
-                    channel_buffer['name'] = "未命名频道"
+                    # 如果频道名称为空，则跳过此频道
+                    channel_buffer.clear()
+                    continue
                     
                 # 从频道名称中提取分辨率信息（如果存在）- 适用于所有格式
                 resolution_match = re.search(r'\[(\d+\*\d+)\]', channel_buffer['name'])
@@ -330,14 +373,13 @@ class IPTVValidator:
                 
                 channel_buffer.clear()
         
-        # 发送最后一次进度更新
+        # 发送最后一次进度更新，不包含虚拟频道
         if progress_callback and total_channels > 0:
             progress = int((processed_count / total_channels) * 100)
             progress_callback({
                 'progress': progress,
                 'total_channels': total_channels,
                 'processed': processed_count,
-                'channel': {'name': '完成解析文件'},
                 'stage': 'parsing'
             })
 
@@ -355,7 +397,7 @@ class IPTVValidator:
         current_category = None
         all_lines = []
         processed_count = 0
-        total_lines = 0
+        actual_channel_count = 0
 
         # 先读取文件内容，支持多种编码
         try:
@@ -378,11 +420,39 @@ class IPTVValidator:
                 content_str = content.decode('latin-1', errors='replace')
 
             all_lines = content_str.splitlines()
-            total_lines = len(all_lines)
         except Exception as e:
             if self.debug:
                 print(f"[调试] 读取文件时出错: {str(e)}")
             return channels, categories
+
+        # 先计算实际的频道数（包括直接频道和外部URL中的频道）
+        # 严格按照要求：只计算英文逗号分隔的name,url格式行
+        for line in all_lines:
+            line = line.strip()
+            if not line:
+                continue
+            
+            # 跳过注释行
+            if line.startswith('//') or (line.startswith('#') and '#genre#' not in line):
+                continue
+
+            # 跳过分类行
+            if re.search(r'([^,]+),#genre#', line):
+                continue
+
+            # 只处理包含英文逗号的行
+            if ',' in line:
+                try:
+                    # 使用最后一个逗号分割频道名和URL
+                    name, url = line.rsplit(',', 1)
+                    name = name.strip()
+                    url = url.strip().strip('`')
+                    
+                    # 检查频道名和URL是否都存在
+                    if name and url:
+                        actual_channel_count += 1
+                except ValueError:
+                    continue
 
         # 逐行处理文件内容
         for line in all_lines:
@@ -393,12 +463,10 @@ class IPTVValidator:
                 
             line = line.strip()
             if not line:
-                processed_count += 1
                 continue
                 
             # 跳过注释行
             if line.startswith('//') or (line.startswith('#') and '#genre#' not in line):
-                processed_count += 1
                 continue
 
             # 检测分类行：支持多种格式，包括#分类名#,genre#和emoji开头的分类名,genre#
@@ -407,86 +475,103 @@ class IPTVValidator:
                 current_category = category_match.group(1).strip()
                 if current_category not in categories:
                     categories.append(current_category)
-                processed_count += 1
                 continue
 
-            # 解析频道行：频道名称,频道URL
-            if ',' in line:
-                try:
-                    # 改进解析逻辑：支持频道名称中包含逗号的情况
-                    # 首先检查是否包含URL协议
-                    url_pattern = r'(http[s]?://|rtsp://|rtmp://|mms://|udp://|rtp://)'
-                    url_match = re.search(url_pattern, line)
-                    if url_match:
-                        # 找到URL的起始位置，前面的都是频道名称
-                        url_start = url_match.start()
-                        name = line[:url_start].rstrip(',').strip()
-                        url = line[url_start:].strip().strip('`')
-                    else:
-                        # 没有找到明确的URL协议，使用最后一个逗号分割
-                        name, url = line.rsplit(',', 1)
-                        name = name.strip()
-                        url = url.strip().strip('`')
-                    
-                    # 处理空频道名称的情况，避免"no desc"显示
-                    if not name:
-                        name = "未命名频道"
-                    
-                    if name and url:
-                        # 从频道名称中提取分辨率信息（如果存在）
-                        resolution_match = re.search(r'\[(\d+\*\d+)\]', name)
-                        resolution = resolution_match.group(1) if resolution_match else None
-                        
-                        # 检查URL是否为外部直播源文件
-                        if self._is_external_source_file(url):
-                            # 处理外部URL，下载并解析，传递进度回调
-                            external_channels, external_categories, _ = self._handle_external_url(url, current_category, progress_callback)
-                            channels.extend(external_channels)
-                            categories.extend([cat for cat in external_categories if cat not in categories])
-                        else:
-                            # 普通频道，直接添加
-                            channel = {
-                                'name': name,
-                                'url': url,
-                                'category': current_category if current_category else '未分类',
-                                'resolution_from_name': resolution
-                            }
-                            channels.append(channel)
-                            
-                            # 发送进度更新
-                            processed_count += 1
-                            if progress_callback:
-                                progress = int((processed_count / max(total_lines, 1)) * 100)
-                                progress_callback({
-                                    'progress': progress,
-                                    'total_channels': max(total_lines, 1),
-                                    'processed': processed_count,
-                                    'channel': channel
-                                })
-                    else:
-                        processed_count += 1
-                except ValueError:
-                    processed_count += 1
+            # 解析频道行：严格按照要求只处理英文逗号分隔的name,url格式
+            # 只处理包含英文逗号的行
+            if ',' not in line:
+                continue
+            
+            try:
+                # 严格按照要求：使用最后一个英文逗号分割频道名和URL
+                name, url = line.rsplit(',', 1)
+                name = name.strip()
+                url = url.strip().strip('`')
+                
+                # 基本要求：频道名和URL都必须存在
+                if not name or not url:
                     continue
-            else:
-                processed_count += 1
+                
+                # 从频道名称中提取分辨率信息（如果存在）
+                resolution_match = re.search(r'\[(\d+\*\d+)\]', name)
+                resolution = resolution_match.group(1) if resolution_match else None
+                
+                # 检查URL是否为外部直播源文件
+                if self._is_external_source_file(url):
+                    # 处理外部URL，下载并解析，传递进度回调
+                    external_channels, external_categories, processed_count = self._handle_external_url(url, current_category, progress_callback, processed_count, actual_channel_count)
+                    channels.extend(external_channels)
+                    categories.extend([cat for cat in external_categories if cat not in categories])
+                    
+                    # 无需再增加actual_channel_count，因为在初步计数时已经计算过了
+                    # 更新进度计数
+                    processed_count += len(external_channels)
+                else:
+                    # 普通频道，直接添加
+                    channel = {
+                        'name': name,
+                        'url': url,
+                        'category': current_category if current_category else '未分类',
+                        'resolution_from_name': resolution
+                    }
+                    channels.append(channel)
+                    actual_channel_count += 1
+                    
+                    # 发送进度更新
+                    processed_count += 1
+                    if progress_callback:
+                        # 使用实际的频道数计算进度
+                        if actual_channel_count > 0:
+                            progress = int((processed_count / actual_channel_count) * 100)
+                        else:
+                            progress = 0
+                        progress_callback({
+                            'progress': progress,
+                            'total_channels': actual_channel_count,
+                            'processed': processed_count,
+                            'channel': channel
+                        })
+            except ValueError:
+                continue
+
+        # 发送最后一次进度更新，不包含虚拟频道
+        if progress_callback and actual_channel_count > 0:
+            progress_callback({
+                'progress': 100,
+                'total_channels': actual_channel_count,
+                'processed': processed_count,
+                'stage': 'parsing'
+            })
+
+        if self.debug:
+            print(f"[调试] TXT文件解析完成，找到 {actual_channel_count} 个频道，实际处理 {processed_count} 个频道")
 
         # 确保所有分类都存在
         if not categories:
             categories.append('未分类')
             current_category = '未分类'
 
-        # 如果没有解析到任何频道，尝试更宽松的解析方式
+        # 如果没有解析到任何频道，尝试更宽松的解析方式，但仍严格要求name,URL格式
         if not channels:
             for line in all_lines:
                 line = line.strip()
                 if not line or line.startswith('#') or line.startswith('//'):
                     continue
-                # 尝试直接匹配URL
-                if re.search(r'http[s]?://', line) or re.search(r'rtsp://', line) or re.search(r'rtmp://', line) or re.search(r'mms://', line):
-                    url = line.split(',')[-1].strip() if ',' in line else line.strip()
-                    name = line.split(',')[0].strip() if ',' in line else '未命名频道'
+                
+                # 仍然要求必须包含英文逗号分隔的name,url格式
+                if ',' not in line:
+                    continue
                     
+                # 提取URL
+                url = line.split(',')[-1].strip() if ',' in line else line.strip()
+                name = line.split(',')[0].strip() if ',' in line else ''
+                
+                # 基本要求：频道名和URL都必须存在
+                if not name or not url:
+                    continue
+                    
+                # 检查URL是否为有效的流媒体URL
+                if re.search(r'http[s]?://', url) or re.search(r'rtsp://', url) or re.search(r'rtmp://', url) or re.search(r'mms://', url):
                     # 检查URL是否为外部直播源文件
                     if self._is_external_source_file(url):
                         # 处理外部URL，下载并解析，传递进度回调
@@ -514,12 +599,27 @@ class IPTVValidator:
         if not url.startswith(('http://', 'https://')):
             return False
             
-        # 检查URL是否以直播源文件扩展名结尾 - 只处理明确的播放列表文件
+        # 检查URL是否以直播源文件扩展名结尾
         url_lower = url.lower()
-        if url_lower.endswith(('.m3u', '.m3u8')):
-            return True
         
-        # 对于txt和json文件，需要更严格的判断
+        # 对于.m3u/.m3u8文件，默认不视为外部直播源文件
+        # 只有当URL中明确包含直播源列表关键字时才视为外部直播源文件
+        if url_lower.endswith(('.m3u', '.m3u8')):
+            # 仅当URL路径中包含明确的直播源列表关键字时，才视为外部直播源文件
+            playlist_keywords = ['playlist', 'm3u', 'm3u8', 'playlist.m3u8', 'live.txt', 'iptv.txt']
+            for keyword in playlist_keywords:
+                if keyword in url_lower:
+                    # 进一步检查，确保不是单个频道的播放URL
+                    # 如果URL中包含stream、live_等关键字，很可能是单个频道的播放URL
+                    stream_keywords = ['stream', 'live_', 'live/', 'edge/', 'playlist.m3u8']
+                    for stream_keyword in stream_keywords:
+                        if stream_keyword in url_lower:
+                            return False
+                    return True
+            # 默认不处理为外部直播源文件
+            return False
+        
+        # 对于txt和json文件，保持现有判断逻辑
         if url_lower.endswith(('.txt', '.json')):
             # 检查URL路径中是否包含直播源相关关键字
             keywords = ['iptv', 'live', 'channel', 'playlist']
@@ -667,46 +767,92 @@ class IPTVValidator:
             if self.stop_requested:
                 return external_channels, external_categories, processed_count
             
-            # 下载外部文件
-            temp_file = self._download_url(url)
+            # 下载外部文件 - 使用会话对象的get方法，并设置超时
+            with self.session.get(url, timeout=self.timeouts['http_get'], allow_redirects=True, verify=False) as response:
+                response.raise_for_status()
+                
+                # 检查是否请求停止
+                if self.stop_requested:
+                    return external_channels, external_categories, processed_count
+                
+                # 获取文件名和扩展名
+                parsed_url = urlparse(url)
+                filename = os.path.basename(parsed_url.path) or 'temp_live_source'
+                
+                # 如果文件名没有扩展名，根据响应头或内容确定
+                if not os.path.splitext(filename)[1]:
+                    # 根据响应头或内容确定文件类型
+                    content_type = response.headers.get('Content-Type', '')
+                    if 'mpegurl' in content_type or 'm3u' in content_type:
+                        filename += '.m3u'
+                    elif 'json' in content_type:
+                        filename += '.json'
+                    else:
+                        # 尝试解析为JSON
+                        try:
+                            json.loads(response.text)
+                            filename += '.json'
+                        except json.JSONDecodeError:
+                            # 检查是否为M3U格式
+                            if '#extm3u' in response.text.lower():
+                                filename += '.m3u'
+                            else:
+                                filename += '.txt'
+                
+                # 创建临时文件
+                temp_dir = tempfile.gettempdir()
+                temp_file_path = os.path.join(temp_dir, filename)
+                
+                # 写入文件内容
+                with open(temp_file_path, 'wb') as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        # 检查是否请求停止
+                        if self.stop_requested:
+                            os.remove(temp_file_path)
+                            return external_channels, external_categories, processed_count
+                        if chunk:
+                            f.write(chunk)
             
             # 检查是否请求停止
             if self.stop_requested:
-                os.remove(temp_file)
+                os.remove(temp_file_path)
                 return external_channels, external_categories, processed_count
             
             # 检测文件类型
-            file_ext = os.path.splitext(temp_file)[1].lower()
+            file_ext = os.path.splitext(temp_file_path)[1].lower()
             
             if file_ext in ['.m3u', '.m3u8']:
                 # 使用read_m3u_file方法解析
-                temp_validator = IPTVValidator(temp_file, debug=self.debug)
+                temp_validator = IPTVValidator(temp_file_path, debug=self.debug)
                 temp_validator.file_type = 'm3u'
                 # 将已处理URL集合传递给临时验证器，避免重复处理
                 temp_validator.processed_external_urls = self.processed_external_urls.copy()
+                temp_validator.stop_requested = self.stop_requested  # 传递停止标志
                 external_channels, external_categories = temp_validator.read_m3u_file(progress_callback)
             elif file_ext == '.txt':
                 # 使用read_txt_file方法解析（递归）
-                temp_validator = IPTVValidator(temp_file, debug=self.debug)
+                temp_validator = IPTVValidator(temp_file_path, debug=self.debug)
                 temp_validator.file_type = 'txt'
                 # 将已处理URL集合传递给临时验证器，避免重复处理
                 temp_validator.processed_external_urls = self.processed_external_urls.copy()
+                temp_validator.stop_requested = self.stop_requested  # 传递停止标志
                 external_channels, external_categories = temp_validator.read_txt_file(progress_callback)
             elif file_ext == '.json':
                 # 使用read_json_file方法解析
-                temp_validator = IPTVValidator(temp_file, debug=self.debug)
+                temp_validator = IPTVValidator(temp_file_path, debug=self.debug)
                 temp_validator.file_type = 'json'
                 # 将已处理URL集合传递给临时验证器，避免重复处理
                 temp_validator.processed_external_urls = self.processed_external_urls.copy()
+                temp_validator.stop_requested = self.stop_requested  # 传递停止标志
                 external_channels, external_categories = temp_validator.read_json_file(progress_callback)
             
             # 检查是否请求停止
             if self.stop_requested:
-                os.remove(temp_file)
+                os.remove(temp_file_path)
                 return external_channels, external_categories, processed_count
             
             # 清理临时文件
-            os.remove(temp_file)
+            os.remove(temp_file_path)
             
             # 如果外部文件没有分类信息，使用默认分类
             for channel in external_channels:
@@ -715,12 +861,17 @@ class IPTVValidator:
                 # 发送进度更新
                 if progress_callback:
                     processed_count += 1
-                    progress = int((processed_count / max(total_channels, processed_count)) * 100)
+                    # 计算进度百分比，使用传入的total_channels（即actual_channel_count）
+                    if total_channels > 0:
+                        progress = int((processed_count / total_channels) * 100)
+                    else:
+                        progress = 0
                     progress_callback({
                         'progress': progress,
-                        'total_channels': max(total_channels, processed_count),
+                        'total_channels': total_channels,
                         'processed': processed_count,
-                        'channel': channel
+                        'channel': channel,
+                        'stage': 'parsing'
                     })
             
             if self.debug:
@@ -772,8 +923,12 @@ class IPTVValidator:
 
     
     def get_resolution(self, url):
-        """获取视频分辨率，使用进程池提高性能"""
+        """获取视频分辨率，使用进程池提高性能，支持停止请求"""
         try:
+            # 检查是否请求停止
+            if self.stop_requested:
+                return None
+
             # 检查ffprobe是否可用
             if not self.ffprobe_available:
                 return None
@@ -788,27 +943,53 @@ class IPTVValidator:
             if not any(protocol in url for protocol in supported_protocols):
                 return None
 
-            # 使用进程池执行ffprobe命令
+            # 使用进程池执行ffprobe命令，并设置超时
             future = self.ffprobe_pool.submit(_ffprobe_get_resolution, url, self.timeouts['ffprobe'])
-            resolution = future.result()
-            return resolution
+            try:
+                # 检查是否请求停止
+                if self.stop_requested:
+                    future.cancel()
+                    return None
+                # 使用较短的超时时间获取结果，以便及时响应停止请求
+                resolution = future.result(timeout=self.timeouts['ffprobe'])
+                return resolution
+            except concurrent.futures.TimeoutError:
+                future.cancel()
+                return None
 
         except Exception:
             return None
 
-    def process_channel(self, channel, thread_id):
-        """处理单个频道：验证URL并检测分辨率，包含线程号信息"""
+    def process_channel(self, channel, original_index):
+        """处理单个频道：验证URL并检测分辨率，包含原始索引信息"""
+        # 检查是否请求停止
+        if self.stop_requested:
+            return {
+                'name': channel['name'],
+                'url': channel['url'],
+                'category': channel.get('category', '未分类'),
+                'original_index': original_index,
+                'valid': False,
+                'resolution': None,
+                'status': 'stopped'
+            }
+            
         result = {
             'name': channel['name'],
             'url': channel['url'],
             'category': channel.get('category', '未分类'),
-            'thread_id': thread_id,
-            'valid': False,
+            'original_index': original_index,
+            'valid': None,  # 初始值为None，表示尚未验证
             'resolution': None,
-            'status': 'invalid'  # 默认状态为无效
+            'status': 'checking'  # 初始状态为正在检查
         }
         
         try:
+            # 再次检查是否请求停止
+            if self.stop_requested:
+                result['status'] = 'stopped'
+                return result
+            
             valid = self.check_url_validity(channel['url'])
             if not valid:
                 return result
@@ -883,39 +1064,42 @@ class IPTVValidator:
         # 清除已处理的外部URL缓存，确保每次验证都是全新开始
         self.processed_external_urls.clear()
         
-        # 分批次处理频道
-        for i in range(0, total_channels, self.batch_size):
-            # 检查是否请求停止
-            if self.stop_requested:
-                print("验证过程已被停止")
-                break
+        # 只创建一个线程池用于整个验证过程，避免频繁创建和关闭的开销
+        with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            # 分批次处理频道，保持原始顺序
+            for i in range(0, total_channels, self.batch_size):
+                # 检查是否请求停止
+                if self.stop_requested:
+                    print("验证过程已被停止")
+                    executor.shutdown(wait=False)
+                    break
+                    
+                batch_start = i
+                batch_end = min(i + self.batch_size, total_channels)
                 
-            batch_start = i
-            batch_end = min(i + self.batch_size, total_channels)
-            
-            # 发送批次处理开始的进度更新
-            if progress_callback:
-                progress = int((processed_count / total_channels) * 100)
-                progress_callback({
-                    'progress': progress,
-                    'total_channels': total_channels,
-                    'processed': processed_count,
-                    'message': f'开始处理批次 {batch_start + 1}-{batch_end} / {total_channels}',
-                    'stage': 'batch_processing'
-                })
-            
-            batch_channels = self.channels[batch_start:batch_end]
-            
-            with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as executor:
-                future_to_channel = {executor.submit(self.process_channel, channel, thread_id + batch_start): channel for thread_id, channel in enumerate(batch_channels)}
-                for future in concurrent.futures.as_completed(future_to_channel):
+                # 发送批次处理开始的进度更新
+                if progress_callback:
+                    progress = int((processed_count / total_channels) * 100)
+                    progress_callback({
+                        'progress': progress,
+                        'total_channels': total_channels,
+                        'processed': processed_count,
+                        'message': f'开始处理批次 {batch_start + 1}-{batch_end} / {total_channels}',
+                        'stage': 'batch_processing'
+                    })
+                
+                batch_channels = self.channels[batch_start:batch_end]
+                
+                # 使用map方法保持原始顺序处理当前批次的所有任务
+                for idx, result in enumerate(executor.map(self.process_channel, batch_channels, range(batch_start, batch_end))):
                     # 检查是否请求停止
                     if self.stop_requested:
                         executor.shutdown(wait=False)
                         print("验证过程已被停止")
                         break
                         
-                    result = future.result()
+                    # 原始索引已经在process_channel中添加
+                    
                     all_results.append(result)
                     processed_count += 1
                     
@@ -926,7 +1110,8 @@ class IPTVValidator:
                             'progress': progress,
                             'total_channels': total_channels,
                             'processed': processed_count,
-                            'channel': result
+                            'channel': result,
+                            'stage': 'validation'
                         })
                     
                     if result['valid']:

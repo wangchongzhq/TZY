@@ -294,7 +294,7 @@ HTML_TEMPLATE = '''
         }
         
         .invalid {
-            color: red;
+            /* 移除红色标记 */
             font-weight: 600;
         }
         
@@ -583,14 +583,24 @@ HTML_TEMPLATE = '''
             </div>
 
             <!-- 底部进度统计部分 -->
-            <div class="progress-container">
-                <h3>验证进度</h3>
+            <div id="reading-progress-container" class="progress-container" style="display: none;">
+                <h3>读取进度</h3>
                 <div class="progress-bar">
-                    <div class="progress-fill" style="width: 0%"></div>
+                    <div id="reading-progress-fill" class="progress-fill" style="width: 0%"></div>
                 </div>
                 <div class="progress-info">
-                    <span id="progress-percentage">0%</span>
-                    <span id="progress-stats">0/0 频道</span>
+                    <span id="reading-progress-percentage">0%</span>
+                    <span id="reading-progress-stats">0/0 频道</span>
+                </div>
+            </div>
+            <div id="validation-progress-container" class="progress-container" style="display: none;">
+                <h3>验证进度</h3>
+                <div class="progress-bar">
+                    <div id="validation-progress-fill" class="progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="progress-info">
+                    <span id="validation-progress-percentage">0%</span>
+                    <span id="validation-progress-stats">0/0 频道</span>
                 </div>
                 <div class="progress-stats">
                     <div class="status-item">
@@ -711,8 +721,6 @@ HTML_TEMPLATE = '''
         function startValidation(type, data, workers, timeout) {
             // 停止可能正在进行的验证
             stopValidation();
-            // 显示进度区域
-            document.getElementById('progress-container').style.display = 'block';
             // 清空结果表格
             document.getElementById('results-table-body').innerHTML = '';
             
@@ -720,13 +728,14 @@ HTML_TEMPLATE = '''
             const existingResults = document.querySelectorAll('.result');
             existingResults.forEach(div => div.remove());
             
-            // 重置进度条
-            const progressFill = document.querySelector('.progress-fill');
-            const progressPercentage = document.getElementById('progress-percentage');
-            const progressStats = document.getElementById('progress-stats');
-            progressFill.style.width = '0%';
-            progressPercentage.textContent = '0%';
-            progressStats.textContent = '0/0 频道';
+            // 重置所有进度条
+            document.getElementById('reading-progress-fill').style.width = '0%';
+            document.getElementById('reading-progress-percentage').textContent = '0%';
+            document.getElementById('reading-progress-stats').textContent = '0/0 频道';
+            
+            document.getElementById('validation-progress-fill').style.width = '0%';
+            document.getElementById('validation-progress-percentage').textContent = '0%';
+            document.getElementById('validation-progress-stats').textContent = '0/0 频道';
             
             // 重置进度统计计数器
             validCount = 0;
@@ -820,44 +829,70 @@ HTML_TEMPLATE = '''
                 return;
             }
             
-            // 更新进度条
-            const progressFill = document.querySelector('.progress-fill');
-            const progressPercentage = document.getElementById('progress-percentage');
-            const progressStats = document.getElementById('progress-stats');
-            
-            progressFill.style.width = data.progress + '%';
-            progressPercentage.textContent = data.progress + '%';
-            progressStats.textContent = `${data.processed}/${data.total_channels} 频道`;
-            
-            // 更新计数器逻辑
-            if (data.channel) {
-                if (data.channel.status === 'timeout') {
-                    timeoutCount++;
-                } else if ('valid' in data.channel) {
-                    if (data.channel.valid) {
-                        validCount++;
-                        // 检查是否有分辨率
-                        if (data.channel.resolution) {
-                            resolutionValidCount++;
+            // 根据阶段更新不同的进度条
+            if (data.stage === 'parsing' || data.stage === 'reading') {
+                // 读取阶段进度
+                document.getElementById('reading-progress-container').style.display = 'block';
+                document.getElementById('validation-progress-container').style.display = 'none';
+                
+                const progressFill = document.getElementById('reading-progress-fill');
+                const progressPercentage = document.getElementById('reading-progress-percentage');
+                const progressStats = document.getElementById('reading-progress-stats');
+                
+                progressFill.style.width = data.progress + '%';
+                progressPercentage.textContent = data.progress + '%';
+                progressStats.textContent = `${data.processed}/${data.total_channels} 频道`;
+            } else {
+                // 验证阶段进度
+                document.getElementById('reading-progress-container').style.display = 'none';
+                document.getElementById('validation-progress-container').style.display = 'block';
+                
+                const progressFill = document.getElementById('validation-progress-fill');
+                const progressPercentage = document.getElementById('validation-progress-percentage');
+                const progressStats = document.getElementById('validation-progress-stats');
+                
+                progressFill.style.width = data.progress + '%';
+                progressPercentage.textContent = data.progress + '%';
+                progressStats.textContent = `${data.processed}/${data.total_channels} 频道`;
+                
+                // 仅在验证阶段更新计数器逻辑
+                if (data.channel) {
+                    if (data.channel.status === 'timeout') {
+                        timeoutCount++;
+                    } else if ('valid' in data.channel) {
+                        if (data.channel.valid === null || data.channel.valid === undefined) {
+                            // 未验证完成，不更新计数器
+                        } else if (data.channel.valid) {
+                            validCount++;
+                            // 检查是否有分辨率
+                            if (data.channel.resolution) {
+                                resolutionValidCount++;
+                            }
+                        } else {
+                            invalidCount++;
                         }
-                    } else {
+                    } else if (data.channel.status === 'invalid') {
+                        // 处理没有'valid'字段但状态为'invalid'的情况
                         invalidCount++;
                     }
-                } else if (data.channel.status === 'invalid') {
-                    // 处理没有'valid'字段但状态为'invalid'的情况
-                    invalidCount++;
+                    
+                    // 更新进度统计
+                    document.getElementById('valid-count').textContent = validCount;
+                    document.getElementById('resolution-valid-count').textContent = resolutionValidCount;
+                    document.getElementById('invalid-count').textContent = invalidCount;
+                    document.getElementById('timeout-count').textContent = timeoutCount;
                 }
             }
             
-            // 更新进度统计
-            document.getElementById('valid-count').textContent = validCount;
-            document.getElementById('resolution-valid-count').textContent = resolutionValidCount;
-            document.getElementById('invalid-count').textContent = invalidCount;
-            document.getElementById('timeout-count').textContent = timeoutCount;
-            
-            // 只在收到验证结果时添加到表格
+            // 只在收到实际验证结果时添加到表格，过滤掉解析阶段的虚拟频道
             if (data.channel) {
-                addResultToTable(data.channel);
+                // 实际频道必须包含URL，且不是解析阶段的进度更新
+                if (data.channel.url && data.stage !== 'parsing') {
+                    addResultToTable(data.channel);
+                } else if (data.channel.name === '完成解析文件') {
+                    // 兼容处理旧版数据，直接忽略
+                    console.log('忽略虚拟频道：', data.channel.name);
+                }
             }
         });
         
@@ -972,6 +1007,9 @@ HTML_TEMPLATE = '''
             const tbody = document.getElementById('results-table-body');
             const row = document.createElement('tr');
             
+            // 存储原始索引用于排序
+            row.dataset.originalIndex = result.original_index;
+            
             const nameCell = document.createElement('td');
             nameCell.textContent = result.name;
             
@@ -986,14 +1024,17 @@ HTML_TEMPLATE = '''
             if (result.status === 'timeout') {
                 validCell.textContent = '超时';
                 validCell.className = 'timeout';
+            } else if (result.valid === null || result.valid === undefined) {
+                validCell.textContent = ''; // 未验证时显示为空
+                validCell.className = 'checking';
             } else {
                 validCell.textContent = result.valid ? '有效' : '无效';
                 validCell.className = result.valid ? 'valid' : 'invalid';
             }
             
             // 拆分分辨率为视频宽和视频高
-            let width = '未检测到';
-            let height = '未检测到';
+            let width = '';
+            let height = '';
             if (result.resolution) {
                 const resolutionParts = result.resolution.split('*');
                 if (resolutionParts.length === 2) {
@@ -1014,11 +1055,19 @@ HTML_TEMPLATE = '''
             row.appendChild(widthCell);
             row.appendChild(heightCell);
             
-            tbody.appendChild(row);
+            // 根据原始索引将行插入到正确位置
+            const rows = Array.from(tbody.children);
+            const insertIndex = rows.findIndex(r => parseInt(r.dataset.originalIndex) > result.original_index);
             
-            // 滚动到表格底部
-            const tableContainer = tbody.closest('.table-container');
-            tableContainer.scrollTop = tableContainer.scrollHeight;
+            if (insertIndex === -1) {
+                // 如果没有找到更大的索引，添加到末尾
+                tbody.appendChild(row);
+            } else {
+                // 否则插入到找到的位置之前
+                tbody.insertBefore(row, rows[insertIndex]);
+            }
+            
+
         }
     </script>
 </body>
@@ -1068,8 +1117,9 @@ def run_validation(data):
                     channel['name'] = channel.get('name', '未命名频道') or '未命名频道'
                 if 'url' not in channel:
                     channel['url'] = ''
-                if 'valid' not in channel and 'status' not in channel:
-                    # 解析阶段的channel，添加处理中状态
+                if 'valid' not in channel:
+                    # 解析阶段的channel，设置为未验证状态
+                    channel['valid'] = None
                     channel['status'] = 'processing'
             
             # 添加验证ID到进度数据中
@@ -1098,7 +1148,8 @@ def run_validation(data):
                 app.logger.debug(f"已创建output目录: {output_dir}")
                 
             # 执行验证，将引用保存在局部变量中
-            local_validator = IPTVValidator(temp_path, max_workers=workers, timeout=timeout)
+            # 传递原始文件名，用于生成正确的输出文件名
+            local_validator = IPTVValidator(temp_path, max_workers=workers, timeout=timeout, original_filename=file_data['filename'])
             global_validator = local_validator  # 更新全局引用
             
             # 根据文件类型解析文件内容
@@ -1166,7 +1217,8 @@ def run_validation(data):
                         temp.write(f'#EXTINF:-1 group-title="{category}",{name.strip()}\n{url.strip()}\n'.encode('utf-8'))
                 
             # 执行验证，将引用保存在局部变量中
-            local_validator = IPTVValidator(temp_path, max_workers=workers, timeout=timeout)
+            # 使用默认文件名"url_channels"作为原始文件名
+            local_validator = IPTVValidator(temp_path, max_workers=workers, timeout=timeout, original_filename="url_channels.m3u")
             global_validator = local_validator  # 更新全局引用
             valid_channels = local_validator.validate_channels(progress_callback=thread_safe_progress_callback)
             
@@ -1265,9 +1317,6 @@ def start_validation(data):
     # 首先停止当前正在运行的验证器（如果有）
     if global_validator:
         global_validator.stop()
-        # 等待一小段时间确保旧线程有机会清理
-        import time
-        time.sleep(0.5)
         # 重置全局验证器
         global_validator = None
     

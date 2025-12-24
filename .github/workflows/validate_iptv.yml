@@ -2,9 +2,6 @@
 name: IPTV 直播源检测工作流
 
 on:
-  schedule:
-    # 北京时间每天早上5点运行 (UTC 20:00)
-    - cron: '0 20 * * *'
   workflow_dispatch:
     inputs:
       logLevel:

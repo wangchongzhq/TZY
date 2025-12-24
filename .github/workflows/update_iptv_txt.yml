@@ -1,9 +1,6 @@
 name: IPTVTXT Update Workflow
 
 on:
-  schedule:
-    # 北京时间每天早上4点30分运行 (UTC 20:30)
-    - cron: '30 20 * * *'
   workflow_dispatch:
     inputs:
       logLevel:
