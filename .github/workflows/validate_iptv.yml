@@ -70,22 +70,24 @@ jobs:
           done
 
       - name: 解码并保存Base64编码的文件内容
-        if: github.event.inputs.fileContent != ''
+        if: github.event.inputs.base64Content != ''
         run: |
-          echo "${{ github.event.inputs.fileContent }}" | base64 -d > "${{ github.event.inputs.fileName || 'temp_iptv_file' }}"
-          echo "=== 已保存临时文件: ${{ github.event.inputs.fileName || 'temp_iptv_file' }} ==="
+          echo "${{ github.event.inputs.base64Content }}" | base64 -d > "${{ github.event.inputs.originalFileName || 'temp_iptv_file' }}"
+          echo "=== 已保存临时文件: ${{ github.event.inputs.originalFileName || 'temp_iptv_file' }} ==="
 
-      - name: 检测指定的直播源文件（通过路径）
-        if: github.event.inputs.inputFile != '' && github.event.inputs.fileContent == ''
+      - name: 检测指定的直播源文件（通过路径或URL）
+        if: (github.event.inputs.inputType == 'local' || github.event.inputs.inputType == 'url') && github.event.inputs.inputFile != ''
         run: |
           echo "=== 验证文件: ${{ github.event.inputs.inputFile }} ==="
-          python validator/iptv_validator.py -i "${{ github.event.inputs.inputFile }}" -w 20 -t 5 -d
+          # 提取URL或本地路径的文件名
+          FILENAME=$(basename "${{ github.event.inputs.inputFile }}")
+          python validator/iptv_validator.py -i "${{ github.event.inputs.inputFile }}" -w 20 -t 5 -d --original-filename "$FILENAME"
 
       - name: 检测指定的直播源文件（通过Base64）
-        if: github.event.inputs.fileContent != ''
+        if: github.event.inputs.inputType == 'base64' && github.event.inputs.base64Content != ''
         run: |
-          INPUT_FILE="${{ github.event.inputs.fileName || 'temp_iptv_file' }}"
-          ORIGINAL_FILENAME="${{ github.event.inputs.fileName || 'temp_iptv_file' }}"
+          INPUT_FILE="${{ github.event.inputs.originalFileName || 'temp_iptv_file' }}"
+          ORIGINAL_FILENAME="${{ github.event.inputs.originalFileName || 'temp_iptv_file' }}"
           echo "=== 验证文件: $INPUT_FILE ==="
           python validator/iptv_validator.py -i "$INPUT_FILE" --original-filename "$ORIGINAL_FILENAME" -w 20 -t 5 -d
 
