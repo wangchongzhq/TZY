@@ -37,9 +37,14 @@ test_*.txt
 test_*.m3u
 
 # 验证工具生成的文件
-*_valid.m3u
-*_valid.txt
 validator/web_validation.log
+
+# 忽略根目录下的验证结果文件，但允许validator/output目录下的文件
+/*_valid.m3u
+/*_valid.txt
+!validator/output/
+!validator/output/*_valid.txt
+!validator/output/*_valid.m3u
 
 # 源文件缓存
 source_cache.json

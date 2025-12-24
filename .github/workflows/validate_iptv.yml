@@ -45,18 +45,47 @@ jobs:
       - name: 检测所有直播源文件
         if: github.event.inputs.inputFile == ''
         run: |
-          for file in jieguo.m3u jieguo.txt; do
+          echo "=== 当前目录内容 ==="
+          ls -la
+          
+          echo "=== 检查输入文件 ==="
+          for file in "109  live 1205 直播源 -减.m3u" "109  live 1205 直播源 -减.txt"; do
             if [ -f "$file" ]; then
+              echo "找到文件: $file"
+              echo "文件大小: $(du -h "$file" | cut -f1)"
+              echo "文件行数: $(wc -l "$file" | cut -d' ' -f1)"
               echo "=== 验证文件: $file ==="
-              python validator/iptv_validator.py -i "$file" -t 5 -d --no-resolution
+              python validator/iptv_validator.py -i "$file" -t 5 -d --no-resolution || echo "⚠️  验证 $file 时出现错误，但继续执行"
+            else
+              echo "未找到文件: $file"
             fi
           done
+          
+          echo "=== 验证结果目录 ==="
+          ls -la validator/output/ 2>/dev/null || echo "output目录不存在"
 
       - name: 检测指定的直播源文件
         if: github.event.inputs.inputFile != ''
         run: |
-          echo "=== 验证文件: ${{ github.event.inputs.inputFile }} ==="
-          python validator/iptv_validator.py -i "${{ github.event.inputs.inputFile }}" -t 5 -d --no-resolution
+          echo "=== 当前目录内容 ==="
+          ls -la
+          
+          echo "=== 检查指定输入文件 ==="
+          input_file="${{ github.event.inputs.inputFile }}"
+          if [ -f "$input_file" ]; then
+            echo "找到文件: $input_file"
+            echo "文件大小: $(du -h "$input_file" | cut -f1)"
+            echo "文件行数: $(wc -l "$input_file" | cut -d' ' -f1)"
+            echo "=== 验证文件: $input_file ==="
+            python validator/iptv_validator.py -i "$input_file" -t 5 -d --no-resolution || echo "⚠️  验证 $input_file 时出现错误"
+          else
+            echo "❌ 未找到指定文件: $input_file"
+            echo "当前目录内容:"
+            ls -la
+          fi
+          
+          echo "=== 验证结果目录 ==="
+          ls -la validator/output/ 2>/dev/null || echo "output目录不存在"
 
       - name: 保存验证结果
         run: |
