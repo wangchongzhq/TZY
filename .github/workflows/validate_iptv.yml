@@ -14,7 +14,7 @@ on:
           - debug
           - warn
       inputFile:
-        description: '要检测的输入文件路径（可选，默认检测所有输出文件）'
+        description: '要检测的输入文件路径或URL（可选，默认检测所有输出文件）'
         required: false
         type: string
 
