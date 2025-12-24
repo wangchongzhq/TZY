@@ -13,25 +13,8 @@ on:
           - info
           - debug
           - warn
-      inputType:
-        description: '输入类型'
-        required: true
-        default: 'local'
-        type: choice
-        options:
-          - local
-          - url
-          - base64
       inputFile:
-        description: '要检测的本地文件路径或远程URL（当inputType为local或url时必填）'
-        required: false
-        type: string
-      base64Content:
-        description: 'Base64编码的本地文件内容（当inputType为base64时必填）'
-        required: false
-        type: string
-      originalFileName:
-        description: '本地文件的原始名称（当inputType为base64时必填）'
+        description: '要检测的输入文件路径（可选，默认检测所有输出文件）'
         required: false
         type: string
 
@@ -69,27 +52,11 @@ jobs:
             fi
           done
 
-      - name: 解码并保存Base64编码的文件内容
-        if: github.event.inputs.base64Content != ''
-        run: |
-          echo "${{ github.event.inputs.base64Content }}" | base64 -d > "${{ github.event.inputs.originalFileName || 'temp_iptv_file' }}"
-          echo "=== 已保存临时文件: ${{ github.event.inputs.originalFileName || 'temp_iptv_file' }} ==="
-
-      - name: 检测指定的直播源文件（通过路径或URL）
-        if: (github.event.inputs.inputType == 'local' || github.event.inputs.inputType == 'url') && github.event.inputs.inputFile != ''
+      - name: 检测指定的直播源文件
+        if: github.event.inputs.inputFile != ''
         run: |
           echo "=== 验证文件: ${{ github.event.inputs.inputFile }} ==="
-          # 提取URL或本地路径的文件名
-          FILENAME=$(basename "${{ github.event.inputs.inputFile }}")
-          python validator/iptv_validator.py -i "${{ github.event.inputs.inputFile }}" -w 20 -t 5 -d --original-filename "$FILENAME"
-
-      - name: 检测指定的直播源文件（通过Base64）
-        if: github.event.inputs.inputType == 'base64' && github.event.inputs.base64Content != ''
-        run: |
-          INPUT_FILE="${{ github.event.inputs.originalFileName || 'temp_iptv_file' }}"
-          ORIGINAL_FILENAME="${{ github.event.inputs.originalFileName || 'temp_iptv_file' }}"
-          echo "=== 验证文件: $INPUT_FILE ==="
-          python validator/iptv_validator.py -i "$INPUT_FILE" --original-filename "$ORIGINAL_FILENAME" -w 20 -t 5 -d
+          python validator/iptv_validator.py -i "${{ github.event.inputs.inputFile }}" -w 20 -t 5 -d
 
       - name: 保存验证结果
         run: |

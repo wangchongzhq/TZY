@@ -11,12 +11,12 @@ import json
 import time
 import subprocess
 import concurrent.futures
-import tempfile
-import multiprocessing
-from urllib.parse import urlparse
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+import tempfile
+import multiprocessing
+from urllib.parse import urlparse
 
 
 def _ffprobe_get_resolution(url, timeout):
@@ -1351,9 +1351,9 @@ class IPTVValidator:
         return None
 
 
-def validate_file(input_file, output_file=None, max_workers=20, timeout=5, debug=False, original_filename=None):
+def validate_file(input_file, output_file=None, max_workers=20, timeout=5, debug=False):
     """便捷函数：验证单个文件"""
-    validator = IPTVValidator(input_file, output_file, max_workers, timeout, debug, original_filename)
+    validator = IPTVValidator(input_file, output_file, max_workers, timeout, debug)
     output_file = validator.run()
     return output_file, validator.get_all_results()
 
@@ -1387,11 +1387,10 @@ if __name__ == "__main__":
     parser.add_argument('-w', '--workers', type=int, default=20, help='并发工作线程数')
     parser.add_argument('-t', '--timeout', type=int, default=5, help='超时时间(秒)')
     parser.add_argument('-d', '--debug', action='store_true', help='启用调试模式，显示详细的验证信息')
-    parser.add_argument('--original-filename', help='本地文件的原始名称')
 
     args = parser.parse_args()
 
     if args.all:
         validate_all_files('.', args.workers, args.timeout, args.debug)
     else:
-        output_file, _ = validate_file(args.input, args.output, args.workers, args.timeout, args.debug, args.original_filename)
+        output_file, _ = validate_file(args.input, args.output, args.workers, args.timeout, args.debug)
