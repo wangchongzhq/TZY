@@ -1368,7 +1368,7 @@ def validate_file(input_file, output_file=None, max_workers=20, timeout=5, debug
     
     validator = IPTVValidator(input_file, output_file, max_workers, timeout, debug, skip_resolution=skip_resolution)
     output_file = validator.run()
-    return output_file, validator.get_all_results()
+    return output_file, validator.all_results
 
 
 def validate_all_files(directory='.', max_workers=20, timeout=5, debug=False, skip_resolution=False):
