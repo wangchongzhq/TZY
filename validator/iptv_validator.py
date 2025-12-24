@@ -1251,8 +1251,8 @@ class IPTVValidator:
         
     def generate_output_files(self):
         """生成输出文件，根据文件类型选择合适的方法"""
-        # 获取有效频道
-        valid_channels = [channel for channel in self.all_results if channel['valid']]
+        # 获取有效频道，使用getattr确保即使all_results未设置也不会出错
+        valid_channels = [channel for channel in getattr(self, 'all_results', []) if channel['valid']]
         
         # 根据文件类型生成输出文件
         if self.file_type == 'm3u':
@@ -1321,8 +1321,8 @@ class IPTVValidator:
 
         print(f"验证完成，耗时 {end_time - start_time:.2f} 秒")
         print(f"有效频道数: {len(valid_channels)}")
-        # 计算分辨率有效频道数
-        resolution_valid_channels = [channel for channel in self.all_results if channel['valid'] and channel.get('resolution')]
+        # 计算分辨率有效频道数，使用getattr确保即使all_results未设置也不会出错
+        resolution_valid_channels = [channel for channel in getattr(self, 'all_results', []) if channel['valid'] and channel.get('resolution')]
         print(f"分辨率有效频道数: {len(resolution_valid_channels)}")
         if len(self.channels) > 0:
             print(f"有效率: {len(valid_channels) / len(self.channels) * 100:.2f}%")
