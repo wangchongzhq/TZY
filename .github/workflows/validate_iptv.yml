@@ -48,7 +48,7 @@ jobs:
           for file in jieguo.m3u jieguo.txt; do
             if [ -f "$file" ]; then
               echo "=== 验证文件: $file ==="
-              python validator/iptv_validator.py -i "$file" -w 20 -t 5 -d
+              python validator/iptv_validator.py -i "$file" -t 5 -d --no-resolution
             fi
           done
 
@@ -56,7 +56,7 @@ jobs:
         if: github.event.inputs.inputFile != ''
         run: |
           echo "=== 验证文件: ${{ github.event.inputs.inputFile }} ==="
-          python validator/iptv_validator.py -i "${{ github.event.inputs.inputFile }}" -w 20 -t 5 -d
+          python validator/iptv_validator.py -i "${{ github.event.inputs.inputFile }}" -t 5 -d --no-resolution
 
       - name: 保存验证结果
         run: |

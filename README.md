@@ -68,22 +68,31 @@ pip install -r requirements.txt
 ```
 ├── .github/workflows/           # GitHub Actions 工作流配置
 ├── IPTV.py                      # 核心直播源生成工具（全功能）
+├── IPTVTXT.py                   # 直播源生成工具（轻量版）
 ├── unified_sources.py           # 统一直播源配置
 ├── update_sources.py            # 直播源更新脚本
 ├── convert_m3u_to_txt.py        # M3U 转 TXT 工具
 ├── check_files.py               # 文件状态检查工具
 ├── check_all_syntax.py          # 语法检查工具
 ├── validate_workflows.py        # GitHub Actions 工作流验证工具
+├── requirements.txt             # 依赖包列表
+├── README.md                    # 项目说明文档
+├── REPOSITORY_OPTIMIZATION_REPORT.md  # 仓库优化报告
+├── 项目文件关联关系.md          # 项目文件依赖关系文档
 ├── validator/                   # 直播源验证工具目录
+│   ├── __init__.py              # 包初始化文件
 │   ├── iptv_validator.py        # 验证工具核心脚本
 │   ├── web_app.py               # Web 界面应用
 │   ├── compare_channels.py      # 频道比较工具（找出无效频道）
 │   ├── README.md                # 验证工具详细文档
+│   ├── OPTIMIZATION_SUGGESTIONS.md  # 性能优化建议
+│   ├── USAGE_GUIDE.md           # 使用指南
+│   ├── test_resolution_detection.py # 分辨率检测测试
+│   ├── test_url_validity.py     # URL有效性测试
+│   ├── test_validation_flow.py  # 验证流程测试
+│   ├── test_validity.py         # 有效性测试
+│   ├── test_web_app.py          # Web应用测试
 │   └── output/                  # 验证工具输出目录
-├── requirements.txt             # 依赖包列表
-├── README.md                    # 项目说明文档
-├── REPOSITORY_OPTIMIZATION_REPORT.md  # 仓库优化报告
-└── 项目文件关联关系.md          # 项目文件依赖关系文档
 ```
 
 ## 🎯 使用指南
@@ -135,7 +144,8 @@ python check_files.py
 ```python
 UNIFIED_SOURCES = [
     "https://iptv-org.github.io/iptv/countries/cn.m3u",
-    "file://c:/Users/Administrator/Documents/GitHub/TZY/temp_live.txt",
+    # 添加本地文件直播源（示例）
+    "file:///path/to/your/local/live.txt",
     # 添加更多直播源...
 ]
 ```
@@ -183,13 +193,13 @@ python validator/compare_channels.py input.m3u output/input_valid.m3u
 
 ```bash
 # 基本用法
-python validator/iptv_validator.py -i validator/109 live 1205 直播源.txt
+python validator/iptv_validator.py -i jieguo.m3u
 
 # 启用调试模式，增加超时时间
-python validator/iptv_validator.py -i validator/109 live 1205 直播源.txt -t 10 -d
+python validator/iptv_validator.py -i jieguo.m3u -t 10 -d
 
 # 自定义输出文件和线程数
-python validator/iptv_validator.py -i validator/109 live 1205 直播源.txt -o valid_channels.m3u -w 10
+python validator/iptv_validator.py -i jieguo.m3u -o valid_channels.m3u -w 10
 
 # 验证当前目录下所有支持的文件
 python validator/iptv_validator.py -a

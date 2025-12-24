@@ -195,12 +195,19 @@ CCTV-13新闻,https://example.com/cctv13.m3u8
 
 ```
 validator/
-├── iptv_validator.py     # 核心验证逻辑
-├── web_app.py            # Web界面
-├── compare_channels.py   # 频道比较工具
-├── README.md             # 文档
-├── OPTIMIZATION_SUGGESTIONS.md # 性能优化建议
-└── output/               # 输出文件目录
+├── iptv_validator.py            # 核心验证逻辑
+├── web_app.py                   # Web界面
+├── compare_channels.py          # 频道比较工具
+├── README.md                    # 文档
+├── OPTIMIZATION_SUGGESTIONS.md  # 性能优化建议
+├── USAGE_GUIDE.md               # 使用指南
+├── __init__.py                  # 包初始化文件
+├── test_resolution_detection.py # 分辨率检测测试
+├── test_url_validity.py         # URL有效性测试
+├── test_validation_flow.py      # 验证流程测试
+├── test_validity.py             # 有效性测试
+├── test_web_app.py              # Web应用测试
+└── output/                      # 输出文件目录
 ```
 
 ## 更新日志

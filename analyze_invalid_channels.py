@@ -108,12 +108,21 @@ def analyze_invalid_channels(original_file, valid_file):
     return invalid_channels
 
 if __name__ == "__main__":
-    original_file = "2025-12-22-070830.txt"
-    valid_file = "output/2025-12-22-070830_valid.txt"
+    import sys
+    
+    if len(sys.argv) != 3:
+        print("用法: python analyze_invalid_channels.py <原始文件> <有效文件>")
+        print("示例: python analyze_invalid_channels.py original.m3u output/original_valid.m3u")
+        sys.exit(1)
+    
+    original_file = sys.argv[1]
+    valid_file = sys.argv[2]
     
     if not os.path.exists(original_file):
         print(f"原始文件 {original_file} 不存在")
+        sys.exit(1)
     elif not os.path.exists(valid_file):
         print(f"有效文件 {valid_file} 不存在")
+        sys.exit(1)
     else:
         analyze_invalid_channels(original_file, valid_file)

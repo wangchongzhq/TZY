@@ -49,17 +49,19 @@ def _ffprobe_get_resolution(url, timeout):
 
 
 class IPTVValidator:
-    def __init__(self, input_file, output_file=None, max_workers=None, timeout=5, debug=False, original_filename=None):
+    def __init__(self, input_file, output_file=None, max_workers=None, timeout=5, debug=False, original_filename=None, skip_resolution=False):
         self.input_file = input_file
         # 保存原始文件名（如果提供）
         self.original_filename = original_filename
-        # 动态计算线程池大小
-        self.max_workers = max_workers or min(20, multiprocessing.cpu_count() * 4)
+        # 动态计算线程池大小，更适合GitHub Actions环境（通常2-4核心）
+        cpu_count = multiprocessing.cpu_count()
+        self.max_workers = max_workers or min(10, cpu_count * 2)
         self.debug = debug
         self.channels = []
         self.categories = []
-        # 批次大小，用于分批次处理频道
-        self.batch_size = 50
+        # 动态批次大小，根据总频道数和线程数自动调整，避免资源占用过高
+        # 初始设置为max_workers的3倍，但不超过100，不少于20
+        self.batch_size = min(max(self.max_workers * 3, 20), 100)
         
         # 添加停止标志
         self.stop_requested = False
@@ -67,13 +69,16 @@ class IPTVValidator:
         # 跟踪已处理的外部URL，防止重复添加频道
         self.processed_external_urls = set()
         
-        # 分级超时策略
+        # 分级超时策略，减少等待时间以加快整体检测速度
         self.timeouts = {
             'http_head': min(timeout, 3),  # HEAD请求超时更短
             'http_get': timeout,           # GET请求使用默认超时
-            'non_http': min(timeout * 2, 10),  # 非HTTP协议超时更长
-            'ffprobe': min(timeout * 2, 10)     # ffprobe超时更长
+            'non_http': min(timeout * 1.5, 5),  # 非HTTP协议超时减少到最多5秒
+            'ffprobe': min(timeout * 1.5, 5)     # ffprobe超时减少到最多5秒
         }
+        
+        # 跳过分辨率检测标志
+        self.skip_resolution = skip_resolution
         
         # 初始化HTTP会话和连接池
         self.session = self._init_http_session()
@@ -90,7 +95,7 @@ class IPTVValidator:
         
         # 初始化ffprobe进程池
         self.ffprobe_pool = None
-        if self.ffprobe_available:
+        if self.ffprobe_available and not self.skip_resolution:
             # 使用与CPU核心数相同的进程池大小
             self.ffprobe_pool = concurrent.futures.ProcessPoolExecutor(max_workers=multiprocessing.cpu_count())
             
@@ -925,6 +930,10 @@ class IPTVValidator:
     def get_resolution(self, url):
         """获取视频分辨率，使用进程池提高性能，支持停止请求"""
         try:
+            # 如果跳过分辨率检测，直接返回None
+            if self.skip_resolution:
+                return None
+                
             # 检查是否请求停止
             if self.stop_requested:
                 return None
@@ -1351,14 +1360,14 @@ class IPTVValidator:
         return None
 
 
-def validate_file(input_file, output_file=None, max_workers=20, timeout=5, debug=False):
+def validate_file(input_file, output_file=None, max_workers=20, timeout=5, debug=False, skip_resolution=False):
     """便捷函数：验证单个文件"""
-    validator = IPTVValidator(input_file, output_file, max_workers, timeout, debug)
+    validator = IPTVValidator(input_file, output_file, max_workers, timeout, debug, skip_resolution=skip_resolution)
     output_file = validator.run()
     return output_file, validator.get_all_results()
 
 
-def validate_all_files(directory='.', max_workers=20, timeout=5, debug=False):
+def validate_all_files(directory='.', max_workers=20, timeout=5, debug=False, skip_resolution=False):
     """便捷函数：验证目录下所有支持的文件"""
     supported_extensions = ('.m3u', '.m3u8', '.txt')
     files_to_validate = []
@@ -1371,7 +1380,7 @@ def validate_all_files(directory='.', max_workers=20, timeout=5, debug=False):
 
     for file_path in files_to_validate:
         print(f"\n{'='*50}")
-        output_file, _ = validate_file(file_path, max_workers=max_workers, timeout=timeout, debug=debug)
+        output_file, _ = validate_file(file_path, max_workers=max_workers, timeout=timeout, debug=debug, skip_resolution=skip_resolution)
 
 
 if __name__ == "__main__":
@@ -1387,10 +1396,11 @@ if __name__ == "__main__":
     parser.add_argument('-w', '--workers', type=int, default=20, help='并发工作线程数')
     parser.add_argument('-t', '--timeout', type=int, default=5, help='超时时间(秒)')
     parser.add_argument('-d', '--debug', action='store_true', help='启用调试模式，显示详细的验证信息')
+    parser.add_argument('--no-resolution', action='store_true', help='跳过视频分辨率检测，加快验证速度')
 
     args = parser.parse_args()
 
     if args.all:
-        validate_all_files('.', args.workers, args.timeout, args.debug)
+        validate_all_files('.', args.workers, args.timeout, args.debug, args.no_resolution)
     else:
-        output_file, _ = validate_file(args.input, args.output, args.workers, args.timeout, args.debug)
+        output_file, _ = validate_file(args.input, args.output, args.workers, args.timeout, args.debug, args.no_resolution)

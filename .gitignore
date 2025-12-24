@@ -1,30 +1,6 @@
-# 临时文件
-*.log
-*.tmp
-*.temp
-
-# 虚拟环境
-venv/
-env/
-.env/
-.venv/
-
-# 输出文件（保留）
-# jieguo.m3u 和 jieguo.txt 是IPTV.py的主要输出文件，需要提交
-# jieguo_txt.m3u 和 jieguo_txt.txt 是IPTVTXT.py的主要输出文件，需要提交
-
-# 临时测试文件
-_test*.txt
-_test*.m3u
-test_*.txt
-test_*.m3u
-*.bak
-
-# 验证工具生成的文件
-*_valid.m3u
-*_valid.txt
-validator/output/
-validator/web_validation.log
+# 操作系统文件
+Thumbs.db
+.DS_Store
 
 # IDE文件
 .vscode/
@@ -33,9 +9,11 @@ validator/web_validation.log
 *.swo
 *~
 
-# 操作系统文件
-Thumbs.db
-.DS_Store
+# 虚拟环境
+venv/
+env/
+.env/
+.venv/
 
 # Python缓存
 __pycache__/
@@ -43,13 +21,26 @@ __pycache__/
 *.pyo
 *.pyd
 
+# 临时文件
+*.log
+*.log.*
+*.tmp
+*.temp
+*.bak
+
 # 测试文件
 .pytest_cache/
 .test_results/
+_test*.txt
+_test*.m3u
+test_*.txt
+test_*.m3u
 
-# 日志文件
-logs/
-*.log.*
+# 验证工具生成的文件
+*_valid.m3u
+*_valid.txt
+validator/output/
+validator/web_validation.log
 
 # 源文件缓存
 source_cache.json
@@ -65,3 +56,97 @@ invalid_channels.txt
 
 # 项目分析文件
 IPTV.py 功能分析
+
+# 新增忽略规则
+# 临时目录
+tmp/
+temp/
+
+# 下载文件
+downloads/
+
+# 配置文件
+*.conf
+*.cfg
+*.ini
+
+# 数据文件
+*.csv
+*.xlsx
+*.xlsm
+
+# 压缩文件
+*.zip
+*.tar.gz
+*.rar
+
+# 备份文件
+*.backup
+*.old
+*.original
+
+# 命令历史
+.history/
+
+# 编译文件
+*.o
+*.so
+*.dll
+
+# 输出文件（保留）
+# jieguo.m3u 和 jieguo.txt 是IPTV.py的主要输出文件，需要提交
+# jieguo_txt.m3u 和 jieguo_txt.txt 是IPTVTXT.py的主要输出文件，需要提交
+
+# 更多临时文件
+.trae/
+.cache/
+
+# 操作系统临时文件
+*.tmp
+*.temp
+*.swp
+
+# 调试文件
+*.pdb
+*.dSYM/
+
+# 性能分析文件
+*.prof
+*.profile
+
+# 日志文件
+logs/
+*.log
+
+# 构建文件
+build/
+dist/
+*.egg-info/
+
+# 数据库文件
+*.db
+*.sqlite3
+*.sqlite
+
+# 密码和敏感文件
+*.pem
+*.key
+*.cert
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Windows系统文件
+Thumbs.db
+.DS_Store
+
+# macOS系统文件
+.AppleDouble
+.LSOverride
+
+# Linux系统文件
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
