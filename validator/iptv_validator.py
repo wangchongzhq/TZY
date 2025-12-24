@@ -69,6 +69,9 @@ class IPTVValidator:
         # 跟踪已处理的外部URL，防止重复添加频道
         self.processed_external_urls = set()
         
+        # 初始化所有结果列表，避免AttributeError
+        self.all_results = []
+        
         # 分级超时策略，减少等待时间以加快整体检测速度
         self.timeouts = {
             'http_head': min(timeout, 3),  # HEAD请求超时更短
