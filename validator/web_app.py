@@ -593,6 +593,16 @@ HTML_TEMPLATE = '''
                     <span id="reading-progress-stats">0/0 频道</span>
                 </div>
             </div>
+            <div id="external-url-progress-container" class="progress-container" style="display: none;">
+                <h3>外部URL处理进度</h3>
+                <div class="progress-bar">
+                    <div id="external-url-progress-fill" class="progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="progress-info">
+                    <span id="external-url-progress-percentage">0%</span>
+                    <span id="external-url-progress-stats">0/0 外部URL</span>
+                </div>
+            </div>
             <div id="validation-progress-container" class="progress-container" style="display: none;">
                 <h3>验证进度</h3>
                 <div class="progress-bar">
@@ -833,6 +843,7 @@ HTML_TEMPLATE = '''
             if (data.stage === 'parsing' || data.stage === 'reading') {
                 // 读取阶段进度
                 document.getElementById('reading-progress-container').style.display = 'block';
+                document.getElementById('external-url-progress-container').style.display = 'none';
                 document.getElementById('validation-progress-container').style.display = 'none';
                 
                 const progressFill = document.getElementById('reading-progress-fill');
@@ -842,9 +853,26 @@ HTML_TEMPLATE = '''
                 progressFill.style.width = data.progress + '%';
                 progressPercentage.textContent = data.progress + '%';
                 progressStats.textContent = `${data.processed}/${data.total_channels} 频道`;
+            } else if (data.stage === 'external_url_processing') {
+                // 外部URL处理阶段进度
+                document.getElementById('reading-progress-container').style.display = 'none';
+                document.getElementById('external-url-progress-container').style.display = 'block';
+                document.getElementById('validation-progress-container').style.display = 'none';
+                
+                const progressFill = document.getElementById('external-url-progress-fill');
+                const progressPercentage = document.getElementById('external-url-progress-percentage');
+                const progressStats = document.getElementById('external-url-progress-stats');
+                
+                // 计算外部URL处理进度
+                const externalProgress = data.total_external > 0 ? Math.round((data.processed_external / data.total_external) * 100) : 0;
+                
+                progressFill.style.width = externalProgress + '%';
+                progressPercentage.textContent = externalProgress + '%';
+                progressStats.textContent = `${data.processed_external}/${data.total_external} 外部URL`;
             } else {
                 // 验证阶段进度
                 document.getElementById('reading-progress-container').style.display = 'none';
+                document.getElementById('external-url-progress-container').style.display = 'none';
                 document.getElementById('validation-progress-container').style.display = 'block';
                 
                 const progressFill = document.getElementById('validation-progress-fill');
@@ -1155,6 +1183,15 @@ def run_validation(data):
             local_validator = IPTVValidator(temp_path, max_workers=workers, timeout=timeout, original_filename=original_filename)
             global_validator = local_validator  # 更新全局引用
             
+            # 发送验证开始的进度更新
+            thread_safe_progress_callback({
+                'progress': 0,
+                'total_channels': 0,
+                'processed': 0,
+                'message': f'开始解析{original_filename}，文件类型：{local_validator.file_type}',
+                'stage': 'validation_started'
+            })
+            
             # 根据文件类型解析文件内容
             if local_validator.file_type == 'm3u':
                 local_validator.read_m3u_file(progress_callback=thread_safe_progress_callback)
@@ -1162,6 +1199,15 @@ def run_validation(data):
                 local_validator.read_json_file(progress_callback=thread_safe_progress_callback)
             else:
                 local_validator.read_txt_file(progress_callback=thread_safe_progress_callback)
+            
+            # 发送解析完成的进度更新
+            thread_safe_progress_callback({
+                'progress': 10,
+                'total_channels': len(local_validator.channels),
+                'processed': 0,
+                'message': f'文件解析完成，共找到{len(local_validator.channels)}个频道，开始验证频道有效性',
+                'stage': 'parsing_completed'
+            })
                 
             # 检查是否请求停止
             if local_validator.stop_requested:
@@ -1222,6 +1268,16 @@ def run_validation(data):
             # 使用默认文件名"url_channels"作为原始文件名
             local_validator = IPTVValidator(temp_path, max_workers=workers, timeout=timeout, original_filename="url_channels.m3u")
             global_validator = local_validator  # 更新全局引用
+            
+            # 发送验证开始的进度更新
+            thread_safe_progress_callback({
+                'progress': 0,
+                'total_channels': len(local_validator.channels),
+                'processed': 0,
+                'message': f'URL列表解析完成，共找到{len(local_validator.channels)}个频道，开始验证频道有效性',
+                'stage': 'validation_started'
+            })
+            
             valid_channels = local_validator.validate_channels(progress_callback=thread_safe_progress_callback)
             
             # 检查是否请求停止
@@ -1255,6 +1311,15 @@ def run_validation(data):
             local_validator = IPTVValidator(url, max_workers=workers, timeout=timeout)
             global_validator = local_validator  # 更新全局引用
             
+            # 发送验证开始的进度更新
+            thread_safe_progress_callback({
+                'progress': 0,
+                'total_channels': 0,
+                'processed': 0,
+                'message': f'开始下载并解析网络源：{url}',
+                'stage': 'validation_started'
+            })
+            
             # 根据文件类型解析文件内容
             if local_validator.file_type == 'm3u':
                 local_validator.read_m3u_file(progress_callback=thread_safe_progress_callback)
@@ -1262,6 +1327,15 @@ def run_validation(data):
                 local_validator.read_json_file(progress_callback=thread_safe_progress_callback)
             else:
                 local_validator.read_txt_file(progress_callback=thread_safe_progress_callback)
+            
+            # 发送解析完成的进度更新
+            thread_safe_progress_callback({
+                'progress': 10,
+                'total_channels': len(local_validator.channels),
+                'processed': 0,
+                'message': f'网络源解析完成，共找到{len(local_validator.channels)}个频道，开始验证频道有效性',
+                'stage': 'parsing_completed'
+            })
                 
             # 检查是否请求停止
             if local_validator.stop_requested:

@@ -1,0 +1,29 @@
+{
+  "timestamp": "2025-12-25 13:36:22",
+  "file_name": "jieguo.m3u",
+  "file_type": "m3u",
+  "file_size": 3995838,
+  "read_result": {
+    "time": 2.552130699157715,
+    "current_memory": 12.320941,
+    "peak_memory": 12.342314,
+    "channel_count": 27552,
+    "category_count": 12
+  },
+  "step_result": {
+    "encoding_time": 1.4162015914916992,
+    "count_time": 1.4162015914916992,
+    "read_time": 1.4162015914916992,
+    "peak_memory": 11.905945,
+    "channel_count": 27552
+  },
+  "validation_result": {
+    "time": 33.71581149101257,
+    "current_memory": 9.572402,
+    "peak_memory": 50.993505,
+    "valid_count": 0,
+    "invalid_count": 0,
+    "error_count": 0,
+    "total_count": 27552
+  }
+}
