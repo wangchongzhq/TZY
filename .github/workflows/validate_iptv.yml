@@ -49,7 +49,7 @@ jobs:
           ls -la
           
           echo "=== 检查输入文件 ==="
-          for file in "109  live 1205 直播源 -减.m3u" "109  live 1205 直播源 -减.txt"; do
+          for file in "109  live 1205 直播源 -减.m3u" "109  live 1205 直播源 -减.txt" "jieguo_txt.txt"; do
             if [ -f "$file" ]; then
               echo "找到文件: $file"
               echo "文件大小: $(du -h "$file" | cut -f1)"
