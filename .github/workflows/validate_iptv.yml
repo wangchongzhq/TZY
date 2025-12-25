@@ -14,7 +14,7 @@ on:
           - debug
           - warn
       inputFile:
-        description: '要检测的输入文件路径（可选，默认检测所有输出文件）'
+        description: '要检测的本地文件路径或远程URL（可选，默认检测仓库内所有文件）'
         required: false
         type: string
 
@@ -42,46 +42,71 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: 检测所有直播源文件
-        if: github.event.inputs.inputFile == ''
+      - name: 检测指定URL的直播源
+        if: github.event.inputs.inputFile != '' && startsWith(github.event.inputs.inputFile, 'http')
         run: |
-          echo "=== 当前目录内容 ==="
-          ls -la
+          input_url="${{ github.event.inputs.inputFile }}"
+          echo "=== 检测远程直播源: $input_url ==="
           
-          echo "=== 检查输入文件 ==="
-          for file in "109  live 1205 直播源 -减.m3u" "109  live 1205 直播源 -减.txt" "jieguo_txt.txt"; do
-            if [ -f "$file" ]; then
-              echo "找到文件: $file"
-              echo "文件大小: $(du -h "$file" | cut -f1)"
-              echo "文件行数: $(wc -l "$file" | cut -d' ' -f1)"
-              echo "=== 验证文件: $file ==="
-              python validator/iptv_validator.py -i "$file" -t 5 -d --no-resolution || echo "⚠️  验证 $file 时出现错误，但继续执行"
-            else
-              echo "未找到文件: $file"
-            fi
-          done
+          # 下载文件
+          filename=$(basename "$input_url")
+          echo "下载文件到: $filename"
+          curl -L -o "$filename" "$input_url" || wget -O "$filename" "$input_url"
           
-          echo "=== 验证结果目录 ==="
-          ls -la validator/output/ 2>/dev/null || echo "output目录不存在"
+          if [ -f "$filename" ]; then
+            echo "文件大小: $(du -h "$filename" | cut -f1)"
+            echo "文件行数: $(wc -l "$filename" | cut -d' ' -f1)"
+            echo "=== 验证文件: $filename ==="
+            python validator/iptv_validator.py -i "$filename" -t 5 -d --no-resolution || echo "⚠️  验证 $filename 时出现错误"
+          else
+            echo "❌ 下载文件失败: $filename"
+          fi
 
-      - name: 检测指定的直播源文件
-        if: github.event.inputs.inputFile != ''
+      - name: 检测指定的本地文件
+        if: github.event.inputs.inputFile != '' && !startsWith(github.event.inputs.inputFile, 'http')
         run: |
-          echo "=== 当前目录内容 ==="
-          ls -la
-          
-          echo "=== 检查指定输入文件 ==="
           input_file="${{ github.event.inputs.inputFile }}"
+          echo "=== 检测本地文件: $input_file ==="
+          
           if [ -f "$input_file" ]; then
-            echo "找到文件: $input_file"
             echo "文件大小: $(du -h "$input_file" | cut -f1)"
             echo "文件行数: $(wc -l "$input_file" | cut -d' ' -f1)"
             echo "=== 验证文件: $input_file ==="
             python validator/iptv_validator.py -i "$input_file" -t 5 -d --no-resolution || echo "⚠️  验证 $input_file 时出现错误"
           else
-            echo "❌ 未找到指定文件: $input_file"
-            echo "当前目录内容:"
-            ls -la
+            echo "❌ 未找到本地文件: $input_file"
+          fi
+
+      - name: 检测仓库中所有直播源文件
+        if: github.event.inputs.inputFile == ''
+        run: |
+          echo "=== 自动扫描仓库中的直播源文件 ==="
+          
+          # 查找所有 .m3u 和 .txt 文件，排除特定目录
+          find . -type f \( -name "*.m3u" -o -name "*.txt" \) \
+            -not -path "./.git/*" \
+            -not -path "./validator/output/*" \
+            -not -path "./validator/results/*" \
+            -not -name "requirements.txt" \
+            -not -name "README*" \
+            -not -name ".git*" \
+            > /tmp/iptv_files.txt
+          
+          if [ -s /tmp/iptv_files.txt ]; then
+            echo "找到以下直播源文件:"
+            cat /tmp/iptv_files.txt
+            echo ""
+            
+            # 检测每个文件
+            while IFS= read -r file; do
+              echo "=== 验证文件: $file ==="
+              echo "文件大小: $(du -h "$file" | cut -f1)"
+              echo "文件行数: $(wc -l "$file" | cut -d' ' -f1)"
+              python validator/iptv_validator.py -i "$file" -t 5 -d --no-resolution || echo "⚠️  验证 $file 时出现错误，但继续执行"
+              echo ""
+            done < /tmp/iptv_files.txt
+          else
+            echo "未找到任何直播源文件 (.m3u 或 .txt)"
           fi
           
           echo "=== 验证结果目录 ==="
