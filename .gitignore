@@ -39,15 +39,10 @@ test_*.m3u
 # 验证工具生成的文件
 validator/web_validation.log
 
-# 忽略根目录下的验证结果文件
-/*_valid.m3u
-/*_valid.txt
-
 # 忽略validator/output目录（本地开发用，不上传）
 validator/output/
-
-# 注意：validator/results/ 不再忽略，可以正常提交
-# 但使用 git_safe_push.bat 时会保护本地版本不被覆盖
+validator/output/*_valid.m3u
+validator/output/*_valid.txt
 
 # ============================================
 # 注意：以下文件不再被 .gitignore 忽略，可以正常提交
