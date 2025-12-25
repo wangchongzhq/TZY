@@ -118,6 +118,12 @@ class IPTVValidator:
         # 分辨率提取正则表达式
         self.re_resolution = re.compile(r'\[(\d+\*\d+)\]')
         
+        # URL参数中的分辨率提取正则表达式
+        # 支持格式：$3840x2160, ?resolution=1920x1080, &res=720, resolution=1280*720
+        self.re_url_resolution_dollar = re.compile(r'\$(\d+)x(\d+)')
+        self.re_url_resolution_param = re.compile(r'[?&]resolution=(\d+)[x*](\d+)', re.IGNORECASE)
+        self.re_url_res_param = re.compile(r'[?&]res=(\d+)', re.IGNORECASE)
+        
         # TXT文件分类解析正则表达式
         self.re_category = re.compile(r'(.+),genre#')
         
@@ -709,17 +715,15 @@ class IPTVValidator:
         # 检查URL是否以直播源文件扩展名结尾
         url_lower = url.lower()
         
-        # 对于.m3u/.m3u8文件，默认不视为外部直播源文件
-        # 只有当URL中明确包含直播源列表关键字时才视为外部直播源文件
+        # 对于.m3u/.m3u8文件，视为外部直播源文件
+        # M3U/M3U8文件本身就是直播源列表文件
         if url_lower.endswith(('.m3u', '.m3u8')):
-            # 仅当URL路径中包含明确的直播源列表关键字时，才视为外部直播源文件
-            # 移除'm3u'和'm3u8'，避免误判单个频道URL
-            playlist_keywords = ['playlist', 'channels', 'channel_list', 'iptv_list', 'live_list']
-            for keyword in playlist_keywords:
-                if keyword in url_lower:
-                    return True
-            # 默认不处理为外部直播源文件
-            return False
+            # 排除明显是单个频道播放URL的情况（包含.stream.、/live_、/edge/、/hls/等路径）
+            stream_path_patterns = ['/stream.', '/live_', '/edge/', '/hls/', '/live/']
+            for pattern in stream_path_patterns:
+                if pattern in url_lower:
+                    return False
+            return True
         
         # 对于txt和json文件，保持现有判断逻辑
         if url_lower.endswith(('.txt', '.json')):
@@ -1235,6 +1239,44 @@ class IPTVValidator:
         except Exception:
             return None
 
+    def _extract_resolution_from_url(self, url):
+        """从URL参数中提取分辨率信息
+        
+        支持格式：
+        - $3840x2160 (URL参数中的分辨率标记)
+        - ?resolution=1920x1080 或 resolution=1280*720
+        - &res=720 (只提供高度)
+        """
+        try:
+            # 提取URL参数部分（去掉查询字符串前的路径）
+            url_lower = url.lower()
+            
+            # 匹配 $3840x2160 格式
+            match = self.re_url_resolution_dollar.search(url)
+            if match:
+                width = match.group(1)
+                height = match.group(2)
+                return f"{width}*{height}"
+            
+            # 匹配 resolution=1920x1080 或 resolution=1280*720 格式
+            match = self.re_url_resolution_param.search(url)
+            if match:
+                width = match.group(1)
+                height = match.group(2)
+                return f"{width}*{height}"
+            
+            # 匹配 res=720 格式（只提供高度，假设16:9比例计算宽度）
+            match = self.re_url_res_param.search(url)
+            if match:
+                height = int(match.group(1))
+                # 假设16:9比例
+                width = int(height * 16 / 9)
+                return f"{width}*{height}"
+            
+            return None
+        except Exception:
+            return None
+
     def process_channel(self, channel, original_index):
         """处理单个频道：验证URL并检测分辨率，包含原始索引信息"""
         # 检查是否请求停止
@@ -1301,7 +1343,11 @@ class IPTVValidator:
                 # 检测分辨率
                 resolution = self.get_resolution(channel['url'])
                 
-                # 如果ffprobe检测失败，尝试使用从频道名称中提取的分辨率
+                # 如果ffprobe检测失败，尝试使用从URL参数中提取的分辨率
+                if not resolution:
+                    resolution = self._extract_resolution_from_url(channel['url'])
+                    
+                # 如果ffprobe和URL参数都失败，尝试使用从频道名称中提取的分辨率
                 if not resolution and channel.get('resolution_from_name'):
                     resolution = channel['resolution_from_name']
                     
@@ -1318,12 +1364,18 @@ class IPTVValidator:
             except concurrent.futures.TimeoutError:
                 # 捕获分辨率检测超时异常
                 result['status'] = 'timeout'  # 设置为超时状态
-                # 超时情况下也尝试使用从名称中提取的分辨率
+                # 超时情况下尝试使用从URL参数和名称中提取的分辨率
                 if channel.get('resolution_from_name'):
                     result['resolution'] = channel['resolution_from_name']
                     result['name_with_resolution'] = channel['name']
                 else:
-                    result['name_with_resolution'] = channel['name']
+                    # 尝试从URL参数提取
+                    url_resolution = self._extract_resolution_from_url(channel['url'])
+                    if url_resolution:
+                        result['resolution'] = url_resolution
+                        result['name_with_resolution'] = f"{channel['name']}[{url_resolution}]"
+                    else:
+                        result['name_with_resolution'] = channel['name']
             except Exception as e:
                 if self.debug:
                     print(f"[调试] 检测频道 {channel['name']} 分辨率时出错: {type(e).__name__}: {e}")
@@ -1338,17 +1390,27 @@ class IPTVValidator:
         except concurrent.futures.TimeoutError:
             # 捕获URL验证超时异常
             result['status'] = 'timeout'  # 设置为超时状态
-            # 超时情况下也尝试使用从名称中提取的分辨率
+            # 超时情况下尝试使用从URL参数和名称中提取的分辨率
             if channel.get('resolution_from_name'):
                 result['resolution'] = channel['resolution_from_name']
+            else:
+                # 尝试从URL参数提取
+                url_resolution = self._extract_resolution_from_url(channel['url'])
+                if url_resolution:
+                    result['resolution'] = url_resolution
             result['name_with_resolution'] = channel['name']
         except Exception as e:
             if self.debug:
                 print(f"[调试] 处理频道 {channel['name']} 时出错: {type(e).__name__}: {e}")
             # 其他异常保持频道为无效
-            # 异常情况下也尝试使用从名称中提取的分辨率
+            # 异常情况下尝试使用从URL参数和名称中提取的分辨率
             if channel.get('resolution_from_name'):
                 result['resolution'] = channel['resolution_from_name']
+            else:
+                # 尝试从URL参数提取
+                url_resolution = self._extract_resolution_from_url(channel['url'])
+                if url_resolution:
+                    result['resolution'] = url_resolution
             result['name_with_resolution'] = channel['name']
 
         return result
