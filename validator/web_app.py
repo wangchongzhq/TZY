@@ -1098,6 +1098,7 @@ def run_validation(data):
     """在单独线程中执行验证过程"""
     global global_validator
     sid = data.get('sid')
+    temp_paths = []  # 存储所有创建的临时文件路径
     
     try:
         # 获取参数
@@ -1137,6 +1138,7 @@ def run_validation(data):
             # 创建临时文件
             file_bytes = base64.b64decode(file_data['content'])
             temp_path = os.path.join(tempfile.gettempdir(), os.urandom(24).hex() + file_data['extension'])
+            temp_paths.append(temp_path)  # 添加到临时文件列表
             with open(temp_path, 'wb') as f:
                 f.write(file_bytes)
                 
@@ -1168,8 +1170,6 @@ def run_validation(data):
                     'message': '验证过程已停止',
                     'validation_id': validation_id
                 }, room=sid)
-                # 清理临时文件
-                os.remove(temp_path)
                 return
                 
             valid_channels = local_validator.validate_channels(progress_callback=thread_safe_progress_callback)
@@ -1181,15 +1181,10 @@ def run_validation(data):
                     'message': '验证过程已停止',
                     'validation_id': validation_id
                 }, room=sid)
-                # 清理临时文件
-                os.remove(temp_path)
                 return
                 
             # 生成输出文件
             output_file = os.path.basename(local_validator.generate_output_files())
-            
-            # 清理临时文件
-            os.remove(temp_path)
             
             socketio.emit('validation_completed', {
                 'message': '验证完成',
@@ -1209,13 +1204,19 @@ def run_validation(data):
                 
             # 创建临时文件
             temp_path = os.path.join(tempfile.gettempdir(), os.urandom(24).hex() + '.m3u')
+            temp_paths.append(temp_path)  # 添加到临时文件列表
             with open(temp_path, 'wb') as temp:
                 temp.write(b'#EXTM3U\n')
                 for line in urls.strip().split('\n'):
                     line = line.strip()
                     if line and ',' in line:
-                        name, url = line.split(',', 1)
-                        temp.write(f'#EXTINF:-1 group-title="{category}",{name.strip()}\n{url.strip()}\n'.encode('utf-8'))
+                        try:
+                            name, url = line.split(',', 1)
+                            if name.strip() and url.strip():
+                                temp.write(f'#EXTINF:-1 group-title="{category}",{name.strip()}\n{url.strip()}\n'.encode('utf-8'))
+                        except ValueError:
+                            # 处理分割错误，跳过无效行
+                            continue
                 
             # 执行验证，将引用保存在局部变量中
             # 使用默认文件名"url_channels"作为原始文件名
@@ -1230,15 +1231,10 @@ def run_validation(data):
                     'message': '验证过程已停止',
                     'validation_id': validation_id
                 }, room=sid)
-                # 清理临时文件
-                os.remove(temp_path)
                 return
                 
             # 生成输出文件
             output_file = os.path.basename(local_validator.generate_output_files())
-            
-            # 清理临时文件
-            os.remove(temp_path)
             
             socketio.emit('validation_completed', {
                 'message': '验证完成',
@@ -1307,6 +1303,14 @@ def run_validation(data):
             'validation_id': validation_id
         }, room=sid)
     finally:
+        # 清理所有临时文件
+        for temp_path in temp_paths:
+            try:
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
+            except Exception as cleanup_error:
+                app.logger.error(f'清理临时文件时出错: {str(cleanup_error)}')
+        
         # 重置全局验证器实例
         global_validator = None
 

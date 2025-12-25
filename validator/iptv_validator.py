@@ -1196,6 +1196,9 @@ class IPTVValidator:
 
     def generate_m3u_output(self, valid_channels):
         """生成M3U格式的输出文件"""
+        # 确保输出目录存在
+        self._check_output_dir()
+        
         # 按分类分组频道
         channels_by_category = {category: [] for category in self.categories}
         # 确保所有分类都存在，包括无分类的频道
@@ -1223,6 +1226,9 @@ class IPTVValidator:
 
     def generate_txt_output(self, valid_channels):
         """生成TXT格式的输出文件"""
+        # 确保输出目录存在
+        self._check_output_dir()
+        
         # 按分类分组频道
         channels_by_category = {}
         
@@ -1257,6 +1263,9 @@ class IPTVValidator:
         
     def generate_json_output(self, valid_channels):
         """生成JSON格式的输出文件"""
+        # 确保输出目录存在
+        self._check_output_dir()
+        
         # 按分类分组频道
         channels_by_category = {}
         
@@ -1298,6 +1307,9 @@ class IPTVValidator:
         
     def generate_output_files(self):
         """生成输出文件，根据文件类型选择合适的方法"""
+        # 确保输出目录存在
+        self._check_output_dir()
+        
         # 获取有效频道，使用getattr确保即使all_results未设置也不会出错
         valid_channels = [channel for channel in getattr(self, 'all_results', []) if channel['valid']]
         
