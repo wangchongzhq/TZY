@@ -39,19 +39,32 @@ test_*.m3u
 # 验证工具生成的文件
 validator/web_validation.log
 
-# 忽略根目录下的验证结果文件，但允许validator/output目录下的文件
+# 忽略根目录下的验证结果文件
 /*_valid.m3u
 /*_valid.txt
-!validator/output/
-!validator/output/*_valid.txt
-!validator/output/*_valid.m3u
+
+# 忽略validator/output目录（本地开发用，不上传）
+validator/output/
 
 # 源文件缓存
 source_cache.json
 sources.json
 
-# 临时数据文件
+# 输出目录（临时文件，不上传）
+outputs/
+uploads/
 
+# 临时数据文件
+invalid_channels.txt
+simple_test.txt
+
+# 测试文件（不上传）
+109  live 1205 直播源 -减.m3u
+109  live 1205 直播源 -减.txt
+
+# 项目分析报告（不上传）
+REPOSITORY_OPTIMIZATION_REPORT.md
+项目文件关联关系.md
 
 # 批处理脚本
 *.bat
