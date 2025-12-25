@@ -46,18 +46,17 @@ validator/web_validation.log
 # 忽略validator/output目录（本地开发用，不上传）
 validator/output/
 
-# 忽略validator/results目录（验证结果，不上传）
-validator/results/
+# 注意：validator/results/ 不再忽略，可以正常提交
+# 但使用 git_safe_push.bat 时会保护本地版本不被覆盖
 
 # ============================================
-# 保护输出文件（这些文件不应该被git操作删除）
+# 注意：以下文件不再被 .gitignore 忽略，可以正常提交
+# 保护工作由 git_safe_push.bat 完成
 # ============================================
-# 重要：以下文件由脚本保护，不会被git add -A覆盖
-# 使用 git_safe_push.bat 代替 git add -A ; git commit ; git push
-jieguo.txt
-jieguo.m3u
-jieguo_txt.m3u
-jieguo_txt.txt
+# jieguo.txt
+# jieguo.m3u
+# jieguo_txt.m3u
+# jieguo_txt.txt
 
 # 源文件缓存
 source_cache.json
