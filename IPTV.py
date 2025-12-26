@@ -714,7 +714,8 @@ def get_ip_address():
         ip = s.getsockname()[0]
         s.close()
         return ip
-    except:
+    except Exception as e:
+        logger.error(f"获取IP地址失败: {e}")
         return "127.0.0.1"
 
 # 检查IPv6支持
@@ -723,7 +724,8 @@ def check_ipv6_support():
     try:
         socket.inet_pton(socket.AF_INET6, '::1')
         return True
-    except:
+    except Exception as e:
+        logger.error(f"IPv6支持检查失败: {e}")
         return False
 
 # 从M3U文件中提取频道信息

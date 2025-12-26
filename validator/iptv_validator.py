@@ -1154,8 +1154,9 @@ class IPTVValidator:
             if temp_file_path and os.path.exists(temp_file_path):
                 try:
                     os.remove(temp_file_path)
-                except:
-                    pass
+                except Exception as e:
+                    if self.debug:
+                        print(f"[调试] 清理临时文件失败: {temp_file_path}, 错误: {e}")
         
         return external_channels, external_categories, processed_count
 
