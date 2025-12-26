@@ -25,8 +25,13 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'iptv_validator_secret_key'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB文件大小限制
 
-# 初始化SocketIO
-socketio = SocketIO(app, cors_allowed_origins="*")
+# 初始化SocketIO，增加消息缓冲区大小以支持大文件
+socketio = SocketIO(app, 
+    cors_allowed_origins="*",
+    max_http_buffer_size=100 * 1024 * 1024,  # 100MB for large file uploads
+    ping_timeout=60,
+    ping_interval=25
+)
 
 # 支持的文件类型
 ALLOWED_EXTENSIONS = {'m3u', 'm3u8', 'txt', 'json'}
@@ -818,6 +823,12 @@ HTML_TEMPLATE = '''
         // 验证开始事件
         socket.on('validation_started', function(data) {
             console.log('验证开始:', data.message);
+            // 显示进度区域
+            document.getElementById('progress-container').style.display = 'block';
+            // 默认显示读取阶段进度
+            document.getElementById('reading-progress-container').style.display = 'block';
+            document.getElementById('external-url-progress-container').style.display = 'none';
+            document.getElementById('validation-progress-container').style.display = 'none';
         });
         
         // 进度统计计数器
@@ -834,7 +845,8 @@ HTML_TEMPLATE = '''
             console.log('进度更新:', data);
             
             // 检查验证ID是否匹配当前验证会话
-            if (data.validation_id && data.validation_id !== currentValidationId) {
+            // 如果data中没有validation_id，也应该接受（向后兼容）
+            if (data.validation_id && currentValidationId && data.validation_id !== currentValidationId) {
                 console.log('忽略不属于当前验证会话的进度更新');
                 return;
             }
@@ -1088,14 +1100,15 @@ HTML_TEMPLATE = '''
             const insertIndex = rows.findIndex(r => parseInt(r.dataset.originalIndex) > result.original_index);
             
             if (insertIndex === -1) {
-                // 如果没有找到更大的索引，添加到末尾
                 tbody.appendChild(row);
+                const tableContainer = document.querySelector('.table-container');
+                if (tableContainer) {
+                    tableContainer.scrollTop = tableContainer.scrollHeight;
+                }
             } else {
-                // 否则插入到找到的位置之前
                 tbody.insertBefore(row, rows[insertIndex]);
+                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-            
-
         }
     </script>
 </body>
@@ -1124,6 +1137,7 @@ global_validator = None
 
 def run_validation(data):
     """在单独线程中执行验证过程"""
+    print("[调试] run_validation 函数开始执行")
     global global_validator
     sid = data.get('sid')
     temp_paths = []  # 存储所有创建的临时文件路径
@@ -1132,43 +1146,78 @@ def run_validation(data):
         # 获取参数
         workers = data.get('workers', 20)
         timeout = data.get('timeout', 5)
+        print(f"[调试] 参数: workers={workers}, timeout={timeout}")
         
         # 生成唯一验证ID
         validation_id = data.get('validation_id', '')
+        print(f"[调试] validation_id: {validation_id}")
+        
+        # 首先发送验证开始事件，让前端准备好接收进度
+        try:
+            socketio.emit('validation_started', {
+                'message': '验证过程已开始',
+                'validation_id': validation_id
+            }, room=sid)
+            print(f"[调试] 验证开始事件已发送, validation_id: {validation_id}")
+        except Exception as e:
+            print(f"[调试] 发送验证开始事件失败: {str(e)}")
         
         # 定义进度回调函数，确保在正确的线程中发送事件
+        # 注意：validation_id 在回调定义时已经可用
         def thread_safe_progress_callback(progress_data):
-            # 确保channel对象始终包含基本字段
-            if progress_data.get('channel'):
-                channel = progress_data['channel']
-                # 确保channel对象包含必要的字段
-                if 'name' not in channel or not channel['name']:
-                    channel['name'] = channel.get('name', '未命名频道') or '未命名频道'
-                if 'url' not in channel:
-                    channel['url'] = ''
-                if 'valid' not in channel:
-                    # 解析阶段的channel，设置为未验证状态
-                    channel['valid'] = None
-                    channel['status'] = 'processing'
-            
-            # 添加验证ID到进度数据中
-            progress_data['validation_id'] = validation_id
-            socketio.emit('validation_progress', progress_data, room=sid)
+            try:
+                # 确保validation_id始终存在
+                if 'validation_id' not in progress_data:
+                    progress_data['validation_id'] = validation_id
+                
+                # 确保channel对象始终包含基本字段
+                if progress_data.get('channel'):
+                    channel = progress_data['channel']
+                    if 'name' not in channel or not channel['name']:
+                        channel['name'] = channel.get('name', '未命名频道') or '未命名频道'
+                    if 'url' not in channel:
+                        channel['url'] = ''
+                    if 'valid' not in channel:
+                        channel['valid'] = None
+                        channel['status'] = 'processing'
+                
+                socketio.emit('validation_progress', progress_data, room=sid)
+            except Exception as e:
+                print(f"[调试] 发送进度事件时出错: {str(e)}")
         
         # 根据验证类型处理
         if data.get('type') == 'file':
+            print("[调试] 开始处理文件验证")
             # 处理文件验证
             file_data = data.get('file_data')
             if not file_data:
+                print("[调试] 文件数据为空")
                 socketio.emit('validation_error', {'message': '文件数据为空'}, room=sid)
                 return
-                
+            
+            try:
+                # 解码文件内容
+                print(f"[调试] 开始解码文件内容，数据长度: {len(file_data.get('content', ''))}")
+                file_bytes = base64.b64decode(file_data['content'])
+                print(f"[调试] 文件解码成功，大小: {len(file_bytes)} bytes")
+            except Exception as decode_error:
+                print(f"[调试] 文件解码失败: {str(decode_error)}")
+                socketio.emit('validation_error', {'message': f'文件解码失败: {str(decode_error)}'}, room=sid)
+                return
+            
             # 创建临时文件
-            file_bytes = base64.b64decode(file_data['content'])
-            temp_path = os.path.join(tempfile.gettempdir(), os.urandom(24).hex() + file_data['extension'])
-            temp_paths.append(temp_path)  # 添加到临时文件列表
-            with open(temp_path, 'wb') as f:
-                f.write(file_bytes)
+            try:
+                print("[调试] 开始创建临时文件")
+                temp_path = os.path.join(tempfile.gettempdir(), os.urandom(24).hex() + file_data['extension'])
+                temp_paths.append(temp_path)
+                print(f"[调试] 临时文件路径: {temp_path}")
+                with open(temp_path, 'wb') as f:
+                    f.write(file_bytes)
+                print(f"[调试] 临时文件写入完成: {temp_path}")
+            except Exception as file_error:
+                print(f"[调试] 创建临时文件失败: {str(file_error)}")
+                socketio.emit('validation_error', {'message': f'创建临时文件失败: {str(file_error)}'}, room=sid)
+                return
                 
             # 确保output目录存在
             script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1178,10 +1227,17 @@ def run_validation(data):
                 app.logger.debug(f"已创建output目录: {output_dir}")
                 
             # 执行验证，将引用保存在局部变量中
-            # 传递原始文件名，用于生成正确的输出文件名
             original_filename = file_data.get('filename', f'uploaded{file_data["extension"]}')
-            local_validator = IPTVValidator(temp_path, max_workers=workers, timeout=timeout, original_filename=original_filename)
-            global_validator = local_validator  # 更新全局引用
+            print(f"[调试] 开始创建IPTVValidator，文件路径: {temp_path}")
+            
+            try:
+                local_validator = IPTVValidator(temp_path, max_workers=workers, timeout=timeout, original_filename=original_filename)
+                global_validator = local_validator
+                print(f"[调试] IPTVValidator创建完成, 文件类型: {local_validator.file_type}")
+            except Exception as validator_error:
+                print(f"[调试] 创建验证器失败: {str(validator_error)}")
+                socketio.emit('validation_error', {'message': f'创建验证器失败: {str(validator_error)}'}, room=sid)
+                return
             
             # 发送验证开始的进度更新
             thread_safe_progress_callback({
@@ -1192,13 +1248,24 @@ def run_validation(data):
                 'stage': 'validation_started'
             })
             
+            print(f"[调试] 开始解析文件: {local_validator.file_type}")
             # 根据文件类型解析文件内容
-            if local_validator.file_type == 'm3u':
-                local_validator.read_m3u_file(progress_callback=thread_safe_progress_callback)
-            elif local_validator.file_type == 'json':
-                local_validator.read_json_file(progress_callback=thread_safe_progress_callback)
-            else:
-                local_validator.read_txt_file(progress_callback=thread_safe_progress_callback)
+            try:
+                if local_validator.file_type == 'm3u':
+                    print("[调试] 调用 read_m3u_file")
+                    local_validator.read_m3u_file(progress_callback=thread_safe_progress_callback)
+                elif local_validator.file_type == 'json':
+                    print("[调试] 调用 read_json_file")
+                    local_validator.read_json_file(progress_callback=thread_safe_progress_callback)
+                else:
+                    print("[调试] 调用 read_txt_file")
+                    local_validator.read_txt_file(progress_callback=thread_safe_progress_callback)
+                
+                print(f"[调试] 文件解析完成, 找到 {len(local_validator.channels)} 个频道")
+            except Exception as parse_error:
+                print(f"[调试] 文件解析失败: {str(parse_error)}")
+                socketio.emit('validation_error', {'message': f'文件解析失败: {str(parse_error)}'}, room=sid)
+                return
             
             # 发送解析完成的进度更新
             thread_safe_progress_callback({
@@ -1391,23 +1458,35 @@ def run_validation(data):
 @socketio.on('start_validation')
 def start_validation(data):
     """启动验证过程"""
+    print(f"[调试] 收到验证请求: {data.get('type')}")
     global global_validator
     
     # 首先停止当前正在运行的验证器（如果有）
     if global_validator:
+        print("[调试] 停止现有的验证器")
         global_validator.stop()
         # 重置全局验证器
         global_validator = None
     
-    emit('validation_started', {'message': '验证过程已开始'})
+    # 获取验证ID
+    validation_id = data.get('validation_id', '')
+    
+    # 发送验证开始事件到正确的房间
+    socketio.emit('validation_started', {
+        'message': '验证过程已开始',
+        'validation_id': validation_id
+    }, room=request.sid)
+    print("[调试] 验证开始消息已发送")
     
     # 将当前会话ID添加到数据中，以便在单独线程中可以发送事件到正确的客户端
     data['sid'] = request.sid
     
+    print(f"[调试] 启动验证线程，会话ID: {request.sid}")
     # 在单独线程中执行验证逻辑，避免阻塞WebSocket事件处理
     validation_thread = threading.Thread(target=run_validation, args=(data,))
     validation_thread.daemon = True  # 设置为守护线程，以便在服务器关闭时自动退出
     validation_thread.start()
+    print("[调试] 验证线程已启动")
 
 @socketio.on('stop_validation')
 def stop_validation():

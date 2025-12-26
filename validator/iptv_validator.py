@@ -210,10 +210,13 @@ class IPTVValidator:
 
     def _detect_file_type(self):
         """检测输入文件类型，支持本地文件和互联网URL"""
+        print(f"[调试] 检测文件类型: {self.input_file}")
         # 检查是否为HTTP/HTTPS URL
         if self.input_file.startswith(('http://', 'https://')):
+            print("[调试] 检测到URL，开始下载文件")
             # 下载文件并检测类型
             self.input_file = self._download_url(self.input_file)
+            print(f"[调试] 下载完成，新文件路径: {self.input_file}")
             # 重新检测下载后的文件类型
             if self.input_file.endswith('.m3u') or self.input_file.endswith('.m3u8'):
                 return 'm3u'
@@ -224,13 +227,18 @@ class IPTVValidator:
             else:
                 raise ValueError("不支持的文件格式，仅支持.m3u、.m3u8、.txt和.json格式")
         # 本地文件检测
-        elif self.input_file.endswith('.m3u') or self.input_file.endswith('.m3u8'):
+        print("[调试] 检测本地文件类型")
+        if self.input_file.endswith('.m3u') or self.input_file.endswith('.m3u8'):
+            print("[调试] 文件类型: m3u")
             return 'm3u'
         elif self.input_file.endswith('.txt'):
+            print("[调试] 文件类型: txt")
             return 'txt'
         elif self.input_file.endswith('.json'):
+            print("[调试] 文件类型: json")
             return 'json'
         else:
+            print(f"[调试] 不支持的文件格式: {self.input_file}")
             raise ValueError("不支持的文件格式，仅支持.m3u、.m3u8、.txt和.json格式")
 
     def _download_url(self, url):
@@ -324,8 +332,60 @@ class IPTVValidator:
             
         return os.path.join(script_dir, 'output', f"{base_name}_valid{ext}")
 
+    def _detect_file_encoding(self, sample_size=10240):
+        """自动检测文件编码
+        
+        Args:
+            sample_size: 用于检测编码的样本大小（字节）
+            
+        Returns:
+            检测到的编码名称
+        """
+        try:
+            with open(self.input_file, 'rb') as f:
+                sample_content = f.read(sample_size)
+            
+            if not sample_content:
+                return 'utf-8'
+            
+            if sample_content.startswith(b'\xef\xbb\xbf'):
+                return 'utf-8-sig'
+            elif sample_content.startswith(b'\xff\xfe'):
+                return 'utf-16-le'
+            elif sample_content.startswith(b'\xfe\xff'):
+                return 'utf-16-be'
+            else:
+                sample_text = sample_content.decode('gbk', errors='ignore')
+                if any(char in sample_text for char in '的一是在不了有和人这中大为上个国我以要他时来用们生到作地于出就分对成会可主发年动同工也能下过子说产种面'):
+                    return 'gbk'
+                sample_text = sample_content.decode('utf-8', errors='ignore')
+                if '\x00' not in sample_text[:100]:
+                    return 'utf-8'
+                try:
+                    sample_content.decode('gb18030')
+                    return 'gb18030'
+                except:
+                    pass
+                try:
+                    sample_content.decode('gb2312')
+                    return 'gb2312'
+                except:
+                    pass
+                try:
+                    sample_content.decode('latin-1')
+                    return 'latin-1'
+                except:
+                    pass
+                
+                return 'utf-8'
+        except Exception as e:
+            if self.debug:
+                print(f"[调试] 检测文件编码时出错: {str(e)}")
+            return 'utf-8'
+
     def read_m3u_file(self, progress_callback=None):
         """读取M3U格式文件，解析频道信息和分类，支持进度回调"""
+        print("[调试] read_m3u_file 开始执行")
         # 清除已处理的外部URL缓存，确保每次解析都是全新开始
         self.processed_external_urls.clear()
         
@@ -335,19 +395,25 @@ class IPTVValidator:
         processed_count = 0
         total_channels = 0
         update_interval = 50  # 增加更新间隔，减少回调次数
+        
+        file_encoding = self._detect_file_encoding()
+        print(f"[调试] 检测到文件编码: {file_encoding}")
 
+        print("[调试] 开始第一次遍历计算频道数")
         # 第一次遍历：只计算总频道数
-        with open(self.input_file, 'r', encoding='utf-8-sig', errors='replace') as f:
+        with open(self.input_file, 'r', encoding=file_encoding, errors='replace') as f:
             for line in f:
                 if self.stop_requested:
                     print("解析文件过程已被停止")
                     return [], []
                 if line.strip().startswith('#EXTINF:'):
                     total_channels += 1
+        print(f"[调试] 第一次遍历完成，总频道数: {total_channels}")
         
+        print("[调试] 开始第二次遍历解析频道信息")
         # 第二次遍历：解析频道信息
-        with open(self.input_file, 'r', encoding='utf-8-sig', errors='replace') as f:
-            for line in f:
+        with open(self.input_file, 'r', encoding=file_encoding, errors='replace') as f:
+            for line_num, line in enumerate(f):
                 # 检查是否请求停止
                 if self.stop_requested:
                     print("解析文件过程已被停止")
@@ -428,6 +494,7 @@ class IPTVValidator:
                     
                     channel_buffer.clear()
         
+        print(f"[调试] read_m3u_file 完成，找到 {len(channels)} 个频道")
         # 发送最后一次进度更新，不包含虚拟频道
         if progress_callback and total_channels > 0:
             progress = int((processed_count / total_channels) * 100)
@@ -444,6 +511,7 @@ class IPTVValidator:
 
     def read_txt_file(self, progress_callback=None):
         """读取TXT格式文件，解析频道信息和分类，支持外部URL处理和进度回调"""
+        print("[调试] read_txt_file 开始执行")
         # 清除已处理的外部URL缓存，确保每次解析都是全新开始
         self.processed_external_urls.clear()
         
@@ -455,32 +523,39 @@ class IPTVValidator:
         update_interval = 50  # 增加更新间隔，减少回调次数
 
         # 先检测文件编码 - 读取文件开头部分内容进行编码检测
-        file_encoding = 'utf-8-sig'  # 默认编码
+        file_encoding = 'utf-8'
         try:
             with open(self.input_file, 'rb') as f:
-                # 读取文件开头10KB用于编码检测
                 sample_content = f.read(10240)
 
-            # 优先检查BOM标记，快速确定编码
             if sample_content.startswith(b'\xef\xbb\xbf'):
-                # UTF-8 with BOM
                 file_encoding = 'utf-8-sig'
             elif sample_content.startswith(b'\xff\xfe'):
-                # UTF-16 LE
                 file_encoding = 'utf-16-le'
             elif sample_content.startswith(b'\xfe\xff'):
-                # UTF-16 BE
                 file_encoding = 'utf-16-be'
             else:
-                # 按编码的可能性顺序尝试，减少不必要的尝试
-                encodings = ['utf-8', 'gbk', 'mbcs', 'latin-1']
-                for encoding in encodings:
-                    try:
-                        sample_content.decode(encoding)
-                        file_encoding = encoding
-                        break
-                    except UnicodeDecodeError:
-                        continue
+                sample_text = sample_content.decode('gbk', errors='ignore')
+                if any(char in sample_text for char in '的一是在不了有和人这中大为上个国我以要他时来用们生到作地于出就分对成会可主发年动同工也能下过子说产种面'):
+                    file_encoding = 'gbk'
+                else:
+                    sample_text = sample_content.decode('utf-8', errors='ignore')
+                    if '\x00' not in sample_text[:100]:
+                        file_encoding = 'utf-8'
+                    else:
+                        try:
+                            sample_content.decode('gb18030')
+                            file_encoding = 'gb18030'
+                        except:
+                            try:
+                                sample_content.decode('gb2312')
+                                file_encoding = 'gb2312'
+                            except:
+                                try:
+                                    sample_content.decode('latin-1')
+                                    file_encoding = 'latin-1'
+                                except:
+                                    file_encoding = 'utf-8'
         except Exception as e:
             if self.debug:
                 print(f"[调试] 检测文件编码时出错: {str(e)}")
@@ -709,7 +784,9 @@ class IPTVValidator:
         
     def _is_external_source_file(self, url):
         """检查URL是否指向外部直播源文件"""
+        print(f"[调试] _is_external_source_file 检查URL: {url}")
         if not url.startswith(('http://', 'https://')):
+            print(f"[调试] URL不是http/https协议，返回False")
             return False
             
         # 检查URL是否以直播源文件扩展名结尾
@@ -722,7 +799,9 @@ class IPTVValidator:
             stream_path_patterns = ['/stream.', '/live_', '/edge/', '/hls/', '/live/']
             for pattern in stream_path_patterns:
                 if pattern in url_lower:
+                    print(f"[调试] URL包含流媒体路径模式 {pattern}，返回False")
                     return False
+            print(f"[调试] URL是外部M3U文件，返回True")
             return True
         
         # 对于txt和json文件，保持现有判断逻辑
@@ -735,11 +814,15 @@ class IPTVValidator:
                     stream_keywords = ['stream', 'live_', 'live/', 'edge/', 'hls/']
                     for stream_keyword in stream_keywords:
                         if stream_keyword in url_lower:
+                            print(f"[调试] URL包含流媒体关键字 {stream_keyword}，返回False")
                             return False
+                    print(f"[调试] URL是外部{url_lower.split('.')[-1]}文件，返回True")
                     return True
             # 如果没有明确的关键字，不处理为外部直播源
+            print(f"[调试] URL没有包含直播源关键字，返回False")
             return False
-                
+        
+        print(f"[调试] URL不符合外部文件条件，返回False")
         return False
         
     def read_json_file(self, progress_callback=None):
@@ -1481,14 +1564,14 @@ class IPTVValidator:
                     future_to_channel[future] = channel
                     self._active_futures.add(future)
                 
-                # 遍历普通频道处理结果
+                # 处理结果
                 for future in concurrent.futures.as_completed(future_to_channel):
                     # 检查是否请求停止
                     if self.stop_requested:
                         print("验证过程已被停止")
                         executor.shutdown(wait=False)
                         break
-                        
+                    
                     try:
                         result = future.result()
                         all_results.append(result)
