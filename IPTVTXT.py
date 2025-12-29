@@ -852,7 +852,8 @@ def extract_channels_from_txt(content):
 # 过滤.txt直播源的函数
 def get_txt_sources():
     """从统一来源中过滤出.txt格式的直播源"""
-    txt_sources = [source for source in UNIFIED_SOURCES if source.endswith('.txt')]
+    sources = config["sources"]["default"]
+    txt_sources = [source for source in sources if source.endswith('.txt')]
     logger.info(f"已过滤出 {len(txt_sources)} 个.txt格式的直播源")
     return txt_sources
 

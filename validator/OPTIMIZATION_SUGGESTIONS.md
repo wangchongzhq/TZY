@@ -1,4 +1,4 @@
-# IPTV直播源验证工具优化建议
+# 直播源有效性验证工具ZHQ优化建议
 
 ## 1. 性能优化建议
 
@@ -81,6 +81,47 @@
   if parsed_url.scheme and parsed_url.netloc:
       # 格式正确的URL，视为有效
       return True
+  ```
+
+- ✅ **BlackBird-Player风格试播验证**：通过实际播放测试判断URL是否真正有效，并获取真实分辨率
+  ```python
+  def _test_stream_playback(url, timeout, headers=None):
+      """
+      BlackBird-Player风格的试播验证函数 - 通过实际播放测试判断URL是否真正有效
+      并获取真实分辨率，而不是从URL模式推断
+      
+      试播策略：
+      1. UDP/RTSP/RTMP/RTP: 使用FFmpeg尝试解码一小段数据，确认流可播放
+      2. IPv6: 使用FFprobe探测，检查是否能在IPv6环境下正常连接
+      3. 成功播放后获取真实分辨率和编码信息
+      """
+      # UDP/RTSP/RTMP/RTP协议使用FFmpeg试播
+      if url.startswith(('udp://', 'rtsp://', 'rtmp://', 'rtp://')):
+          cmd = [
+              'ffmpeg', '-i', url, '-t', '2', '-f', 'null', '-',
+              '-timeout', str(timeout * 1000000),  # 微秒
+              '-err_detect', 'ignore_err'
+          ]
+          # 执行FFmpeg命令尝试解码流
+          
+      # IPv6地址检测
+      elif re.match(r'^\[?[0-9a-fA-F:]+\]?:', url):
+          # 使用FFprobe探测IPv6流
+          cmd = [
+              'ffprobe', '-v', 'error',
+              '-select_streams', 'v:0',
+              '-show_entries', 'stream=width,height,codec_name',
+              '-of', 'json', url
+          ]
+          # 执行探测命令
+          
+      # 返回真实分辨率和编码信息
+      return {
+          'valid': True,
+          'resolution': '1920x1080',
+          'codec': 'h264',
+          'method': 'playback'
+      }
   ```
 
 ## 2. 用户体验优化建议

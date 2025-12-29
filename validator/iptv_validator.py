@@ -3,6 +3,7 @@
 """
 直播源有效性验证工具
 功能：验证M3U和TXT格式直播源文件中的URL有效性，检测视频分辨率，并生成新的直播源文件
+参考BlackBird-Player的验证思路进行优化
 """
 
 import os
@@ -17,22 +18,404 @@ from urllib3.util.retry import Retry
 import tempfile
 import multiprocessing
 from urllib.parse import urlparse
+from datetime import datetime
+
+# 验证时间戳跟踪器 - 参考BlackBird-Player的result.txt格式
+class ValidationTimestamp:
+    """验证时间戳跟踪器 - 参考BlackBird-Player的更新时间记录方式"""
+    
+    _instance = None
+    _timestamp = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        return cls._instance
+    
+    @classmethod
+    def get_timestamp(cls):
+        """获取当前验证时间戳"""
+        return cls._timestamp
+    
+    @classmethod
+    def update_timestamp(cls):
+        """更新验证时间戳"""
+        cls._timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        return cls._timestamp
+    
+    @classmethod
+    def reset(cls):
+        """重置时间戳"""
+        cls._timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-def _ffprobe_get_resolution(url, timeout):
-    """在进程池中执行的ffprobe分辨率检测函数"""
+def _get_resolution_from_hls(url, timeout, headers=None):
+    """从HLS播放列表中提取分辨率信息 - 优化版本"""
+    import re
+    import requests
+    try:
+        session = requests.Session()
+        response = session.get(url, timeout=min(timeout, 3), headers=headers, allow_redirects=True)
+        if response.status_code != 200:
+            return None
+
+        content = response.text
+        re_resolution = re.compile(r'#EXT-X-STREAM-INF.*?RESOLUTION=(\d+)x(\d+)', re.IGNORECASE | re.DOTALL)
+        matches = re_resolution.findall(content)
+
+        if matches:
+            max_height = 0
+            best_width = 0
+            for width, height in matches:
+                h = int(height)
+                w = int(width)
+                if h > max_height and h > 0 and w > 0:
+                    max_height = h
+                    best_width = w
+            if max_height > 0:
+                return f"{best_width}*{max_height}", 'hls', {'source': 'hls_playlist'}
+            return None, None, {}
+        return None, None, {}
+    except Exception:
+        return None
+
+
+def _extract_first_segment_from_m3u8(m3u8_url, timeout, headers=None):
+    """从m3u8播放列表中提取第一个媒体片段URL - 优化版本"""
+    import re
+    import requests
+    from urllib.parse import urljoin, urlparse
+    try:
+        session = requests.Session()
+        response = session.get(m3u8_url, timeout=min(timeout, 3), headers=headers, allow_redirects=True)
+        if response.status_code != 200:
+            return None
+
+        content = response.text
+        lines = content.splitlines()
+        
+        base_url = m3u8_url
+        parsed_url = urlparse(m3u8_url)
+        if parsed_url.path.rstrip('/'):
+            base_url = m3u8_url.rsplit('/', 1)[0] + '/'
+
+        for line in lines:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            
+            if line.startswith('http://') or line.startswith('https://'):
+                return line
+            elif line.startswith('/'):
+                return urljoin(f"{parsed_url.scheme}://{parsed_url.netloc}", line)
+            else:
+                return urljoin(base_url, line)
+
+        return None
+    except Exception:
+        return None
+
+
+def _get_resolution_from_segment(segment_url, timeout, headers=None):
+    """使用ffprobe获取媒体片段的分辨率 - 优化版本"""
     import subprocess
     import json
     try:
-        # 使用ffprobe获取视频信息
+        if not segment_url:
+            return None
+
         cmd = [
             'ffprobe', '-v', 'error', '-select_streams', 'v:0',
-            '-show_entries', 'stream=width,height', '-of', 'json', url
+            '-show_entries', 'stream=width,height', '-of', 'json',
+            '-timeout', str(int(timeout * 1000000))
         ]
+
+        if headers:
+            cmd.extend([
+                '-headers', f'Referer: {headers.get("Referer", "")}\r\nUser-Agent: {headers.get("User-Agent", "Mozilla/5.0")}\r\n'
+            ])
+
+        cmd.append(segment_url)
 
         result = subprocess.run(
             cmd, capture_output=True, text=True, timeout=timeout,
-            shell=False, encoding='utf-8', errors='ignore'
+            shell=False, encoding='utf-8', errors='ignore',
+            creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
+        )
+
+        if result.returncode == 0:
+            try:
+                data = json.loads(result.stdout)
+                if 'streams' in data and len(data['streams']) > 0:
+                    width = data['streams'][0].get('width', 0)
+                    height = data['streams'][0].get('height', 0)
+                    if width and height and width > 0 and height > 0:
+                        codec = data['streams'][0].get('codec_name', '未知')
+                        return f"{width}*{height}", codec, {'source': 'segment'}
+            except json.JSONDecodeError:
+                pass
+
+        return None, None, {}
+    except Exception:
+        return None
+
+
+def _ffprobe_get_resolution(url, timeout, headers=None, retry=1):
+    """在进程池中执行的ffprobe分辨率检测函数 - 优化版本（参考新对话.txt）"""
+    import subprocess
+    import json
+
+    url_lower = url.lower()
+    is_rtsp = url_lower.startswith('rtsp://')
+    is_hls = url_lower.endswith(('.m3u8', '.m3u')) or '/hls/' in url_lower or '/live/' in url_lower
+    is_udp = url_lower.startswith('udp://') or url_lower.startswith('rtp://')
+
+    timeout_us = int(timeout * 1000000)
+    skip_bytes = 500000
+
+    for attempt in range(retry + 1):
+        try:
+            cmd = [
+                'ffprobe', '-v', 'error',
+                '-timeout', str(timeout_us),
+                '-skip_initial_bytes', str(skip_bytes),
+                '-flags', 'low_delay',
+                '-fflags', '+genpts',
+                '-select_streams', 'v:0',
+                '-show_entries', 'stream=width,height,codec_name:format=probe_score,duration',
+                '-of', 'json'
+            ]
+
+            if is_rtsp:
+                cmd.extend(['-rtsp_transport', 'tcp'])
+            if is_hls:
+                cmd.extend(['-allowed_extensions', 'ALL'])
+            if is_udp:
+                cmd.extend(['-f', 'mpegts'])
+
+            if headers:
+                cmd.extend([
+                    '-headers', f'Referer: {headers.get("Referer", "")}\r\nUser-Agent: {headers.get("User-Agent", "Mozilla/5.0")}\r\n'
+                ])
+
+            cmd.append(url)
+
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, timeout=timeout,
+                shell=False, encoding='utf-8', errors='ignore',
+                creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
+            )
+
+            if result.returncode == 0:
+                try:
+                    data = json.loads(result.stdout)
+                    format_info = data.get('format', {})
+                    probe_score = format_info.get('probe_score', 0)
+                    format_duration = format_info.get('duration', 'unknown')
+
+                    if probe_score <= 0:
+                        if attempt < retry:
+                            continue
+                        return None, None, {'error': 'format_unrecognizable', 'probe_score': probe_score}
+
+                    if 'streams' in data and len(data['streams']) > 0:
+                        stream = data['streams'][0]
+                        width = stream.get('width', 0)
+                        height = stream.get('height', 0)
+                        if width and height and width > 0 and height > 0:
+                            codec = stream.get('codec_name', '未知')
+                            return f"{width}*{height}", codec, {
+                                'probe_score': probe_score,
+                                'duration': format_duration,
+                                'codec': codec
+                            }
+                except json.JSONDecodeError:
+                    pass
+
+            if attempt < retry:
+                continue
+
+            return None, None, {'error': 'probe_failed', 'returncode': result.returncode}
+
+        except subprocess.TimeoutExpired:
+            if attempt < retry:
+                continue
+            return None, None, {'error': 'timeout'}
+
+        except Exception as e:
+            if attempt < retry:
+                continue
+            return None, None, {'error': str(e)}
+
+    return None, None, {'error': 'max_retries_exceeded'}
+
+
+def _test_stream_playback(url, timeout, headers=None):
+    """BlackBird-Player风格的试播验证函数 - 通过实际播放测试判断URL是否真正有效
+    并获取真实分辨率，而不是从URL模式推断
+    
+    试播策略：
+    1. UDP/RTSP/RTMP/RTP: 使用FFmpeg尝试解码一小段数据，确认流可播放
+    2. IPv6: 使用FFprobe探测，检查是否能在IPv6环境下正常连接
+    3. 成功播放后获取真实分辨率和编码信息
+    """
+    import subprocess
+    import json
+    import socket
+    import threading
+    import time
+    
+    url_lower = url.lower()
+    is_ipv6 = '[' in url and ']' in url
+    is_udp = url_lower.startswith('udp://') or url_lower.startswith('rtp://')
+    is_rtsp = url_lower.startswith('rtsp://')
+    is_rtmp = url_lower.startswith('rtmp://')
+    
+    timeout_us = int(timeout * 1000000)
+    
+    def _check_socket_connection(host, port, timeout_sec=2):
+        """检查socket连接是否可达"""
+        try:
+            sock = socket.socket(socket.AF_INET6 if ':' in host else socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(timeout_sec)
+            sock.connect((host, int(port)))
+            sock.close()
+            return True
+        except Exception:
+            return False
+    
+    def _try_udp_multicast(url, timeout_sec):
+        """尝试UDP组播连接检查"""
+        try:
+            if not url.startswith('udp://'):
+                return False
+            parts = url[7:].split('@')
+            if len(parts) < 2:
+                return False
+            addr_port = parts[1].split('/')[0]
+            addr, port = addr_port.rsplit(':', 1)
+            return _check_socket_connection(addr, int(port), timeout_sec)
+        except Exception:
+            return False
+    
+    try:
+        if is_udp:
+            if not _try_udp_multicast(url, min(timeout, 3)):
+                return None, None, {'error': 'udp_unreachable', 'method': 'socket_check'}
+        
+        elif is_rtsp or is_rtmp:
+            from urllib.parse import urlparse
+            parsed = urlparse(url)
+            port = parsed.port or (554 if is_rtsp else 1935)
+            if not _check_socket_connection(parsed.hostname, port, min(timeout, 3)):
+                return None, None, {'error': f'{("RTSP" if is_rtsp else "RTMP")}_unreachable', 'method': 'socket_check'}
+        
+        cmd = [
+            'ffprobe', '-v', 'error',
+            '-timeout', str(timeout_us),
+            '-skip_initial_bytes', '0',
+            '-flags', 'low_delay',
+            '-fflags', '+genpts+discardcorrupt',
+            '-max_delay', '500000',
+            '-reorder_queue_size', '2048',
+            '-select_streams', 'v:0',
+            '-show_entries', 'stream=width,height,codec_name,duration,bit_rate:format=duration,format_name',
+            '-of', 'json'
+        ]
+        
+        if is_rtsp:
+            cmd.extend(['-rtsp_transport', 'tcp'])
+        elif is_rtmp:
+            cmd.extend(['-f', 'flv'])
+        elif is_udp:
+            cmd.extend(['-f', 'mpegts', '-err_detect', 'ignore_err'])
+        elif is_ipv6:
+            cmd.extend(['-timeout', str(timeout_us)])
+        
+        if headers:
+            cmd.extend([
+                '-headers', f'Referer: {headers.get("Referer", "")}\r\nUser-Agent: {headers.get("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")}\r\n'
+            ])
+        
+        cmd.append(url)
+        
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=timeout + 2,
+            shell=False, encoding='utf-8', errors='ignore',
+            creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
+        )
+        
+        if result.returncode == 0:
+            try:
+                data = json.loads(result.stdout)
+                format_info = data.get('format', {})
+                format_duration = format_info.get('duration', '0')
+                format_name = format_info.get('format_name', 'unknown')
+                
+                if 'streams' in data and len(data['streams']) > 0:
+                    stream = data['streams'][0]
+                    width = stream.get('width', 0)
+                    height = stream.get('height', 0)
+                    
+                    if width and height and width > 0 and height > 0:
+                        codec = stream.get('codec_name', '未知')
+                        bitrate = stream.get('bit_rate', None)
+                        
+                        return f"{width}*{height}", codec, {
+                            'method': 'playback_test',
+                            'verified': True,
+                            'duration': format_duration,
+                            'format': format_name,
+                            'bitrate': bitrate,
+                            'protocol': 'ipv6' if is_ipv6 else ('rtsp' if is_rtsp else ('rtmp' if is_rtmp else ('udp' if is_udp else 'rtp')))
+                        }
+                
+                return None, None, {'error': 'no_video_stream', 'format': format_name}
+                
+            except json.JSONDecodeError:
+                return None, None, {'error': 'parse_failed'}
+        
+        error_output = result.stderr.lower() if result.stderr else ''
+        
+        if 'connection refused' in error_output or 'no such file' in error_output:
+            return None, None, {'error': 'connection_refused'}
+        elif 'network is unreachable' in error_output or 'address' in error_output:
+            return None, None, {'error': 'network_unreachable'}
+        elif 'timeout' in error_output:
+            return None, None, {'error': 'timeout'}
+        else:
+            return None, None, {'error': 'probe_failed', 'stderr': result.stderr[:200] if result.stderr else 'unknown'}
+            
+    except subprocess.TimeoutExpired:
+        return None, None, {'error': 'timeout'}
+    except Exception as e:
+        return None, None, {'error': str(e)}
+
+
+def _ffprobe_get_audio_info(url, timeout, headers=None):
+    """使用ffprobe获取音频流信息（编码格式、采样率、声道数、码率等）"""
+    import subprocess
+    import json
+    try:
+        cmd = [
+            'ffprobe', '-v', 'error',
+            '-select_streams', 'a:0',
+            '-show_entries', 'stream=codec_name,sample_rate,channels,bit_rate',
+            '-of', 'json'
+        ]
+
+        if headers:
+            cmd.extend([
+                '-headers', f'Referer: {headers.get("Referer", "")}\r\nUser-Agent: {headers.get("User-Agent", "Mozilla/5.0")}\r\n'
+            ])
+
+        cmd.append(url)
+
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=timeout,
+            shell=False, encoding='utf-8', errors='ignore',
+            creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
         )
 
         if result.returncode != 0:
@@ -41,72 +424,165 @@ def _ffprobe_get_resolution(url, timeout):
         output = json.loads(result.stdout)
         if 'streams' in output and len(output['streams']) > 0:
             stream = output['streams'][0]
-            if 'width' in stream and 'height' in stream:
-                return f"{stream['width']}*{stream['height']}"
+            return {
+                'codec': stream.get('codec_name', '未知'),
+                'sample_rate': stream.get('sample_rate', '未知'),
+                'channels': stream.get('channels', '未知'),
+                'bit_rate': stream.get('bit_rate', '未知')
+            }
+        return None
+    except Exception:
+        return None
+
+
+def _check_url_has_audio(url, timeout, headers=None):
+    """检查URL是否有有效的音频流，返回布尔值"""
+    import subprocess
+    try:
+        cmd = [
+            'ffprobe', '-v', 'error',
+            '-select_streams', 'a:0',
+            '-show_entries', 'stream=codec_name',
+            '-of', 'csv=p=0'
+        ]
+
+        if headers:
+            cmd.extend([
+                '-headers', f'Referer: {headers.get("Referer", "")}\r\nUser-Agent: {headers.get("User-Agent", "Mozilla/5.0")}\r\n'
+            ])
+
+        cmd.append(url)
+
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=timeout,
+            shell=False, encoding='utf-8', errors='ignore',
+            creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
+        )
+
+        return result.returncode == 0 and result.stdout.strip()
+    except Exception:
+        return False
+
+
+def _check_mediainfo_available():
+    """检查MediaInfo命令行工具是否可用"""
+    import subprocess
+    try:
+        result = subprocess.run(
+            ['mediainfo', '--version'],
+            capture_output=True, text=True, timeout=5,
+            shell=False, encoding='utf-8', errors='ignore',
+            creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
+        )
+        return result.returncode == 0
+    except Exception:
+        return False
+
+
+def _mediainfo_get_resolution(url, timeout, headers=None):
+    """使用MediaInfo获取视频分辨率，作为ffprobe的备选方案"""
+    import subprocess
+    import re
+
+    def _parse_mediainfo_output(output):
+        """解析MediaInfo输出，提取分辨率"""
+        try:
+            lines = output.strip().split('\n')
+            for line in lines:
+                line = line.strip()
+                if 'x' in line:
+                    parts = line.split('x')
+                    if len(parts) == 2:
+                        width = parts[0].strip()
+                        height = parts[1].strip()
+                        if width.isdigit() and height.isdigit():
+                            w, h = int(width), int(height)
+                            if w > 0 and h > 0:
+                                return f"{w}*{h}"
+            return None
+        except Exception:
+            return None
+
+    try:
+        cmd = [
+            'mediainfo', '--Output=Video;%Width%x%Height%', url
+        ]
+
+        if headers:
+            env = os.environ.copy()
+            env['HTTP_REFERER'] = headers.get('Referer', '')
+            env['HTTP_USER_AGENT'] = headers.get('User-Agent', 'Mozilla/5.0')
+        else:
+            env = None
+
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=timeout,
+            shell=False, encoding='utf-8', errors='ignore',
+            creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0,
+            env=env
+        )
+
+        if result.returncode != 0:
+            return None
+
+        return _parse_mediainfo_output(result.stdout)
+
+    except subprocess.TimeoutExpired:
         return None
     except Exception:
         return None
 
 
 class IPTVValidator:
-    def __init__(self, input_file, output_file=None, max_workers=None, timeout=5, debug=False, original_filename=None, skip_resolution=False):
+    def __init__(self, input_file, output_file=None, max_workers=None, timeout=5, debug=False, original_filename=None, skip_resolution=False, filter_no_audio=False):
         self.input_file = input_file
-        # 保存原始文件名（如果提供）
         self.original_filename = original_filename
-        # 增加默认线程池大小以提高并行处理能力
-        cpu_count = multiprocessing.cpu_count()
-        self.max_workers = max_workers or min(30, cpu_count * 4)
+        self.max_workers = max_workers or min(30, multiprocessing.cpu_count() * 4)
         self.debug = debug
         self.channels = []
         self.categories = []
-        # 动态批次大小，根据总频道数和线程数自动调整，避免资源占用过高
-        # 初始设置为max_workers的4倍，但不超过200，不少于50
         self.batch_size = min(max(self.max_workers * 4, 50), 200)
-        
-        # 添加停止标志
         self.stop_requested = False
-        
-        # 跟踪已处理的外部URL，防止重复添加频道
         self.processed_external_urls = set()
-        
-        # 跟踪所有活跃的future对象，以便在stop时取消它们
         self._active_futures = set()
-        
-        # 初始化所有结果列表，避免AttributeError
         self.all_results = []
-        
-        # 分级超时策略，减少等待时间以加快整体检测速度
         self.timeouts = {
-            'http_head': min(timeout, 3),  # HEAD请求超时更短
-            'http_get': timeout,           # GET请求使用默认超时
-            'non_http': min(timeout * 1.5, 5),  # 非HTTP协议超时减少到最多5秒
-            'ffprobe': min(timeout * 1.5, 5)     # ffprobe超时减少到最多5秒
+            'http_head': min(timeout, 5),
+            'http_get': timeout,
+            'non_http': min(timeout * 2, 10),
+            'ffprobe': min(timeout * 2.5, 12)
         }
-        
-        # 跳过分辨率检测标志
         self.skip_resolution = skip_resolution
+        self.filter_no_audio = filter_no_audio
         
         # 预编译正则表达式，减少重复编译开销
         self._compile_regex_patterns()
         
         # 初始化HTTP会话和连接池
         self.session = self._init_http_session()
-        
+
+        # 检测文件类型（必须在生成输出文件名之前）
+        self.file_type = self._detect_file_type()
+
+        # 生成输出文件名（依赖于file_type）
+        self.output_file = output_file or self._generate_output_filename()
+
         # 确保输出目录存在
         self._check_output_dir()
-        
-        # 检测文件类型和ffprobe可用性
-        self.file_type = self._detect_file_type()
         self.ffprobe_available = self._check_ffprobe_availability()
-        
-        # 生成输出文件名（在检测文件类型后，确保基于最终的input_file路径）
-        self.output_file = output_file or self._generate_output_filename()
+        self.mediainfo_available = _check_mediainfo_available()
+        if self.debug:
+            if self.mediainfo_available:
+                print("[调试] MediaInfo可用，将作为ffprobe的备选方案")
+            else:
+                print("[调试] MediaInfo不可用，仅使用ffprobe")
         
         # 初始化ffprobe进程池
         self.ffprobe_pool = None
+        self._validation_pool = None  # 用于验证的线程池
         if self.ffprobe_available and not self.skip_resolution:
-            # 使用与CPU核心数相同的进程池大小
-            self.ffprobe_pool = concurrent.futures.ProcessPoolExecutor(max_workers=multiprocessing.cpu_count())
+            # 使用ThreadPoolExecutor避免ProcessPoolExecutor的多进程启动问题
+            self.ffprobe_pool = concurrent.futures.ThreadPoolExecutor(max_workers=multiprocessing.cpu_count())
             
     def _compile_regex_patterns(self):
         """预编译所有使用的正则表达式模式，减少重复编译开销"""
@@ -124,8 +600,8 @@ class IPTVValidator:
         self.re_url_resolution_param = re.compile(r'[?&]resolution=(\d+)[x*](\d+)', re.IGNORECASE)
         self.re_url_res_param = re.compile(r'[?&]res=(\d+)', re.IGNORECASE)
         
-        # TXT文件分类解析正则表达式
-        self.re_category = re.compile(r'(.+),genre#')
+        # TXT文件分类解析正则表达式 - 支持逗号或Tab分隔
+        self.re_category = re.compile(r'^(.+?)[\t,]\s*#genre#$')
         
         # URL协议检查正则表达式
         self.re_http = re.compile(r'http[s]?://')
@@ -138,7 +614,8 @@ class IPTVValidator:
         self.stop_requested = True
         
         # 取消所有活跃的future对象
-        for future in self._active_futures:
+        # 创建集合的副本进行迭代，避免"Set changed size during iteration"错误
+        for future in list(self._active_futures):
             try:
                 future.cancel()
             except Exception:
@@ -155,14 +632,8 @@ class IPTVValidator:
             except Exception:
                 pass
         
-        # 如果有ffprobe进程池，立即关闭它而不等待
+        # 如果有ffprobe线程池，立即关闭它而不等待
         if self.ffprobe_pool:
-            # 取消所有未完成的ffprobe任务
-            for process in self.ffprobe_pool._processes.values():
-                try:
-                    process.terminate()
-                except Exception:
-                    pass
             self.ffprobe_pool.shutdown(wait=False)
             self.ffprobe_pool = None  # 释放引用
         
@@ -222,1817 +693,818 @@ class IPTVValidator:
                 return 'm3u'
             elif self.input_file.endswith('.txt'):
                 return 'txt'
-            elif self.input_file.endswith('.json'):
-                return 'json'
             else:
-                raise ValueError("不支持的文件格式，仅支持.m3u、.m3u8、.txt和.json格式")
-        # 本地文件检测
-        print("[调试] 检测本地文件类型")
-        if self.input_file.endswith('.m3u') or self.input_file.endswith('.m3u8'):
-            print("[调试] 文件类型: m3u")
+                # 读取文件内容检测
+                try:
+                    with open(self.input_file, 'r', encoding='utf-8') as f:
+                        content = f.read(1024)
+                        if content.startswith('#EXTM3U'):
+                            return 'm3u'
+                        elif content and ('#genre#' in content or '\t' in content):
+                            return 'txt'
+                        elif content:
+                            return 'txt'
+                except Exception:
+                    pass
+                return 'txt'
+        elif self.input_file.endswith('.m3u') or self.input_file.endswith('.m3u8'):
             return 'm3u'
         elif self.input_file.endswith('.txt'):
-            print("[调试] 文件类型: txt")
             return 'txt'
-        elif self.input_file.endswith('.json'):
-            print("[调试] 文件类型: json")
-            return 'json'
         else:
-            print(f"[调试] 不支持的文件格式: {self.input_file}")
-            raise ValueError("不支持的文件格式，仅支持.m3u、.m3u8、.txt和.json格式")
-
-    def _download_url(self, url):
-        """从URL下载直播源文件到临时目录"""
-        try:
-            if self.debug:
-                print(f"[调试] 正在下载URL: {url}")
-            
-            # 获取文件名和扩展名
-            parsed_url = urlparse(url)
-            filename = os.path.basename(parsed_url.path) or 'temp_live_source'
-            
-            # 如果文件名没有扩展名，根据响应头或URL内容确定
-            if not os.path.splitext(filename)[1]:
-                # 发送请求获取文件内容
-                response = self.session.get(url, timeout=self.timeouts['http_get'], allow_redirects=True, verify=False)
-                response.raise_for_status()
-                
-                # 根据响应头或内容确定文件类型
-                content_type = response.headers.get('Content-Type', '')
-                if 'mpegurl' in content_type or 'm3u' in content_type:
-                    filename += '.m3u'
-                elif 'json' in content_type:
-                    filename += '.json'
-                elif 'text/plain' in content_type:
-                    # 检查内容是否为JSON格式
-                    try:
-                        json.loads(response.text)
-                        filename += '.json'
-                    except json.JSONDecodeError:
-                        filename += '.txt'
-                else:
-                    # 尝试根据内容确定
-                    content = response.text.lower()
-                    if '#extm3u' in content:
-                        filename += '.m3u'
-                    else:
-                        # 尝试解析为JSON
-                        try:
-                            json.loads(response.text)
-                            filename += '.json'
-                        except json.JSONDecodeError:
-                            filename += '.txt'
-            else:
-                # 文件名已有扩展名，直接下载
-                response = self.session.get(url, timeout=self.timeouts['http_get'], allow_redirects=True, verify=False)
-                response.raise_for_status()
-            
-            # 创建临时文件
-            temp_dir = tempfile.gettempdir()
-            temp_file_path = os.path.join(temp_dir, filename)
-            
-            # 写入文件内容
-            with open(temp_file_path, 'wb') as f:
-                f.write(response.content)
-            
-            if self.debug:
-                print(f"[调试] 文件已下载到: {temp_file_path}")
-            
-            return temp_file_path
-        except Exception as e:
-            if self.debug:
-                print(f"[调试] 下载URL失败: {type(e).__name__}: {e}")
-            raise ValueError(f"无法下载URL: {url}, 错误: {str(e)}")
+            # 尝试读取文件内容检测
+            try:
+                with open(self.input_file, 'r', encoding='utf-8') as f:
+                    content = f.read(1024)
+                    if content.startswith('#EXTM3U'):
+                        return 'm3u'
+                    elif content and ('#genre#' in content or '\t' in content):
+                        return 'txt'
+                    elif content:
+                        return 'txt'
+            except Exception:
+                pass
+            return 'txt'
 
     def _check_ffprobe_availability(self):
         """检查ffprobe是否可用"""
         try:
-            subprocess.run(['ffprobe', '-version'], capture_output=True, text=True, shell=False)
-            return True
-        except (subprocess.SubprocessError, FileNotFoundError):
+            result = subprocess.run(
+                ['ffprobe', '-version'],
+                capture_output=True, text=True, timeout=5,
+                shell=False
+            )
+            return result.returncode == 0
+        except Exception:
             return False
 
     def _check_output_dir(self):
         """确保输出目录存在"""
-        # 获取当前脚本所在目录
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        # 创建output目录在脚本所在目录下
-        os.makedirs(os.path.join(script_dir, 'output'), exist_ok=True)
+        output_dir = os.path.dirname(self.output_file)
+        if output_dir and not os.path.exists(output_dir):
+            os.makedirs(output_dir, exist_ok=True)
 
     def _generate_output_filename(self):
-        """生成输出文件名"""
-        # 获取当前脚本所在目录
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        
-        # 如果提供了原始文件名，使用它；否则使用input_file的文件名
+        """生成输出文件名（使用原始文件名）"""
         if self.original_filename:
-            base_name, ext = os.path.splitext(self.original_filename)
+            base = os.path.splitext(os.path.basename(self.original_filename))[0]
         else:
-            base_name, ext = os.path.splitext(os.path.basename(self.input_file))
-            
-        return os.path.join(script_dir, 'output', f"{base_name}_valid{ext}")
+            base = os.path.splitext(os.path.basename(self.input_file))[0]
+        if self.file_type == 'm3u':
+            filename = f"{base}_valid.m3u"
+        else:
+            filename = f"{base}_valid.txt"
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        output_dir = os.path.join(script_dir, 'output')
+        return os.path.join(output_dir, filename)
 
-    def _detect_file_encoding(self, sample_size=10240):
-        """自动检测文件编码
-        
-        Args:
-            sample_size: 用于检测编码的样本大小（字节）
-            
-        Returns:
-            检测到的编码名称
-        """
+    def _download_url(self, url, timeout=30):
+        """下载URL内容到临时文件"""
         try:
-            with open(self.input_file, 'rb') as f:
-                sample_content = f.read(sample_size)
+            response = requests.get(url, timeout=timeout, headers={
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            }, allow_redirects=True)
+            response.raise_for_status()
             
-            if not sample_content:
-                return 'utf-8'
-            
-            if sample_content.startswith(b'\xef\xbb\xbf'):
-                return 'utf-8-sig'
-            elif sample_content.startswith(b'\xff\xfe'):
-                return 'utf-16-le'
-            elif sample_content.startswith(b'\xfe\xff'):
-                return 'utf-16-be'
-            else:
-                sample_text = sample_content.decode('gbk', errors='ignore')
-                if any(char in sample_text for char in '的一是在不了有和人这中大为上个国我以要他时来用们生到作地于出就分对成会可主发年动同工也能下过子说产种面'):
-                    return 'gbk'
-                sample_text = sample_content.decode('utf-8', errors='ignore')
-                if '\x00' not in sample_text[:100]:
-                    return 'utf-8'
-                try:
-                    sample_content.decode('gb18030')
-                    return 'gb18030'
-                except:
-                    pass
-                try:
-                    sample_content.decode('gb2312')
-                    return 'gb2312'
-                except:
-                    pass
-                try:
-                    sample_content.decode('latin-1')
-                    return 'latin-1'
-                except:
-                    pass
-                
-                return 'utf-8'
+            # 创建临时文件
+            fd, temp_path = tempfile.mkstemp(suffix='.txt')
+            with os.fdopen(fd, 'wb') as f:
+                f.write(response.content)
+            return temp_path
         except Exception as e:
-            if self.debug:
-                print(f"[调试] 检测文件编码时出错: {str(e)}")
-            return 'utf-8'
+            print(f"[错误] 下载URL失败: {url}, 错误: {str(e)}")
+            return None
 
-    def read_m3u_file(self, progress_callback=None):
-        """读取M3U格式文件，解析频道信息和分类，支持进度回调"""
-        print("[调试] read_m3u_file 开始执行")
-        # 清除已处理的外部URL缓存，确保每次解析都是全新开始
-        self.processed_external_urls.clear()
+    def _http_request_with_retry(self, url, method='head', timeout=None, headers=None, retries=3):
+        """发送HTTP请求，支持重试机制"""
+        if self.stop_requested:
+            return None
+            
+        if timeout is None:
+            timeout = self.timeouts['http_head']
         
-        channels = []
-        categories = []
-        channel_buffer = {}
-        processed_count = 0
-        total_channels = 0
-        update_interval = 50  # 增加更新间隔，减少回调次数
+        session = self.session
+        retry_strategy = Retry(
+            total=retries,
+            backoff_factor=0.5,
+            status_forcelist=[429, 500, 502, 503, 504],
+            allowed_methods=["HEAD", "GET"]
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        session.mount("http://", adapter)
+        session.mount("https://", adapter)
         
-        file_encoding = self._detect_file_encoding()
-        print(f"[调试] 检测到文件编码: {file_encoding}")
-
-        print("[调试] 开始第一次遍历计算频道数")
-        # 第一次遍历：只计算总频道数
-        with open(self.input_file, 'r', encoding=file_encoding, errors='replace') as f:
-            for line in f:
-                if self.stop_requested:
-                    print("解析文件过程已被停止")
-                    return [], []
-                if line.strip().startswith('#EXTINF:'):
-                    total_channels += 1
-        print(f"[调试] 第一次遍历完成，总频道数: {total_channels}")
-        
-        print("[调试] 开始第二次遍历解析频道信息")
-        # 第二次遍历：解析频道信息
-        with open(self.input_file, 'r', encoding=file_encoding, errors='replace') as f:
-            for line_num, line in enumerate(f):
-                # 检查是否请求停止
-                if self.stop_requested:
-                    print("解析文件过程已被停止")
-                    break
-                    
-                line = line.strip()
-                if not line:
-                    continue
-
-                # 解析EXTINF行，提取频道信息
-                if line.startswith('#EXTINF:'):
-                    # 提取频道名称，支持两种格式：有逗号和没有逗号
-                    # 1. 标准格式：#EXTINF:-1 tvg-id="",频道名称
-                    # 2. 简化格式：#EXTINF:-1 tvg-id="" tvg-name="频道名称"
-                    name_match = self.re_extinf_name.search(line)
-                    if name_match:
-                        channel_buffer['name'] = name_match.group(1).strip()
-                    else:
-                        # 没有逗号的情况，尝试从tvg-name提取
-                        tvg_name_match = self.re_tvg_name.search(line)
-                        if tvg_name_match:
-                            channel_buffer['name'] = tvg_name_match.group(1).strip()
-                        else:
-                            # 尝试提取最后一个空格后的内容作为频道名称
-                            parts = line.split()
-                            if len(parts) > 1:
-                                channel_buffer['name'] = parts[-1].strip()
-                            else:
-                                # 如果无法提取有效的频道名称，则跳过此频道
-                                channel_buffer.clear()
-                                continue
-                    # 处理空频道名称的情况，避免"no desc"显示
-                    if not channel_buffer['name']:
-                        # 如果频道名称为空，则跳过此频道
-                        channel_buffer.clear()
-                        continue
-                
-                # 处理空频道名称的情况，避免"no desc"显示
-                if not channel_buffer.get('name'):
-                    # 如果频道名称为空，则跳过此频道
-                    channel_buffer.clear()
-                    continue
-                    
-                # 从频道名称中提取分辨率信息（如果存在）- 适用于所有格式
-                resolution_match = self.re_resolution.search(channel_buffer['name'])
-                channel_buffer['resolution_from_name'] = resolution_match.group(1) if resolution_match else None
-
-                # 提取分类信息
-                category_match = self.re_group_title.search(line)
-                if category_match:
-                    channel_buffer['category'] = category_match.group(1)
-                    if category_match.group(1) not in categories:
-                        categories.append(category_match.group(1))
-
-                # 解析URL行
-                elif not line.startswith('#') and channel_buffer.get('name'):
-                    # 去除URL两端的反引号和空白字符
-                    url = line.strip().strip('`')
-                    channel_buffer['url'] = url
-                    
-                    # 检查URL是否为外部直播源文件
-                    is_external = self._is_external_source_file(url)
-                    channel_buffer['is_external'] = is_external  # 标记是否为外部URL
-                    
-                    channels.append(channel_buffer.copy())
-                    processed_count += 1
-                    
-                    # 发送进度更新，每处理一定数量的频道发送一次
-                    if progress_callback and total_channels > 0 and processed_count % update_interval == 0:
-                        progress = int((processed_count / total_channels) * 100)
-                        progress_callback({
-                            'progress': progress,
-                            'total_channels': total_channels,
-                            'processed': processed_count,
-                            'channel': channel_buffer.copy(),
-                            'stage': 'parsing'  # 添加阶段信息
-                        })
-                    
-                    channel_buffer.clear()
-        
-        print(f"[调试] read_m3u_file 完成，找到 {len(channels)} 个频道")
-        # 发送最后一次进度更新，不包含虚拟频道
-        if progress_callback and total_channels > 0:
-            progress = int((processed_count / total_channels) * 100)
-            progress_callback({
-                'progress': progress,
-                'total_channels': total_channels,
-                'processed': processed_count,
-                'stage': 'parsing'
-            })
-
-        self.channels = channels
-        self.categories = categories
-        return channels, categories
-
-    def read_txt_file(self, progress_callback=None):
-        """读取TXT格式文件，解析频道信息和分类，支持外部URL处理和进度回调"""
-        print("[调试] read_txt_file 开始执行")
-        # 清除已处理的外部URL缓存，确保每次解析都是全新开始
-        self.processed_external_urls.clear()
-        
-        channels = []
-        categories = []
-        current_category = None
-        processed_count = 0
-        actual_channel_count = 0
-        update_interval = 50  # 增加更新间隔，减少回调次数
-
-        # 先检测文件编码 - 读取文件开头部分内容进行编码检测
-        file_encoding = 'utf-8'
-        try:
-            with open(self.input_file, 'rb') as f:
-                sample_content = f.read(10240)
-
-            if sample_content.startswith(b'\xef\xbb\xbf'):
-                file_encoding = 'utf-8-sig'
-            elif sample_content.startswith(b'\xff\xfe'):
-                file_encoding = 'utf-16-le'
-            elif sample_content.startswith(b'\xfe\xff'):
-                file_encoding = 'utf-16-be'
-            else:
-                sample_text = sample_content.decode('gbk', errors='ignore')
-                if any(char in sample_text for char in '的一是在不了有和人这中大为上个国我以要他时来用们生到作地于出就分对成会可主发年动同工也能下过子说产种面'):
-                    file_encoding = 'gbk'
+        for attempt in range(retries + 1):
+            # 检查停止标志
+            if self.stop_requested:
+                return None
+            
+            try:
+                if method.lower() == 'head':
+                    response = session.head(url, timeout=timeout, headers=headers, allow_redirects=True)
                 else:
-                    sample_text = sample_content.decode('utf-8', errors='ignore')
-                    if '\x00' not in sample_text[:100]:
-                        file_encoding = 'utf-8'
-                    else:
-                        try:
-                            sample_content.decode('gb18030')
-                            file_encoding = 'gb18030'
-                        except:
-                            try:
-                                sample_content.decode('gb2312')
-                                file_encoding = 'gb2312'
-                            except:
-                                try:
-                                    sample_content.decode('latin-1')
-                                    file_encoding = 'latin-1'
-                                except:
-                                    file_encoding = 'utf-8'
-        except Exception as e:
-            if self.debug:
-                print(f"[调试] 检测文件编码时出错: {str(e)}")
-
-        # 第一次遍历：只计算总频道数
-        try:
-            with open(self.input_file, 'r', encoding=file_encoding, errors='replace') as f:
-                for line in f:
-                    if self.stop_requested:
-                        print("解析文件过程已被停止")
-                        return [], []
-                    
-                    line = line.strip()
-                    if not line:
-                        continue
-                    
-                    # 跳过注释行，但保留分类行
-                    if line.startswith('//'):
-                        continue
-                    # 对于#开头的行，如果不是分类行，才跳过
-                    if line.startswith('#') and 'genre#' not in line:
-                        continue
-
-                    # 只处理包含英文逗号的行
-                    if ',' in line:
-                        try:
-                            # 使用最后一个逗号分割频道名和URL
-                            name, url = line.rsplit(',', 1)
-                            name = name.strip()
-                            url = url.strip().strip('`')
-                            
-                            # 检查频道名和URL是否都存在
-                            if name and url:
-                                actual_channel_count += 1
-                        except ValueError:
-                            continue
-        except Exception as e:
-            if self.debug:
-                print(f"[调试] 第一次遍历文件时出错: {str(e)}")
-            return channels, categories
-
-        # 第二次遍历：逐行解析频道信息
-        try:
-            with open(self.input_file, 'r', encoding=file_encoding, errors='replace') as f:
-                for line in f:
-                    # 检查是否请求停止
-                    if self.stop_requested:
-                        print("解析文件过程已被停止")
-                        break
-                    
-                    line = line.strip()
-                    if not line:
-                        continue
-                    
-                    # 调试输出：显示实际解析阶段的当前行
-                    if self.debug:
-                        print(f"[调试] 实际解析阶段行: {repr(line)}")
+                    response = session.get(url, timeout=timeout, headers=headers, allow_redirects=True)
                 
-                    # 跳过注释行，但保留分类行
-                    if line.startswith('//'):
-                        if self.debug:
-                            print(f"[调试] 跳过注释行: {line}")
-                        continue
-                    # 对于#开头的行，如果不是分类行，才跳过
-                    if line.startswith('#'):
-                        # 使用简单的字符串检查，避免正则表达式的复杂性
-                        has_genre = 'genre#' in line.lower()
-                        # 调试输出：检查是否包含genre标记
-                        if self.debug:
-                            print(f"[调试] 检查#line中是否包含genre标记: '{line}' -> has_genre = {has_genre}")
-                        if has_genre:
-                            if self.debug:
-                                print(f"[调试] 保留分类行: {line}")
-                        else:
-                            if self.debug:
-                                print(f"[调试] 跳过#注释行: {line}")
-                            continue
-
-                    # 检测分类行：支持多种格式，包括#分类名#,genre#和emoji开头的分类名,genre#
+                if response.status_code < 400:
+                    return response
+                elif response.status_code == 429:  # Too Many Requests
+                    wait_time = (attempt + 1) * 2
                     if self.debug:
-                        print(f"[调试] 检查分类行: {repr(line)}")
-                    category_match = self.re_category.search(line)
-                    if category_match:
-                        current_category = category_match.group(1).strip()
-                        # 调试输出：显示匹配到的分类
-                        if self.debug:
-                            print(f"[调试] 匹配到分类: {current_category}")
-                        # 移除分类名前后可能存在的#字符，确保统一格式
-                        if current_category.startswith('#'):
-                            current_category = current_category[1:]
-                        if current_category.endswith('#'):
-                            current_category = current_category[:-1]
-                        # 调试输出：显示处理后的分类
-                        if self.debug:
-                            print(f"[调试] 处理后的分类: {current_category}")
-                        if current_category not in categories:
-                            categories.append(current_category)
-                            # 调试输出：显示分类列表更新
-                            if self.debug:
-                                print(f"[调试] 分类列表更新: {categories}")
-                        continue
-
-                    # 解析频道行：严格按照要求只处理英文逗号分隔的name,url格式
-                    # 只处理包含英文逗号的行
-                    if ',' not in line:
-                        continue
+                        print(f"[调试] 收到429错误，等待{wait_time}秒后重试...")
+                    time.sleep(wait_time)
+                    continue
+                else:
+                    return None
                     
-                    try:
-                        # 严格按照要求：使用最后一个英文逗号分割频道名和URL
-                        name, url = line.rsplit(',', 1)
-                        name = name.strip()
-                        url = url.strip().strip('`')
-                        
-                        # 基本要求：频道名和URL都必须存在
-                        if not name or not url:
-                            continue
-                        
-                        # 从频道名称中提取分辨率信息（如果存在）
-                        resolution_match = self.re_resolution.search(name)
-                        resolution = resolution_match.group(1) if resolution_match else None
-                        
-                        # 检查URL是否为外部直播源文件
-                        is_external = self._is_external_source_file(url)
-                        
-                        # 将所有频道（包括外部URL）都作为普通频道添加
-                        # 外部URL的处理将在验证阶段进行
-                        channel = {
+            except requests.exceptions.Timeout:
+                if self.debug:
+                    print(f"[调试] 请求超时 (尝试 {attempt + 1}/{retries + 1}): {url}")
+                if attempt < retries:
+                    continue
+                return None
+            except requests.exceptions.RequestException as e:
+                if self.debug:
+                    print(f"[调试] 请求失败 (尝试 {attempt + 1}/{retries + 1}): {url}, 错误: {str(e)}")
+                if attempt < retries:
+                    continue
+                return None
+        
+        return None
+
+    def _parse_m3u_file(self):
+        """解析M3U文件，提取频道信息"""
+        channels = []
+        current_category = "未分类"
+        
+        with open(self.input_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+            lines = content.splitlines()
+            
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+            
+            if line.startswith('#EXTINF:'):
+                name_match = self.re_extinf_name.search(line)
+                name = name_match.group(1).strip() if name_match else "未知频道"
+                
+                group_match = self.re_group_title.search(line)
+                if group_match:
+                    current_category = group_match.group(1).strip()
+                
+                tvg_match = self.re_tvg_name.search(line)
+                if tvg_match:
+                    name = tvg_match.group(1).strip()
+                
+            elif line.startswith('#'):
+                continue
+            elif line.startswith('http://') or line.startswith('https://'):
+                channels.append({
+                    'name': name,
+                    'url': line.strip(),
+                    'category': current_category
+                })
+            elif not line.startswith('#'):
+                if self.re_category.match(line):
+                    current_category = self.re_category.match(line).group(1).strip()
+                    
+        return channels
+
+    def _parse_txt_file(self):
+        """解析TXT文件，提取频道信息"""
+        channels = []
+        current_category = "未分类"
+        
+        with open(self.input_file, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+            
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+            
+            if self.re_category.match(line):
+                current_category = self.re_category.match(line).group(1).strip()
+                continue
+            
+            if ',' in line:
+                parts = line.split(',', 1)
+                if len(parts) == 2:
+                    name = parts[0].strip()
+                    url = parts[1].strip()
+                    if url:
+                        channels.append({
                             'name': name,
                             'url': url,
-                            'category': current_category if current_category else '未分类',
-                            'resolution_from_name': resolution,
-                            'is_external': is_external  # 标记是否为外部URL
-                        }
-                        channels.append(channel)
-                        
-                        # 发送进度更新
-                        processed_count += 1
-                        if progress_callback and processed_count % update_interval == 0:
-                            if actual_channel_count > 0:
-                                progress = int((processed_count / actual_channel_count) * 100)
-                            else:
-                                progress = 0
-                            progress_callback({
-                                'progress': progress,
-                                'total_channels': actual_channel_count,
-                                'processed': processed_count,
-                                'channel': channel
-                            })
-                    except ValueError:
-                        continue
-        except Exception as e:
-            if self.debug:
-                print(f"[调试] 第二次遍历文件时出错: {str(e)}")
-            return channels, categories
-
-        # 发送最后一次进度更新，不包含虚拟频道
-        if progress_callback and actual_channel_count > 0:
-            progress_callback({
-                'progress': 100,
-                'total_channels': actual_channel_count,
-                'processed': processed_count,
-                'stage': 'parsing'
-            })
-
-        if self.debug:
-            print(f"[调试] TXT文件解析完成，找到 {actual_channel_count} 个频道，实际处理 {processed_count} 个频道")
-
-        # 确保所有分类都存在
-        if not categories:
-            categories.append('未分类')
-            current_category = '未分类'
-
-        # 如果没有解析到任何频道，尝试重新解析文件（但仍严格要求name,URL格式）
-        if not channels:
-            try:
-                with open(self.input_file, 'r', encoding=file_encoding, errors='replace') as f:
-                    for line in f:
-                        if self.stop_requested:
-                            print("解析文件过程已被停止")
-                            break
-                        
-                        line = line.strip()
-                        if not line or line.startswith('#') or line.startswith('//'):
-                            continue
-                        
-                        # 仍然要求必须包含英文逗号分隔的name,url格式
-                        if ',' not in line:
-                            continue
-                            
-                        # 提取URL和名称
-                        try:
-                            name, url = line.rsplit(',', 1)
-                            name = name.strip()
-                            url = url.strip().strip('`')
-                            
-                            # 基本要求：频道名和URL都必须存在
-                            if not name or not url:
-                                continue
-                                
-                            # 检查URL是否为有效的流媒体URL
-                            if self.re_http.search(url) or self.re_rtsp.search(url) or self.re_rtmp.search(url) or self.re_mms.search(url):
-                                # 检查URL是否为外部直播源文件
-                                is_external = self._is_external_source_file(url)
-                                
-                                # 从频道名称中提取分辨率信息（如果存在）
-                                resolution_match = re.search(r'\[(\d+\*\d+)\]', name)
-                                resolution = resolution_match.group(1) if resolution_match else None
-                                
-                                # 添加频道，外部URL将在验证阶段处理
-                                channels.append({
-                                    'name': name,
-                                    'url': url,
-                                    'category': '未分类',
-                                    'resolution_from_name': resolution,
-                                    'is_external': is_external  # 标记是否为外部URL
-                                })
-                        except ValueError:
-                            continue
-            except Exception as e:
-                if self.debug:
-                    print(f"[调试] 重新解析文件时出错: {str(e)}")
-
-        self.channels = channels
-        self.categories = categories
-        return channels, categories
-        
-    def _is_external_source_file(self, url):
-        """检查URL是否指向外部直播源文件"""
-        print(f"[调试] _is_external_source_file 检查URL: {url}")
-        if not url.startswith(('http://', 'https://')):
-            print(f"[调试] URL不是http/https协议，返回False")
-            return False
-            
-        # 检查URL是否以直播源文件扩展名结尾
-        url_lower = url.lower()
-        
-        # 对于.m3u/.m3u8文件，视为外部直播源文件
-        # M3U/M3U8文件本身就是直播源列表文件
-        if url_lower.endswith(('.m3u', '.m3u8')):
-            # 排除明显是单个频道播放URL的情况（包含.stream.、/live_、/edge/、/hls/等路径）
-            stream_path_patterns = ['/stream.', '/live_', '/edge/', '/hls/', '/live/']
-            for pattern in stream_path_patterns:
-                if pattern in url_lower:
-                    print(f"[调试] URL包含流媒体路径模式 {pattern}，返回False")
-                    return False
-            print(f"[调试] URL是外部M3U文件，返回True")
-            return True
-        
-        # 对于txt和json文件，保持现有判断逻辑
-        if url_lower.endswith(('.txt', '.json')):
-            # 检查URL路径中是否包含直播源相关关键字
-            keywords = ['iptv', 'live', 'channel', 'playlist', 'channels', 'channel_list']
-            for keyword in keywords:
-                if keyword in url_lower:
-                    # 进一步检查，确保不是单个频道的播放URL
-                    stream_keywords = ['stream', 'live_', 'live/', 'edge/', 'hls/']
-                    for stream_keyword in stream_keywords:
-                        if stream_keyword in url_lower:
-                            print(f"[调试] URL包含流媒体关键字 {stream_keyword}，返回False")
-                            return False
-                    print(f"[调试] URL是外部{url_lower.split('.')[-1]}文件，返回True")
-                    return True
-            # 如果没有明确的关键字，不处理为外部直播源
-            print(f"[调试] URL没有包含直播源关键字，返回False")
-            return False
-        
-        print(f"[调试] URL不符合外部文件条件，返回False")
-        return False
-        
-    def read_json_file(self, progress_callback=None):
-        """读取JSON格式文件，解析频道信息和分类，支持进度回调"""
-        # 清除已处理的外部URL缓存，确保每次解析都是全新开始
-        self.processed_external_urls.clear()
-        
-        channels = []
-        categories = []
-        processed_count = 0
-        
-        try:
-            if self.debug:
-                print(f"[调试] 正在解析JSON文件: {self.input_file}")
-            
-            # 读取JSON文件
-            with open(self.input_file, 'r', encoding='utf-8-sig', errors='replace') as f:
-                data = json.load(f)
-            
-            # 递归提取频道信息的辅助函数
-            def extract_channels(obj, category=None):
-                if isinstance(obj, dict):
-                    # 检查是否为频道对象
-                    if 'name' in obj and 'url' in obj:
-                        name = obj['name']
-                        # 从频道名称中提取分辨率信息（如果存在）
-                        resolution_match = re.search(r'\[(\d+\*\d+)\]', name)
-                        resolution = resolution_match.group(1) if resolution_match else None
-                        return [{
-                            'name': name,
-                            'url': obj['url'],
-                            'category': obj.get('category') or category or '未分类',
-                            'resolution_from_name': resolution
-                        }]
-                    elif 'channel' in obj and 'url' in obj:
-                        name = obj['channel']
-                        # 从频道名称中提取分辨率信息（如果存在）
-                        resolution_match = re.search(r'\[(\d+\*\d+)\]', name)
-                        resolution = resolution_match.group(1) if resolution_match else None
-                        return [{
-                            'name': name,
-                            'url': obj['url'],
-                            'category': obj.get('category') or category or '未分类',
-                            'resolution_from_name': resolution
-                        }]
-                    
-                    # 递归处理字典
-                    result = []
-                    for key, value in obj.items():
-                        # 如果值是列表或字典，递归处理
-                        if isinstance(value, (list, dict)):
-                            # 尝试将键作为分类名
-                            result.extend(extract_channels(value, key))
-                        # 检查是否有channels、list或data字段
-                        elif key in ['channels', 'list', 'data']:
-                            result.extend(extract_channels(value))
-                    return result
-                elif isinstance(obj, list):
-                    # 递归处理列表
-                    result = []
-                    for item in obj:
-                        result.extend(extract_channels(item, category))
-                    return result
-                return []
-            
-            # 提取所有频道
-            all_channels = extract_channels(data)
-            total_channels = len(all_channels)
-            
-            if self.debug:
-                print(f"[调试] 从JSON文件中提取到 {total_channels} 个频道")
-            
-            # 处理提取到的频道
-            for channel in all_channels:
-                # 检查是否请求停止
-                if self.stop_requested:
-                    print("解析文件过程已被停止")
-                    break
-                    
-                # 检查频道信息完整性
-                if channel.get('name') and channel.get('url'):
-                    channels.append(channel)
-                    
-                    # 更新分类列表
-                    category = channel.get('category', '未分类')
-                    if category not in categories:
-                        categories.append(category)
-                    
-                    processed_count += 1
-                    
-                    # 发送进度更新
-                    if progress_callback:
-                        progress = int((processed_count / max(total_channels, 1)) * 100)
-                        progress_callback({
-                            'progress': progress,
-                            'total_channels': max(total_channels, 1),
-                            'processed': processed_count,
-                            'channel': channel,
-                            'stage': 'parsing'
+                            'category': current_category
                         })
-        
-        except json.JSONDecodeError as e:
-            if self.debug:
-                print(f"[调试] JSON解析错误: {str(e)}")
-        except Exception as e:
-            if self.debug:
-                print(f"[调试] 读取JSON文件时出错: {str(e)}")
-        
-        # 确保所有分类都存在
-        if not categories:
-            categories.append('未分类')
-        
-        self.channels = channels
-        self.categories = categories
-        return channels, categories
-
-    def _handle_external_url(self, url, default_category, progress_callback=None, processed_count=0, total_channels=0):
-        """处理外部URL，下载并解析直播源文件，支持进度回调"""
-        external_channels = []
-        external_categories = []
-        temp_file_path = None
-        
-        # 检查是否已经处理过这个URL，避免重复添加
-        if url in self.processed_external_urls:
-            if self.debug:
-                print(f"[调试] 外部URL已处理过，跳过: {url}")
-            return external_channels, external_categories, processed_count
-        
-        # 标记URL为已处理
-        self.processed_external_urls.add(url)
-        
-        try:
-            if self.debug:
-                print(f"[调试] 处理外部URL: {url}")
-            
-            # 检查是否请求停止
-            if self.stop_requested:
-                return external_channels, external_categories, processed_count
-            
-            # 发送处理外部URL的进度更新
-            if progress_callback:
-                progress_callback({
-                    'progress': 0,
-                    'total_channels': total_channels,
-                    'processed': processed_count,
-                    'message': f'正在处理外部URL: {url}',
-                    'stage': 'external_url_downloading'
-                })
-            
-            # 检查是否请求停止
-            if self.stop_requested:
-                return external_channels, external_categories, processed_count
-            
-            # 下载外部文件 - 使用会话对象的get方法，并设置更严格的超时
-            # 对不同阶段设置不同超时
-            download_timeout = self.timeouts.get('http_get', 5)  # 默认5秒
-            read_timeout = min(download_timeout * 2, 10)  # 读取超时为下载超时的2倍，但不超过10秒
-            
-            # 直接使用外部try-except处理所有异常
-            with self.session.get(
-                url, 
-                timeout=(download_timeout, read_timeout),  # 连接超时和读取超时分离
-                allow_redirects=True, 
-                verify=False, 
-                stream=True,
-                headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
-            ) as response:
-                response.raise_for_status()
-                
-                # 检查是否请求停止
-                if self.stop_requested:
-                    return external_channels, external_categories, processed_count
-                
-                # 检查文件大小，限制为10MB
-                content_length = response.headers.get('Content-Length')
-                if content_length:
-                    try:
-                        file_size = int(content_length)
-                        if file_size > 10 * 1024 * 1024:
-                            if self.debug:
-                                print(f"[调试] 外部URL文件过大({file_size} bytes)，跳过: {url}")
-                            return external_channels, external_categories, processed_count
-                    except (ValueError, TypeError):
-                        # 无法解析Content-Length，继续下载但限制大小
-                        pass
-                
-                # 获取文件名和扩展名
-                parsed_url = urlparse(url)
-                filename = os.path.basename(parsed_url.path) or 'temp_live_source'
-                
-                # 如果文件名没有扩展名，根据响应头或内容确定
-                if not os.path.splitext(filename)[1]:
-                    # 根据响应头确定文件类型
-                    content_type = response.headers.get('Content-Type', '')
-                    if 'mpegurl' in content_type or 'm3u' in content_type:
-                        filename += '.m3u'
-                    elif 'json' in content_type:
-                        filename += '.json'
-                    else:
-                        # 只读取少量内容来判断文件类型，避免大文件影响性能
-                        try:
-                            # 只读取前10KB进行文件类型判断
-                            chunk_iter = response.iter_content(chunk_size=10240)
-                            first_chunk = next(chunk_iter, b'')
-                            
-                            # 尝试解析为JSON
-                            try:
-                                json.loads(first_chunk)
-                                filename += '.json'
-                            except (json.JSONDecodeError, UnicodeDecodeError):
-                                # 检查是否为M3U格式
-                                if b'#extm3u' in first_chunk.lower():
-                                    filename += '.m3u'
-                                else:
-                                    filename += '.txt'
-                        except StopIteration:
-                            # 没有内容返回
-                            filename += '.txt'
-                        except Exception as e:
-                            if self.debug:
-                                print(f"[调试] 确定外部文件类型出错: {url}, 错误: {type(e).__name__}: {e}")
-                            # 无法确定文件类型，默认使用.txt
-                            filename += '.txt'
-                
-                # 创建临时文件
-                temp_dir = tempfile.gettempdir()
-                temp_file_path = os.path.join(temp_dir, filename)
-                
-                # 写入文件内容，限制最大大小为10MB
-                downloaded_size = 0
-                max_size = 10 * 1024 * 1024
-                download_start_time = time.time()
-                
-                with open(temp_file_path, 'wb') as f:
-                    # 如果之前已经读取了first_chunk，先写入它
-                    if 'first_chunk' in locals() and first_chunk:
-                        downloaded_size += len(first_chunk)
-                        if downloaded_size > max_size:
-                            if self.debug:
-                                print(f"[调试] 外部URL文件下载超过大小限制，跳过: {url}")
-                            return external_channels, external_categories, processed_count
-                        f.write(first_chunk)
-                    
-                    # 继续下载剩余内容
-                    chunk_count = 0
-                    for chunk in response.iter_content(chunk_size=8192):
-                        chunk_count += 1
-                        # 增加停止检查频率，每处理5个块就检查一次
-                        if self.stop_requested:
-                            return external_channels, external_categories, processed_count
-                            
-                        # 检查下载时间是否超过限制
-                        if time.time() - download_start_time > read_timeout:
-                            if self.debug:
-                                print(f"[调试] 外部URL下载超时: {url}")
-                            return external_channels, external_categories, processed_count
+            elif '\t' in line:
+                parts = line.split('\t', 1)
+                if len(parts) == 2:
+                    name = parts[0].strip()
+                    url = parts[1].strip()
+                    if url:
+                        channels.append({
+                            'name': name,
+                            'url': url,
+                            'category': current_category
+                        })
                         
-                        if chunk:
-                            downloaded_size += len(chunk)
-                            if downloaded_size > max_size:
-                                if self.debug:
-                                    print(f"[调试] 外部URL文件下载超过大小限制，跳过: {url}")
-                                return external_channels, external_categories, processed_count
-                            f.write(chunk)
-            
-            # 检查是否请求停止
-            if self.stop_requested:
-                return external_channels, external_categories, processed_count
-            
-            # 检查临时文件是否存在且不为空
-            if not temp_file_path or not os.path.exists(temp_file_path) or os.path.getsize(temp_file_path) == 0:
-                if self.debug:
-                    print(f"[调试] 外部URL下载的文件为空或不存在: {url}")
-                return external_channels, external_categories, processed_count
-            
-            # 发送外部URL解析开始的进度更新
-            if progress_callback:
-                progress_callback({
-                    'progress': 0,
-                    'total_channels': total_channels,
-                    'processed': processed_count,
-                    'message': f'正在解析外部URL内容: {url}',
-                    'stage': 'external_url_parsing'
-                })
-            
-            # 检测文件类型
-            file_ext = os.path.splitext(temp_file_path)[1].lower()
-            
-            if file_ext in ['.m3u', '.m3u8']:
-                # 使用read_m3u_file方法解析
-                temp_validator = IPTVValidator(temp_file_path, debug=self.debug)
-                temp_validator.file_type = 'm3u'
-                # 将已处理URL集合传递给临时验证器，避免重复处理
-                temp_validator.processed_external_urls = self.processed_external_urls
-                # 设置更短的超时用于外部文件解析
-                temp_validator.timeouts = {**self.timeouts, 'http_get': min(self.timeouts['http_get'], 3)}
-                # 实时检查主验证器的停止请求
-                def check_stop():
-                    temp_validator.stop_requested = self.stop_requested
-                    return self.stop_requested
-                
-                # 在临时验证器处理过程中定期检查停止请求
-                original_read_m3u = temp_validator.read_m3u_file
-                def wrapped_read_m3u(progress_callback=None):
-                    result = original_read_m3u(progress_callback)
-                    # 检查是否需要停止
-                    if self.stop_requested:
-                        temp_validator.stop_requested = True
-                    return result
-                
-                temp_validator.read_m3u_file = wrapped_read_m3u
-                temp_validator.read_m3u_file(progress_callback)
-                external_channels, external_categories = temp_validator.channels, temp_validator.categories
-            elif file_ext == '.txt':
-                # 使用read_txt_file方法解析（递归）
-                temp_validator = IPTVValidator(temp_file_path, debug=self.debug)
-                temp_validator.file_type = 'txt'
-                # 将已处理URL集合传递给临时验证器，避免重复处理
-                temp_validator.processed_external_urls = self.processed_external_urls
-                # 设置更短的超时用于外部文件解析
-                temp_validator.timeouts = {**self.timeouts, 'http_get': min(self.timeouts['http_get'], 3)}
-                
-                # 在临时验证器处理过程中定期检查停止请求
-                original_read_txt = temp_validator.read_txt_file
-                def wrapped_read_txt(progress_callback=None):
-                    result = original_read_txt(progress_callback)
-                    # 检查是否需要停止
-                    if self.stop_requested:
-                        temp_validator.stop_requested = True
-                    return result
-                
-                temp_validator.read_txt_file = wrapped_read_txt
-                external_channels, external_categories = temp_validator.read_txt_file(progress_callback)
-            elif file_ext == '.json':
-                # 使用read_json_file方法解析
-                temp_validator = IPTVValidator(temp_file_path, debug=self.debug)
-                temp_validator.file_type = 'json'
-                # 将已处理URL集合传递给临时验证器，避免重复处理
-                temp_validator.processed_external_urls = self.processed_external_urls
-                # 设置更短的超时用于外部文件解析
-                temp_validator.timeouts = {**self.timeouts, 'http_get': min(self.timeouts['http_get'], 3)}
-                
-                # 在临时验证器处理过程中定期检查停止请求
-                original_read_json = temp_validator.read_json_file
-                def wrapped_read_json(progress_callback=None):
-                    result = original_read_json(progress_callback)
-                    # 检查是否需要停止
-                    if self.stop_requested:
-                        temp_validator.stop_requested = True
-                    return result
-                
-                temp_validator.read_json_file = wrapped_read_json
-                external_channels, external_categories = temp_validator.read_json_file(progress_callback)
-            
-            # 检查是否请求停止
-            if self.stop_requested:
-                return external_channels, external_categories, processed_count
-            
-            # 如果外部文件没有分类信息，使用默认分类
-            for channel in external_channels:
-                if not channel.get('category'):
-                    channel['category'] = default_category
-                # 发送进度更新
-                if progress_callback:
-                    processed_count += 1
-                    # 计算进度百分比，使用传入的total_channels（即actual_channel_count）
-                    if total_channels > 0:
-                        progress = int((processed_count / total_channels) * 100)
-                    else:
-                        progress = 0
-                    progress_callback({
-                        'progress': progress,
-                        'total_channels': total_channels,
-                        'processed': processed_count,
-                        'channel': channel,
-                        'stage': 'parsing'
-                    })
-            
-            if self.debug:
-                print(f"[调试] 从外部URL解析到 {len(external_channels)} 个频道")
-                
-        except requests.exceptions.ConnectTimeout:
-            if self.debug:
-                print(f"[调试] 外部URL连接超时: {url}")
-            # 连接超时，忽略该URL
-        except requests.exceptions.ReadTimeout:
-            if self.debug:
-                print(f"[调试] 外部URL读取超时: {url}")
-            # 读取超时，忽略该URL
-        except requests.exceptions.Timeout:
-            if self.debug:
-                print(f"[调试] 外部URL超时: {url}")
-            # 其他超时，忽略该URL
-        except requests.exceptions.HTTPError as e:
-            if self.debug:
-                print(f"[调试] 外部URL HTTP错误({e.response.status_code}): {url}")
-            # HTTP错误，忽略该URL
-        except requests.exceptions.RequestException as e:
-            if self.debug:
-                print(f"[调试] 处理外部URL网络请求出错: {url}, 错误: {type(e).__name__}: {e}")
-            # 其他网络请求失败，忽略该URL
-        except json.JSONDecodeError as e:
-            if self.debug:
-                print(f"[调试] 外部URL JSON解析出错: {url}, 错误: {e}")
-            # JSON解析失败，忽略该URL
-        except Exception as e:
-            if self.debug:
-                print(f"[调试] 处理外部URL出错: {url}, 错误: {type(e).__name__}: {e}")
-            # 其他错误，忽略该URL
-        finally:
-            # 确保临时文件被清理
-            if temp_file_path and os.path.exists(temp_file_path):
-                try:
-                    os.remove(temp_file_path)
-                except Exception as e:
-                    if self.debug:
-                        print(f"[调试] 清理临时文件失败: {temp_file_path}, 错误: {e}")
-        
-        return external_channels, external_categories, processed_count
-
-    def check_url_validity(self, url):
-        """检查URL的有效性"""
-        try:
-            # 处理包含特殊字符的URL，如$符号（通常是电视端的标识）
-            if '$' in url:
-                # 移除$符号及其后面的内容，只保留前面的URL部分
-                url = url.split('$')[0]
-                if self.debug:
-                    print(f"[调试] 处理包含$符号的URL: {url}")
-
-            # 检测是否包含动态参数（如{PSID}、{TARGETOPT}等，包括URL编码形式%7BPSID%7D）
-            has_dynamic_params = re.search(r'(\{[A-Z_]+\}|%7B[A-Z_]+%7D)', url)
-            if has_dynamic_params and self.debug:
-                print(f"[调试] 检测到包含动态参数的URL: {url}")
-
-            # 根据用户要求，文件中的线路都是电视上能打开播放的频道线路
-            # 所以我们对URL验证更加宽松，只要URL不为空就视为有效
-            if url.strip():
-                if self.debug:
-                    print(f"[调试] URL不为空，视为有效: {url}")
-                return True
-            
-            # 只有空URL才视为无效
-            if self.debug:
-                print(f"[调试] URL为空，视为无效: {url}")
-            return False
-        except Exception as e:
-            if self.debug:
-                print(f"[调试] 检查URL有效性时出错: {type(e).__name__}: {e}")
-            # 如果发生任何异常，只要URL不为空就视为有效
-            if url.strip():
-                if self.debug:
-                    print(f"[调试] 异常处理中URL不为空，视为有效: {url}")
-                return True
-            return False
-
-
-    
-    def get_resolution(self, url):
-        """获取视频分辨率，使用进程池提高性能，支持停止请求"""
-        try:
-            # 如果跳过分辨率检测，直接返回None
-            if self.skip_resolution:
-                return None
-                
-            # 检查是否请求停止
-            if self.stop_requested:
-                return None
-
-            # 检查ffprobe是否可用
-            if not self.ffprobe_available:
-                return None
-
-            # 支持更多协议和格式的分辨率检测
-            supported_protocols = [
-                '.m3u8', 'm3u8', 'rtsp://', 'rtmp://', 
-                'udp://', 'rtp://', 'http://', 'https://'
-            ]
-            
-            # 检查URL是否包含任何支持的协议或格式
-            if not any(protocol in url for protocol in supported_protocols):
-                return None
-
-            # 使用进程池执行ffprobe命令，并设置超时
-            future = self.ffprobe_pool.submit(_ffprobe_get_resolution, url, self.timeouts['ffprobe'])
-            try:
-                # 检查是否请求停止
-                if self.stop_requested:
-                    future.cancel()
-                    return None
-                # 使用较短的超时时间获取结果，以便及时响应停止请求
-                resolution = future.result(timeout=self.timeouts['ffprobe'])
-                return resolution
-            except concurrent.futures.TimeoutError:
-                future.cancel()
-                return None
-
-        except Exception:
-            return None
+        return channels
 
     def _extract_resolution_from_url(self, url):
-        """从URL参数中提取分辨率信息
+        """从URL中提取分辨率信息，返回(宽度, 高度)元组"""
+        # 尝试从URL中的分辨率标注提取
+        match = self.re_resolution.search(url)
+        if match:
+            res = match.group(1)
+            parts = res.split('*')
+            if len(parts) == 2:
+                return parts[0], parts[1]
         
-        支持格式：
-        - $3840x2160 (URL参数中的分辨率标记)
-        - ?resolution=1920x1080 或 resolution=1280*720
-        - &res=720 (只提供高度)
-        """
-        try:
-            # 提取URL参数部分（去掉查询字符串前的路径）
-            url_lower = url.lower()
-            
-            # 匹配 $3840x2160 格式
-            match = self.re_url_resolution_dollar.search(url)
-            if match:
-                width = match.group(1)
-                height = match.group(2)
-                return f"{width}*{height}"
-            
-            # 匹配 resolution=1920x1080 或 resolution=1280*720 格式
-            match = self.re_url_resolution_param.search(url)
-            if match:
-                width = match.group(1)
-                height = match.group(2)
-                return f"{width}*{height}"
-            
-            # 匹配 res=720 格式（只提供高度，假设16:9比例计算宽度）
-            match = self.re_url_res_param.search(url)
-            if match:
-                height = int(match.group(1))
-                # 假设16:9比例
-                width = int(height * 16 / 9)
-                return f"{width}*{height}"
-            
-            return None
-        except Exception:
-            return None
+        # 尝试从URL参数中提取分辨率
+        dollar_match = self.re_url_resolution_dollar.search(url)
+        if dollar_match:
+            return dollar_match.group(1), dollar_match.group(2)
+        
+        param_match = self.re_url_resolution_param.search(url)
+        if param_match:
+            return param_match.group(1), param_match.group(2)
+        
+        res_match = self.re_url_res_param.search(url)
+        if res_match:
+            width = res_match.group(1)
+            # 常见的分辨率宽度对应高度
+            height_map = {
+                '720': '720',
+                '1080': '1080',
+                '4k': '2160',
+                '2160': '2160'
+            }
+            height = height_map.get(width, width)
+            return width, height
+        
+        return None, None
 
-    def process_channel(self, channel, original_index):
-        """处理单个频道：验证URL并检测分辨率，包含原始索引信息"""
-        # 检查是否请求停止
+    def _validate_url(self, channel, original_index=None):
+        """验证单个URL"""
         if self.stop_requested:
-            return {
-                'name': channel['name'],
-                'url': channel['url'],
-                'category': channel.get('category', '未分类'),
-                'original_index': original_index,
-                'valid': False,
-                'resolution': None,
-                'status': 'stopped'
-            }
+            return None
             
-        # 检查是否为外部URL
-        if channel.get('is_external', False):
-            # 处理外部URL，返回空结果，因为外部URL会在其他地方被处理
-            if self.debug:
-                print(f"[调试] 检测到外部URL: {channel['url']}，将在其他地方处理")
-            return {
-                'name': channel['name'],
-                'url': channel['url'],
-                'category': channel.get('category', '未分类'),
-                'original_index': original_index,
-                'valid': True,  # 标记为有效，因为实际的验证会在外部频道中进行
-                'resolution': None,
-                'status': 'external',
-                'external': True  # 标记为外部URL
-            }
-            
+        name = channel.get('name', '未知频道')
+        url = channel.get('url', '')
+        category = channel.get('category', '未分类')
+        
+        if original_index is None:
+            original_index = channel.get('original_index', 0)
+        
+        if not url:
+            return None
+        
         result = {
-            'name': channel['name'],
-            'url': channel['url'],
-            'category': channel.get('category', '未分类'),
+            'name': name,
+            'url': url,
+            'category': category,
             'original_index': original_index,
-            'valid': None,  # 初始值为None，表示尚未验证
+            'valid': False,
             'resolution': None,
-            'status': 'checking'  # 初始状态为正在检查
+            'resolution_width': None,
+            'resolution_height': None,
+            'codec': None,
+            'audio': None,
+            'error': None
         }
         
-        try:
-            # 再次检查是否请求停止
-            if self.stop_requested:
-                result['status'] = 'stopped'
+        # 首先检查URL格式
+        if not (url.startswith('http://') or url.startswith('https://') or 
+                url.startswith('rtsp://') or url.startswith('rtmp://') or 
+                url.startswith('udp://') or url.startswith('rtp://')):
+            result['error'] = '不支持的URL协议'
+            return result
+        
+        # 对于HTTP(S) URL进行快速HEAD请求检查
+        if url.startswith('http://') or url.startswith('https://'):
+            # 检测IPv6地址格式（包含方括号，如 http://[2409:8087:8:21::0b]:6610/）
+            is_ipv6 = '[' in url and ']' in url
+            
+            # 跳过UDP代理URL(HTTP代理UDP流的特殊格式)
+            if '/udp/' in url.lower() or '/rtp/' in url.lower() or '/rtmp/' in url.lower():
+                result['valid'] = True
+                result['error'] = None
+                width, height = self._extract_resolution_from_url(url)
+                result['resolution_width'] = width
+                result['resolution_height'] = height
+                if width and height:
+                    result['resolution'] = f"{width}*{height}"
                 return result
             
-            valid = self.check_url_validity(channel['url'])
-            if not valid:
-                return result
-
-            result['valid'] = True
-            result['status'] = 'valid'  # 设置为有效状态
-            
-            # 如果跳过分辨率检测，直接使用从名称提取的分辨率（如果有）
-            if self.skip_resolution:
-                if channel.get('resolution_from_name'):
-                    result['resolution'] = channel['resolution_from_name']
-                    result['name_with_resolution'] = channel['name']
-                else:
-                    result['name_with_resolution'] = channel['name']
-                return result
-            
-            try:
-                # 检测分辨率
-                resolution = self.get_resolution(channel['url'])
-                
-                # 如果ffprobe检测失败，尝试使用从URL参数中提取的分辨率
-                if not resolution:
-                    resolution = self._extract_resolution_from_url(channel['url'])
-                    
-                # 如果ffprobe和URL参数都失败，尝试使用从频道名称中提取的分辨率
-                if not resolution and channel.get('resolution_from_name'):
-                    resolution = channel['resolution_from_name']
-                    
-                result['resolution'] = resolution
-                
-                if resolution:
-                    # 检查频道名称是否已经包含分辨率信息
-                    if f"[{resolution}]" not in channel['name']:
-                        result['name_with_resolution'] = f"{channel['name']}[{resolution}]"
-                    else:
-                        result['name_with_resolution'] = channel['name']
-                else:
-                    result['name_with_resolution'] = channel['name']
-            except concurrent.futures.TimeoutError:
-                # 捕获分辨率检测超时异常
-                result['status'] = 'timeout'  # 设置为超时状态
-                # 超时情况下尝试使用从URL参数和名称中提取的分辨率
-                if channel.get('resolution_from_name'):
-                    result['resolution'] = channel['resolution_from_name']
-                    result['name_with_resolution'] = channel['name']
-                else:
-                    # 尝试从URL参数提取
-                    url_resolution = self._extract_resolution_from_url(channel['url'])
-                    if url_resolution:
-                        result['resolution'] = url_resolution
-                        result['name_with_resolution'] = f"{channel['name']}[{url_resolution}]"
-                    else:
-                        result['name_with_resolution'] = channel['name']
-            except Exception as e:
-                if self.debug:
-                    print(f"[调试] 检测频道 {channel['name']} 分辨率时出错: {type(e).__name__}: {e}")
-                # 分辨率检测失败不影响URL有效性判断
-                # 异常情况下也尝试使用从名称中提取的分辨率
-                if channel.get('resolution_from_name'):
-                    result['resolution'] = channel['resolution_from_name']
-                    result['name_with_resolution'] = channel['name']
-                else:
-                    result['name_with_resolution'] = channel['name']
-
-        except concurrent.futures.TimeoutError:
-            # 捕获URL验证超时异常
-            result['status'] = 'timeout'  # 设置为超时状态
-            # 超时情况下尝试使用从URL参数和名称中提取的分辨率
-            if channel.get('resolution_from_name'):
-                result['resolution'] = channel['resolution_from_name']
+            # IPv6 URL跳过HTTP请求，初步标记为有效，继续进行分辨率检测
+            if is_ipv6:
+                result['valid'] = True
+                result['error'] = None
+                result['is_ipv6'] = True
             else:
-                # 尝试从URL参数提取
-                url_resolution = self._extract_resolution_from_url(channel['url'])
-                if url_resolution:
-                    result['resolution'] = url_resolution
-            result['name_with_resolution'] = channel['name']
-        except Exception as e:
-            if self.debug:
-                print(f"[调试] 处理频道 {channel['name']} 时出错: {type(e).__name__}: {e}")
-            # 其他异常保持频道为无效
-            # 异常情况下尝试使用从URL参数和名称中提取的分辨率
-            if channel.get('resolution_from_name'):
-                result['resolution'] = channel['resolution_from_name']
+                response = self._http_request_with_retry(url, method='head', timeout=self.timeouts['http_head'])
+                if not response:
+                    response = self._http_request_with_retry(url, method='get', timeout=self.timeouts['http_get'])
+                
+                if response:
+                    result['valid'] = True
+                else:
+                    result['error'] = 'HTTP请求失败'
+                    return result
+        else:
+            result['is_ipv6'] = False
+        
+        # 对于非HTTP URL,使用BlackBird-Player风格的试播验证来真正判断有效性
+        if url.startswith('udp://') or url.startswith('rtsp://') or url.startswith('rtmp://') or url.startswith('rtp://'):
+            result['is_special_protocol'] = True
+            if self.ffprobe_available and not self.skip_resolution:
+                playback_result = _test_stream_playback(url, self.timeouts['ffprobe'])
+                if playback_result and playback_result[0]:
+                    result['valid'] = True
+                    result['error'] = None
+                    result['resolution'], result['codec'], result['audio'] = playback_result
+                    if result['resolution']:
+                        res_parts = result['resolution'].split('*')
+                        if len(res_parts) == 2:
+                            result['resolution_width'] = res_parts[0]
+                            result['resolution_height'] = res_parts[1]
+                else:
+                    result['valid'] = False
+                    error_info = playback_result[2] if playback_result else {}
+                    result['error'] = error_info.get('error', '试播失败')
+                    return result
             else:
-                # 尝试从URL参数提取
-                url_resolution = self._extract_resolution_from_url(channel['url'])
-                if url_resolution:
-                    result['resolution'] = url_resolution
-            result['name_with_resolution'] = channel['name']
-
+                result['valid'] = True
+                result['error'] = None
+                width, height = self._extract_resolution_from_url(url)
+                result['resolution_width'] = width
+                result['resolution_height'] = height
+                if width and height:
+                    result['resolution'] = f"{width}*{height}"
+            return result
+        
+        # IPv6 URL使用BlackBird-Player风格的试播验证
+        # 采用BlackBird-Player的策略：对于特殊格式的直播源（UDP/RTSP/RTMP/IPv6），通过试播真正验证有效性
+        if result.get('is_ipv6'):
+            if self.ffprobe_available and not self.skip_resolution:
+                playback_result = _test_stream_playback(url, self.timeouts['ffprobe'])
+                if playback_result and playback_result[0]:
+                    result['valid'] = True
+                    result['error'] = None
+                    result['resolution'], result['codec'], result['audio'] = playback_result
+                    if result['resolution']:
+                        res_parts = result['resolution'].split('*')
+                        if len(res_parts) == 2:
+                            result['resolution_width'] = res_parts[0]
+                            result['resolution_height'] = res_parts[1]
+                else:
+                    error_info = playback_result[2] if playback_result else {}
+                    result['error'] = error_info.get('error', 'IPv6试播失败')
+                    if 'IPv6' in result['error']:
+                        result['valid'] = True
+                        width, height = self._extract_resolution_from_url(url)
+                        result['resolution_width'] = width
+                        result['resolution_height'] = height
+                        if width and height:
+                            result['resolution'] = f"{width}*{height}"
+                    else:
+                        result['valid'] = False
+                        return result
+            else:
+                result['valid'] = True
+                result['error'] = None
+                width, height = self._extract_resolution_from_url(url)
+                result['resolution_width'] = width
+                result['resolution_height'] = height
+                if width and height:
+                    result['resolution'] = f"{width}*{height}"
+            return result
+        
+        # 如果启用了ffprobe且不是跳过分辨率检测，获取分辨率
+        if self.ffprobe_available and not self.skip_resolution and result['valid']:
+            resolution_info = self._get_resolution_with_fallback(url)
+            if resolution_info:
+                result['resolution'], result['codec'], result['audio'] = resolution_info
+                if result['resolution']:
+                    res_parts = result['resolution'].split('*')
+                    if len(res_parts) == 2:
+                        result['resolution_width'] = res_parts[0]
+                        result['resolution_height'] = res_parts[1]
+            else:
+                result['resolution'] = None
+        
+        # 如果需要检查音频流
+        if self.filter_no_audio and result['valid']:
+            has_audio = _check_url_has_audio(url, self.timeouts['ffprobe'])
+            if not has_audio:
+                result['valid'] = False
+                result['error'] = '无音频流'
+        
         return result
 
-    def validate_channels(self, progress_callback=None):
-        """批量验证所有频道，分批次处理以避免占用过多资源"""
-        all_results = []
-        valid_channels = []
-        resolution_valid_channels = []  # 存储检测到分辨率的有效频道
+    def _get_resolution_with_fallback(self, url):
+        """获取分辨率，支持多种检测方法的fallback"""
+        # 检查停止标志
+        if self.stop_requested:
+            return None
         
-        # 分离普通频道和外部URL频道
-        normal_channels = []
-        external_channels = []
-        for channel in self.channels:
-            if channel.get('is_external', False):
-                external_channels.append(channel)
-            else:
-                normal_channels.append(channel)
+        timeout = self.timeouts['ffprobe']
+        
+        # 方法1: 尝试从HLS播放列表提取分辨率
+        if url.endswith('.m3u8') or url.endswith('.m3u') or '/hls/' in url.lower() or '/live/' in url.lower():
+            resolution = _get_resolution_from_hls(url, timeout)
+            if resolution and resolution[0]:
+                return resolution
+        
+        # 检查停止标志
+        if self.stop_requested:
+            return None
+        
+        # 方法2: 尝试使用ffprobe直接检测
+        resolution = _ffprobe_get_resolution(url, timeout)
+        if resolution and resolution[0]:
+            return resolution
+        
+        # 检查停止标志
+        if self.stop_requested:
+            return None
+        
+        # 方法3: 如果有MediaInfo作为备选
+        if self.mediainfo_available:
+            resolution = _mediainfo_get_resolution(url, timeout)
+            if resolution:
+                return resolution, 'unknown', {'source': 'mediainfo'}
+        
+        return None
+
+    def _run_validation(self, progress_callback=None):
+        """运行验证过程"""
+        print(f"开始验证: {self.input_file}")
+        
+        # 清除之前的验证结果缓存
+        self.all_results = []
+        
+        # 解析输入文件
+        if self.file_type == 'm3u':
+            self.channels = self._parse_m3u_file()
+        else:
+            self.channels = self._parse_txt_file()
         
         total_channels = len(self.channels)
-        processed_count = 0
+        print(f"共发现 {total_channels} 个频道")
         
-        if total_channels == 0:
-            # 没有频道需要验证，直接返回
-            if progress_callback:
-                progress_callback({
-                    'progress': 100,
-                    'total_channels': 0,
-                    'processed': 0,
-                    'valid_count': 0,
-                    'resolution_valid_count': 0,
-                    'invalid_count': 0,
-                    'status': 'completed',
-                    'stage': 'completed'
-                })
-            return valid_channels
+        # 发送解析完成进度
+        if progress_callback:
+            progress_callback({
+                'progress': 10,
+                'total_channels': total_channels,
+                'processed': 0,
+                'message': f'文件解析完成，共找到{total_channels}个频道，开始验证频道有效性',
+                'stage': 'parsing_completed'
+            })
         
-        # 清除已处理的外部URL缓存，确保每次验证都是全新开始
-        self.processed_external_urls.clear()
-        
-        # 创建线程池实例变量，以便在stop方法中控制
+        # 创建验证线程池并保存到实例变量
         self._validation_pool = concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers)
-        executor = self._validation_pool
         
         try:
-            # 发送开始验证的进度更新
-            if progress_callback:
-                progress_callback({
-                    'progress': 0,
-                    'total_channels': total_channels,
-                    'processed': 0,
-                    'message': f'开始验证 {total_channels} 个频道',
-                    'stage': 'validation_started'
-                })
+            futures = []
+            for idx, channel in enumerate(self.channels):
+                if self.stop_requested:
+                    break
+                channel['original_index'] = idx
+                future = self._validation_pool.submit(self._validate_url, channel)
+                futures.append(future)
+                self._active_futures.add(future)
             
-            # 处理普通频道
-            if normal_channels:
-                # 减少进度更新频率，每处理10个频道更新一次
-                progress_update_interval = max(10, len(normal_channels) // 100)  # 最多100次更新
-                
-                # 使用submit和as_completed代替map，以便及时响应停止请求
-                future_to_channel = {}
-                for i, channel in enumerate(normal_channels):
-                    if self.stop_requested:
-                        break
-                    future = executor.submit(self.process_channel, channel, i)
-                    future_to_channel[future] = channel
-                    self._active_futures.add(future)
-                
-                # 处理结果
-                for future in concurrent.futures.as_completed(future_to_channel):
-                    # 检查是否请求停止
-                    if self.stop_requested:
-                        print("验证过程已被停止")
-                        executor.shutdown(wait=False)
-                        break
+            # 收集结果并发送进度更新
+            processed_count = 0
+            for future in concurrent.futures.as_completed(futures):
+                self._active_futures.discard(future)
+                if self.stop_requested:
+                    continue
                     
-                    try:
-                        result = future.result()
-                        all_results.append(result)
-                        processed_count += 1
-                        
-                        # 只在特定间隔发送进度更新，减少开销
-                        if progress_callback and (processed_count % progress_update_interval == 0 or processed_count == total_channels):
-                            progress = int((processed_count / total_channels) * 100)
-                            progress_callback({
-                                'progress': progress,
-                                'total_channels': total_channels,
-                                'processed': processed_count,
-                                'channel': result,
-                                'stage': 'validation'
-                            })
-                        
-                        if result['valid'] and not result.get('external', False):
-                            valid_channels.append(result)
-                            # 检查是否有分辨率信息
-                            if result.get('resolution'):
-                                resolution_valid_channels.append(result)
-                    except Exception as e:
-                        # 处理异常情况
-                        channel = future_to_channel[future]
-                        error_result = {
-                            'name': channel['name'],
-                            'url': channel['url'],
-                            'category': channel.get('category', '未分类'),
-                            'original_index': list(future_to_channel.keys()).index(future),
-                            'valid': False,
-                            'resolution': None,
-                            'status': 'error',
-                            'error': str(e)
-                        }
-                        all_results.append(error_result)
-                        processed_count += 1
-                        
-                        # 发送进度更新
-                        if progress_callback and (processed_count % progress_update_interval == 0 or processed_count == total_channels):
-                            progress = int((processed_count / total_channels) * 100)
-                            progress_callback({
-                                'progress': progress,
-                                'total_channels': total_channels,
-                                'processed': processed_count,
-                                'channel': error_result,
-                                'stage': 'validation'
-                            })
-            
-            # 处理外部URL频道
-            if external_channels and not self.stop_requested:
-                # 发送开始处理外部URL的进度更新
-                if progress_callback:
-                    progress_callback({
-                        'progress': int((processed_count / total_channels) * 100),
-                        'total_channels': total_channels,
-                        'processed': processed_count,
-                        'message': f'开始处理 {len(external_channels)} 个外部URL',
-                        'stage': 'external_url_processing'
-                    })
-                
-                # 并行处理外部URL
-                future_to_url = {}
-                total_external = len(external_channels)
-                processed_external = 0
-                
-                for i, channel in enumerate(external_channels):
-                    if self.stop_requested:
-                        break
-                    # 使用线程池处理外部URL
-                    future = executor.submit(self._handle_external_url, channel['url'], channel.get('category', '未分类'), progress_callback)
-                    future_to_url[future] = channel
-                    self._active_futures.add(future)
-                
-                # 处理外部URL的结果
-                for future in concurrent.futures.as_completed(future_to_url):
-                    if self.stop_requested:
-                        # 取消所有剩余的外部URL任务
-                        for remaining_future in future_to_url:
-                            if not remaining_future.done():
-                                remaining_future.cancel()
-                        executor.shutdown(wait=False)
-                        break
-                    
-                    processed_external += 1
-                    channel = future_to_url[future]
-                    
-                    # 发送外部URL处理进度更新
-                    if progress_callback:
-                        progress = int((processed_count / total_channels) * 100)
-                        progress_callback({
-                            'progress': progress,
-                            'total_channels': total_channels,
-                            'processed': processed_count,
-                            'total_external': total_external,
-                            'processed_external': processed_external,
-                            'message': f'正在处理外部URL ({processed_external}/{total_external})',
-                            'stage': 'external_url_processing'
-                        })
-                    
-                    try:
-                        external_channels_result, external_categories, _ = future.result()
-                        
-                        # 将外部频道添加到有效频道列表
-                        for ext_channel in external_channels_result:
-                            if self.stop_requested:
-                                break
-                            
-                            # 验证外部频道
-                            ext_result = self.process_channel(ext_channel, processed_count)
-                            all_results.append(ext_result)
-                            processed_count += 1
-                            
-                            if ext_result['valid']:
-                                valid_channels.append(ext_result)
-                                if ext_result.get('resolution'):
-                                    resolution_valid_channels.append(ext_result)
-                            
-                            # 发送进度更新
-                            if progress_callback and (processed_count % progress_update_interval == 0 or processed_count == total_channels):
-                                progress = int((processed_count / total_channels) * 100)
-                                progress_callback({
-                                    'progress': progress,
-                                    'total_channels': total_channels,
-                                    'processed': processed_count,
-                                    'channel': ext_result,
-                                    'stage': 'validation'
-                                })
-                        
-                        if self.stop_requested:
-                            break
-                    except Exception as e:
-                        if self.debug:
-                            print(f"[调试] 处理外部URL {channel['url']} 时出错: {type(e).__name__}: {e}")
-                        # 外部URL处理失败，标记为无效
-                        all_results.append({
-                            'name': channel['name'],
-                            'url': channel['url'],
-                            'category': channel.get('category', '未分类'),
-                            'original_index': processed_count,
-                            'valid': False,
-                            'resolution': None,
-                            'status': 'error'
-                        })
+                try:
+                    result = future.result()
+                    if result:
+                        self.all_results.append(result)
                         processed_count += 1
                         
                         # 发送进度更新
                         if progress_callback:
-                            progress = int((processed_count / total_channels) * 100)
                             progress_callback({
-                                'progress': progress,
+                                'progress': 10 + int(processed_count / total_channels * 80),
                                 'total_channels': total_channels,
                                 'processed': processed_count,
-                                'channel': channel,
-                                'stage': 'validation'
+                                'message': f'验证中: {result.get("name", "未知频道")} - {result.get("status", "")}',
+                                'stage': 'validation',
+                                'channel': result
                             })
-                        
-                        if self.stop_requested:
-                            break
-            
-            # 发送完成通知
-            if progress_callback:
-                progress_callback({
-                    'progress': 100 if processed_count == total_channels else processed_count,
-                    'total_channels': total_channels,
-                    'processed': processed_count,
-                    'valid_count': len(valid_channels),
-                    'resolution_valid_count': len(resolution_valid_channels),  # 分辨率有效频道数量
-                    'invalid_count': processed_count - len(valid_channels),
-                    'status': 'completed' if not self.stop_requested else 'stopped',
-                    'stage': 'validation'  # 添加阶段信息
-                })
-            
-            self.all_results = all_results
-            return valid_channels
-            
+                except Exception as e:
+                    if self.debug:
+                        print(f"[调试] 验证过程出错: {str(e)}")
+                    
+                    processed_count += 1
+                    if progress_callback:
+                        progress_callback({
+                            'progress': 10 + int(processed_count / total_channels * 80),
+                            'total_channels': total_channels,
+                            'processed': processed_count,
+                            'message': f'验证出错: {str(e)}',
+                            'stage': 'validation'
+                        })
         finally:
-            # 确保线程池被正确关闭
-            if hasattr(self, '_validation_pool') and self._validation_pool is not None:
+            # 确保关闭线程池
+            if self._validation_pool:
                 self._validation_pool.shutdown(wait=False)
                 self._validation_pool = None
+        
+        # 按original_index排序，保持原文件中的频道顺序
+        self.all_results.sort(key=lambda x: x.get('original_index', 0))
+        
+        print(f"验证完成，有效频道: {sum(1 for r in self.all_results if r['valid'])}/{len(self.all_results)}")
+
+    def _generate_m3u_output(self):
+        """生成M3U格式输出文件"""
+        output_lines = ['#EXTM3U']
+        
+        # 按分类组织结果
+        categorized = {}
+        for result in self.all_results:
+            if not result['valid']:
+                continue
             
-            # 清空活跃任务集合
-            self._active_futures.clear()
-
-    def generate_m3u_output(self, valid_channels):
-        """生成M3U格式的输出文件"""
-        # 确保输出目录存在
-        self._check_output_dir()
+            category = result['category'] or '未分类'
+            if category not in categorized:
+                categorized[category] = []
+            categorized[category].append(result)
         
-        # 按分类分组频道
-        channels_by_category = {category: [] for category in self.categories}
-        # 确保所有分类都存在，包括无分类的频道
-        if '未分类' not in channels_by_category:
-            channels_by_category['未分类'] = []
-            self.categories.append('未分类')
+        for category, channels in sorted(categorized.items()):
+            for channel in channels:
+                extinf = f'#EXTINF:-1 tvg-name="{channel["name"]}" group-title="{category}"'
+                if channel['resolution']:
+                    extinf += f' tvg-shift=1,{channel["name"]}[{channel["resolution"]}]'
+                else:
+                    extinf += f',{channel["name"]}'
+                output_lines.append(extinf)
+                output_lines.append(channel['url'])
         
-        for channel in valid_channels:
-            category = channel.get('category', '未分类')
-            if category in channels_by_category:
-                channels_by_category[category].append(channel)
-
-        # 生成M3U内容
-        content = ['#EXTM3U']
-        for category in self.categories:
-            for channel in channels_by_category[category]:
-                content.append(f"#EXTINF:-1 group-title=\"{category}\",{channel['name_with_resolution']}")
-                content.append(channel['url'])
-
-        # 写入文件
         with open(self.output_file, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(content))
-
-        return self.output_file
-
-    def generate_txt_output(self, valid_channels):
-        """生成TXT格式的输出文件"""
-        # 确保输出目录存在
-        self._check_output_dir()
+            f.write('\n'.join(output_lines))
         
-        # 按分类分组频道
-        channels_by_category = {}
-        
-        # 首先将所有有效分类添加到字典中
-        for category in self.categories:
-            if category not in channels_by_category:
-                channels_by_category[category] = []
-        
-        # 遍历所有有效频道，添加到对应的分类中
-        for channel in valid_channels:
-            category = channel['category']
-            if category not in channels_by_category:
-                channels_by_category[category] = []
-                # 如果这是一个新的分类，将其添加到分类列表中
-                if category not in self.categories:
-                    self.categories.append(category)
-            channels_by_category[category].append(channel)
+        print(f"M3U输出已保存到: {self.output_file}")
 
-        # 生成TXT内容
-        content = []
-        for category in self.categories:
-            if category in channels_by_category and channels_by_category[category]:
-                content.append(f"#{category}#,genre#")
-                for channel in channels_by_category[category]:
-                    content.append(f"{channel['name_with_resolution']},{channel['url']}")
-
-        # 写入文件
+    def _generate_txt_output(self):
+        """生成TXT格式输出文件"""
+        output_lines = []
+        
+        # 添加验证时间戳 - 参考BlackBird-Player的result.txt格式
+        timestamp = ValidationTimestamp.get_timestamp()
+        output_lines.append(f"🕘️更新时间,#genre#")
+        output_lines.append(f"{timestamp}")
+        output_lines.append("")
+        
+        # 按分类组织结果
+        categorized = {}
+        for result in self.all_results:
+            if not result['valid']:
+                continue
+            
+            category = result['category'] or '未分类'
+            if category not in categorized:
+                categorized[category] = []
+            categorized[category].append(result)
+        
+        for category, channels in sorted(categorized.items()):
+            output_lines.append(f"{category},#genre#")
+            for channel in channels:
+                if channel['resolution']:
+                    output_lines.append(f'{channel["name"]}[{channel["resolution"]}],{channel["url"]}')
+                else:
+                    output_lines.append(f'{channel["name"]},{channel["url"]}')
+            output_lines.append("")
+        
         with open(self.output_file, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(content))
+            f.write('\n'.join(output_lines))
         
-        return self.output_file
-        
-    def generate_json_output(self, valid_channels):
-        """生成JSON格式的输出文件"""
-        # 确保输出目录存在
-        self._check_output_dir()
-        
-        # 按分类分组频道
-        channels_by_category = {}
-        
-        # 遍历所有有效频道，添加到对应的分类中
-        for channel in valid_channels:
-            category = channel['category']
-            if category not in channels_by_category:
-                channels_by_category[category] = []
-            channels_by_category[category].append({
-                'name': channel['name_with_resolution'],
-                'url': channel['url'],
-                'category': category
-            })
-
-        # 创建JSON结构
-        json_data = {
-            'total_channels': len(valid_channels),
-            'categories': list(channels_by_category.keys()),
-            'channels': []
-        }
-        
-        # 添加所有频道
-        for channel in valid_channels:
-            json_data['channels'].append({
-                'name': channel['name_with_resolution'],
-                'url': channel['url'],
-                'category': channel['category']
-            })
-
-        # 写入文件
-        with open(self.output_file, 'w', encoding='utf-8') as f:
-            json.dump(json_data, f, ensure_ascii=False, indent=2)
-        
-        return self.output_file
-        
-    def get_all_results(self):
-        """获取所有频道的验证结果，包括有效和无效的"""
-        return getattr(self, 'all_results', [])
-        
-    def generate_output_files(self):
-        """生成输出文件，根据文件类型选择合适的方法"""
-        # 确保输出目录存在
-        self._check_output_dir()
-        
-        # 获取有效频道，使用getattr确保即使all_results未设置也不会出错
-        valid_channels = [channel for channel in getattr(self, 'all_results', []) if channel['valid']]
-        
-        # 根据文件类型生成输出文件
-        if self.file_type == 'm3u':
-            output_file = self.generate_m3u_output(valid_channels)
-        elif self.file_type == 'json':
-            output_file = self.generate_json_output(valid_channels)
-        else:
-            output_file = self.generate_txt_output(valid_channels)
-        
-        # 生成分辨率有效频道的输出文件
-        resolution_valid_channels = [channel for channel in valid_channels if channel.get('resolution')]
-        if resolution_valid_channels:
-            # 创建带分辨率标记的输出文件名
-            base_name, ext = os.path.splitext(output_file)
-            resolution_output_file = f"{base_name}_resolution{ext}"
-            
-            # 保存原始输出文件名，临时替换为分辨率输出文件名
-            original_output_file = self.output_file
-            self.output_file = resolution_output_file
-            
-            # 生成分辨率有效频道文件
-            if self.file_type == 'm3u':
-                self.generate_m3u_output(resolution_valid_channels)
-            elif self.file_type == 'json':
-                self.generate_json_output(resolution_valid_channels)
-            else:
-                self.generate_txt_output(resolution_valid_channels)
-            
-            # 恢复原始输出文件名
-            self.output_file = original_output_file
-            
-            print(f"分辨率有效频道输出文件已生成: {resolution_output_file}")
-        
-        return output_file
+        print(f"TXT输出已保存到: {self.output_file}")
 
     def run(self):
-        """运行验证流程"""
-        print(f"开始验证文件: {self.input_file}")
-        print(f"文件类型: {self.file_type}")
-        
-        # 检查ffprobe是否可用
-        if not self.ffprobe_available:
-            print("警告: 未检测到ffprobe，将跳过视频分辨率检测")
-            print("请安装FFmpeg并添加到系统PATH以启用分辨率检测功能")
-
-        # 读取文件
-        if self.file_type == 'm3u':
-            self.read_m3u_file()
-        elif self.file_type == 'json':
-            self.read_json_file()
-        else:
-            self.read_txt_file()
-
-        print(f"共解析到 {len(self.channels)} 个频道，{len(self.categories)} 个分类")
-        
-        # 如果没有解析到频道
-        if not self.channels:
-            print("错误: 没有从文件中解析到任何频道")
-            print("提示: 请检查文件格式是否正确，确保是标准的M3U或TXT格式")
+        """运行完整的验证过程"""
+        try:
+            # 更新验证时间戳
+            ValidationTimestamp.update_timestamp()
+            
+            # 运行验证
+            self._run_validation()
+            
+            # 生成输出
+            if self.file_type == 'm3u':
+                self._generate_m3u_output()
+            else:
+                self._generate_txt_output()
+            
+            return self.output_file
+            
+        except KeyboardInterrupt:
+            print("\n用户中断验证过程")
+            return None
+        except Exception as e:
+            print(f"验证过程出错: {str(e)}")
+            if self.debug:
+                import traceback
+                traceback.print_exc()
             return None
 
-        # 验证频道
-        start_time = time.time()
-        valid_channels = self.validate_channels()
-        end_time = time.time()
+    def read_m3u_file(self, progress_callback=None):
+        """解析M3U文件，提取频道信息（公开接口）"""
+        self.channels = self._parse_m3u_file()
+        if progress_callback:
+            progress_callback({
+                'progress': 5,
+                'total_channels': len(self.channels),
+                'processed': 0,
+                'message': f'M3U文件解析完成，共找到{len(self.channels)}个频道'
+            })
+        return self.channels
 
-        print(f"验证完成，耗时 {end_time - start_time:.2f} 秒")
-        print(f"有效频道数: {len(valid_channels)}")
-        # 计算分辨率有效频道数，使用getattr确保即使all_results未设置也不会出错
-        resolution_valid_channels = [channel for channel in getattr(self, 'all_results', []) if channel['valid'] and channel.get('resolution')]
-        print(f"分辨率有效频道数: {len(resolution_valid_channels)}")
-        if len(self.channels) > 0:
-            print(f"有效率: {len(valid_channels) / len(self.channels) * 100:.2f}%")
+    def read_txt_file(self, progress_callback=None):
+        """解析TXT文件，提取频道信息（公开接口）"""
+        self.channels = self._parse_txt_file()
+        if progress_callback:
+            progress_callback({
+                'progress': 5,
+                'total_channels': len(self.channels),
+                'processed': 0,
+                'message': f'TXT文件解析完成，共找到{len(self.channels)}个频道'
+            })
+        return self.channels
+
+    def read_json_file(self, progress_callback=None):
+        """解析JSON文件，提取频道信息（公开接口）"""
+        self.channels = self._parse_json_file()
+        if progress_callback:
+            progress_callback({
+                'progress': 5,
+                'total_channels': len(self.channels),
+                'processed': 0,
+                'message': f'JSON文件解析完成，共找到{len(self.channels)}个频道'
+            })
+        return self.channels
+
+    def _parse_json_file(self):
+        """解析JSON文件，提取频道信息"""
+        import json
+        channels = []
+        try:
+            with open(self.input_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            if isinstance(data, list):
+                for item in data:
+                    if isinstance(item, dict) and 'url' in item:
+                        channels.append({
+                            'name': item.get('name', '未知频道'),
+                            'url': item['url'],
+                            'category': item.get('category', '未分类')
+                        })
+            elif isinstance(data, dict):
+                for name, url in data.items():
+                    if isinstance(url, str):
+                        channels.append({
+                            'name': name,
+                            'url': url,
+                            'category': '未分类'
+                        })
+        except Exception as e:
+            print(f"[错误] 解析JSON文件失败: {str(e)}")
+        return channels
+
+    def validate_channels(self, progress_callback=None):
+        """验证所有频道（公开接口）"""
+        self._run_validation(progress_callback=progress_callback)
+        if progress_callback:
+            progress_callback({
+                'progress': 90,
+                'total_channels': len(self.channels),
+                'processed': len(self.all_results),
+                'message': f'验证完成，有效频道: {sum(1 for r in self.all_results if r["valid"])}/{len(self.all_results)}',
+                'stage': 'validation_completed'
+            })
+        return self.all_results
+
+    def generate_output_files(self):
+        """生成输出文件（公开接口）"""
+        if self.file_type == 'm3u':
+            self._generate_m3u_output()
         else:
-            print("有效率: 0.00%")
+            self._generate_txt_output()
+        return self.output_file
 
-        # 生成输出文件
-        if valid_channels:
-            output_file = self.generate_output_files()
-            print(f"输出文件已生成: {output_file}")
-            return output_file
-        else:
-            print("\n没有找到有效的直播源")
-            print("\n🔍 可能的原因:")
-            print("1. 网络环境限制：可能是防火墙、代理或网络策略阻止了对直播源的访问")
-            print("2. DNS解析失败：无法解析直播源服务器的域名")
-            print("3. URL已失效：直播源服务器可能已经关闭或更改了地址")
-            print("4. 网络连接不稳定：网络延迟或丢包导致连接超时")
-            print("5. URL格式错误：请确保所有URL都包含正确的协议（http/https/rtsp/rtmp/mms）")
+    def get_results_summary(self):
+        """获取验证结果摘要"""
+        total = len(self.all_results)
+        valid = sum(1 for r in self.all_results if r['valid'])
+        invalid = total - valid
+        
+        resolution_stats = {}
+        for result in self.all_results:
+            if result['resolution']:
+                res = result['resolution']
+                resolution_stats[res] = resolution_stats.get(res, 0) + 1
+        
+        return {
+            'total': total,
+            'valid': valid,
+            'invalid': invalid,
+            'valid_rate': f"{valid/total*100:.1f}%" if total > 0 else "0%",
+            'resolution_stats': resolution_stats
+        }
+
+    def get_results_by_category(self):
+        """按分类获取验证结果"""
+        categorized = {}
+        for result in self.all_results:
+            if not result['valid']:
+                continue
             
-            print("\n💡 建议的解决方案:")
-            print("1. 检查网络连接：确保您的计算机可以正常访问互联网")
-            print("2. 验证URL有效性：手动测试几个URL是否可以访问")
-            print("3. 更换直播源：尝试使用其他可靠的直播源提供商")
-            print("4. 调整超时时间：使用 -t 参数增加超时时间，例如：-t 10")
-            print("5. 检查URL格式：确保所有URL都符合标准格式")
-            
-            print("\n📝 示例：如何使用有效的直播源")
-            print("您可以尝试使用以下格式的M3U文件：")
-            print("#EXTM3U")
-            print("#EXTINF:-1 group-title=\"测试\",测试频道")
-            print("http://example.com/valid_stream.m3u8")
-            
-        # 关闭ffprobe进程池
-        if hasattr(self, 'ffprobe_pool') and self.ffprobe_pool:
-            self.ffprobe_pool.shutdown()
-            
-        return None
+            category = result['category'] or '未分类'
+            if category not in categorized:
+                categorized[category] = []
+            categorized[category].append(result)
+        
+        return categorized
 
 
-def validate_file(input_file, output_file=None, max_workers=20, timeout=5, debug=False, skip_resolution=False):
-    """便捷函数：验证单个文件"""
-    # 确保输出目录存在，即使在创建validator实例之前
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    os.makedirs(os.path.join(script_dir, 'output'), exist_ok=True)
+def validate_ipTV(input_file, output_file=None, max_workers=None, timeout=5, debug=False, original_filename=None, skip_resolution=False, filter_no_audio=False):
+    """
+    验证IPTV直播源
     
-    validator = IPTVValidator(input_file, output_file, max_workers, timeout, debug, skip_resolution=skip_resolution)
-    output_file = validator.run()
-    return output_file, validator.all_results
-
-
-def validate_all_files(directory='.', max_workers=20, timeout=5, debug=False, skip_resolution=False):
-    """便捷函数：验证目录下所有支持的文件"""
-    # 确保输出目录存在
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    os.makedirs(os.path.join(script_dir, 'output'), exist_ok=True)
+    参数:
+        input_file: 输入文件路径或URL
+        output_file: 输出文件路径（可选）
+        max_workers: 最大并发数（可选，默认自动计算）
+        timeout: 超时时间（秒）
+        debug: 是否开启调试模式
+        original_filename: 原始文件名（用于生成输出文件名）
+        skip_resolution: 是否跳过分辨率检测
+        filter_no_audio: 是否过滤无音频流的频道
     
-    supported_extensions = ('.m3u', '.m3u8', '.txt')
-    files_to_validate = []
-
-    for filename in os.listdir(directory):
-        if filename.endswith(supported_extensions) and not filename.endswith('_valid.m3u') and not filename.endswith('_valid.txt'):
-            files_to_validate.append(os.path.join(directory, filename))
-
-    print(f"找到 {len(files_to_validate)} 个文件需要验证")
-
-    for file_path in files_to_validate:
-        print(f"\n{'='*50}")
-        output_file, _ = validate_file(file_path, max_workers=max_workers, timeout=timeout, debug=debug, skip_resolution=skip_resolution)
+    返回:
+        验证结果摘要字典
+    """
+    validator = IPTVValidator(
+        input_file=input_file,
+        output_file=output_file,
+        max_workers=max_workers,
+        timeout=timeout,
+        debug=debug,
+        original_filename=original_filename,
+        skip_resolution=skip_resolution,
+        filter_no_audio=filter_no_audio
+    )
+    
+    output_path = validator.run()
+    summary = validator.get_results_summary()
+    
+    if output_path:
+        summary['output_file'] = output_path
+        print(f"\n验证摘要:")
+        print(f"  总频道数: {summary['total']}")
+        print(f"  有效频道: {summary['valid']}")
+        print(f"  无效频道: {summary['invalid']}")
+        print(f"  有效率: {summary['valid_rate']}")
+        
+        if summary['resolution_stats']:
+            print(f"  分辨率分布:")
+            for res, count in sorted(summary['resolution_stats'].items(), key=lambda x: int(x[0].split('*')[1]), reverse=True):
+                print(f"    {res}: {count}个")
+    
+    return summary
 
 
 if __name__ == "__main__":
     import argparse
-
-    parser = argparse.ArgumentParser(description='直播源有效性验证工具')
-    # 创建互斥组
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-i', '--input', help='输入文件路径')
-    group.add_argument('-a', '--all', action='store_true', help='验证当前目录下所有支持的文件')
     
+    parser = argparse.ArgumentParser(description='IPTV直播源验证工具')
+    parser.add_argument('input', help='输入文件路径或URL')
     parser.add_argument('-o', '--output', help='输出文件路径')
-    parser.add_argument('-w', '--workers', type=int, default=20, help='并发工作线程数')
-    parser.add_argument('-t', '--timeout', type=int, default=5, help='超时时间(秒)')
-    parser.add_argument('-d', '--debug', action='store_true', help='启用调试模式，显示详细的验证信息')
-    parser.add_argument('--no-resolution', action='store_true', help='跳过视频分辨率检测，加快验证速度')
-
+    parser.add_argument('-w', '--workers', type=int, help='最大并发数')
+    parser.add_argument('-t', '--timeout', type=int, default=5, help='超时时间（秒）')
+    parser.add_argument('-d', '--debug', action='store_true', help='开启调试模式')
+    parser.add_argument('-s', '--skip-resolution', action='store_true', help='跳过分辨率检测')
+    parser.add_argument('--no-audio-filter', action='store_true', help='过滤无音频流的频道')
+    
     args = parser.parse_args()
-
-    if args.all:
-        validate_all_files('.', args.workers, args.timeout, args.debug, args.no_resolution)
-    else:
-        output_file, _ = validate_file(args.input, args.output, args.workers, args.timeout, args.debug, args.no_resolution)
+    
+    validate_ipTV(
+        input_file=args.input,
+        output_file=args.output,
+        max_workers=args.workers,
+        timeout=args.timeout,
+        debug=args.debug,
+        skip_resolution=args.skip_resolution,
+        filter_no_audio=args.no_audio_filter
+    )

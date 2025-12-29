@@ -1,4 +1,4 @@
-# IPTV直播源验证工具
+# 直播源有效性验证工具ZHQ
 
 一个功能强大的IPTV直播源验证工具，支持多协议（HTTP/HTTPS/RTSP/RTMP/MMS/UDP/RTP）验证，提供命令行和Web界面两种使用方式。
 
@@ -21,10 +21,18 @@
   - 特殊字符处理：自动处理URL中的$符号和后续内容
   - IPv6支持：支持IPv6地址（带或不带方括号）
   - 宽松验证逻辑：URL格式有效（包含scheme和netloc）即标记为有效（用户确认的电视可播放链接）
+- **BlackBird-Player风格试播验证**：
+  - IPv6 URL试播：通过FFprobe探测，检查是否能在IPv6环境下正常连接并获取真实分辨率
+  - UDP/RTSP/RTMP/RTP协议：使用FFmpeg尝试解码一小段数据，确认流可播放并获取真实分辨率
+  - 真实分辨率检测：通过实际播放测试获取流的真实分辨率，而非从URL模式推断
+  - 编码信息获取：成功播放后获取视频编码、音频编码等详细信息
 - **调试模式**：详细的调试输出，便于排查问题
 - **Web界面**：用户友好的Web界面，支持文件上传和手动URL验证
 - **增强的结果展示**：Web界面以表格形式展示验证结果，包括频道名称、播放地址、线程号、有效性和视频分辨率
-- **分辨率检测**：自动检测视频流分辨率（需要FFmpeg）
+- **分辨率检测**：自动检测视频流分辨率（需要FFmpeg，支持MediaInfo作为备选方案）
+- **音频参数检测**：自动检测音频流参数（编码格式、采样率、声道数、比特率）
+- **失效源过滤**：可自动过滤不含音频或视频流的失效源
+- **增强分辨率检测**：支持ffprobe和MediaInfo双重检测，提高分辨率识别成功率
 - **自动目录管理**：验证完成后自动创建output目录（若不存在），确保输出文件能正常生成
 
 ## 安装依赖
@@ -34,7 +42,37 @@ pip install requests flask
 ```
 
 **可选依赖**：
-- FFmpeg：用于视频分辨率检测
+- FFmpeg：用于视频分辨率检测（必需）
+- MediaInfo：用于增强分辨率检测，作为ffprobe的备选方案
+
+### MediaInfo 安装
+
+**Windows**（使用 winget）：
+```powershell
+winget install MediaArea.MediaInfo -e
+```
+
+**Windows**（使用 Chocolatey）：
+```powershell
+choco install mediainfo
+```
+
+**macOS**（使用 Homebrew）：
+```bash
+brew install mediainfo
+```
+
+**Linux**（Ubuntu/Debian）：
+```bash
+sudo apt install mediainfo
+```
+
+**Linux**（Fedora）：
+```bash
+sudo dnf install mediainfo
+```
+
+安装后需要重启终端或刷新环境变量使PATH生效。
 
 ## 使用方法
 
@@ -56,6 +94,9 @@ python iptv_validator.py -i <输入文件> [选项]
 | -t, --timeout | 超时时间（秒） | 5 |
 | -d, --debug | 启用调试模式 | False |
 | -a, --all | 验证当前目录下所有支持的文件 | False（与-i互斥） |
+| --no-audio-filter | 过滤不含音频流的频道 | False |
+| --skip-resolution | 跳过分辨率检测 | False |
+| --use-mediainfo-only | 仅使用MediaInfo进行分辨率检测 | False |
 
 #### 示例
 
@@ -68,6 +109,15 @@ python iptv_validator.py -i channels.m3u -t 10 -d
 
 # 自定义输出文件和线程数
 python iptv_validator.py -i channels.m3u -o valid_channels.m3u -w 10
+
+# 过滤不含音频流的频道
+python iptv_validator.py -i channels.m3u --no-audio-filter
+
+# 跳过分辨率检测（快速模式）
+python iptv_validator.py -i channels.m3u --skip-resolution
+
+# 仅使用MediaInfo进行分辨率检测
+python iptv_validator.py -i channels.m3u --use-mediainfo-only
 
 # 验证当前目录下所有支持的文件
 python iptv_validator.py -a
@@ -124,6 +174,8 @@ python web_app.py
   - 线程号：处理该频道的线程ID
   - 有效性：频道是否有效（绿色表示有效，红色表示无效）
   - 分辨率：视频流的宽度和高度（如1920x1080）
+  - 音频参数：音频编码、采样率、声道数（如AAC/48000/6）
+- **过滤选项**：可选择过滤不含音频流的失效源
 - **文件下载**：可下载验证后的有效直播源文件
 
 ## 文件格式支持
@@ -213,7 +265,14 @@ validator/
 
 ## 更新日志
 
-### v1.5
+### v1.6
+- 新增BlackBird-Player风格试播验证功能
+- IPv6 URL试播：通过FFprobe探测，检查是否能在IPv6环境下正常连接并获取真实分辨率
+- UDP/RTSP/RTMP/RTP协议：使用FFmpeg尝试解码一小段数据，确认流可播放并获取真实分辨率
+- 真实分辨率检测：通过实际播放测试获取流的真实分辨率，而非从URL模式推断
+- 编码信息获取：成功播放后获取视频编码、音频编码等详细信息
+- Web界面更名为"直播源有效性验证工具ZHQ"
+- 优化Web界面布局，减少行间距，提升用户体验
 - 修复输出目录问题：验证完成后自动创建output目录（若不存在），解决删除output目录后无法生成输出文件的问题
 - 新增文件编码智能检测：支持UTF-8、GBK、GB2312等中文编码自动识别，解决大文件乱码问题
 - 增强WebSocket传输：增大缓冲区至100MB，支持大文件实时通信
