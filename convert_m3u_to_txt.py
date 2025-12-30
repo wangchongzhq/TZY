@@ -36,7 +36,14 @@ class M3UConverter:
                 return content, encoding
             except UnicodeDecodeError:
                 continue
-            except Exception:
+            except (IOError, OSError) as e:
+                print(f"读取文件失败: 文件操作错误 - {e}")
+                continue
+            except (ValueError, TypeError) as e:
+                print(f"读取文件失败: 数据格式错误 - {e}")
+                continue
+            except Exception as e:
+                print(f"读取文件失败: 未知错误 - {e}")
                 continue
         return None, None
     
@@ -188,57 +195,165 @@ class M3UConverter:
             
             return True
                 
-        except Exception:
+        except (IOError, OSError) as e:
+            print(f"写入文件失败: 文件操作错误 - {e}")
+            return False
+        except (ValueError, TypeError) as e:
+            print(f"写入文件失败: 数据格式错误 - {e}")
+            return False
+        except Exception as e:
+            print(f"写入文件失败: 未知错误 - {e}")
             return False
     
 
 
+def validate_file_path(file_path):
+    """验证文件路径的安全性"""
+    if not file_path:
+        return False
+    
+    # 检查路径长度
+    if len(file_path) > 255:
+        raise ValueError(f"文件路径过长: {file_path}")
+    
+    # 检查是否包含危险字符
+    dangerous_chars = ['<', '>', ':', '"', '|', '?', '*']
+    for char in dangerous_chars:
+        if char in file_path:
+            raise ValueError(f"文件路径包含危险字符 '{char}': {file_path}")
+    
+    # 检查是否尝试访问上级目录
+    if '..' in file_path:
+        raise ValueError(f"文件路径包含上级目录访问: {file_path}")
+    
+    return True
+
 def main():
-    """主函数"""
-    import sys
-    import os
+    import argparse
     
-    # 创建转换器实例
-    converter = M3UConverter()
+    parser = argparse.ArgumentParser(
+        description='将M3U/M3A格式的IPTV文件转换为TXT格式',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+示例:
+  python convert_m3u_to_txt.py input.m3u
+  python convert_m3u_to_txt.py input.m3u output.txt
+  python convert_m3u_to_txt.py --auto-detect
+        """
+    )
     
-    # 尝试找到M3U文件
-    possible_m3u_files = ["iptv.m3u", "cn.m3u", "4K.m3u", "ipvym3a", "iptv.m3a"]
-    m3u_file = None
-    txt_file = "output.txt"
+    parser.add_argument('input_file', nargs='?', help='输入的M3U/M3A文件路径')
+    parser.add_argument('output_file', nargs='?', help='输出的TXT文件路径')
+    parser.add_argument('--auto-detect', action='store_true', 
+                       help='自动检测当前目录下的M3U/M3A文件')
+    parser.add_argument('--encoding', default='utf-8', 
+                       help='文件编码格式 (默认: utf-8)')
     
-    # 检查命令行参数
-    if len(sys.argv) >= 2:
-        # 至少提供了一个参数，使用它作为输入文件
-        m3u_file = sys.argv[1]
-        if len(sys.argv) == 3:
-            # 提供了两个参数，使用第二个作为输出文件
-            txt_file = sys.argv[2]
-        # 如果只提供了一个参数，后面会根据输入文件名自动生成输出文件名
-    else:
-        # 没有提供参数，查找当前目录下的所有M3U文件
-        all_m3u_files = [f for f in os.listdir('.') if f.lower().endswith(('.m3u', '.m3a'))]
+    try:
+        args = parser.parse_args()
         
-        if all_m3u_files:
-            # 检查每个文件是否为空
-            valid_m3u_files = [f for f in all_m3u_files if os.path.getsize(f) > 0]
+        # 创建转换器实例
+        converter = M3UConverter()
+        
+        m3u_file = None
+        txt_file = None
+        
+        if args.auto_detect:
+            # 自动检测模式
+            all_m3u_files = [f for f in os.listdir('.') if f.lower().endswith(('.m3u', '.m3a'))]
             
-            if valid_m3u_files:
-                # 选择第一个有效文件
-                m3u_file = valid_m3u_files[0]
-    
-    if not m3u_file:
+            if all_m3u_files:
+                # 检查每个文件是否为空
+                valid_m3u_files = [f for f in all_m3u_files if os.path.getsize(f) > 0]
+                
+                if valid_m3u_files:
+                    m3u_file = valid_m3u_files[0]
+                    print(f"自动检测到文件: {m3u_file}")
+                else:
+                    print("错误: 当前目录下没有有效的M3U/M3A文件")
+                    sys.exit(1)
+            else:
+                print("错误: 当前目录下没有找到M3U/M3A文件")
+                sys.exit(1)
+        elif args.input_file:
+            # 指定了输入文件
+            try:
+                validate_file_path(args.input_file)
+            except ValueError as e:
+                print(f"错误: 输入文件路径验证失败 - {e}")
+                sys.exit(1)
+            
+            if not os.path.exists(args.input_file):
+                print(f"错误: 输入文件 '{args.input_file}' 不存在")
+                sys.exit(1)
+            
+            if not os.path.isfile(args.input_file):
+                print(f"错误: '{args.input_file}' 不是普通文件")
+                sys.exit(1)
+            
+            m3u_file = args.input_file
+        else:
+            # 尝试自动检测
+            possible_m3u_files = ["iptv.m3u", "cn.m3u", "4K.m3u", "ipvym3a", "iptv.m3a"]
+            for file_name in possible_m3u_files:
+                if os.path.exists(file_name) and os.path.getsize(file_name) > 0:
+                    m3u_file = file_name
+                    print(f"找到文件: {m3u_file}")
+                    break
+        
+        if not m3u_file:
+            print("错误: 没有找到有效的M3U/M3A文件")
+            print("请使用 --auto-detect 自动检测，或指定输入文件路径")
+            parser.print_help()
+            sys.exit(1)
+        
+        # 确定输出文件路径
+        if args.output_file:
+            try:
+                validate_file_path(args.output_file)
+            except ValueError as e:
+                print(f"错误: 输出文件路径验证失败 - {e}")
+                sys.exit(1)
+            txt_file = args.output_file
+        else:
+            # 根据输入文件自动生成输出文件名
+            txt_file = f"{os.path.splitext(m3u_file)[0]}.txt"
+        
+        # 验证输出目录
+        output_dir = os.path.dirname(txt_file)
+        if output_dir and not os.path.exists(output_dir):
+            try:
+                os.makedirs(output_dir, exist_ok=True)
+            except OSError as e:
+                print(f"错误: 无法创建输出目录 '{output_dir}': {e}")
+                sys.exit(1)
+        
+        print(f"输入文件: {m3u_file}")
+        print(f"输出文件: {txt_file}")
+        
+        # 执行转换
+        success = converter.convert_m3u_to_txt(m3u_file, txt_file)
+        
+        if not success:
+            print("转换失败")
+            sys.exit(1)
+        else:
+            print("转换成功完成")
+            
+    except KeyboardInterrupt:
+        print("\n操作被用户取消")
         sys.exit(1)
-    
-    # 根据输入文件自动生成输出文件名
-    if m3u_file:
-        txt_file = f"{os.path.splitext(m3u_file)[0]}.txt"
-    else:
-        txt_file = "output.txt"
-    
-    # 执行转换
-    success = converter.convert_m3u_to_txt(m3u_file, txt_file)
-    
-    if not success:
+    except ValueError as e:
+        print(f"参数错误: {e}")
+        sys.exit(1)
+    except (IOError, OSError) as e:
+        print(f"文件操作错误: {e}")
+        sys.exit(1)
+    except (ValueError, TypeError) as e:
+        print(f"数据格式错误: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"未知错误: {e}")
         sys.exit(1)
 
 if __name__ == "__main__":

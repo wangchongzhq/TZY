@@ -419,8 +419,14 @@ def save_cache():
                 }
             json.dump(serializable_cache, f, ensure_ascii=False, indent=2)
         return True
+    except (IOError, OSError) as e:
+        print(f"保存缓存失败: 文件操作错误 - {e}")
+        return False
+    except (ValueError, TypeError) as e:
+        print(f"保存缓存失败: 数据格式错误 - {e}")
+        return False
     except Exception as e:
-        print(f"保存缓存失败: {e}")
+        print(f"保存缓存失败: 未知错误 - {e}")
         return False
 
 # 从文件加载缓存
@@ -442,8 +448,16 @@ def load_cache():
                     )
             print(f"✅ 从缓存文件加载了 {len(source_cache)} 个缓存条目")
         return True
+    except (IOError, OSError) as e:
+        print(f"加载缓存失败: 文件操作错误 - {e}")
+        source_cache = {}
+        return False
+    except (ValueError, TypeError) as e:
+        print(f"加载缓存失败: 数据格式错误 - {e}")
+        source_cache = {}
+        return False
     except Exception as e:
-        print(f"加载缓存失败: {e}")
+        print(f"加载缓存失败: 未知错误 - {e}")
         source_cache = {}
         return False
 
@@ -480,8 +494,18 @@ def load_config():
             save_config()
             print(f"✅ 创建了默认配置文件: {CONFIG_FILE}")
         return True
+    except (IOError, OSError) as e:
+        print(f"加载配置文件失败: 文件操作错误 - {e}")
+        config = DEFAULT_CONFIG.copy()
+        update_global_vars_from_config()
+        return False
+    except (ValueError, TypeError) as e:
+        print(f"加载配置文件失败: 数据格式错误 - {e}")
+        config = DEFAULT_CONFIG.copy()
+        update_global_vars_from_config()
+        return False
     except Exception as e:
-        print(f"加载配置文件失败: {e}")
+        print(f"加载配置文件失败: 未知错误 - {e}")
         config = DEFAULT_CONFIG.copy()
         update_global_vars_from_config()
         return False
@@ -1152,14 +1176,20 @@ def process_single_source(source_url):
             # M3U格式
             return extract_channels_from_m3u(content)
         else:
-            # TXT格式（保存到临时文件再解析）
+            # TXT格式（安全地保存到临时文件再解析）
             with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False, encoding='utf-8') as f:
-                f.write(content)
                 temp_file_path = f.name
+                f.write(content)
+            
+            # 设置安全的文件权限（仅所有者可读写）
+            os.chmod(temp_file_path, 0o600)
+            
             try:
                 return extract_channels_from_txt(temp_file_path)
             finally:
-                os.unlink(temp_file_path)
+                # 确保清理临时文件
+                if os.path.exists(temp_file_path):
+                    os.unlink(temp_file_path)
     return None
 
 # 合并直播源
@@ -1386,59 +1416,100 @@ def fix_ip_tv_chars():
         return False
 
 
+def validate_command_line_args():
+    """验证命令行参数的安全性"""
+    for arg in sys.argv[1:]:  # 跳过脚本名称
+        if not arg.startswith('--'):
+            raise ValueError(f"参数必须以'--'开头: {arg}")
+        
+        # 检查参数长度
+        if len(arg) > 50:
+            raise ValueError(f"参数过长: {arg}")
+        
+        # 检查是否包含危险字符
+        dangerous_chars = ['<', '>', ':', '"', '|', '?', '*', ';', '&', '|', '`', '$', '(', ')', '{', '}', '[', ']', '\\']
+        for char in dangerous_chars:
+            if char in arg:
+                raise ValueError(f"参数包含危险字符 '{char}': {arg}")
+
 def main():
     """主函数"""
     import sys
+    import argparse
     
     # 加载配置文件
     load_config()
     
-    # 检查命令行参数
-    if len(sys.argv) > 1:
-        if sys.argv[1] == "--update":
+    parser = argparse.ArgumentParser(
+        description='IPTV直播源自动生成工具',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+示例:
+  python IPTV.py --update
+  python IPTV.py --check-syntax
+  python IPTV.py --fix-chars
+  python IPTV.py --filter-4k
+        """
+    )
+    
+    parser.add_argument('--update', action='store_true', 
+                       help='立即手动更新直播源')
+    parser.add_argument('--check-syntax', action='store_true', 
+                       help='检查IPTV.py文件语法错误')
+    parser.add_argument('--fix-chars', action='store_true', 
+                       help='修复IPTV.py文件中的不可打印字符')
+    parser.add_argument('--filter-4k', action='store_true', 
+                       help='只获取4K频道')
+    
+    try:
+        # 验证命令行参数安全性
+        validate_command_line_args()
+        
+        # 解析命令行参数
+        args = parser.parse_args()
+        
+        # 执行相应操作
+        if args.update:
             # 手动更新模式
             update_iptv_sources()
-        elif sys.argv[1] == "--check-syntax":
+        elif args.check_syntax:
             # 检查语法错误
             check_ip_tv_syntax()
-        elif sys.argv[1] == "--fix-chars":
+        elif args.fix_chars:
             # 修复不可打印字符
             fix_ip_tv_chars()
-        elif sys.argv[1] == "--filter-4k":
+        elif args.filter_4k:
             # 只获取4K频道模式
             config["filter"]["only_4k"] = True
             update_iptv_sources()
         else:
             # 显示帮助信息
-            print("未知参数，请使用以下参数：")
-            print("  --update       # 立即手动更新直播源")
-            print("  --check-syntax # 检查IPTV.py文件语法错误")
-            print("  --fix-chars    # 修复IPTV.py文件中的不可打印字符")
-            print("  --filter-4k    # 只获取4K频道")
-    else:
-        # 显示帮助信息
-        print("=" * 60)
-        print("      IPTV直播源自动生成工具")
-        print("=" * 60)
-        print("功能：")
-        print("  1. 从多个来源获取IPTV直播源")
-        print("  2. 生成M3U和TXT格式的直播源文件")
-        print("  3. 支持手动更新和通过GitHub Actions工作流定时更新")
-        print("  4. 检查IPTV.py文件语法错误")
-        print("  5. 修复IPTV.py文件中的不可打印字符")
-        print("  6. 支持只获取4K频道")
-        print("")
-        print("使用方法：")
-        print("  python IPTV.py --update       # 立即手动更新直播源")
-        print("  python IPTV.py --check-syntax # 检查语法错误")
-        print("  python IPTV.py --fix-chars    # 修复不可打印字符")
-        print("  python IPTV.py --filter-4k    # 只获取4K频道")
-        print("")
-        print("输出文件：")
-        print("  - jieguo.m3u   # M3U格式的直播源文件")
-        print("  - jieguo.txt   # TXT格式的直播源文件")
-        print("  - iptv_update.log  # 更新日志文件")
-        print("=" * 60)
+            print("=" * 60)
+            print("      IPTV直播源自动生成工具")
+            print("=" * 60)
+            print("功能：")
+            print("  1. 从多个来源获取IPTV直播源")
+            print("  2. 生成M3U和TXT格式的直播源文件")
+            print("  3. 支持手动更新和通过GitHub Actions工作流定时更新")
+            print("  4. 检查IPTV.py文件语法错误")
+            print("  5. 修复IPTV.py文件中的不可打印字符")
+            print("  6. 支持只获取4K频道")
+            print("")
+            print("使用方法：")
+            print("  python IPTV.py --update       # 立即手动更新直播源")
+            print("  python IPTV.py --check-syntax # 检查语法错误")
+            print("  python IPTV.py --fix-chars    # 修复不可打印字符")
+            print("  python IPTV.py --filter-4k    # 只获取4K频道")
+            
+    except ValueError as e:
+        print(f"参数验证错误: {e}")
+        sys.exit(1)
+    except KeyboardInterrupt:
+        print("\n操作被用户取消")
+        sys.exit(1)
+    except Exception as e:
+        print(f"错误: {e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

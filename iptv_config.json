@@ -17,5 +17,45 @@
   "output": {
     "m3u_file": "jieguo_txt.m3u",
     "txt_file": "jieguo_txt.txt"
+  },
+  "web_app": {
+    "max_content_length": 16777216,
+    "max_http_buffer_size": 104857600,
+    "ping_timeout": 120,
+    "ping_interval": 30,
+    "default_timeout": 5,
+    "allowed_extensions": ["m3u", "m3u8", "txt", "json"]
+  },
+  "validation": {
+    "default_timeout": 8,
+    "default_workers": 30,
+    "max_workers_multiplier": 4,
+    "ffprobe_timeout": 8,
+    "socket_timeout": 3,
+    "download_timeout": 30,
+    "http_request_timeout": 5,
+    "http_request_retries": 5,
+    "4k_timeout": 8,
+    "batch_size_min": 50,
+    "batch_size_max": 200,
+    "batch_size_multiplier": 4,
+    "timeout_multipliers": {
+      "http_head": 5,
+      "http_get": 1,
+      "non_http": 2,
+      "ffprobe": 2.5
+    },
+    "timeout_caps": {
+      "http_head": 8,
+      "non_http": 15,
+      "ffprobe": 15
+    }
+  },
+  "logging": {
+    "web_log_file": "web_validation.log",
+    "log_level": "INFO",
+    "console_log_level": "INFO",
+    "file_log_level": "INFO",
+    "log_format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
   }
 }

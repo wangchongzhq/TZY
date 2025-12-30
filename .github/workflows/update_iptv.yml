@@ -20,19 +20,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
-      contents: write  # 授予写入内容的权限
+      contents: write
 
     steps:
     - name: Checkout代码
       uses: actions/checkout@v4
       with:
         repository: wangchongzhq/TZY
-        persist-credentials: true  # 保持凭据以便推送
+        persist-credentials: true
 
     - name: 设置Python环境
       uses: actions/setup-python@v4
       with:
         python-version: '3.x'
+        cache: 'pip'
 
     - name: 安装依赖
       run: |
@@ -56,13 +57,13 @@ jobs:
         # 配置git身份和行为
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "GitHub Actions Bot"
-        git config --global pull.rebase false  # 使用merge而不是rebase
-        git config --global core.autocrlf false  # 防止行尾字符转换问题
+        git config --global pull.rebase false
+        git config --global core.autocrlf false
         
         echo "=== 开始Git操作 ==="
         echo "当前分支: $(git branch --show-current)"
         
-        # 直接使用origin远程仓库
+        # 同步本地与远程仓库
         echo "同步本地与远程仓库..."
         git remote -v
         git fetch origin ${{ github.ref_name }}
@@ -75,7 +76,7 @@ jobs:
         echo "重新执行脚本生成最新文件..."
         python IPTV.py --update
         
-        # 检查文件是否存在（检查所有可能的输出文件名）
+        # 检查文件是否存在
         if [ ! -f "jieguo.m3u" ] && [ ! -f "jieguo.txt" ]; then
           echo "::error::错误：未找到任何生成的文件"
           exit 1
@@ -97,14 +98,10 @@ jobs:
         
         # 推送到远程仓库
         echo "尝试推送更改到远程仓库..."
-        # 直接推送到origin
         git push origin ${{ github.ref_name }} || {
           echo "推送失败，尝试使用--force-with-lease推送..."
           git push --force-with-lease origin ${{ github.ref_name }} || {
             echo "--force-with-lease推送失败，最后尝试使用--force推送..."
-            git push --force origin ${{ github.ref_name }} || {
-              echo "::error::所有推送方式均失败，请检查GitHub权限配置"
-              exit 1
-            }
+            git push --force origin ${{ github.ref_name }}
           }
         }

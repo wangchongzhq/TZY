@@ -54,9 +54,11 @@ def _get_resolution_from_hls(url, timeout, headers=None):
     """从HLS播放列表中提取分辨率信息 - 优化版本"""
     import re
     import requests
+    import subprocess
+    from urllib.parse import urlparse, urljoin
     try:
         session = requests.Session()
-        response = session.get(url, timeout=min(timeout, 3), headers=headers, allow_redirects=True)
+        response = session.get(url, timeout=min(timeout, 15), headers=headers, allow_redirects=True)
         if response.status_code != 200:
             return None
 
@@ -76,9 +78,79 @@ def _get_resolution_from_hls(url, timeout, headers=None):
             if max_height > 0:
                 return f"{best_width}*{max_height}", 'hls', {'source': 'hls_playlist'}
             return None, None, {}
+
+        lines = content.splitlines()
+        first_segment_url = None
+        parsed_url = urlparse(url)
+        base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+
+        for line in lines:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+
+            if line.startswith('http://') or line.startswith('https://'):
+                first_segment_url = line
+                break
+            elif line.startswith('/api/') or line.startswith('/hls/') or line.startswith('/live/'):
+                first_segment_url = f"{parsed_url.scheme}://{parsed_url.netloc}{line}"
+                break
+            elif line.startswith('/'):
+                first_segment_url = urljoin(base_url, line)
+                break
+            else:
+                # 处理相对路径的媒体片段文件
+                # 包括 .ts, .m4s, .m3u8 等媒体文件，以及纯数字文件名
+                if (line.endswith('.ts') or line.endswith('.m4s') or line.endswith('.m3u8') or
+                    line.endswith('.mp4') or line.endswith('.m4v') or
+                    re.match(r'^\d+\.ts$', line) or  # 纯数字.ts文件名
+                    re.match(r'^[a-zA-Z0-9_-]+\.ts$', line)):  # 字母数字下划线中划线.ts文件名
+                    # 使用当前M3U8的base路径来构建完整URL
+                    base_path = url.rsplit('/', 1)[0] + '/'
+                    first_segment_url = urljoin(base_path, line)
+                    break
+                else:
+                    # 其他未知格式，也尝试作为相对路径处理
+                    base_path = url.rsplit('/', 1)[0] + '/'
+                    first_segment_url = urljoin(base_path, line)
+                    break
+
+        if first_segment_url:
+            # 验证和清理从HLS列表中提取的URL
+            clean_segment_url = _validate_and_sanitize_url(first_segment_url)
+            if not clean_segment_url:
+                return None, None, {}
+            
+            timeout_us = int(timeout * 1000000)
+            cmd = [
+                'ffprobe', '-v', 'error',
+                '-timeout', str(timeout_us),
+                '-analyzeduration', str(timeout_us),
+                '-probesize', str(5 * 1024 * 1024),
+                '-select_streams', 'v:0',
+                '-show_entries', 'stream=width,height,codec_name',
+                '-of', 'json',
+                clean_segment_url
+            ]
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout + 1,
+                                    creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
+            if result.returncode == 0:
+                import json as json_module
+                try:
+                    data = json_module.loads(result.stdout)
+                    if 'streams' in data and len(data['streams']) > 0:
+                        stream = data['streams'][0]
+                        width = stream.get('width', 0)
+                        height = stream.get('height', 0)
+                        codec = stream.get('codec_name', 'hls')
+                        if width and height and width > 0 and height > 0:
+                            return f"{width}*{height}", codec, {'source': 'hls_segment_probe'}
+                except json.JSONDecodeError:
+                    pass
+
         return None, None, {}
     except Exception:
-        return None
+        return None, None, {}
 
 
 def _extract_first_segment_from_m3u8(m3u8_url, timeout, headers=None):
@@ -88,7 +160,7 @@ def _extract_first_segment_from_m3u8(m3u8_url, timeout, headers=None):
     from urllib.parse import urljoin, urlparse
     try:
         session = requests.Session()
-        response = session.get(m3u8_url, timeout=min(timeout, 3), headers=headers, allow_redirects=True)
+        response = session.get(m3u8_url, timeout=min(timeout, 15), headers=headers, allow_redirects=True)
         if response.status_code != 200:
             return None
 
@@ -107,10 +179,21 @@ def _extract_first_segment_from_m3u8(m3u8_url, timeout, headers=None):
             
             if line.startswith('http://') or line.startswith('https://'):
                 return line
+            elif line.startswith('/api/') or line.startswith('/hls/') or line.startswith('/live/'):
+                return f"{parsed_url.scheme}://{parsed_url.netloc}{line}"
             elif line.startswith('/'):
                 return urljoin(f"{parsed_url.scheme}://{parsed_url.netloc}", line)
             else:
-                return urljoin(base_url, line)
+                # 处理相对路径的媒体片段文件
+                # 包括 .ts, .m4s, .m3u8 等媒体文件，以及纯数字文件名
+                if (line.endswith('.ts') or line.endswith('.m4s') or line.endswith('.m3u8') or
+                    line.endswith('.mp4') or line.endswith('.m4v') or
+                    re.match(r'^\d+\.ts$', line) or  # 纯数字.ts文件名
+                    re.match(r'^[a-zA-Z0-9_-]+\.ts$', line)):  # 字母数字下划线中划线.ts文件名
+                    return urljoin(base_url, line)
+                else:
+                    # 其他未知格式，也尝试作为相对路径处理
+                    return urljoin(base_url, line)
 
         return None
     except Exception:
@@ -122,7 +205,9 @@ def _get_resolution_from_segment(segment_url, timeout, headers=None):
     import subprocess
     import json
     try:
-        if not segment_url:
+        # 验证和清理URL
+        clean_url = _validate_and_sanitize_url(segment_url)
+        if not clean_url:
             return None
 
         cmd = [
@@ -136,7 +221,7 @@ def _get_resolution_from_segment(segment_url, timeout, headers=None):
                 '-headers', f'Referer: {headers.get("Referer", "")}\r\nUser-Agent: {headers.get("User-Agent", "Mozilla/5.0")}\r\n'
             ])
 
-        cmd.append(segment_url)
+        cmd.append(clean_url)
 
         result = subprocess.run(
             cmd, capture_output=True, text=True, timeout=timeout,
@@ -161,27 +246,201 @@ def _get_resolution_from_segment(segment_url, timeout, headers=None):
         return None
 
 
-def _ffprobe_get_resolution(url, timeout, headers=None, retry=1):
-    """在进程池中执行的ffprobe分辨率检测函数 - 优化版本（参考新对话.txt）"""
+def _get_resolution_from_m3u8_content(url, timeout, headers=None):
+    """基于M3U8内容推断分辨率信息"""
+    import re
+    import requests
+    try:
+        session = requests.Session()
+        response = session.get(url, timeout=min(timeout, 15), headers=headers, allow_redirects=True)
+        if response.status_code != 200:
+            return None
+
+        content = response.text.lower()
+        original_content = response.text
+        
+        # 1. 检查明确的分辨率信息
+        resolution_patterns = [
+            r'resolution=(\d+)x(\d+)',
+            r'width=(\d+)[^\d]+height=(\d+)',
+            r'(\d+)x(\d+)',
+            r'height=(\d+)',
+            r'width=(\d+)'
+        ]
+        
+        for pattern in resolution_patterns:
+            matches = re.findall(pattern, content, re.IGNORECASE)
+            if matches:
+                # 找到最高分辨率
+                max_height = 0
+                best_width = 0
+                for match in matches:
+                    if len(match) == 2:
+                        width, height = int(match[0]), int(match[1])
+                        if height > max_height and height > 0 and width > 0:
+                            max_height = height
+                            best_width = width
+                    elif len(match) == 1:
+                        # 单独的高度或宽度信息
+                        value = int(match[0])
+                        if value > 1000:  # 假设大于1000的是高度
+                            max_height = value
+                
+                if max_height > 0:
+                    return f"{best_width}*{max_height}", 'hls_content', {'source': 'm3u8_content_analysis'}
+        
+        # 2. 检查4K相关关键词
+        if any(keyword in content for keyword in ['4k', 'uhd', '2160p', '3840', '超高清', '4K']):
+            return "3840*2160", 'hls_content', {'source': 'm3u8_keyword_inference'}
+        
+        # 3. 检查HD相关关键词
+        if any(keyword in content for keyword in ['1080p', 'hd', 'fullhd', '高清', '1080i']):
+            return "1920*1080", 'hls_content', {'source': 'm3u8_keyword_inference'}
+        
+        # 4. 检查720p相关关键词
+        if any(keyword in content for keyword in ['720p', 'hd_ready']):
+            return "1280*720", 'hls_content', {'source': 'm3u8_keyword_inference'}
+        
+        # 5. 检查URL路径中的关键词
+        url_lower = url.lower()
+        if any(keyword in url_lower for keyword in ['4k', 'uhd', '2160p', 'szws4k', 'fct4k']):
+            return "3840*2160", 'hls_content', {'source': 'url_keyword_inference'}
+        
+        # 6. 检查是否有多个码率选项（暗示为高清内容）
+        bitrate_count = content.count('#ext-x-media:') + content.count('bandwidth=')
+        if bitrate_count >= 3:
+            return "1920*1080", 'hls_content', {'source': 'multi_bitrate_inference'}
+        
+        # 7. 基于频道类型和常见分辨率的智能推断
+        # 分析URL和内容模式
+        if any(keyword in url_lower for keyword in ['cctv1', 'cctv2', 'cctv4', 'cctv5', 'cctv6', 'cctv8', 'cctv11', 'cctv12', 'cctv14', 'cctv16', 'cctv17']):
+            # CCTV频道通常是高清内容
+            return "1920*1080", 'hls_content', {'source': 'channel_type_inference'}
+        
+        if any(keyword in url_lower for keyword in ['卫视', 'tv', '频道']) and any(keyword in url_lower for keyword in ['江苏', '湖北', '贵州', '深圳', '北京', '财经', '生活']):
+            # 地方卫视通常是高清内容
+            return "1920*1080", 'hls_content', {'source': 'channel_type_inference'}
+        
+        # 8. 基于M3U8特征的高级推断
+        # 检查segment数量和duration特征
+        extinf_count = content.count('#extinf:')
+        if extinf_count >= 5:  # 有多个segment，通常是正常的高质量直播流
+            # 检查segment时长特征
+            durations = re.findall(r'#extinf:([0-9.]+)', original_content)
+            if durations:
+                avg_duration = sum(float(d) for d in durations if d.replace('.', '').isdigit()) / len(durations)
+                if 2 <= avg_duration <= 8:  # 合理的segment时长
+                    return "1920*1080", 'hls_content', {'source': 'segment_pattern_inference'}
+        
+        # 9. 基于服务器特征推断
+        server_patterns = {
+            'btjg.net': "3840*2160",  # btjg.net通常是4K源
+            '163189.xyz': "3840*2160",  # 163189.xyz通常是4K源
+            'qqqtv.top': "1920*1080",  # qqqtv.top通常是HD源
+            'wulinsy.cn': "1920*1080",  # wulinsy.cn通常是HD源
+        }
+        
+        for server, resolution in server_patterns.items():
+            if server in url_lower:
+                return resolution, 'hls_content', {'source': 'server_pattern_inference'}
+        
+        return None, None, {}
+        
+    except Exception:
+        return None, None, {}
+
+
+def _validate_and_sanitize_url(url):
+    """验证和清理URL，确保安全性"""
+    import re
+    import urllib.parse
+    
+    if not url or not isinstance(url, str):
+        return None
+    
+    # 移除首尾空格
+    url = url.strip()
+    
+    # 检查URL长度
+    if len(url) > 2048:
+        return None
+    
+    # 只允许特定协议
+    allowed_protocols = ['http://', 'https://', 'rtsp://', 'rtmp://', 'udp://', 'rtp://']
+    if not any(url.lower().startswith(protocol) for protocol in allowed_protocols):
+        return None
+    
+    # 检查是否包含危险字符，但对于IPv6地址允许方括号
+    dangerous_chars = [';', '|', '`', '$', '(', ')', '<', '>', '{', '}', '\\']
+    
+    # 检测是否为IPv6地址（包含方括号格式的IPv6地址）
+    is_ipv6_address = '[' in url and ']' in url and ':' in url
+    
+    # 如果不是IPv6地址，则检查危险字符（允许&字符，因为它是URL查询参数的正常分隔符）
+    if not is_ipv6_address:
+        if any(char in url for char in dangerous_chars):
+            return None
+    else:
+        # 对于IPv6地址，只检查除方括号外的危险字符
+        if any(char in url for char in dangerous_chars):
+            return None
+    
+    try:
+        # 解析URL确保格式正确
+        parsed = urllib.parse.urlparse(url)
+        if not parsed.netloc:
+            return None
+        return url
+    except Exception:
+        return None
+
+
+def _ffprobe_get_resolution(url, timeout, headers=None, retry=2):
+    """在进程池中执行的ffprobe分辨率检测函数 - 优化版本"""
     import subprocess
     import json
+    import re
 
-    url_lower = url.lower()
+    # 验证和清理URL
+    clean_url = _validate_and_sanitize_url(url)
+    if not clean_url:
+        return None, None, {'error': 'invalid_url'}
+
+    url_lower = clean_url.lower()
     is_rtsp = url_lower.startswith('rtsp://')
-    is_hls = url_lower.endswith(('.m3u8', '.m3u')) or '/hls/' in url_lower or '/live/' in url_lower
+    # 扩展HLS检测逻辑，支持更多类型的M3U8 URL
+    is_hls = (url_lower.endswith(('.m3u8', '.m3u')) or 
+              '/hls/' in url_lower or 
+              '/live/' in url_lower or
+              '/api/' in url_lower or  # 支持/api/路径的M3U8
+              '/163189/' in url_lower or  # 支持特定CDN路径
+              '/playlist' in url_lower or
+              '/stream' in url_lower)
     is_udp = url_lower.startswith('udp://') or url_lower.startswith('rtp://')
 
+    is_udp_proxy = '/udp/' in url_lower or '/rtp/' in url_lower
+    has_dollar_auth = '$' in clean_url
+
+    if has_dollar_auth:
+        dollar_match = re.search(r'\$[^$]+$', clean_url)
+        if dollar_match:
+            auth_part = dollar_match.group(0)
+            clean_url = clean_url[:clean_url.rfind(auth_part)]
+
     timeout_us = int(timeout * 1000000)
-    skip_bytes = 500000
 
     for attempt in range(retry + 1):
         try:
             cmd = [
                 'ffprobe', '-v', 'error',
                 '-timeout', str(timeout_us),
-                '-skip_initial_bytes', str(skip_bytes),
+                '-skip_initial_bytes', '0',
                 '-flags', 'low_delay',
-                '-fflags', '+genpts',
+                '-fflags', '+genpts+discardcorrupt',
+                '-max_delay', '500000',
+                '-reorder_queue_size', '2048',
+                '-analyzeduration', str(int(timeout * 1000000)),
+                '-probesize', str(5 * 1024 * 1024),
                 '-select_streams', 'v:0',
                 '-show_entries', 'stream=width,height,codec_name:format=probe_score,duration',
                 '-of', 'json'
@@ -190,16 +449,27 @@ def _ffprobe_get_resolution(url, timeout, headers=None, retry=1):
             if is_rtsp:
                 cmd.extend(['-rtsp_transport', 'tcp'])
             if is_hls:
+                # 强制使用HLS格式处理
+                cmd.extend(['-f', 'hls'])
                 cmd.extend(['-allowed_extensions', 'ALL'])
-            if is_udp:
-                cmd.extend(['-f', 'mpegts'])
+                cmd.extend(['-protocol_whitelist', 'file,http,https,crypto,data'])
+                # 添加重试和容错参数
+                cmd.extend(['-reconnect', '1'])
+                cmd.extend(['-reconnect_streamed', '1'])
+                cmd.extend(['-reconnect_delay_max', '2'])
+            if is_udp or is_udp_proxy:
+                cmd.extend(['-f', 'mpegts', '-err_detect', 'ignore_err'])
 
-            if headers:
+            cmd_headers = headers.copy() if headers else {}
+            if has_dollar_auth:
+                cmd_headers.setdefault('Referer', url)
+
+            if cmd_headers:
                 cmd.extend([
-                    '-headers', f'Referer: {headers.get("Referer", "")}\r\nUser-Agent: {headers.get("User-Agent", "Mozilla/5.0")}\r\n'
+                    '-headers', f'Referer: {cmd_headers.get("Referer", "")}\r\nUser-Agent: {cmd_headers.get("User-Agent", "Mozilla/5.0")}\r\n'
                 ])
 
-            cmd.append(url)
+            cmd.append(clean_url)
 
             result = subprocess.run(
                 cmd, capture_output=True, text=True, timeout=timeout,
@@ -219,17 +489,47 @@ def _ffprobe_get_resolution(url, timeout, headers=None, retry=1):
                             continue
                         return None, None, {'error': 'format_unrecognizable', 'probe_score': probe_score}
 
+                    width = 0
+                    height = 0
+                    codec = '未知'
+
                     if 'streams' in data and len(data['streams']) > 0:
                         stream = data['streams'][0]
                         width = stream.get('width', 0)
                         height = stream.get('height', 0)
-                        if width and height and width > 0 and height > 0:
-                            codec = stream.get('codec_name', '未知')
-                            return f"{width}*{height}", codec, {
-                                'probe_score': probe_score,
-                                'duration': format_duration,
-                                'codec': codec
-                            }
+                        codec = stream.get('codec_name', '未知')
+
+                    if width and height and width > 0 and height > 0:
+                        return f"{width}*{height}", codec, {
+                            'probe_score': probe_score,
+                            'duration': format_duration,
+                            'codec': codec,
+                            'source': 'streams'
+                        }
+
+                    if 'programs' in data and len(data['programs']) > 0:
+                        for program in data['programs']:
+                            if 'streams' in program and len(program['streams']) > 0:
+                                for stream in program['streams']:
+                                    w = stream.get('width', 0)
+                                    h = stream.get('height', 0)
+                                    if w and h and w > 0 and h > 0:
+                                        c = stream.get('codec_name', codec)
+                                        return f"{w}*{h}", c, {
+                                            'probe_score': probe_score,
+                                            'duration': format_duration,
+                                            'codec': c,
+                                            'source': 'programs'
+                                        }
+
+                    if width == 0 or height == 0:
+                        return None, None, {
+                            'error': 'no_valid_resolution',
+                            'probe_score': probe_score,
+                            'codec': codec,
+                            'suggestion': 'stream_detected_but_no_video_dimensions'
+                        }
+
                 except json.JSONDecodeError:
                     pass
 
@@ -266,8 +566,13 @@ def _test_stream_playback(url, timeout, headers=None):
     import threading
     import time
     
-    url_lower = url.lower()
-    is_ipv6 = '[' in url and ']' in url
+    # 验证和清理URL
+    clean_url = _validate_and_sanitize_url(url)
+    if not clean_url:
+        return None, None, {'error': 'invalid_url'}
+    
+    url_lower = clean_url.lower()
+    is_ipv6 = '[' in clean_url and ']' in clean_url
     is_udp = url_lower.startswith('udp://') or url_lower.startswith('rtp://')
     is_rtsp = url_lower.startswith('rtsp://')
     is_rtmp = url_lower.startswith('rtmp://')
@@ -338,7 +643,7 @@ def _test_stream_playback(url, timeout, headers=None):
                 '-headers', f'Referer: {headers.get("Referer", "")}\r\nUser-Agent: {headers.get("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")}\r\n'
             ])
         
-        cmd.append(url)
+        cmd.append(clean_url)
         
         result = subprocess.run(
             cmd, capture_output=True, text=True, timeout=timeout + 2,
@@ -398,6 +703,11 @@ def _ffprobe_get_audio_info(url, timeout, headers=None):
     import subprocess
     import json
     try:
+        # 验证和清理URL
+        clean_url = _validate_and_sanitize_url(url)
+        if not clean_url:
+            return None
+
         cmd = [
             'ffprobe', '-v', 'error',
             '-select_streams', 'a:0',
@@ -410,7 +720,7 @@ def _ffprobe_get_audio_info(url, timeout, headers=None):
                 '-headers', f'Referer: {headers.get("Referer", "")}\r\nUser-Agent: {headers.get("User-Agent", "Mozilla/5.0")}\r\n'
             ])
 
-        cmd.append(url)
+        cmd.append(clean_url)
 
         result = subprocess.run(
             cmd, capture_output=True, text=True, timeout=timeout,
@@ -439,6 +749,11 @@ def _check_url_has_audio(url, timeout, headers=None):
     """检查URL是否有有效的音频流，返回布尔值"""
     import subprocess
     try:
+        # 验证和清理URL
+        clean_url = _validate_and_sanitize_url(url)
+        if not clean_url:
+            return False
+
         cmd = [
             'ffprobe', '-v', 'error',
             '-select_streams', 'a:0',
@@ -451,7 +766,7 @@ def _check_url_has_audio(url, timeout, headers=None):
                 '-headers', f'Referer: {headers.get("Referer", "")}\r\nUser-Agent: {headers.get("User-Agent", "Mozilla/5.0")}\r\n'
             ])
 
-        cmd.append(url)
+        cmd.append(clean_url)
 
         result = subprocess.run(
             cmd, capture_output=True, text=True, timeout=timeout,
@@ -504,8 +819,13 @@ def _mediainfo_get_resolution(url, timeout, headers=None):
             return None
 
     try:
+        # 验证和清理URL
+        clean_url = _validate_and_sanitize_url(url)
+        if not clean_url:
+            return None
+
         cmd = [
-            'mediainfo', '--Output=Video;%Width%x%Height%', url
+            'mediainfo', '--Output=Video;%Width%x%Height%', clean_url
         ]
 
         if headers:
@@ -534,24 +854,66 @@ def _mediainfo_get_resolution(url, timeout, headers=None):
 
 
 class IPTVValidator:
-    def __init__(self, input_file, output_file=None, max_workers=None, timeout=5, debug=False, original_filename=None, skip_resolution=False, filter_no_audio=False):
+    def __init__(self, input_file, output_file=None, max_workers=None, timeout=5, debug=False, original_filename=None, skip_resolution=False, filter_no_audio=False, validation_id=None):
+        # 加载配置
+        try:
+            import json
+            CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'iptv_config.json')
+            if os.path.exists(CONFIG_FILE):
+                with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+                    app_config = json.load(f)
+            else:
+                app_config = {}
+        except Exception:
+            app_config = {}
+        
+        # 从配置中获取值或使用默认值
+        validation_config = app_config.get('validation', {})
+        
         self.input_file = input_file
         self.original_filename = original_filename
-        self.max_workers = max_workers or min(30, multiprocessing.cpu_count() * 4)
+        self.validation_id = validation_id
+        
+        # 最大工作线程数配置
+        default_workers = validation_config.get('default_workers', 30)
+        max_workers_multiplier = validation_config.get('max_workers_multiplier', 4)
+        self.max_workers = max_workers or min(default_workers, multiprocessing.cpu_count() * max_workers_multiplier)
+        
         self.debug = debug
         self.channels = []
         self.categories = []
-        self.batch_size = min(max(self.max_workers * 4, 50), 200)
+        
+        # 批处理大小配置
+        batch_size_min = validation_config.get('batch_size_min', 50)
+        batch_size_max = validation_config.get('batch_size_max', 200)
+        batch_size_multiplier = validation_config.get('batch_size_multiplier', 4)
+        self.batch_size = min(max(self.max_workers * batch_size_multiplier, batch_size_min), batch_size_max)
+        
         self.stop_requested = False
         self.processed_external_urls = set()
         self._active_futures = set()
         self.all_results = []
+        
+        # 超时配置
+        timeout_multipliers = validation_config.get('timeout_multipliers', {
+            'http_head': 5,
+            'http_get': 1,
+            'non_http': 2,
+            'ffprobe': 2.5
+        })
+        timeout_caps = validation_config.get('timeout_caps', {
+            'http_head': 5,
+            'non_http': 10,
+            'ffprobe': 12
+        })
+        
         self.timeouts = {
-            'http_head': min(timeout, 5),
+            'http_head': min(timeout, timeout_caps.get('http_head', 5)),
             'http_get': timeout,
-            'non_http': min(timeout * 2, 10),
-            'ffprobe': min(timeout * 2.5, 12)
+            'non_http': min(timeout * timeout_multipliers.get('non_http', 2), timeout_caps.get('non_http', 10)),
+            'ffprobe': min(timeout * timeout_multipliers.get('ffprobe', 2.5), timeout_caps.get('ffprobe', 12))
         }
+        
         self.skip_resolution = skip_resolution
         self.filter_no_audio = filter_no_audio
         
@@ -560,6 +922,9 @@ class IPTVValidator:
         
         # 初始化HTTP会话和连接池
         self.session = self._init_http_session()
+        
+        # 跟踪临时文件以便清理
+        self.temp_files = []
 
         # 检测文件类型（必须在生成输出文件名之前）
         self.file_type = self._detect_file_type()
@@ -613,46 +978,76 @@ class IPTVValidator:
         """立即停止验证过程，终止所有线程和进程"""
         self.stop_requested = True
         
-        # 取消所有活跃的future对象
-        # 创建集合的副本进行迭代，避免"Set changed size during iteration"错误
+        output_file = None
+        if self.all_results:
+            valid_count = sum(1 for r in self.all_results if r['valid'])
+            if valid_count > 0:
+                try:
+                    output_dir = os.path.dirname(self.output_file)
+                    if output_dir and not os.path.exists(output_dir):
+                        os.makedirs(output_dir, exist_ok=True)
+                    if self.file_type == 'm3u':
+                        self._generate_m3u_output()
+                    else:
+                        self._generate_txt_output()
+                    output_file = self.output_file
+                    print(f"已保存部分结果，有效频道: {valid_count}/{len(self.all_results)}")
+                except Exception as e:
+                    print(f"保存部分结果失败: {e}")
+        
+        # 立即取消所有活跃的future对象
         for future in list(self._active_futures):
             try:
                 future.cancel()
             except Exception:
                 pass
-        # 清空活跃future集合
         self._active_futures.clear()
         
-        # 如果有验证线程池，立即关闭它
+        # 使用更激进的方式关闭线程池
         if hasattr(self, '_validation_pool') and self._validation_pool:
             try:
-                # 立即关闭线程池，不等待任务完成
-                self._validation_pool.shutdown(wait=False)
-                self._validation_pool = None  # 释放引用
+                import threading
+                self._validation_pool._threads = []  # 清除线程引用
+                for thread in threading.enumerate():
+                    if thread.name.startswith('ThreadPoolExecutor'):
+                        try:
+                            thread._stop()  # 强制停止线程
+                        except Exception:
+                            pass
+                self._validation_pool.shutdown(cancel_futures=True)
+                self._validation_pool = None
             except Exception:
                 pass
         
-        # 如果有ffprobe线程池，立即关闭它而不等待
+        # 激进关闭ffprobe线程池
         if self.ffprobe_pool:
-            self.ffprobe_pool.shutdown(wait=False)
-            self.ffprobe_pool = None  # 释放引用
+            try:
+                import threading
+                self.ffprobe_pool._threads = []
+                for thread in threading.enumerate():
+                    if thread.name.startswith('ThreadPoolExecutor'):
+                        try:
+                            thread._stop()
+                        except Exception:
+                            pass
+                self.ffprobe_pool.shutdown(cancel_futures=True)
+                self.ffprobe_pool = None
+            except Exception:
+                pass
         
-        # 如果有HTTP会话，立即关闭它
+        # 立即关闭HTTP会话
         if hasattr(self, 'session') and self.session:
             try:
-                # 关闭所有连接
                 self.session.close()
             except Exception:
                 pass
-            self.session = None  # 释放引用
+            self.session = None
         
-        # 清理已处理的外部URL集合，释放内存
+        # 清理外部URL集合
         if hasattr(self, 'processed_external_urls'):
             self.processed_external_urls.clear()
         
-        # 强制垃圾回收，释放资源
-        import gc
-        gc.collect()
+        return output_file
 
     def _init_http_session(self):
         """初始化HTTP会话，配置连接池和重试机制"""
@@ -766,10 +1161,18 @@ class IPTVValidator:
             }, allow_redirects=True)
             response.raise_for_status()
             
-            # 创建临时文件
-            fd, temp_path = tempfile.mkstemp(suffix='.txt')
-            with os.fdopen(fd, 'wb') as f:
-                f.write(response.content)
+            # 安全地创建临时文件
+            with tempfile.NamedTemporaryFile(mode='wb', suffix='.txt', delete=False) as temp_file:
+                temp_path = temp_file.name
+                temp_file.write(response.content)
+            
+            # 设置安全的文件权限（仅所有者可读写）
+            os.chmod(temp_path, 0o600)
+            
+            # 记录临时文件以便后续清理
+            if hasattr(self, 'temp_files'):
+                self.temp_files.append(temp_path)
+            
             return temp_path
         except Exception as e:
             print(f"[错误] 下载URL失败: {url}, 错误: {str(e)}")
@@ -1132,7 +1535,17 @@ class IPTVValidator:
         if self.stop_requested:
             return None
         
-        # 方法3: 如果有MediaInfo作为备选
+        # 方法3: 如果是M3U8文件且ffprobe失败，尝试基于内容的检测
+        if url.endswith('.m3u8') or url.endswith('.m3u'):
+            resolution = _get_resolution_from_m3u8_content(url, timeout)
+            if resolution and resolution[0]:
+                return resolution
+        
+        # 检查停止标志
+        if self.stop_requested:
+            return None
+        
+        # 方法4: 如果有MediaInfo作为备选
         if self.mediainfo_available:
             resolution = _mediainfo_get_resolution(url, timeout)
             if resolution:
@@ -1259,12 +1672,6 @@ class IPTVValidator:
     def _generate_txt_output(self):
         """生成TXT格式输出文件"""
         output_lines = []
-        
-        # 添加验证时间戳 - 参考BlackBird-Player的result.txt格式
-        timestamp = ValidationTimestamp.get_timestamp()
-        output_lines.append(f"🕘️更新时间,#genre#")
-        output_lines.append(f"{timestamp}")
-        output_lines.append("")
         
         # 按分类组织结果
         categorized = {}
@@ -1455,6 +1862,25 @@ def validate_ipTV(input_file, output_file=None, max_workers=None, timeout=5, deb
     返回:
         验证结果摘要字典
     """
+    # 加载配置
+    try:
+        import json
+        CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'iptv_config.json')
+        if os.path.exists(CONFIG_FILE):
+            with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+                app_config = json.load(f)
+        else:
+            app_config = {}
+    except Exception:
+        app_config = {}
+    
+    # 从配置中获取默认值
+    validation_config = app_config.get('validation', {})
+    
+    # 使用配置中的默认值，如果用户没有提供参数
+    if timeout == 5 and validation_config.get('default_timeout'):
+        timeout = validation_config.get('default_timeout')
+    
     validator = IPTVValidator(
         input_file=input_file,
         output_file=output_file,

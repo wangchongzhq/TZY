@@ -29,8 +29,12 @@ def read_channels(file_path):
                     url = url.strip()
                     base_url = extract_base_url(url)
                     channels[base_url] = name
+    except (IOError, OSError) as e:
+        print(f"读取文件 {file_path} 时出错: 文件操作错误 - {e}")
+    except (ValueError, TypeError) as e:
+        print(f"读取文件 {file_path} 时出错: 数据格式错误 - {e}")
     except Exception as e:
-        print(f"读取文件 {file_path} 时出错: {e}")
+        print(f"读取文件 {file_path} 时出错: 未知错误 - {e}")
     return channels
 
 def analyze_invalid_channels(original_file, valid_file):
@@ -109,20 +113,98 @@ def analyze_invalid_channels(original_file, valid_file):
 
 if __name__ == "__main__":
     import sys
+    import argparse
     
-    if len(sys.argv) != 3:
-        print("用法: python analyze_invalid_channels.py <原始文件> <有效文件>")
-        print("示例: python analyze_invalid_channels.py original.m3u outputs/original_valid.m3u")
-        sys.exit(1)
+    def validate_file_path(file_path):
+        """验证文件路径的安全性"""
+        if not file_path:
+            return False
+        
+        # 检查路径长度
+        if len(file_path) > 255:
+            raise ValueError(f"文件路径过长: {file_path}")
+        
+        # 检查是否包含危险字符
+        dangerous_chars = ['<', '>', ':', '"', '|', '?', '*']
+        for char in dangerous_chars:
+            if char in file_path:
+                raise ValueError(f"文件路径包含危险字符 '{char}': {file_path}")
+        
+        # 检查是否尝试访问上级目录
+        if '..' in file_path:
+            raise ValueError(f"文件路径包含上级目录访问: {file_path}")
+        
+        return True
     
-    original_file = sys.argv[1]
-    valid_file = sys.argv[2]
+    parser = argparse.ArgumentParser(
+        description='分析被验证工具标记为无效的频道',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+示例:
+  python analyze_invalid_channels.py original.m3u outputs/original_valid.m3u
+  python analyze_invalid_channels.py channels.txt valid_channels.txt
+        """
+    )
     
-    if not os.path.exists(original_file):
-        print(f"原始文件 {original_file} 不存在")
+    parser.add_argument('original_file', help='原始频道文件路径')
+    parser.add_argument('valid_file', help='有效频道文件路径')
+    parser.add_argument('--output', '-o', default='invalid_channels.txt', 
+                       help='输出文件名 (默认: invalid_channels.txt)')
+    
+    try:
+        args = parser.parse_args()
+        
+        # 验证输入文件路径
+        try:
+            validate_file_path(args.original_file)
+            validate_file_path(args.valid_file)
+        except ValueError as e:
+            print(f"错误: 文件路径验证失败 - {e}")
+            sys.exit(1)
+        
+        # 检查文件是否存在
+        if not os.path.exists(args.original_file):
+            print(f"错误: 原始文件 '{args.original_file}' 不存在")
+            sys.exit(1)
+        elif not os.path.exists(args.valid_file):
+            print(f"错误: 有效文件 '{args.valid_file}' 不存在")
+            sys.exit(1)
+        
+        # 检查文件是否为普通文件
+        if not os.path.isfile(args.original_file):
+            print(f"错误: '{args.original_file}' 不是普通文件")
+            sys.exit(1)
+        elif not os.path.isfile(args.valid_file):
+            print(f"错误: '{args.valid_file}' 不是普通文件")
+            sys.exit(1)
+        
+        # 验证输出目录
+        output_dir = os.path.dirname(args.output)
+        if output_dir and not os.path.exists(output_dir):
+            try:
+                os.makedirs(output_dir, exist_ok=True)
+            except OSError as e:
+                print(f"错误: 无法创建输出目录 '{output_dir}': {e}")
+                sys.exit(1)
+        
+        # 执行分析
+        invalid_channels = analyze_invalid_channels(args.original_file, args.valid_file)
+        
+        # 将无效频道保存到指定文件
+        try:
+            with open(args.output, 'w', encoding='utf-8') as f:
+                f.write("# 被标记为无效的频道\n")
+                f.write("# 频道名称,原始URL\n")
+                for base_url, name in invalid_channels.items():
+                    f.write(f"{name},{base_url}\n")
+            print(f"\n无效频道列表已保存到 {args.output}")
+        except OSError as e:
+            print(f"错误: 无法写入输出文件 '{args.output}': {e}")
+            sys.exit(1)
+            
+    except KeyboardInterrupt:
+        print("\n操作被用户取消")
         sys.exit(1)
-    elif not os.path.exists(valid_file):
-        print(f"有效文件 {valid_file} 不存在")
+    except Exception as e:
+        print(f"错误: {e}")
         sys.exit(1)
-    else:
-        analyze_invalid_channels(original_file, valid_file)

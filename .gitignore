@@ -66,6 +66,7 @@ simple_test.txt
 # 项目分析报告（不上传）
 REPOSITORY_OPTIMIZATION_REPORT.md
 项目文件关联关系.md
+BUG_REPORT.md
 
 # 批处理脚本
 *.bat

@@ -9,32 +9,95 @@ import tempfile
 import logging
 import threading
 import base64
+import secrets
 from flask import Flask, request, render_template_string, send_file, flash
 from flask_socketio import SocketIO, emit
 from iptv_validator import IPTVValidator, validate_ipTV
 
 # 配置日志记录
-logging.basicConfig(
-    filename='web_validation.log',
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+def setup_logging():
+    """设置日志记录配置"""
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+    
+    # 创建控制台处理器
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    
+    # 创建文件处理器
+    file_handler = logging.FileHandler('web_validation.log', encoding='utf-8')
+    file_handler.setLevel(logging.INFO)
+    
+    # 创建格式器
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    console_handler.setFormatter(formatter)
+    file_handler.setFormatter(formatter)
+    
+    # 添加处理器到logger
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
+    
+    return logger
+
+# 初始化日志记录器
+logger = setup_logging()
+
+# 加载配置
+try:
+    import json
+    CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'iptv_config.json')
+    if os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+            app_config = json.load(f)
+    else:
+        app_config = {}
+except Exception:
+    app_config = {}
+
+# 检查是否启用调试模式
+DEBUG_MODE = os.environ.get('WEB_VALIDATOR_DEBUG', 'false').lower() == 'true'
+
+# 安全地获取SECRET_KEY
+def get_secret_key():
+    """安全地获取SECRET_KEY，优先从环境变量读取"""
+    secret_key = os.environ.get('FLASK_SECRET_KEY')
+    if not secret_key:
+        # 如果环境变量未设置，使用secrets模块生成安全的随机密钥
+        secret_key = secrets.token_urlsafe(32)
+        logging.warning("警告: 未设置FLASK_SECRET_KEY环境变量，使用生成的临时密钥。请在生产环境中设置FLASK_SECRET_KEY")
+    return secret_key
+
+# 从配置中获取值或使用默认值
+web_config = app_config.get('web_app', {})
+validation_config = app_config.get('validation', {})
+logging_config = app_config.get('logging', {})
+
+MAX_CONTENT_LENGTH = web_config.get('max_content_length', 16 * 1024 * 1024)
+MAX_HTTP_BUFFER_SIZE = web_config.get('max_http_buffer_size', 100 * 1024 * 1024)
+PING_TIMEOUT = web_config.get('ping_timeout', 120)
+PING_INTERVAL = web_config.get('ping_interval', 30)
+DEFAULT_TIMEOUT = web_config.get('default_timeout', 5)
+ALLOWED_EXTENSIONS = set(web_config.get('allowed_extensions', ['m3u', 'm3u8', 'txt', 'json']))
+
+DEFAULT_VALIDATION_TIMEOUT = validation_config.get('default_timeout', 5)
+DEFAULT_VALIDATION_WORKERS = validation_config.get('default_workers', 30)
+
+WEB_LOG_FILE = logging_config.get('web_log_file', 'web_validation.log')
+LOG_LEVEL = logging_config.get('log_level', 'INFO')
 
 # 创建Flask应用
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'iptv_validator_secret_key'
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB文件大小限制
+app.config['SECRET_KEY'] = get_secret_key()
+app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 
 # 初始化SocketIO，增加消息缓冲区大小以支持大文件
 socketio = SocketIO(app, 
     cors_allowed_origins="*",
-    max_http_buffer_size=100 * 1024 * 1024,  # 100MB for large file uploads
-    ping_timeout=60,
-    ping_interval=25
+    max_http_buffer_size=MAX_HTTP_BUFFER_SIZE,
+    ping_timeout=PING_TIMEOUT,
+    ping_interval=PING_INTERVAL,
+    async_mode='threading'
 )
-
-# 支持的文件类型
-ALLOWED_EXTENSIONS = {'m3u', 'm3u8', 'txt', 'json'}
 
 # 检查文件类型是否被允许
 def allowed_file(filename):
@@ -47,7 +110,8 @@ HTML_TEMPLATE = '''
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>直播源有效性验证工具ZHQ</title>
+    <title>直播源有效性验证工具    by  ZHQ</title>
+    <link rel="icon" href="data:," />
     <style>
         * {
             box-sizing: border-box;
@@ -511,7 +575,7 @@ HTML_TEMPLATE = '''
     </style>
 </head>
 <body>
-    <h1>直播源有效性验证工具ZHQ</h1>
+    <h1>直播源有效性验证工具    by  ZHQ</h1>
     <div class="container">
         <div class="tab">
             <button class="tablinks active" onclick="openTab(event, 'FileUpload')">文件上传</button>
@@ -702,11 +766,38 @@ HTML_TEMPLATE = '''
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
         // 初始化Socket.io连接
-        const socket = io(window.location.origin);
+        const socket = io(window.location.origin, {
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000
+        });
         
         // 连接事件
         socket.on('connection_established', function(data) {
             console.log('WebSocket连接已建立:', data.message);
+        });
+        
+        // 重连事件
+        socket.on('reconnect', function(attemptNumber) {
+            console.log('WebSocket重连成功，尝试次数:', attemptNumber);
+        });
+        
+        socket.on('reconnect_attempt', function(attemptNumber) {
+            console.log('WebSocket正在重连，尝试次数:', attemptNumber);
+        });
+        
+        socket.on('reconnect_error', function(error) {
+            console.log('WebSocket重连错误:', error);
+        });
+        
+        socket.on('reconnect_failed', function() {
+            console.log('WebSocket重连失败');
+        });
+        
+        // 断开连接事件
+        socket.on('disconnect', function(reason) {
+            console.log('WebSocket连接已断开:', reason);
         });
         
         // 标签页切换函数
@@ -734,6 +825,26 @@ HTML_TEMPLATE = '''
             });
         }
         
+        // 初始化文件输入事件监听
+        function initFileInputListener() {
+            const fileInput = document.getElementById('file');
+            if (fileInput) {
+                fileInput.addEventListener('change', function() {
+                    console.log('文件选择事件触发，清除检测结果');
+                    if (this.files.length > 0) {
+                        // 用户选择了新文件，自动清除之前的检测结果
+                        clearList();
+                    }
+                });
+            }
+        }
+
+        // DOM内容加载完成后立即初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM内容加载完成，初始化文件选择监听器');
+            initFileInputListener();
+        });
+
         // 文件上传验证
         async function startFileValidation() {
             const fileInput = document.getElementById('file');
@@ -750,11 +861,11 @@ HTML_TEMPLATE = '''
             const fileContent = await readFileAsBase64(file);
             const extension = '.' + file.name.split('.').pop();
             
-            startValidation('file', { file_data: { content: fileContent, extension, filename: file.name } }, workers, timeout, filter_no_audio);
+            await startValidation('file', { file_data: { content: fileContent, extension, filename: file.name } }, workers, timeout, filter_no_audio);
         }
         
         // URL输入验证
-        function startUrlValidation() {
+        async function startUrlValidation() {
             const urlsText = document.getElementById('urls').value;
             const category = document.getElementById('category').value;
             const workers = document.getElementById('workers2').value;
@@ -766,11 +877,11 @@ HTML_TEMPLATE = '''
                 return;
             }
             
-            startValidation('url', { urls: urlsText, category }, workers, timeout, filter_no_audio);
+            await startValidation('url', { urls: urlsText, category }, workers, timeout, filter_no_audio);
         }
         
         // 互联网直播源验证
-        function startWebSourceValidation() {
+        async function startWebSourceValidation() {
             const sourceUrl = document.getElementById('source_url').value;
             const workers = document.getElementById('workers3').value;
             const timeout = document.getElementById('timeout3').value;
@@ -781,12 +892,34 @@ HTML_TEMPLATE = '''
                 return;
             }
             
-            startValidation('network', { url: sourceUrl }, workers, timeout, filter_no_audio);
+            await startValidation('network', { url: sourceUrl }, workers, timeout, filter_no_audio);
         }
         
         // 通用开始验证函数
-        function startValidation(type, data, workers, timeout, filter_no_audio=false) {
-            // 不再在这里调用stopValidation()，服务器端会在开始新验证前自动停止现有的验证器
+        async function startValidation(type, data, workers, timeout, filter_no_audio=false) {
+            // 确保WebSocket连接活跃
+            if (!socket.connected) {
+                console.log('WebSocket未连接，尝试重连...');
+                await new Promise((resolve, reject) => {
+                    const timeoutId = setTimeout(() => {
+                        reject(new Error('重连超时'));
+                    }, 5000);
+                    
+                    socket.once('connect', () => {
+                        clearTimeout(timeoutId);
+                        console.log('重连成功');
+                        resolve();
+                    });
+                    socket.once('connect_error', () => {
+                        clearTimeout(timeoutId);
+                        reject(new Error('重连失败'));
+                    });
+                    
+                    socket.connect();
+                });
+            }
+            
+            // 清空结果列表
             document.getElementById('results-table-body').innerHTML = '';
             
             const existingResults = document.querySelectorAll('.result');
@@ -839,13 +972,19 @@ HTML_TEMPLATE = '''
         
         // 停止验证函数
         function stopValidation() {
-            // 发送停止验证请求
-            socket.emit('stop_validation');
+            console.log('停止验证函数被调用');
             
-            // 禁用停止按钮
+            // 立即重新启用开始按钮，禁用停止按钮
+            document.getElementById('start-btn1').removeAttribute('disabled');
+            document.getElementById('start-btn2').removeAttribute('disabled');
+            document.getElementById('start-btn3').removeAttribute('disabled');
             document.getElementById('stop-btn1').setAttribute('disabled', 'disabled');
             document.getElementById('stop-btn2').setAttribute('disabled', 'disabled');
             document.getElementById('stop-btn3').setAttribute('disabled', 'disabled');
+            
+            // 发送停止验证请求
+            console.log('发送stop_validation事件');
+            socket.emit('stop_validation');
         }
         
         // 清空列表函数
@@ -914,9 +1053,9 @@ HTML_TEMPLATE = '''
             const processedChannels = data.processed || 0;
             const progress = totalChannels > 0 ? Math.round((processedChannels / totalChannels) * 100) : 0;
             
-            progressFill.style.width = progress + '%';
-            progressPercentage.textContent = progress + '%';
-            progressStats.textContent = `${processedChannels}/${totalChannels} 频道`;
+            if (progressFill) progressFill.style.width = progress + '%';
+            if (progressPercentage) progressPercentage.textContent = progress + '%';
+            if (progressStats) progressStats.textContent = `${processedChannels}/${totalChannels} 频道`;
             
             // 更新计数器逻辑
             if (data.channel) {
@@ -940,10 +1079,15 @@ HTML_TEMPLATE = '''
                 }
                 
                 // 更新进度统计
-                document.getElementById('valid-count').textContent = validCount;
-                document.getElementById('resolution-valid-count').textContent = resolutionValidCount;
-                document.getElementById('invalid-count').textContent = invalidCount;
-                document.getElementById('timeout-count').textContent = timeoutCount;
+                const validCountEl = document.getElementById('valid-count');
+                const resolutionValidCountEl = document.getElementById('resolution-valid-count');
+                const invalidCountEl = document.getElementById('invalid-count');
+                const timeoutCountEl = document.getElementById('timeout-count');
+                
+                if (validCountEl) validCountEl.textContent = validCount;
+                if (resolutionValidCountEl) resolutionValidCountEl.textContent = resolutionValidCount;
+                if (invalidCountEl) invalidCountEl.textContent = invalidCount;
+                if (timeoutCountEl) timeoutCountEl.textContent = timeoutCount;
             }
             
             // 只在收到实际验证结果时添加到表格
@@ -974,14 +1118,18 @@ HTML_TEMPLATE = '''
             }
             
             // 使用后端返回的最终统计更新显示
-            if (data.valid_count !== undefined) {
-                document.getElementById('valid-count').textContent = data.valid_count;
+            const validCountEl = document.getElementById('valid-count');
+            const resolutionValidCountEl = document.getElementById('resolution-valid-count');
+            const invalidCountEl = document.getElementById('invalid-count');
+            
+            if (data.valid_count !== undefined && validCountEl) {
+                validCountEl.textContent = data.valid_count;
             }
-            if (data.resolution_valid_count !== undefined) {
-                document.getElementById('resolution-valid-count').textContent = data.resolution_valid_count;
+            if (data.resolution_valid_count !== undefined && resolutionValidCountEl) {
+                resolutionValidCountEl.textContent = data.resolution_valid_count;
             }
-            if (data.invalid_count !== undefined) {
-                document.getElementById('invalid-count').textContent = data.invalid_count;
+            if (data.invalid_count !== undefined && invalidCountEl) {
+                invalidCountEl.textContent = data.invalid_count;
             }
             
             // 更新所有仍显示"检测中"的行
@@ -996,13 +1144,13 @@ HTML_TEMPLATE = '''
             
             // 显示完成信息
             const message = `验证完成！总频道数: ${data.total_channels}, 有效频道数: ${data.valid_count || data.valid_channels}`;
-            const downloadLink = `<a href="/download/${data.output_file}" class="download-link">下载有效直播源文件</a>`;
+            const saveButton = `<a href="/download/${data.output_file}" class="btn btn-primary" style="margin-top: 15px; display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #8e9bef 100%); color: white; text-decoration: none; border-radius: 5px; cursor: pointer;">保存有效直播源</a>`;
             
             // 创建完成提示
             const container = document.querySelector('.container');
             const resultDiv = document.createElement('div');
             resultDiv.className = 'result success';
-            resultDiv.innerHTML = '<p>' + message + '</p>' + downloadLink;
+            resultDiv.innerHTML = '<p>' + message + '</p>' + saveButton;
             container.appendChild(resultDiv);
             
             // 重新启用所有开始按钮，禁用所有停止按钮
@@ -1042,7 +1190,9 @@ HTML_TEMPLATE = '''
         
         // 验证停止事件
         socket.on('validation_stopped', function(data) {
-            console.log('验证停止:', data.message);
+            console.log('验证停止:', data);
+            console.log('output_file:', data.output_file);
+            console.log('valid_count:', data.valid_count);
             
             // 检查验证ID是否匹配当前验证会话
             if (data.validation_id && data.validation_id !== currentValidationId) {
@@ -1066,9 +1216,9 @@ HTML_TEMPLATE = '''
             const progressFill = document.querySelector('.progress-fill');
             const progressPercentage = document.getElementById('progress-percentage');
             const progressStats = document.getElementById('progress-stats');
-            progressFill.style.width = '0%';
-            progressPercentage.textContent = '0%';
-            progressStats.textContent = '0/0 频道';
+            if (progressFill) progressFill.style.width = '0%';
+            if (progressPercentage) progressPercentage.textContent = '0%';
+            if (progressStats) progressStats.textContent = '0/0 频道';
             
             // 重置进度统计计数器
             validCount = 0;
@@ -1077,16 +1227,27 @@ HTML_TEMPLATE = '''
             timeoutCount = 0;
             
             // 重置统计显示
-            document.getElementById('valid-count').textContent = '0';
-            document.getElementById('resolution-valid-count').textContent = '0';
-            document.getElementById('invalid-count').textContent = '0';
-            document.getElementById('timeout-count').textContent = '0';
+            const validCountEl = document.getElementById('valid-count');
+            const resolutionValidCountEl = document.getElementById('resolution-valid-count');
+            const invalidCountEl = document.getElementById('invalid-count');
+            const timeoutCountEl = document.getElementById('timeout-count');
+            
+            if (validCountEl) validCountEl.textContent = '0';
+            if (resolutionValidCountEl) resolutionValidCountEl.textContent = '0';
+            if (invalidCountEl) invalidCountEl.textContent = '0';
+            if (timeoutCountEl) timeoutCountEl.textContent = '0';
             
             // 创建停止提示
             const container = document.querySelector('.container');
             const resultDiv = document.createElement('div');
             resultDiv.className = 'result';
-            resultDiv.innerHTML = '<p>' + data.message + '</p>';
+            let html = '<p>' + data.message + '</p>';
+            if (data.output_file) {
+                const validCount = data.valid_count || 0;
+                html += `<p style="color: #28a745; margin-top: 10px;">已保存 ${validCount} 个有效频道</p>`;
+                html += `<a href="/download/${data.output_file}" class="btn btn-primary" style="margin-top: 15px; display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #8e9bef 100%); color: white; text-decoration: none; border-radius: 5px; cursor: pointer;">保存有效直播源</a>`;
+            }
+            resultDiv.innerHTML = html;
             container.appendChild(resultDiv);
         });
         
@@ -1177,6 +1338,8 @@ HTML_TEMPLATE = '''
                 row.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
+
+
     </script>
 </body>
 </html>
@@ -1204,7 +1367,8 @@ global_validator = None
 
 def run_validation(data):
     """在单独线程中执行验证过程"""
-    print("[调试] run_validation 函数开始执行")
+    if DEBUG_MODE:
+        logger.debug("run_validation 函数开始执行")
     global global_validator
     sid = data.get('sid')
     temp_paths = []  # 存储所有创建的临时文件路径
@@ -1213,11 +1377,13 @@ def run_validation(data):
         # 获取参数
         workers = data.get('workers', 20)
         timeout = data.get('timeout', 5)
-        print(f"[调试] 参数: workers={workers}, timeout={timeout}")
+        if DEBUG_MODE:
+            logger.debug(f"参数: workers={workers}, timeout={timeout}")
         
         # 生成唯一验证ID
         validation_id = data.get('validation_id', '')
-        print(f"[调试] validation_id: {validation_id}")
+        if DEBUG_MODE:
+            logger.debug(f"validation_id: {validation_id}")
         
         # 首先发送验证开始事件，让前端准备好接收进度
         try:
@@ -1225,9 +1391,11 @@ def run_validation(data):
                 'message': '验证过程已开始',
                 'validation_id': validation_id
             }, room=sid)
-            print(f"[调试] 验证开始事件已发送, validation_id: {validation_id}")
+            if DEBUG_MODE:
+                logger.debug(f"验证开始事件已发送, validation_id: {validation_id}")
         except Exception as e:
-            print(f"[调试] 发送验证开始事件失败: {str(e)}")
+            if DEBUG_MODE:
+                logger.debug(f"发送验证开始事件失败: {str(e)}")
         
         # 定义进度回调函数，确保在正确的线程中发送事件
         # 注意：validation_id 在回调定义时已经可用
@@ -1250,39 +1418,54 @@ def run_validation(data):
                 
                 socketio.emit('validation_progress', progress_data, room=sid)
             except Exception as e:
-                print(f"[调试] 发送进度事件时出错: {str(e)}")
+                if DEBUG_MODE:
+                    logger.debug(f"发送进度事件时出错: {str(e)}")
         
         # 根据验证类型处理
         if data.get('type') == 'file':
-            print("[调试] 开始处理文件验证")
+            if DEBUG_MODE:
+                logger.debug("开始处理文件验证")
             # 处理文件验证
             file_data = data.get('file_data')
             if not file_data:
-                print("[调试] 文件数据为空")
+                if DEBUG_MODE:
+                    logger.debug("文件数据为空")
                 socketio.emit('validation_error', {'message': '文件数据为空'}, room=sid)
                 return
             
             try:
                 # 解码文件内容
-                print(f"[调试] 开始解码文件内容，数据长度: {len(file_data.get('content', ''))}")
+                if DEBUG_MODE:
+                    logger.debug(f"开始解码文件内容，数据长度: {len(file_data.get('content', ''))}")
                 file_bytes = base64.b64decode(file_data['content'])
-                print(f"[调试] 文件解码成功，大小: {len(file_bytes)} bytes")
+                if DEBUG_MODE:
+                    logger.debug(f"文件解码成功，大小: {len(file_bytes)} bytes")
             except Exception as decode_error:
-                print(f"[调试] 文件解码失败: {str(decode_error)}")
+                if DEBUG_MODE:
+                    logger.debug(f"文件解码失败: {str(decode_error)}")
                 socketio.emit('validation_error', {'message': f'文件解码失败: {str(decode_error)}'}, room=sid)
                 return
             
-            # 创建临时文件
+            # 安全地创建临时文件
             try:
-                print("[调试] 开始创建临时文件")
-                temp_path = os.path.join(tempfile.gettempdir(), os.urandom(24).hex() + file_data['extension'])
+                if DEBUG_MODE:
+                    logger.debug("开始创建临时文件")
+                # 使用tempfile模块的安全临时文件创建方式
+                with tempfile.NamedTemporaryFile(mode='wb', suffix=file_data['extension'], 
+                                                delete=False, dir=tempfile.gettempdir()) as temp_file:
+                    temp_path = temp_file.name
+                    temp_file.write(file_bytes)
+                
+                # 设置安全的文件权限（仅所有者可读写）
+                os.chmod(temp_path, 0o600)
                 temp_paths.append(temp_path)
-                print(f"[调试] 临时文件路径: {temp_path}")
-                with open(temp_path, 'wb') as f:
-                    f.write(file_bytes)
-                print(f"[调试] 临时文件写入完成: {temp_path}")
+                if DEBUG_MODE:
+                    logger.debug(f"临时文件路径: {temp_path}")
+                if DEBUG_MODE:
+                    logger.debug(f"临时文件写入完成: {temp_path}")
             except Exception as file_error:
-                print(f"[调试] 创建临时文件失败: {str(file_error)}")
+                if DEBUG_MODE:
+                    logger.debug(f"创建临时文件失败: {str(file_error)}")
                 socketio.emit('validation_error', {'message': f'创建临时文件失败: {str(file_error)}'}, room=sid)
                 return
                 
@@ -1291,18 +1474,22 @@ def run_validation(data):
             output_dir = os.path.join(script_dir, 'output')
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
-                app.logger.debug(f"已创建output目录: {output_dir}")
+                if DEBUG_MODE:
+                    logger.debug(f"已创建output目录: {output_dir}")
                 
             # 执行验证，将引用保存在局部变量中
             original_filename = file_data.get('filename', f'uploaded{file_data["extension"]}')
-            print(f"[调试] 开始创建IPTVValidator，文件路径: {temp_path}")
+            if DEBUG_MODE:
+                logger.debug(f"开始创建IPTVValidator，文件路径: {temp_path}")
             
             try:
-                local_validator = IPTVValidator(temp_path, max_workers=workers, timeout=timeout, original_filename=original_filename, filter_no_audio=data.get('filter_no_audio', False))
+                local_validator = IPTVValidator(temp_path, max_workers=workers, timeout=timeout, original_filename=original_filename, filter_no_audio=data.get('filter_no_audio', False), validation_id=data.get('validation_id'))
                 global_validator = local_validator
-                print(f"[调试] IPTVValidator创建完成, 文件类型: {local_validator.file_type}")
+                if DEBUG_MODE:
+                    logger.debug(f"IPTVValidator创建完成, 文件类型: {local_validator.file_type}")
             except Exception as validator_error:
-                print(f"[调试] 创建验证器失败: {str(validator_error)}")
+                if DEBUG_MODE:
+                    logger.debug(f"创建验证器失败: {str(validator_error)}")
                 socketio.emit('validation_error', {'message': f'创建验证器失败: {str(validator_error)}'}, room=sid)
                 return
             
@@ -1315,22 +1502,28 @@ def run_validation(data):
                 'stage': 'validation_started'
             })
             
-            print(f"[调试] 开始解析文件: {local_validator.file_type}")
+            if DEBUG_MODE:
+                logger.debug(f"开始解析文件: {local_validator.file_type}")
             # 根据文件类型解析文件内容
             try:
                 if local_validator.file_type == 'm3u':
-                    print("[调试] 调用 read_m3u_file")
+                    if DEBUG_MODE:
+                        logger.debug("调用 read_m3u_file")
                     local_validator.read_m3u_file(progress_callback=thread_safe_progress_callback)
                 elif local_validator.file_type == 'json':
-                    print("[调试] 调用 read_json_file")
+                    if DEBUG_MODE:
+                        logger.debug("调用 read_json_file")
                     local_validator.read_json_file(progress_callback=thread_safe_progress_callback)
                 else:
-                    print("[调试] 调用 read_txt_file")
+                    if DEBUG_MODE:
+                        logger.debug("调用 read_txt_file")
                     local_validator.read_txt_file(progress_callback=thread_safe_progress_callback)
                 
-                print(f"[调试] 文件解析完成, 找到 {len(local_validator.channels)} 个频道")
+                if DEBUG_MODE:
+                    logger.debug(f"文件解析完成, 找到 {len(local_validator.channels)} 个频道")
             except Exception as parse_error:
-                print(f"[调试] 文件解析失败: {str(parse_error)}")
+                if DEBUG_MODE:
+                    logger.debug(f"文件解析失败: {str(parse_error)}")
                 socketio.emit('validation_error', {'message': f'文件解析失败: {str(parse_error)}'}, room=sid)
                 return
             
@@ -1345,10 +1538,17 @@ def run_validation(data):
                 
             # 检查是否请求停止
             if local_validator.stop_requested:
+                output_file = local_validator.stop()
+                valid_count = sum(1 for r in local_validator.all_results if r['valid'])
+                output_basename = os.path.basename(output_file) if output_file else None
+                if DEBUG_MODE:
+                    logger.debug(f"停止时output_file: {output_file}, valid_count: {valid_count}")
                 # 发送停止消息
                 socketio.emit('validation_stopped', {
                     'message': '验证过程已停止',
-                    'validation_id': validation_id
+                    'validation_id': validation_id,
+                    'output_file': output_basename,
+                    'valid_count': valid_count
                 }, room=sid)
                 return
                 
@@ -1361,15 +1561,23 @@ def run_validation(data):
             
             # 检查是否请求停止
             if local_validator.stop_requested:
+                output_file = local_validator.stop()
+                valid_count = sum(1 for r in local_validator.all_results if r['valid'])
+                output_basename = os.path.basename(output_file) if output_file else None
+                if DEBUG_MODE:
+                    logger.debug(f"停止时output_file: {output_file}, valid_count: {valid_count}")
                 socketio.emit('validation_stopped', {
                     'message': '验证过程已停止',
-                    'validation_id': validation_id
+                    'validation_id': validation_id,
+                    'output_file': output_basename,
+                    'valid_count': valid_count
                 }, room=sid)
                 return
             
             # 生成输出文件
             output_file = os.path.basename(local_validator.generate_output_files())
-            print(f"[调试] 输出文件: {output_file}")
+            if DEBUG_MODE:
+                logger.debug(f"输出文件: {output_file}")
             
             # 发送验证完成事件
             try:
@@ -1383,9 +1591,11 @@ def run_validation(data):
                     'output_file': output_file,
                     'validation_id': validation_id
                 }, room=sid)
-                print(f"[调试] 验证完成事件已发送")
+                if DEBUG_MODE:
+                    logger.debug("验证完成事件已发送")
             except Exception as e:
-                print(f"[调试] 发送验证完成事件失败: {str(e)}")
+                if DEBUG_MODE:
+                    logger.debug(f"发送验证完成事件失败: {str(e)}")
             
         elif data.get('type') == 'url':
             # 处理URL验证
@@ -1395,23 +1605,31 @@ def run_validation(data):
                 socketio.emit('validation_error', {'message': 'URL列表为空'}, room=sid)
                 return
                 
-            # 创建临时文件
-            temp_path = os.path.join(tempfile.gettempdir(), os.urandom(24).hex() + '.m3u')
-            temp_paths.append(temp_path)  # 添加到临时文件列表
-            with open(temp_path, 'wb') as temp:
-                temp.write(b'#EXTM3U\n')
-                for line in urls.strip().split('\n'):
-                    line = line.strip()
-                    if line and ',' in line:
-                        try:
-                            name, url = line.split(',', 1)
-                            if name.strip() and url.strip():
-                                temp.write(f'#EXTINF:-1 group-title="{category}",{name.strip()}\n{url.strip()}\n'.encode('utf-8'))
-                        except ValueError:
-                            # 处理分割错误，跳过无效行
-                            continue
+            # 安全地创建临时文件
+            try:
+                with tempfile.NamedTemporaryFile(mode='wb', suffix='.m3u', 
+                                                delete=False, dir=tempfile.gettempdir()) as temp_file:
+                    temp_path = temp_file.name
+                    temp_file.write(b'#EXTM3U\n')
+                    for line in urls.strip().split('\n'):
+                        line = line.strip()
+                        if line and ',' in line:
+                            try:
+                                name, url = line.split(',', 1)
+                                if name.strip() and url.strip():
+                                    temp_file.write(f'#EXTINF:-1 group-title="{category}",{name.strip()}\n{url.strip()}\n'.encode('utf-8'))
+                            except ValueError:
+                                # 处理分割错误，跳过无效行
+                                continue
                 
-            local_validator = IPTVValidator(temp_path, max_workers=workers, timeout=timeout, original_filename="url_channels.m3u", filter_no_audio=data.get('filter_no_audio', False))
+                # 设置安全的文件权限（仅所有者可读写）
+                os.chmod(temp_path, 0o600)
+                temp_paths.append(temp_path)  # 添加到临时文件列表
+            except Exception as temp_error:
+                socketio.emit('validation_error', {'message': f'创建临时文件失败: {str(temp_error)}'}, room=sid)
+                return
+                
+            local_validator = IPTVValidator(temp_path, max_workers=workers, timeout=timeout, original_filename="url_channels.m3u", filter_no_audio=data.get('filter_no_audio', False), validation_id=data.get('validation_id'))
             global_validator = local_validator  # 更新全局引用
             
             # 发送验证开始的进度更新
@@ -1430,15 +1648,23 @@ def run_validation(data):
             
             # 检查是否请求停止
             if local_validator.stop_requested:
+                output_file = local_validator.stop()
+                valid_count = sum(1 for r in local_validator.all_results if r['valid'])
+                output_basename = os.path.basename(output_file) if output_file else None
+                if DEBUG_MODE:
+                    logger.debug(f"停止时output_file: {output_file}, valid_count: {valid_count}")
                 socketio.emit('validation_stopped', {
                     'message': '验证过程已停止',
-                    'validation_id': validation_id
+                    'validation_id': validation_id,
+                    'output_file': output_basename,
+                    'valid_count': valid_count
                 }, room=sid)
                 return
             
             # 生成输出文件
             output_file = os.path.basename(local_validator.generate_output_files())
-            print(f"[调试] 输出文件: {output_file}")
+            if DEBUG_MODE:
+                logger.debug(f"输出文件: {output_file}")
             
             # 发送验证完成事件
             try:
@@ -1452,9 +1678,11 @@ def run_validation(data):
                     'output_file': output_file,
                     'validation_id': validation_id
                 }, room=sid)
-                print(f"[调试] 验证完成事件已发送")
+                if DEBUG_MODE:
+                    logger.debug("验证完成事件已发送")
             except Exception as e:
-                print(f"[调试] 发送验证完成事件失败: {str(e)}")
+                if DEBUG_MODE:
+                    logger.debug(f"发送验证完成事件失败: {str(e)}")
             
         elif data.get('type') == 'network':
             # 处理网络源验证
@@ -1463,7 +1691,7 @@ def run_validation(data):
                 socketio.emit('validation_error', {'message': '网络源URL为空'}, room=sid)
                 return
                 
-            local_validator = IPTVValidator(url, max_workers=workers, timeout=timeout, filter_no_audio=data.get('filter_no_audio', False))
+            local_validator = IPTVValidator(url, max_workers=workers, timeout=timeout, filter_no_audio=data.get('filter_no_audio', False), validation_id=data.get('validation_id'))
             global_validator = local_validator  # 更新全局引用
             
             # 发送验证开始的进度更新
@@ -1494,10 +1722,17 @@ def run_validation(data):
                 
             # 检查是否请求停止
             if local_validator.stop_requested:
+                output_file = local_validator.stop()
+                valid_count = sum(1 for r in local_validator.all_results if r['valid'])
+                output_basename = os.path.basename(output_file) if output_file else None
+                if DEBUG_MODE:
+                    logger.debug(f"停止时output_file: {output_file}, valid_count: {valid_count}")
                 # 发送停止消息
                 socketio.emit('validation_stopped', {
                     'message': '验证过程已停止',
-                    'validation_id': validation_id
+                    'validation_id': validation_id,
+                    'output_file': output_basename,
+                    'valid_count': valid_count
                 }, room=sid)
                 return
                 
@@ -1508,15 +1743,23 @@ def run_validation(data):
             
             # 检查是否请求停止
             if local_validator.stop_requested:
+                output_file = local_validator.stop()
+                valid_count = sum(1 for r in local_validator.all_results if r['valid'])
+                output_basename = os.path.basename(output_file) if output_file else None
+                if DEBUG_MODE:
+                    logger.debug(f"停止时output_file: {output_file}, valid_count: {valid_count}")
                 socketio.emit('validation_stopped', {
                     'message': '验证过程已停止',
-                    'validation_id': validation_id
+                    'validation_id': validation_id,
+                    'output_file': output_basename,
+                    'valid_count': valid_count
                 }, room=sid)
                 return
             
             # 生成输出文件
             output_file = os.path.basename(local_validator.generate_output_files())
-            print(f"[调试] 输出文件: {output_file}")
+            if DEBUG_MODE:
+                logger.debug(f"输出文件: {output_file}")
             
             # 发送验证完成事件
             try:
@@ -1530,9 +1773,11 @@ def run_validation(data):
                     'output_file': output_file,
                     'validation_id': validation_id
                 }, room=sid)
-                print(f"[调试] 验证完成事件已发送")
+                if DEBUG_MODE:
+                    logger.debug("验证完成事件已发送")
             except Exception as e:
-                print(f"[调试] 发送验证完成事件失败: {str(e)}")
+                if DEBUG_MODE:
+                    logger.debug(f"发送验证完成事件失败: {str(e)}")
             
     except Exception as e:
         app.logger.error(f'验证过程出错: {str(e)}')
@@ -1557,12 +1802,14 @@ def run_validation(data):
 @socketio.on('start_validation')
 def start_validation(data):
     """启动验证过程"""
-    print(f"[调试] 收到验证请求: {data.get('type')}")
+    if DEBUG_MODE:
+        logger.debug(f"收到验证请求: {data.get('type')}")
     global global_validator
     
     # 首先停止当前正在运行的验证器（如果有）
     if global_validator:
-        print("[调试] 停止现有的验证器")
+        if DEBUG_MODE:
+            logger.debug("停止现有的验证器")
         global_validator.stop()
         # 重置全局验证器
         global_validator = None
@@ -1575,27 +1822,60 @@ def start_validation(data):
         'message': '验证过程已开始',
         'validation_id': validation_id
     }, room=request.sid)
-    print("[调试] 验证开始消息已发送")
+    if DEBUG_MODE:
+        logger.debug("验证开始消息已发送")
     
     # 将当前会话ID添加到数据中，以便在单独线程中可以发送事件到正确的客户端
     data['sid'] = request.sid
     
-    print(f"[调试] 启动验证线程，会话ID: {request.sid}")
+    if DEBUG_MODE:
+        logger.debug(f"启动验证线程，会话ID: {request.sid}")
     # 在单独线程中执行验证逻辑，避免阻塞WebSocket事件处理
     validation_thread = threading.Thread(target=run_validation, args=(data,))
     validation_thread.daemon = True  # 设置为守护线程，以便在服务器关闭时自动退出
     validation_thread.start()
-    print("[调试] 验证线程已启动")
+    if DEBUG_MODE:
+        logger.debug("验证线程已启动")
 
 @socketio.on('stop_validation')
 def stop_validation():
     """停止验证过程"""
+    print(f"收到停止验证请求，会话ID: {request.sid}")
     global global_validator
     if global_validator:
-        global_validator.stop()
-        # 不立即发送停止消息，而是在run_validation函数中验证真正停止后发送
-        # 不要立即重置global_validator，因为run_validation函数中可能还在使用它
-        # 让run_validation函数在完成处理后自己清理global_validator
+        print(f"找到全局验证器，尝试停止...")
+        try:
+            output_file = global_validator.stop()
+            valid_count = sum(1 for r in global_validator.all_results if r['valid'])
+            output_basename = os.path.basename(output_file) if output_file else None
+            if DEBUG_MODE:
+                logger.debug(f"停止时output_file: {output_file}, valid_count: {valid_count}")
+            print(f"验证器停止成功，output_file: {output_file}")
+            socketio.emit('validation_stopped', {
+                'message': '验证过程已停止',
+                'validation_id': getattr(global_validator, 'validation_id', ''),
+                'output_file': output_basename,
+                'valid_count': valid_count
+            }, room=request.sid)
+            global_validator = None
+            print("全局验证器已清除")
+        except Exception as e:
+            print(f"停止验证器时出错: {str(e)}")
+            socketio.emit('validation_stopped', {
+                'message': f'停止验证过程时出错: {str(e)}',
+                'validation_id': getattr(global_validator, 'validation_id', ''),
+                'output_file': None,
+                'valid_count': 0
+            }, room=request.sid)
+    else:
+        print("未找到全局验证器，可能是验证已结束或未开始")
+        # 即使没有全局验证器，也要通知客户端停止按钮状态需要重置
+        socketio.emit('validation_stopped', {
+            'message': '验证过程已停止（未找到活跃验证器）',
+            'validation_id': '',
+            'output_file': None,
+            'valid_count': 0
+        }, room=request.sid)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
