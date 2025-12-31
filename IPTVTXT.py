@@ -13,6 +13,14 @@ import concurrent.futures
 from collections import defaultdict
 from urllib.parse import urlparse
 
+# 尝试导入快速URL检测器
+try:
+    from quick_url_checker import QuickURLChecker, create_quick_checker
+    QUICK_CHECKER_AVAILABLE = True
+except ImportError:
+    QUICK_CHECKER_AVAILABLE = False
+    print("警告: 快速URL检测器不可用，将使用基础检测")
+
 # 配置日志
 logging.basicConfig(
     level=logging.INFO,
@@ -589,6 +597,154 @@ def check_url(url, timeout=2, retries=0):
         # 其他请求错误返回False
         return False
 
+def test_channels(channels):
+    """测试所有频道的URL有效性（使用快速检测器优化）"""
+    if not config["url_testing"]["enable"]:
+        print("📌 URL测试功能已禁用")
+        return channels
+    
+    print(f"🔍 开始测试频道URL有效性...")
+    
+    # 收集所有需要测试的频道
+    all_channel_items = []
+    for category, channel_list in channels.items():
+        for channel_name, url in channel_list:
+            all_channel_items.append((category, channel_name, url))
+    
+    total_channels = len(all_channel_items)
+    print(f"📺 待测试频道总数: {total_channels}")
+    
+    if total_channels == 0:
+        return channels
+    
+    # 测试结果
+    valid_channels = defaultdict(list)
+    valid_count = 0
+    invalid_count = 0
+    
+    # 尝试使用快速检测器
+    if QUICK_CHECKER_AVAILABLE and total_channels > 50:
+        print("🚀 使用轻量级快速检测器进行批量检测...")
+        
+        try:
+            # 准备URL列表
+            urls = [(category, channel_name, url) for category, channel_name, url in all_channel_items]
+            
+            # 创建快速检测器
+            checker = create_quick_checker(
+                timeout=config["url_testing"]["timeout"],
+                max_workers=min(32, config["url_testing"]["workers"]),
+                enable_dns_check=True
+            )
+            
+            # 批量检测
+            results = checker.batch_check([url for _, _, url in urls], show_progress=True)
+            
+            # 处理结果
+            for i, result in enumerate(results):
+                category, channel_name, url = urls[i]
+                
+                if result['valid']:
+                    valid_channels[category].append((channel_name, url))
+                    valid_count += 1
+                else:
+                    invalid_count += 1
+                    
+                if (i + 1) % 100 == 0:
+                    print(f"📊 处理进度: {i+1}/{len(results)} ({valid_count}有效, {invalid_count}无效)")
+            
+            print(f"✅ 快速检测完成: {valid_count}个有效, {invalid_count}个无效")
+            
+        except Exception as e:
+            print(f"⚠️ 快速检测器出错: {e}")
+            print("🔄 回退到传统检测方式...")
+            return test_channels_traditional(channels)
+    else:
+        print("🔄 使用传统检测方式...")
+        return test_channels_traditional(channels)
+    
+    print(f"📊 测试结果: 共测试 {total_channels} 个频道")
+    print(f"📊 有效频道: {valid_count} 个")
+    print(f"📊 无效频道: {invalid_count} 个")
+    print(f"📊 有效率: {valid_count/total_channels*100:.1f}%")
+    
+    return valid_channels
+
+def test_channels_traditional(channels):
+    """使用传统方式测试频道URL有效性"""
+    # 准备需要测试的频道
+    test_items = []
+    seen_items = set()  # 用于跟踪已经添加的URL
+    for category, channel_list in channels.items():
+        for channel_name, url in channel_list:
+            # 检查是否已经添加过这个URL（使用规范化URL）
+            normalized = normalize_url(url)
+            if (category, channel_name, normalized) not in seen_items:
+                seen_items.add((category, channel_name, normalized))
+                if is_ultra_high_quality(url, channel_name):
+                    timeout = 5  # 4K频道超时5秒
+                else:
+                    timeout = config["url_testing"]["timeout"]  # 使用配置中的超时时间
+                test_items.append((category, channel_name, url, timeout))
+    
+    # 并发测试URL
+    tested_channels = defaultdict(list)
+    total_tested = len(test_items)
+    valid_count = 0
+    seen_valid_items = set()
+    
+    # 如果没有需要测试的项目，直接返回
+    if not test_items:
+        logger.info("没有需要测试的频道")
+        return channels
+    
+    # 进一步降低并发数，以适应GitHub Actions的资源限制
+    max_workers = min(16, config["url_testing"]["workers"], len(test_items))  # 最多16个线程
+    logger.info(f"使用 {max_workers} 个线程进行URL测试")
+    
+    try:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            # 提交所有测试任务，future_to_test直接包含完整信息
+            future_to_test = {executor.submit(check_url, url, timeout, config["url_testing"]["retries"]): (category, channel_name, url) 
+                             for category, channel_name, url, timeout in test_items}
+            
+            # 收集测试结果，设置超时，防止单个任务阻塞
+            for future in concurrent.futures.as_completed(future_to_test, timeout=total_tested * 2):
+                category, channel_name, url = future_to_test[future]
+                try:
+                    # 为future.result()也设置超时，确保单个任务不会无限期等待
+                    is_valid = future.result(timeout=timeout + 1)
+                    if is_valid:
+                        # 检查是否已经添加过这个URL（使用规范化URL）
+                        normalized = normalize_url(url)
+                        if (category, channel_name, normalized) not in seen_valid_items:
+                            seen_valid_items.add((category, channel_name, normalized))
+                            tested_channels[category].append((channel_name, url))
+                            valid_count += 1
+                            logger.debug(f"频道可用: {channel_name} -> {url}")
+                    else:
+                        logger.debug(f"频道不可用: {channel_name} -> {url}")
+                except concurrent.futures.TimeoutError:
+                    logger.warning(f"测试频道 {channel_name} -> {url} 超时")
+                except Exception as e:
+                    logger.error(f"测试频道 {channel_name} -> {url} 时出错: {e}")
+    except KeyboardInterrupt:
+        logger.info("用户中断了URL测试")
+        return 130
+    except concurrent.futures.TimeoutError:
+        logger.warning("URL测试总时间超时，部分频道可能未完成测试")
+        # 超时情况下，使用已测试通过的频道和部分未测试的频道
+        if not tested_channels:
+            tested_channels = channels
+        valid_count = sum(len(channels_list) for channels_list in tested_channels.values())
+    except Exception as e:
+        logger.error(f"URL测试过程中发生错误: {e}")
+        # 如果测试过程出错，使用未测试的频道列表
+        tested_channels = channels
+        valid_count = sum(len(channels_list) for channels_list in tested_channels.values())
+
+    return tested_channels
+
 # 超清（4K及以上）检测的正则表达式模式
 ULTRA_HD_PATTERNS = [
     r'[48]k',
@@ -1084,85 +1240,12 @@ def main():
         logger.info(f"去重后剩余 {sum(len(channels_list) for channels_list in unique_channels.values())} 个频道")
     
     # URL测试处理
-        logger.info("正在进行URL测试...")
-        
-        # 准备需要测试的频道
-        test_items = []
-        seen_items = set()  # 用于跟踪已经添加的URL
-        for category, channels in unique_channels.items():
-            for channel_name, url in channels:
-                # 判断是否为超清频道，设置不同的超时时间
-                # 检查是否已经添加过这个URL（使用规范化URL）
-                normalized = normalize_url(url)
-                if (category, channel_name, normalized) not in seen_items:
-                    seen_items.add((category, channel_name, normalized))
-                    if is_ultra_high_quality(url, channel_name):
-                        timeout = 5  # 4K频道超时5秒
-                    else:
-                        timeout = config["url_testing"]["timeout"]  # 使用配置中的超时时间
-                    test_items.append((category, channel_name, url, timeout))
-        
-        # 并发测试URL
-        tested_channels = defaultdict(list)
-        total_tested = len(test_items)
-        valid_count = 0
-        seen_valid_items = set()
-        
-        # 如果没有需要测试的项目，直接返回
-        if not test_items:
-            logger.info("没有需要测试的频道")
-            return 0
-        
-        # 进一步降低并发数，以适应GitHub Actions的资源限制
-        max_workers = min(16, config["url_testing"]["workers"], len(test_items))  # 最多16个线程
-        logger.info(f"使用 {max_workers} 个线程进行URL测试")
-        
-        try:
-            with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-                # 提交所有测试任务，future_to_test直接包含完整信息
-                future_to_test = {executor.submit(check_url, url, timeout, config["url_testing"]["retries"]): (category, channel_name, url) 
-                                 for category, channel_name, url, timeout in test_items}
-                
-                # 收集测试结果，设置超时，防止单个任务阻塞
-                for future in concurrent.futures.as_completed(future_to_test, timeout=total_tested * 2):
-                    category, channel_name, url = future_to_test[future]
-                    try:
-                        # 为future.result()也设置超时，确保单个任务不会无限期等待
-                        is_valid = future.result(timeout=timeout + 1)
-                        if is_valid:
-                            # 检查是否已经添加过这个URL（使用规范化URL）
-                            normalized = normalize_url(url)
-                            if (category, channel_name, normalized) not in seen_valid_items:
-                                seen_valid_items.add((category, channel_name, normalized))
-                                tested_channels[category].append((channel_name, url))
-                                valid_count += 1
-                                logger.debug(f"频道可用: {channel_name} -> {url}")
-                        else:
-                            logger.debug(f"频道不可用: {channel_name} -> {url}")
-                    except concurrent.futures.TimeoutError:
-                        logger.warning(f"测试频道 {channel_name} -> {url} 超时")
-                    except Exception as e:
-                        logger.error(f"测试频道 {channel_name} -> {url} 时出错: {e}")
-        except KeyboardInterrupt:
-            logger.info("用户中断了URL测试")
-            return 130
-        except concurrent.futures.TimeoutError:
-            logger.warning("URL测试总时间超时，部分频道可能未完成测试")
-            # 超时情况下，使用已测试通过的频道和部分未测试的频道
-            if not tested_channels:
-                tested_channels = unique_channels
-            valid_count = sum(len(channels_list) for channels_list in tested_channels.values())
-        except Exception as e:
-            logger.error(f"URL测试过程中发生错误: {e}")
-            # 如果测试过程出错，使用未测试的频道列表
-            tested_channels = unique_channels
-            valid_count = sum(len(channels_list) for channels_list in tested_channels.values())
-
+        tested_channels = test_channels(unique_channels)
         if not tested_channels:
-            logger.error("没有测试通过的频道")
+            logger.error("URL测试失败或没有可用频道")
             return 3
 
-        logger.info(f"URL测试完成，共测试 {total_tested} 个频道，{valid_count} 个可用")
+        logger.info("URL测试完成")
 
         # 生成M3U文件
         m3u_result = generate_m3u_file(tested_channels, output_file=args.m3u_output)

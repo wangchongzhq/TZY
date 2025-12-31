@@ -21,6 +21,14 @@ import ast
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+# 导入轻量级URL快速检测器
+try:
+    from quick_url_checker import QuickURLChecker, create_quick_checker
+    QUICK_CHECKER_AVAILABLE = True
+except ImportError:
+    QUICK_CHECKER_AVAILABLE = False
+    print("警告: 快速URL检测器不可用，将使用基础检测")
+
 # 配置日志
 logging.basicConfig(
     level=logging.INFO,
@@ -1098,7 +1106,7 @@ def get_optimal_workers():
 
 # 测试频道URL有效性
 def test_channels(channels):
-    """测试所有频道的URL有效性"""
+    """测试所有频道的URL有效性（使用快速检测器优化）"""
     if not config["url_testing"]["enable"]:
         print("📌 URL测试功能已禁用")
         return channels
@@ -1116,6 +1124,68 @@ def test_channels(channels):
     
     if total_channels == 0:
         return channels
+    
+    # 测试结果
+    valid_channels = defaultdict(list)
+    valid_count = 0
+    invalid_count = 0
+    
+    # 尝试使用快速检测器
+    if QUICK_CHECKER_AVAILABLE and total_channels > 50:
+        print("🚀 使用轻量级快速检测器进行批量检测...")
+        
+        try:
+            # 准备URL列表
+            urls = [(category, channel_name, url) for category, channel_name, url in all_channel_items]
+            
+            # 创建快速检测器
+            checker = create_quick_checker(
+                timeout=config["url_testing"]["timeout"],
+                max_workers=min(32, config["url_testing"]["workers"]),
+                enable_dns_check=True
+            )
+            
+            # 批量检测
+            results = checker.batch_check([url for _, _, url in urls], show_progress=True)
+            
+            # 处理结果
+            for i, result in enumerate(results):
+                category, channel_name, url = urls[i]
+                
+                if result['valid']:
+                    valid_channels[category].append((channel_name, url))
+                    valid_count += 1
+                else:
+                    invalid_count += 1
+                    
+                if (i + 1) % 100 == 0:
+                    print(f"📊 处理进度: {i+1}/{len(results)} ({valid_count}有效, {invalid_count}无效)")
+            
+        except Exception as e:
+            print(f"⚠️ 快速检测器出错: {e}")
+            print("🔄 回退到传统检测方式...")
+            return test_channels_traditional(channels)
+    else:
+        print("🔄 使用传统检测方式...")
+        return test_channels_traditional(channels)
+    
+    print(f"✅ URL测试完成: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))}")
+    print(f"📊 测试结果: 共测试 {total_channels} 个频道")
+    print(f"📊 有效频道: {valid_count} 个")
+    print(f"📊 无效频道: {invalid_count} 个")
+    print(f"📊 有效率: {valid_count/total_channels*100:.1f}%")
+    
+    return valid_channels
+
+def test_channels_traditional(channels):
+    """传统URL检测方法（作为回退方案）"""
+    # 收集所有需要测试的频道
+    all_channel_items = []
+    for category, channel_list in channels.items():
+        for channel_name, url in channel_list:
+            all_channel_items.append((category, channel_name, url))
+    
+    total_channels = len(all_channel_items)
     
     # 计算测试所需的参数
     test_workers = config["url_testing"]["workers"]
