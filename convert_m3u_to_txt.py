@@ -3,10 +3,14 @@
 """
 convert_m3u_to_txt.py
 
-将M3U格式的直播源转换为TXT格式的直播源
+M3U/TXT格式双向转换工具
+支持 M3U → TXT 和 TXT → M3U 双向转换
 """
 
 import re
+import argparse
+import os
+import sys
 from datetime import datetime
 
 class M3UConverter:
@@ -36,14 +40,7 @@ class M3UConverter:
                 return content, encoding
             except UnicodeDecodeError:
                 continue
-            except (IOError, OSError) as e:
-                print(f"读取文件失败: 文件操作错误 - {e}")
-                continue
-            except (ValueError, TypeError) as e:
-                print(f"读取文件失败: 数据格式错误 - {e}")
-                continue
-            except Exception as e:
-                print(f"读取文件失败: 未知错误 - {e}")
+            except Exception:
                 continue
         return None, None
     
@@ -94,9 +91,6 @@ class M3UConverter:
                         if len(match) == 3:
                             # 标准格式：tvg_name, group_title, channel_name
                             tvg_name, group_title, channel_name = match
-                            # 如果频道显示名为空，使用tvg_name
-                            if not channel_name.strip():
-                                channel_name = tvg_name
                         elif len(match) == 2:
                             # 简化格式：tvg_name, channel_name
                             tvg_name, channel_name = match
@@ -104,15 +98,15 @@ class M3UConverter:
                         else:
                             # 极简格式：channel_name
                             channel_name = match[0]
-                            tvg_name = channel_name
+                            tvg_name = match[0]  # 没有tvg-name时，使用频道显示名
                             group_title = ""
                         
-                        # 清理数据
-                        tvg_name = tvg_name.strip()
-                        group_title = group_title.strip()
-                        channel_name = channel_name.strip()
+                        # 清理数据，保持原始频道名称不变
+                        tvg_name = tvg_name.strip() if tvg_name else ""
+                        group_title = group_title.strip() if group_title else ""
+                        channel_name = channel_name.strip() if channel_name else ""
                         
-                        # 使用频道显示名作为主要名称，如果为空则使用tvg_name
+                        # 如果没有频道显示名，使用tvg-name作为频道显示名
                         if not channel_name:
                             channel_name = tvg_name
                         
@@ -126,10 +120,11 @@ class M3UConverter:
                         if group_title not in group_channels:
                             group_channels[group_title] = []
                         
-                        # 为每个URL创建一行，确保每个URL都包含对应的频道名称
+                        # 为每个URL创建一行，只包含频道显示名和URL，不包含分组名
                         for url in urls:
                             url = url.strip()
                             if url:
+                                # 格式: 频道显示名,URL （不包含分组名）
                                 channel_line = f"{channel_name},{url}"
                                 # 使用URL作为唯一标识，避免重复处理相同的频道URL组合
                                 if url not in processed_channels:
@@ -195,165 +190,172 @@ class M3UConverter:
             
             return True
                 
-        except (IOError, OSError) as e:
-            print(f"写入文件失败: 文件操作错误 - {e}")
+        except Exception:
             return False
-        except (ValueError, TypeError) as e:
-            print(f"写入文件失败: 数据格式错误 - {e}")
-            return False
-        except Exception as e:
-            print(f"写入文件失败: 未知错误 - {e}")
+    
+    def convert_txt_to_m3u(self, txt_file_path, m3u_file_path):
+        """将TXT格式转换为M3U格式"""
+        try:
+            # 读取TXT文件
+            content, _ = self.read_file_with_encoding(txt_file_path)
+            if not content:
+                return False
+                
+            lines = content.strip().split('\n')
+            output_lines = ['#EXTM3U']
+            
+            current_group = ""  # 当前分组名称
+            
+            for line in lines:
+                original_line = line  # 保存原始行
+                line = line.strip()
+                if not line:
+                    continue
+                
+                # 处理分组标记行 (凡是每行的结尾是,#genre# 或 ,genre#，都看作频道分类)
+                if line.endswith(',#genre#') or line.endswith(',genre#'):
+                    # 提取分组名：去掉相应的后缀
+                    if line.endswith(',#genre#'):
+                        group_name = line[:-8].strip()  # 去掉 ",#genre#" (8个字符)
+                    elif line.endswith(',genre#'):
+                        group_name = line[:-7].strip()  # 去掉 ",genre#" (7个字符)
+                    
+                    # 清理前后的#符号
+                    while group_name.startswith('#'):
+                        group_name = group_name[1:].strip()
+                    while group_name.endswith('#'):
+                        group_name = group_name[:-1].strip()
+                    
+                    # 清理BOM字符和其他不可见字符
+                    group_name = group_name.replace('﻿', '').replace('\ufeff', '').strip()
+                    current_group = group_name
+                    continue
+                
+                # 跳过注释行（以#开头的行） - 但要确保分类行已经处理过了
+                if line.startswith('#'):
+                    continue
+                
+                # 解析TXT格式: 频道名,http://xxx 或 频道名|http://xxx
+                if ',' in line:
+                    parts = line.split(',', 1)  # 只分割第一个逗号
+                    if len(parts) == 2:
+                        # 格式: 频道名,http://xxx
+                        channel_name = parts[0].strip()
+                        url = parts[1].strip()
+                    else:
+                        continue  # 跳过不正确的格式
+                elif '|' in line:
+                    parts = line.split('|', 1)  # 只分割第一个管道符
+                    if len(parts) == 2:
+                        channel_name = parts[0].strip()
+                        url = parts[1].strip()
+                    else:
+                        continue  # 跳过不正确的格式
+                else:
+                    # 没有分隔符的行，跳过
+                    continue
+                
+                # 构建EXTINF行，使用当前分组信息
+                extinf_attrs = ['-1', f'tvg-name="{channel_name}"']
+                if current_group:  # 如果有当前分组，添加group-title
+                    extinf_attrs.append(f'group-title="{current_group}"')
+                # 频道显示名保持原始名称
+                extinf_line = f"#EXTINF:{','.join(extinf_attrs)},{channel_name}"
+                
+                output_lines.append(extinf_line)
+                output_lines.append(url)
+            
+            # 写入M3U文件
+            with open(m3u_file_path, 'w', encoding='utf-8') as f:
+                for line in output_lines:
+                    f.write(line + '\n')
+            
+            return True
+            
+        except Exception:
             return False
     
 
-
-def validate_file_path(file_path):
-    """验证文件路径的安全性"""
-    if not file_path:
-        return False
-    
-    # 检查路径长度
-    if len(file_path) > 255:
-        raise ValueError(f"文件路径过长: {file_path}")
-    
-    # 检查是否包含危险字符
-    dangerous_chars = ['<', '>', ':', '"', '|', '?', '*']
-    for char in dangerous_chars:
-        if char in file_path:
-            raise ValueError(f"文件路径包含危险字符 '{char}': {file_path}")
-    
-    # 检查是否尝试访问上级目录
-    if '..' in file_path:
-        raise ValueError(f"文件路径包含上级目录访问: {file_path}")
-    
-    return True
 
 def main():
-    import argparse
+    """主函数"""
+    parser = argparse.ArgumentParser(description='M3U/TXT双向转换工具')
+    parser.add_argument('input_file', help='输入文件路径')
+    parser.add_argument('output_file', nargs='?', help='输出文件路径（可选）')
+    parser.add_argument('--direction', choices=['m3u_to_txt', 'txt_to_m3u'], 
+                       help='转换方向: m3u_to_txt 或 txt_to_m3u')
     
-    parser = argparse.ArgumentParser(
-        description='将M3U/M3A格式的IPTV文件转换为TXT格式',
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-示例:
-  python convert_m3u_to_txt.py input.m3u
-  python convert_m3u_to_txt.py input.m3u output.txt
-  python convert_m3u_to_txt.py --auto-detect
-        """
-    )
+    args = parser.parse_args()
     
-    parser.add_argument('input_file', nargs='?', help='输入的M3U/M3A文件路径')
-    parser.add_argument('output_file', nargs='?', help='输出的TXT文件路径')
-    parser.add_argument('--auto-detect', action='store_true', 
-                       help='自动检测当前目录下的M3U/M3A文件')
-    parser.add_argument('--encoding', default='utf-8', 
-                       help='文件编码格式 (默认: utf-8)')
+    input_file = args.input_file
+    output_file = args.output_file
+    conversion_type = args.direction
     
-    try:
-        args = parser.parse_args()
-        
-        # 创建转换器实例
-        converter = M3UConverter()
-        
-        m3u_file = None
-        txt_file = None
-        
-        if args.auto_detect:
-            # 自动检测模式
-            all_m3u_files = [f for f in os.listdir('.') if f.lower().endswith(('.m3u', '.m3a'))]
-            
-            if all_m3u_files:
-                # 检查每个文件是否为空
-                valid_m3u_files = [f for f in all_m3u_files if os.path.getsize(f) > 0]
-                
-                if valid_m3u_files:
-                    m3u_file = valid_m3u_files[0]
-                    print(f"自动检测到文件: {m3u_file}")
-                else:
-                    print("错误: 当前目录下没有有效的M3U/M3A文件")
-                    sys.exit(1)
-            else:
-                print("错误: 当前目录下没有找到M3U/M3A文件")
-                sys.exit(1)
-        elif args.input_file:
-            # 指定了输入文件
-            try:
-                validate_file_path(args.input_file)
-            except ValueError as e:
-                print(f"错误: 输入文件路径验证失败 - {e}")
-                sys.exit(1)
-            
-            if not os.path.exists(args.input_file):
-                print(f"错误: 输入文件 '{args.input_file}' 不存在")
-                sys.exit(1)
-            
-            if not os.path.isfile(args.input_file):
-                print(f"错误: '{args.input_file}' 不是普通文件")
-                sys.exit(1)
-            
-            m3u_file = args.input_file
+    # 创建转换器实例
+    converter = M3UConverter()
+    
+    # 检查输入文件是否存在
+    if not os.path.exists(input_file):
+        print(f"错误: 输入文件不存在: {input_file}")
+        sys.exit(1)
+    
+    # 获取输入文件扩展名
+    _, input_ext = os.path.splitext(input_file)
+    input_ext = input_ext.lower()
+    
+    # 如果没有指定转换方向，根据输入文件自动判断
+    if not conversion_type:
+        if input_ext in ['.m3u', '.m3a']:
+            conversion_type = 'm3u_to_txt'
+        elif input_ext == '.txt':
+            conversion_type = 'txt_to_m3u'
         else:
-            # 尝试自动检测
-            possible_m3u_files = ["iptv.m3u", "cn.m3u", "4K.m3u", "ipvym3a", "iptv.m3a"]
-            for file_name in possible_m3u_files:
-                if os.path.exists(file_name) and os.path.getsize(file_name) > 0:
-                    m3u_file = file_name
-                    print(f"找到文件: {m3u_file}")
-                    break
-        
-        if not m3u_file:
-            print("错误: 没有找到有效的M3U/M3A文件")
-            print("请使用 --auto-detect 自动检测，或指定输入文件路径")
-            parser.print_help()
+            print(f"错误: 无法从文件扩展名 '{input_ext}' 判断转换方向")
+            print("请使用 --direction 参数明确指定转换方向")
             sys.exit(1)
+    
+    # 如果没有指定输出文件，使用原文件名但改变扩展名
+    if not output_file:
+        # 使用与输入文件相同的路径和文件名，但改变扩展名
+        input_dir = os.path.dirname(input_file)
+        input_name = os.path.splitext(os.path.basename(input_file))[0]
         
-        # 确定输出文件路径
-        if args.output_file:
-            try:
-                validate_file_path(args.output_file)
-            except ValueError as e:
-                print(f"错误: 输出文件路径验证失败 - {e}")
-                sys.exit(1)
-            txt_file = args.output_file
-        else:
-            # 根据输入文件自动生成输出文件名
-            txt_file = f"{os.path.splitext(m3u_file)[0]}.txt"
-        
-        # 验证输出目录
-        output_dir = os.path.dirname(txt_file)
-        if output_dir and not os.path.exists(output_dir):
-            try:
-                os.makedirs(output_dir, exist_ok=True)
-            except OSError as e:
-                print(f"错误: 无法创建输出目录 '{output_dir}': {e}")
-                sys.exit(1)
-        
-        print(f"输入文件: {m3u_file}")
-        print(f"输出文件: {txt_file}")
-        
-        # 执行转换
-        success = converter.convert_m3u_to_txt(m3u_file, txt_file)
-        
-        if not success:
-            print("转换失败")
-            sys.exit(1)
-        else:
-            print("转换成功完成")
-            
-    except KeyboardInterrupt:
-        print("\n操作被用户取消")
+        if conversion_type == 'm3u_to_txt':
+            # M3U -> TXT，保持文件名相同，只改变扩展名
+            output_file = os.path.join(input_dir, f"{input_name}.txt")
+        else:  # txt_to_m3u
+            # TXT -> M3U，保持文件名相同，只改变扩展名
+            output_file = os.path.join(input_dir, f"{input_name}.m3u")
+    
+    # 验证输入文件是否与指定的转换方向匹配
+    if conversion_type == 'm3u_to_txt' and input_ext not in ['.m3u', '.m3a']:
+        print(f"错误: 使用 --direction m3u_to_txt 时，输入文件必须是 .m3u 或 .m3a 格式")
+        print(f"当前输入文件: {input_file} (扩展名: {input_ext})")
         sys.exit(1)
-    except ValueError as e:
-        print(f"参数错误: {e}")
+    elif conversion_type == 'txt_to_m3u' and input_ext != '.txt':
+        print(f"错误: 使用 --direction txt_to_m3u 时，输入文件必须是 .txt 格式")
+        print(f"当前输入文件: {input_file} (扩展名: {input_ext})")
         sys.exit(1)
-    except (IOError, OSError) as e:
-        print(f"文件操作错误: {e}")
-        sys.exit(1)
-    except (ValueError, TypeError) as e:
-        print(f"数据格式错误: {e}")
-        sys.exit(1)
-    except Exception as e:
-        print(f"未知错误: {e}")
+    
+    print(f"转换方向: {conversion_type}")
+    print(f"输入文件: {input_file}")
+    print(f"输出文件: {output_file}")
+    print("-" * 50)
+    
+    # 执行转换
+    success = False
+    if conversion_type == 'm3u_to_txt':
+        print("开始M3U → TXT转换...")
+        success = converter.convert_m3u_to_txt(input_file, output_file)
+    else:  # txt_to_m3u
+        print("开始TXT → M3U转换...")
+        success = converter.convert_txt_to_m3u(input_file, output_file)
+    
+    if success:
+        print(f"转换成功！输出文件: {output_file}")
+        print(f"文件大小: {os.path.getsize(output_file)} 字节")
+    else:
+        print("转换失败！")
         sys.exit(1)
 
 if __name__ == "__main__":

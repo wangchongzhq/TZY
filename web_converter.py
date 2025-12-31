@@ -3,7 +3,8 @@
 """
 web_converter.py
 
-具有Web界面的M3U到TXT转换器
+具有Web界面的M3U/TXT双向转换器
+支持 M3U ↔ TXT 双向转换
 """
 
 import os
@@ -23,7 +24,7 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['OUTPUT_FOLDER'] = 'outputs'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB 最大上传大小
-app.config['ALLOWED_EXTENSIONS'] = {'m3u', 'm3a'}
+app.config['ALLOWED_EXTENSIONS'] = {'m3u', 'm3a', 'txt'}  # 支持M3U/M3A/TXT文件
 
 # 创建必要的目录
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -49,29 +50,44 @@ def convert():
     if file.filename == '':
         return render_template('index.html', error='未选择文件')
     
+    # 获取转换方向
+    direction = request.form.get('direction', 'm3u_to_txt')
+    
     # 检查文件类型
     if not allowed_file(file.filename):
-        return render_template('index.html', error='只允许上传M3U/M3A格式的文件')
+        return render_template('index.html', error='只允许上传M3U/M3A/TXT格式的文件')
     
     try:
         # 保存上传的文件
         filename = secure_filename(file.filename)
+        # 上传文件使用时间戳避免冲突，但输出文件名保持原名
         timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
         unique_filename = f"{timestamp}_{filename}"
         upload_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
         file.save(upload_path)
         
-        # 生成输出文件名
-        output_filename = f"{timestamp}_{os.path.splitext(filename)[0]}.txt"
+        # 根据转换方向生成输出文件名 - 保持原文件名，只改变扩展名
+        name_without_ext = os.path.splitext(filename)[0]
+        if direction == 'm3u_to_txt':
+            output_filename = f"{name_without_ext}.txt"
+            conversion_type = 'M3U → TXT'
+        else:  # txt_to_m3u
+            output_filename = f"{name_without_ext}.m3u"
+            conversion_type = 'TXT → M3U'
+        
         output_path = os.path.join(app.config['OUTPUT_FOLDER'], output_filename)
         
         # 执行转换
         converter = M3UConverter()
-        success = converter.convert_m3u_to_txt(upload_path, output_path)
+        if direction == 'm3u_to_txt':
+            success = converter.convert_m3u_to_txt(upload_path, output_path)
+        else:  # txt_to_m3u
+            success = converter.convert_txt_to_m3u(upload_path, output_path)
         
         if success:
             # 返回转换成功的页面，包含下载链接
-            return render_template('index.html', success=True, output_filename=output_filename)
+            return render_template('index.html', success=True, output_filename=output_filename, 
+                                 conversion_type=conversion_type, direction=direction)
         else:
             return render_template('index.html', error='转换失败，请检查文件格式')
             

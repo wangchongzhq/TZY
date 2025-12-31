@@ -63,10 +63,10 @@ simple_test.txt
 109  live 1205 直播源 -减.m3u
 109  live 1205 直播源 -减.txt
 
-# 项目分析报告（不上传）
-REPOSITORY_OPTIMIZATION_REPORT.md
-项目文件关联关系.md
-BUG_REPORT.md
+# 项目分析报告（保留重要文档）
+# REPOSITORY_OPTIMIZATION_REPORT.md - 仓库优化报告，保留
+# 项目文件关联关系.md - 项目结构文档，保留
+# BUG_REPORT.md - 错误报告文档，保留
 
 # 批处理脚本
 *.bat
@@ -86,7 +86,7 @@ downloads/
 *.cfg
 *.ini
 
-# 开发报告文档（本地开发记录，不上传）
-REPOSITORY_DEVELOPMENT_REPORT.md
-validator/DEVELOPMENT_REPORT.md
-validator/OPTIMIZATION_SUGGESTIONS.md
+# 开发报告文档（保留重要文档）
+REPOSITORY_DEVELOPMENT_REPORT.md - 开发总结，保留
+validator/DEVELOPMENT_REPORT.md - 开发报告，保留
+validator/OPTIMIZATION_SUGGESTIONS.md - 优化建议文档，保留

@@ -906,8 +906,9 @@ def generate_txt_file(channels, output_file='jieguo_txt.txt'):
             # 按CHANNEL_CATEGORIES中定义的顺序写入分类
             for category in CHANNEL_CATEGORIES:
                 if category in channels and channels[category]:
-                    # 写入分组标题，添加,#genre#后缀
-                    f.write(f"#{category}#,genre#\n")
+                    # 写入分组标题，使用格式: 分组名,#genre#（去掉前导#和emoji）
+                    category_clean = category.replace('🇨🇳 ', '').replace('📺 ', '').replace('📡 ', '').replace('🏙️ ', '').replace('🌊 ', '').replace('🌏 ', '').replace('🎬 ', '').replace('👶 ', '').replace('🔥 ', '').replace('📊 ', '').replace('⚽ ', '').replace('🎭 ', '')
+                    f.write(f"{category_clean},#genre#\n")
                     
                     # 对当前类别的频道按名称升序排序
                     sorted_channels = sorted(channels[category], key=lambda x: x[0])

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M3U转TXT转换器</title>
+    <title>M3U/TXT双向转换器</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -91,16 +91,59 @@
             margin-top: 20px;
             border-radius: 4px;
         }
+        .direction-group {
+            margin-bottom: 20px;
+        }
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        input[type="radio"] {
+            margin: 0;
+        }
+        .file-upload-info {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>M3U转TXT转换器</h1>
+        <h1>M3U/TXT双向转换器</h1>
         
         <form method="post" action="/convert" enctype="multipart/form-data">
+            <div class="direction-group">
+                <label>转换方向：</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="m3u_to_txt" name="direction" value="m3u_to_txt" checked>
+                        <label for="m3u_to_txt">M3U → TXT</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="txt_to_m3u" name="direction" value="txt_to_m3u">
+                        <label for="txt_to_m3u">TXT → M3U</label>
+                    </div>
+                </div>
+            </div>
+            
             <div class="form-group">
-                <label for="file">选择M3U/M3A文件：</label>
-                <input type="file" id="file" name="file" accept=".m3u,.m3a" required>
+                <label for="file">选择文件：</label>
+                <input type="file" id="file" name="file" accept=".m3u,.m3a,.txt" required>
+                <div class="file-upload-info">
+                    M3U → TXT: 选择M3U/M3A文件<br>
+                    TXT → M3U: 选择TXT文件
+                </div>
             </div>
             <button type="submit">开始转换</button>
         </form>
@@ -114,9 +157,13 @@
         {% if success %}
             <div class="message success">
                 <h3>转换成功！</h3>
-                <p>您的文件已成功转换为TXT格式。</p>
+                {% if conversion_type %}
+                    <p>您的文件已成功进行 {{ conversion_type }} 转换。</p>
+                {% else %}
+                    <p>您的文件已成功转换。</p>
+                {% endif %}
                 <a href="{{ url_for('download', filename=output_filename) }}" class="download-link">
-                    下载转换后的TXT文件
+                    下载转换后的文件
                 </a>
             </div>
         {% endif %}
@@ -124,10 +171,17 @@
         <div class="info">
             <h4>使用说明：</h4>
             <ul>
-                <li>支持上传M3U和M3A格式的直播源文件</li>
+                <li>支持双向转换：M3U ↔ TXT</li>
+                <li>支持上传M3U、M3A和TXT格式的文件</li>
                 <li>文件大小限制为16MB</li>
                 <li>转换后的文件将保留原有的频道分组信息</li>
                 <li>每个频道将包含频道名称和对应的URL</li>
+                <li>转换方向：
+                    <ul>
+                        <li>M3U → TXT：提取频道信息为文本格式</li>
+                        <li>TXT → M3U：重新构建为标准M3U格式</li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>

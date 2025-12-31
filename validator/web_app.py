@@ -5,6 +5,14 @@
 """
 
 import os
+import sys
+
+# 添加项目根目录到Python路径，以支持模块导入
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
 import tempfile
 import logging
 import threading
@@ -12,7 +20,18 @@ import base64
 import secrets
 from flask import Flask, request, render_template_string, send_file, flash
 from flask_socketio import SocketIO, emit
-from iptv_validator import IPTVValidator, validate_ipTV
+from validator.iptv_validator import IPTVValidator, validate_ipTV
+
+# 导入统一的配置管理器
+try:
+    from config_manager import get_config_manager
+except ImportError:
+    # 如果无法导入，定义一个简单的替代函数
+    def get_config_manager():
+        class SimpleConfigManager:
+            def load_config(self):
+                return {}
+        return SimpleConfigManager()
 
 # 配置日志记录
 def setup_logging():
@@ -44,13 +63,8 @@ logger = setup_logging()
 
 # 加载配置
 try:
-    import json
-    CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'iptv_config.json')
-    if os.path.exists(CONFIG_FILE):
-        with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
-            app_config = json.load(f)
-    else:
-        app_config = {}
+    config_manager = get_config_manager()
+    app_config = config_manager.load_config()
 except Exception:
     app_config = {}
 
@@ -766,7 +780,7 @@ HTML_TEMPLATE = '''
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
         // 初始化Socket.io连接
-        const socket = io(window.location.origin, {
+        let socket = io(window.location.origin, {
             reconnection: true,
             reconnectionAttempts: 5,
             reconnectionDelay: 1000,
@@ -897,26 +911,26 @@ HTML_TEMPLATE = '''
         
         // 通用开始验证函数
         async function startValidation(type, data, workers, timeout, filter_no_audio=false) {
-            // 确保WebSocket连接活跃
-            if (!socket.connected) {
-                console.log('WebSocket未连接，尝试重连...');
-                await new Promise((resolve, reject) => {
-                    const timeoutId = setTimeout(() => {
-                        reject(new Error('重连超时'));
-                    }, 5000);
-                    
-                    socket.once('connect', () => {
-                        clearTimeout(timeoutId);
-                        console.log('重连成功');
-                        resolve();
-                    });
-                    socket.once('connect_error', () => {
-                        clearTimeout(timeoutId);
-                        reject(new Error('重连失败'));
-                    });
-                    
-                    socket.connect();
-                });
+            // 首先确保任何现有的验证都已停止
+            try {
+                // 如果有正在进行的验证，先停止
+                if (validationInProgress) {
+                    socket.emit('stop_validation');
+                    console.log('发送停止验证命令');
+                    // 等待一下确保停止命令被处理
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+            } catch (e) {
+                console.log('停止现有验证时出错:', e);
+            }
+            
+            // 重新建立WebSocket连接以确保连接状态干净
+            try {
+                await resetWebSocketConnection();
+            } catch (e) {
+                console.error('重新建立连接失败:', e);
+                alert('连接服务器失败，请检查网络或服务器状态。');
+                return;
             }
             
             // 清空结果列表
@@ -945,16 +959,8 @@ HTML_TEMPLATE = '''
             document.getElementById('invalid-count').textContent = '0';
             document.getElementById('timeout-count').textContent = '0';
             
-            // 禁用所有开始按钮，启用所有停止按钮
-            document.getElementById('start-btn1').setAttribute('disabled', 'disabled');
-            document.getElementById('start-btn2').setAttribute('disabled', 'disabled');
-            document.getElementById('start-btn3').setAttribute('disabled', 'disabled');
-            document.getElementById('stop-btn1').removeAttribute('disabled');
-            document.getElementById('stop-btn2').removeAttribute('disabled');
-            document.getElementById('stop-btn3').removeAttribute('disabled');
-            
             // 生成唯一验证ID
-            const validation_id = Date.now().toString() + Math.floor(Math.random() * 1000).toString();
+            const validation_id = generateValidationId();
             
             // 发送验证请求
             socket.emit('start_validation', {
@@ -966,8 +972,8 @@ HTML_TEMPLATE = '''
                 validation_id: validation_id
             });
             
-            // 保存当前验证ID
-            currentValidationId = validation_id;
+            // 更新验证状态
+            setValidationState(validation_id, true, socket.id);
         }
         
         // 停止验证函数
@@ -1027,6 +1033,98 @@ HTML_TEMPLATE = '''
         
         // 当前验证会话ID
         let currentValidationId = null;
+        
+        // 验证状态管理
+        let validationInProgress = false;
+        let currentSessionId = null; // 当前会话ID
+        
+        // 生成验证ID
+        function generateValidationId() {
+            return 'validation_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+        }
+        
+        // 设置验证状态
+        function setValidationState(id, inProgress, sessionId) {
+            currentValidationId = id;
+            validationInProgress = inProgress;
+            if (sessionId) {
+                currentSessionId = sessionId;
+            }
+            
+            // 更新UI状态
+            if (inProgress) {
+                document.getElementById('start-btn1').setAttribute('disabled', 'disabled');
+                document.getElementById('start-btn2').setAttribute('disabled', 'disabled');
+                document.getElementById('start-btn3').setAttribute('disabled', 'disabled');
+                
+                document.getElementById('stop-btn1').removeAttribute('disabled');
+                document.getElementById('stop-btn2').removeAttribute('disabled');
+                document.getElementById('stop-btn3').removeAttribute('disabled');
+            } else {
+                document.getElementById('start-btn1').removeAttribute('disabled');
+                document.getElementById('start-btn2').removeAttribute('disabled');
+                document.getElementById('start-btn3').removeAttribute('disabled');
+                
+                document.getElementById('stop-btn1').setAttribute('disabled', 'disabled');
+                document.getElementById('stop-btn2').setAttribute('disabled', 'disabled');
+                document.getElementById('stop-btn3').setAttribute('disabled', 'disabled');
+            }
+        }
+        
+        // 重置WebSocket连接
+        async function resetWebSocketConnection() {
+            // 断开当前WebSocket连接并重新建立连接
+            console.log('重新建立WebSocket连接...');
+            const oldSocket = socket;
+            
+            // 创建一个新的Socket.IO实例
+            socket = io(window.location.origin, {
+                reconnection: true,
+                reconnectionDelay: 1000,
+                reconnectionDelayMax: 5000,
+                reconnectionAttempts: 5
+            });
+            
+            // 复制事件监听器
+            oldSocket.listeners('validation_progress').forEach(listener => {
+                socket.on('validation_progress', listener);
+            });
+            
+            oldSocket.listeners('validation_completed').forEach(listener => {
+                socket.on('validation_completed', listener);
+            });
+            
+            oldSocket.listeners('validation_error').forEach(listener => {
+                socket.on('validation_error', listener);
+            });
+            
+            oldSocket.listeners('validation_stopped').forEach(listener => {
+                socket.on('validation_stopped', listener);
+            });
+            
+            oldSocket.listeners('validation_started').forEach(listener => {
+                socket.on('validation_started', listener);
+            });
+            
+            // 等待新连接建立
+            return new Promise((resolve, reject) => {
+                const timeoutId = setTimeout(() => {
+                    reject(new Error('连接超时'));
+                }, 10000);
+                
+                socket.once('connect', () => {
+                    clearTimeout(timeoutId);
+                    console.log('新WebSocket连接已建立');
+                    resolve();
+                });
+                
+                socket.once('connect_error', (error) => {
+                    clearTimeout(timeoutId);
+                    console.error('WebSocket连接错误:', error);
+                    reject(error);
+                });
+            });
+        }
         
         // 进度更新事件
         socket.on('validation_progress', function(data) {
@@ -1353,15 +1451,93 @@ def validation_progress_callback(data):
 @socketio.on('connect')
 def handle_connect():
     """处理WebSocket连接"""
-    emit('connection_established', {'message': '已连接到服务器'})
+    sid = request.sid
+    if DEBUG_MODE:
+        logger.debug(f"WebSocket连接建立, 会话ID: {sid}")
+    
+    # 清除任何残留的会话状态
+    clear_session_validator(sid)
+    
+    emit('connection_established', {
+        'message': '已连接到服务器',
+        'sid': sid
+    })
 
 @socketio.on('disconnect')
 def handle_disconnect():
     """处理WebSocket断开连接"""
-    app.logger.info('WebSocket连接已断开')
+    sid = request.sid
+    if DEBUG_MODE:
+        logger.debug(f"WebSocket连接断开, 会话ID: {sid}")
+    
+    # 确保清理该会话的所有资源
+    clear_session_validator(sid)
 
-# 全局变量保存当前验证器实例
+# 全局变量保存当前验证器实例和会话ID映射
 global_validator = None
+# 保存每个会话对应的验证器实例，以防止多个会话互相干扰
+validator_sessions = {}
+
+def clear_session_validator(session_id):
+    """彻底清除指定会话的验证器实例和所有相关资源"""
+    global validator_sessions
+    if session_id in validator_sessions:
+        validator = validator_sessions[session_id]
+        if validator:
+            try:
+                if DEBUG_MODE:
+                    logger.debug(f"正在清理会话 {session_id} 的验证器...")
+                # 强制停止验证器
+                validator.stop_requested = True
+                
+                # 强制取消所有活跃的future对象
+                if hasattr(validator, '_active_futures'):
+                    for future in list(validator._active_futures):
+                        try:
+                            future.cancel()
+                        except Exception as e:
+                            if DEBUG_MODE:
+                                logger.debug(f"取消future时出错: {str(e)}")
+                    validator._active_futures.clear()
+                
+                # 强制关闭线程池
+                if hasattr(validator, '_validation_pool') and validator._validation_pool:
+                    validator._validation_pool.shutdown(wait=False, cancel_futures=True)
+                    validator._validation_pool = None
+                
+                if hasattr(validator, 'ffprobe_pool') and validator.ffprobe_pool:
+                    validator.ffprobe_pool.shutdown(wait=False, cancel_futures=True)
+                    validator.ffprobe_pool = None
+                
+                if DEBUG_MODE:
+                    logger.debug(f"会话 {session_id} 的验证器资源已强制清理")
+            except Exception as e:
+                if DEBUG_MODE:
+                    logger.debug(f"清理验证器时出错: {str(e)}")
+        
+        # 删除会话记录
+        del validator_sessions[session_id]
+        if DEBUG_MODE:
+            logger.debug(f"已清除会话 {session_id} 的验证器记录")
+    else:
+        if DEBUG_MODE:
+            logger.debug(f"会话 {session_id} 不存在验证器记录")
+
+def get_validator_for_session(session_id):
+    """获取指定会话的验证器实例"""
+    global validator_sessions
+    if session_id not in validator_sessions:
+        validator_sessions[session_id] = None
+    return validator_sessions[session_id]
+
+def set_validator_for_session(session_id, validator):
+    """为指定会话设置验证器实例"""
+    global validator_sessions
+    # 先清除旧验证器
+    clear_session_validator(session_id)
+    validator_sessions[session_id] = validator
+    if DEBUG_MODE:
+        logger.debug(f"为会话 {session_id} 设置新的验证器")
 
 
 
@@ -1369,8 +1545,13 @@ def run_validation(data):
     """在单独线程中执行验证过程"""
     if DEBUG_MODE:
         logger.debug("run_validation 函数开始执行")
-    global global_validator
+    
     sid = data.get('sid')
+    if not sid:
+        if DEBUG_MODE:
+            logger.debug("缺少会话ID，退出验证")
+        return
+        
     temp_paths = []  # 存储所有创建的临时文件路径
     
     try:
@@ -1483,8 +1664,14 @@ def run_validation(data):
                 logger.debug(f"开始创建IPTVValidator，文件路径: {temp_path}")
             
             try:
-                local_validator = IPTVValidator(temp_path, max_workers=workers, timeout=timeout, original_filename=original_filename, filter_no_audio=data.get('filter_no_audio', False), validation_id=data.get('validation_id'))
-                global_validator = local_validator
+                # 为当前会话创建一个新的验证器
+                local_validator = IPTVValidator(temp_path, max_workers=workers, timeout=timeout, 
+                                              original_filename=original_filename, 
+                                              filter_no_audio=data.get('filter_no_audio', False), 
+                                              validation_id=data.get('validation_id'))
+                
+                # 将验证器关联到当前会话
+                set_validator_for_session(sid, local_validator)
                 if DEBUG_MODE:
                     logger.debug(f"IPTVValidator创建完成, 文件类型: {local_validator.file_type}")
             except Exception as validator_error:
@@ -1804,32 +1991,35 @@ def start_validation(data):
     """启动验证过程"""
     if DEBUG_MODE:
         logger.debug(f"收到验证请求: {data.get('type')}")
-    global global_validator
     
-    # 首先停止当前正在运行的验证器（如果有）
-    if global_validator:
-        if DEBUG_MODE:
-            logger.debug("停止现有的验证器")
-        global_validator.stop()
-        # 重置全局验证器
-        global_validator = None
+    # 获取当前会话ID
+    sid = request.sid
+    if DEBUG_MODE:
+        logger.debug(f"start_validation 会话ID: {sid}")
+    
+    # 立即清理当前会话的所有资源
+    if DEBUG_MODE:
+        logger.debug("立即清理当前会话的所有资源")
+    clear_session_validator(sid)
     
     # 获取验证ID
     validation_id = data.get('validation_id', '')
+    if DEBUG_MODE:
+        logger.debug(f"validation_id: {validation_id}")
     
     # 发送验证开始事件到正确的房间
     socketio.emit('validation_started', {
         'message': '验证过程已开始',
         'validation_id': validation_id
-    }, room=request.sid)
+    }, room=sid)
     if DEBUG_MODE:
         logger.debug("验证开始消息已发送")
     
     # 将当前会话ID添加到数据中，以便在单独线程中可以发送事件到正确的客户端
-    data['sid'] = request.sid
+    data['sid'] = sid
     
     if DEBUG_MODE:
-        logger.debug(f"启动验证线程，会话ID: {request.sid}")
+        logger.debug(f"启动验证线程，会话ID: {sid}")
     # 在单独线程中执行验证逻辑，避免阻塞WebSocket事件处理
     validation_thread = threading.Thread(target=run_validation, args=(data,))
     validation_thread.daemon = True  # 设置为守护线程，以便在服务器关闭时自动退出
@@ -1840,42 +2030,62 @@ def start_validation(data):
 @socketio.on('stop_validation')
 def stop_validation():
     """停止验证过程"""
-    print(f"收到停止验证请求，会话ID: {request.sid}")
-    global global_validator
-    if global_validator:
-        print(f"找到全局验证器，尝试停止...")
-        try:
-            output_file = global_validator.stop()
-            valid_count = sum(1 for r in global_validator.all_results if r['valid'])
-            output_basename = os.path.basename(output_file) if output_file else None
-            if DEBUG_MODE:
-                logger.debug(f"停止时output_file: {output_file}, valid_count: {valid_count}")
-            print(f"验证器停止成功，output_file: {output_file}")
+    if DEBUG_MODE:
+        logger.debug(f"收到停止验证请求，会话ID: {request.sid}")
+    
+    # 获取当前会话ID
+    sid = request.sid
+    
+    # 检查当前会话是否有活跃的验证器
+    output_file = None
+    valid_count = 0
+    
+    if sid in validator_sessions:
+        local_validator = validator_sessions[sid]
+        if local_validator:
+            try:
+                # 停止验证器并获取输出文件
+                output_file = local_validator.stop()
+                valid_count = sum(1 for r in local_validator.all_results if r['valid'])
+                output_basename = os.path.basename(output_file) if output_file else None
+                
+                if DEBUG_MODE:
+                    logger.debug(f"停止验证器 - output_file: {output_file}, valid_count: {valid_count}")
+                
+                # 发送停止消息包含有效结果信息
+                socketio.emit('validation_stopped', {
+                    'message': '验证过程已停止',
+                    'validation_id': '',
+                    'output_file': output_basename,
+                    'valid_count': valid_count
+                }, room=sid)
+                
+            except Exception as e:
+                if DEBUG_MODE:
+                    logger.debug(f"停止验证器时出错: {str(e)}")
+                # 即使出错也发送基本停止消息
+                socketio.emit('validation_stopped', {
+                    'message': '验证过程已停止',
+                    'validation_id': ''
+                }, room=sid)
+        else:
+            # 验证器为空，发送基本停止消息
             socketio.emit('validation_stopped', {
                 'message': '验证过程已停止',
-                'validation_id': getattr(global_validator, 'validation_id', ''),
-                'output_file': output_basename,
-                'valid_count': valid_count
-            }, room=request.sid)
-            global_validator = None
-            print("全局验证器已清除")
-        except Exception as e:
-            print(f"停止验证器时出错: {str(e)}")
-            socketio.emit('validation_stopped', {
-                'message': f'停止验证过程时出错: {str(e)}',
-                'validation_id': getattr(global_validator, 'validation_id', ''),
-                'output_file': None,
-                'valid_count': 0
-            }, room=request.sid)
+                'validation_id': ''
+            }, room=sid)
     else:
-        print("未找到全局验证器，可能是验证已结束或未开始")
-        # 即使没有全局验证器，也要通知客户端停止按钮状态需要重置
+        # 没有活跃验证器
         socketio.emit('validation_stopped', {
-            'message': '验证过程已停止（未找到活跃验证器）',
-            'validation_id': '',
-            'output_file': None,
-            'valid_count': 0
-        }, room=request.sid)
+            'message': '验证过程已停止',
+            'validation_id': ''
+        }, room=sid)
+    
+    # 强制清理当前会话的所有资源
+    clear_session_validator(sid)
+    
+    if DEBUG_MODE:
+        logger.debug(f"验证停止处理完成, 会话ID: {sid}")
 
 @app.route('/', methods=['GET', 'POST'])
 def index():

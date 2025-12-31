@@ -8,6 +8,7 @@ support：手动更新和通过GitHub Actions工作流定时更新
 import asyncio
 import os
 import re
+import sys
 import time
 import requests
 import datetime
@@ -356,9 +357,9 @@ DEFAULT_CONFIG = {
     },
     "url_testing": {
         "enable": True,    # 启用URL有效性测试
-        "timeout": 2,      # URL测试超时时间（秒）
+        "timeout": 3,      # URL测试超时时间（秒）- 增加到3秒
         "retries": 0,      # URL测试重试次数
-        "workers": 32     # URL测试并发数（降低并发数避免资源耗尽）
+        "workers": 8      # URL测试并发数 - 降低到8个线程避免网络压力
     },
     "cache": {
         "expiry_time": 3600,  # 缓存有效期（秒）
@@ -982,8 +983,9 @@ def generate_txt_file(channels, output_path):
         # 按CHANNEL_CATEGORIES中定义的顺序写入分类
         for category in CHANNEL_CATEGORIES:
             if category in channels and channels[category]:
-                # 写入分组标题，添加,#genre#后缀
-                f.write(f"#{category}#,genre#\n")
+                # 写入分组标题，使用格式: 分组名,#genre#（去掉前导#）
+                category_clean = category.replace('🇨🇳 ', '').replace('📺 ', '').replace('📡 ', '').replace('🏙️ ', '').replace('🌊 ', '').replace('🌏 ', '').replace('🎬 ', '').replace('👶 ', '').replace('🔥 ', '').replace('📊 ', '').replace('⚽ ', '').replace('🎭 ', '')
+                f.write(f"{category_clean},#genre#\n")
                 
                 # 对当前类别的频道按名称升序排序
                 sorted_channels = sorted(channels[category], key=lambda x: x[0])
@@ -1021,11 +1023,27 @@ def extract_channels_from_txt(file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
             for line in f:
                 line = line.strip()
-                if not line or line.startswith('#'):
+                if not line:
                     continue
                 
-                # 跳过格式不正确的分组标题行（如"4K频道,#genre#"）
-                if line.endswith(',#genre#') or line.endswith(',genre#'):
+                # 处理分组标记行 - 只支持,#genre#格式
+                if line.endswith(',#genre#'):
+                    # 提取分组名：去掉 ",#genre#" 后缀
+                    group_name = line[:-8].strip()  # 去掉 ",#genre#" (8个字符)
+                    
+                    # 清理前后的#符号
+                    while group_name.startswith('#'):
+                        group_name = group_name[1:].strip()
+                    while group_name.endswith('#'):
+                        group_name = group_name[:-1].strip()
+                    
+                    # 清理BOM字符和其他不可见字符
+                    group_name = group_name.replace('﻿', '').replace('\ufeff', '').strip()
+                    current_group = group_name
+                    continue
+                
+                # 跳过注释行（以#开头的行） - 但要确保分类行已经处理过了
+                if line.startswith('#'):
                     continue
                 
                 # 解析频道信息（格式：频道名称,URL）
@@ -1101,8 +1119,8 @@ def test_channels(channels):
     
     # 计算测试所需的参数
     test_workers = config["url_testing"]["workers"]
-    # 限制最大线程数为16，与IPTVTXT.py保持一致
-    max_workers = min(16, test_workers if test_workers > 0 else get_optimal_workers(), len(all_channel_items))
+    # 限制最大线程数为8，避免网络压力过大
+    max_workers = min(8, test_workers if test_workers > 0 else get_optimal_workers(), len(all_channel_items))
     print(f"⚡ 使用 {max_workers} 个并发线程测试URL...")
     
     # 测试结果
@@ -1114,15 +1132,18 @@ def test_channels(channels):
     # 测试单个频道URL
     def test_single_channel(channel_item):
         category, channel_name, url = channel_item
-        # 对于4K频道使用更长的超时时间
-        timeout = 5 if is_4k(channel_name, url) else config["url_testing"]["timeout"]
+        # 对于4K频道使用稍长的超时时间（但不要过长）
+        timeout = 4 if is_4k(channel_name, url) else config["url_testing"]["timeout"]
         is_valid = check_url(url, timeout=timeout, retries=config["url_testing"]["retries"])
         return (category, channel_name, url, is_valid)
     
-    # 计算总超时时间（基于每个任务的超时时间和任务数量）
+    # 计算总超时时间（基于并发数和每个任务的最大超时时间）
     total_tested = len(all_channel_items)
     base_timeout = config["url_testing"]["timeout"]
-    total_timeout = total_tested * 2  # 每个任务平均2秒的超时时间
+    # 使用并发数和批次的概念，而不是任务总数
+    # 假设所有任务分批执行，每批最多max_workers个
+    batches = (total_tested + max_workers - 1) // max_workers  # 向上取整
+    total_timeout = batches * (base_timeout + 2)  # 每批最多超时时间
     
     # 并发测试所有频道
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -1150,8 +1171,8 @@ def test_channels(channels):
                 else:
                     invalid_count += 1
                 
-                # 每测试100个频道打印一次进度
-                if tested_count % 100 == 0 or tested_count == total_channels:
+                # 每测试50个频道打印一次进度，或者完成时打印
+                if tested_count % 50 == 0 or tested_count == total_channels:
                     print(f"📊 测试进度: {tested_count}/{total_channels} ({valid_count}有效, {invalid_count}无效) - {tested_count/total_channels*100:.1f}%")
         except concurrent.futures.TimeoutError:
             print(f"⚠️  URL测试总超时，还有 {len(future_to_channel) - tested_count} 个频道未测试完成")

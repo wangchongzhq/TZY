@@ -7,6 +7,14 @@
 """
 
 import os
+import sys
+
+# 添加项目根目录到Python路径，以支持模块导入
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
 import re
 import json
 import time
@@ -18,6 +26,29 @@ from urllib3.util.retry import Retry
 import tempfile
 import multiprocessing
 from urllib.parse import urlparse
+
+# 导入统一的配置管理器和URL验证器
+try:
+    from config_manager import get_config_manager
+    from url_validator import check_url_status, is_valid_url_format, is_http_url
+except ImportError:
+    # 如果无法导入，定义简单的替代函数
+    def get_config_manager():
+        class SimpleConfigManager:
+            def get_validation_config(self):
+                return {}
+            def get_timeout_config(self):
+                return 5
+        return SimpleConfigManager()
+    
+    def check_url_status(url, timeout=5, retries=1):
+        return False, "URL验证器不可用"
+    
+    def is_valid_url_format(url):
+        return url.startswith(('http://', 'https://'))
+    
+    def is_http_url(url):
+        return url.startswith(('http://', 'https://'))
 from datetime import datetime
 
 # 验证时间戳跟踪器 - 参考BlackBird-Player的result.txt格式
@@ -154,7 +185,7 @@ def _get_resolution_from_hls(url, timeout, headers=None):
 
 
 def _extract_first_segment_from_m3u8(m3u8_url, timeout, headers=None):
-    """从m3u8播放列表中提取第一个媒体片段URL - 优化版本"""
+    """从m3u8播放列表中提取第一个媒体片段URL - 增强相对路径处理版本"""
     import re
     import requests
     from urllib.parse import urljoin, urlparse
@@ -167,10 +198,17 @@ def _extract_first_segment_from_m3u8(m3u8_url, timeout, headers=None):
         content = response.text
         lines = content.splitlines()
         
-        base_url = m3u8_url
+        # 解析基础URL
         parsed_url = urlparse(m3u8_url)
-        if parsed_url.path.rstrip('/'):
-            base_url = m3u8_url.rsplit('/', 1)[0] + '/'
+        base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+        
+        # 构建更准确的基础路径
+        if parsed_url.path and parsed_url.path != '/':
+            path_parts = parsed_url.path.rstrip('/').split('/')
+            if len(path_parts) > 1:
+                base_url = f"{parsed_url.scheme}://{parsed_url.netloc}/{'/'.join(path_parts[:-1])}/"
+            else:
+                base_url = f"{parsed_url.scheme}://{parsed_url.netloc}/"
 
         for line in lines:
             line = line.strip()
@@ -179,10 +217,39 @@ def _extract_first_segment_from_m3u8(m3u8_url, timeout, headers=None):
             
             if line.startswith('http://') or line.startswith('https://'):
                 return line
-            elif line.startswith('/api/') or line.startswith('/hls/') or line.startswith('/live/'):
+            elif line.startswith('/api/'):
+                # 特殊处理 /api/ 路径
+                return f"{parsed_url.scheme}://{parsed_url.netloc}{line}"
+            elif line.startswith('/hls/') or line.startswith('/live/'):
+                # 处理 /hls/ 和 /live/ 路径
                 return f"{parsed_url.scheme}://{parsed_url.netloc}{line}"
             elif line.startswith('/'):
-                return urljoin(f"{parsed_url.scheme}://{parsed_url.netloc}", line)
+                # 处理其他以 / 开头的绝对路径
+                return f"{parsed_url.scheme}://{parsed_url.netloc}{line}"
+            elif '=' in line and '&' in line:
+                # 处理查询参数格式的URL，如 api.php?id=j1&t=79
+                # 提取基础路径并组合，只保留目录部分
+                if line.startswith('api.php') or line.startswith('?'):
+                    query_path = parsed_url.path if parsed_url.path else '/'
+                    if query_path.endswith('/'):
+                        query_path = query_path.rstrip('/')
+                    # 只取目录部分，不包含当前文件名
+                    if '/' in query_path:
+                        query_path = '/'.join(query_path.split('/')[:-1])
+                    
+                    # 确保路径正确格式化
+                    if query_path:
+                        if not query_path.startswith('/'):
+                            query_path = '/' + query_path
+                        if not query_path.endswith('/'):
+                            query_path += '/'
+                    else:
+                        query_path = '/'
+                        
+                    return f"{parsed_url.scheme}://{parsed_url.netloc}{query_path}{line}"
+                else:
+                    # 其他包含查询参数的路径
+                    return f"{base_url}{line}"
             else:
                 # 处理相对路径的媒体片段文件
                 # 包括 .ts, .m4s, .m3u8 等媒体文件，以及纯数字文件名
@@ -191,6 +258,9 @@ def _extract_first_segment_from_m3u8(m3u8_url, timeout, headers=None):
                     re.match(r'^\d+\.ts$', line) or  # 纯数字.ts文件名
                     re.match(r'^[a-zA-Z0-9_-]+\.ts$', line)):  # 字母数字下划线中划线.ts文件名
                     return urljoin(base_url, line)
+                elif line.startswith('api.php') or line.endswith('.php'):
+                    # 处理PHP文件作为相对路径
+                    return f"{base_url}{line}"
                 else:
                     # 其他未知格式，也尝试作为相对路径处理
                     return urljoin(base_url, line)
@@ -857,18 +927,10 @@ class IPTVValidator:
     def __init__(self, input_file, output_file=None, max_workers=None, timeout=5, debug=False, original_filename=None, skip_resolution=False, filter_no_audio=False, validation_id=None):
         # 加载配置
         try:
-            import json
-            CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'iptv_config.json')
-            if os.path.exists(CONFIG_FILE):
-                with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
-                    app_config = json.load(f)
-            else:
-                app_config = {}
+            config_manager = get_config_manager()
+            validation_config = config_manager.get_validation_config()
         except Exception:
-            app_config = {}
-        
-        # 从配置中获取值或使用默认值
-        validation_config = app_config.get('validation', {})
+            validation_config = {}
         
         self.input_file = input_file
         self.original_filename = original_filename
@@ -893,6 +955,11 @@ class IPTVValidator:
         self.processed_external_urls = set()
         self._active_futures = set()
         self.all_results = []
+        
+        # 性能优化：使用更高效的数据结构
+        from collections import defaultdict
+        self._categorized_results = defaultdict(list)
+        self._original_order_results = {}
         
         # 超时配置
         timeout_multipliers = validation_config.get('timeout_multipliers', {
@@ -965,8 +1032,8 @@ class IPTVValidator:
         self.re_url_resolution_param = re.compile(r'[?&]resolution=(\d+)[x*](\d+)', re.IGNORECASE)
         self.re_url_res_param = re.compile(r'[?&]res=(\d+)', re.IGNORECASE)
         
-        # TXT文件分类解析正则表达式 - 支持逗号或Tab分隔
-        self.re_category = re.compile(r'^(.+?)[\t,]\s*#genre#$')
+        # TXT文件分类解析正则表达式 - 支持逗号或Tab分隔，支持两种genre格式
+        self.re_category = re.compile(r'^(.+?)[\t,]\s*#?genre#$')
         
         # URL协议检查正则表达式
         self.re_http = re.compile(r'http[s]?://')
@@ -977,6 +1044,7 @@ class IPTVValidator:
     def stop(self):
         """立即停止验证过程，终止所有线程和进程"""
         self.stop_requested = True
+        print(f"[调试] 停止验证器，请求ID: {self.validation_id}")
         
         output_file = None
         if self.all_results:
@@ -996,83 +1064,96 @@ class IPTVValidator:
                     print(f"保存部分结果失败: {e}")
         
         # 立即取消所有活跃的future对象
-        for future in list(self._active_futures):
-            try:
-                future.cancel()
-            except Exception:
-                pass
-        self._active_futures.clear()
+        if hasattr(self, '_active_futures'):
+            print(f"[调试] 取消 {len(self._active_futures)} 个活跃的future对象")
+            for future in list(self._active_futures):
+                try:
+                    future.cancel()
+                except Exception as e:
+                    print(f"[调试] 取消future时出错: {str(e)}")
+            self._active_futures.clear()
         
-        # 使用更激进的方式关闭线程池
+        # 使用更激进的方式关闭验证线程池
         if hasattr(self, '_validation_pool') and self._validation_pool:
             try:
                 import threading
-                self._validation_pool._threads = []  # 清除线程引用
+                print(f"[调试] 关闭验证线程池，当前线程数: {len(self._validation_pool._threads)}")
+                
+                # 清除线程引用
+                self._validation_pool._threads = []
+                
+                # 强制停止所有相关的线程
                 for thread in threading.enumerate():
                     if thread.name.startswith('ThreadPoolExecutor'):
                         try:
-                            thread._stop()  # 强制停止线程
-                        except Exception:
-                            pass
+                            print(f"[调试] 强制停止线程: {thread.name}")
+                            thread._stop()
+                        except Exception as e:
+                            print(f"[调试] 停止线程时出错: {str(e)}")
+                
+                # 关闭线程池
                 self._validation_pool.shutdown(cancel_futures=True)
                 self._validation_pool = None
-            except Exception:
-                pass
+                print("[调试] 验证线程池已关闭")
+            except Exception as e:
+                print(f"[调试] 关闭验证线程池时出错: {str(e)}")
         
         # 激进关闭ffprobe线程池
-        if self.ffprobe_pool:
+        if hasattr(self, 'ffprobe_pool') and self.ffprobe_pool:
             try:
                 import threading
+                print(f"[调试] 关闭ffprobe线程池，当前线程数: {len(self.ffprobe_pool._threads)}")
+                
+                # 清除线程引用
                 self.ffprobe_pool._threads = []
+                
+                # 强制停止所有相关的线程
                 for thread in threading.enumerate():
                     if thread.name.startswith('ThreadPoolExecutor'):
                         try:
+                            print(f"[调试] 强制停止ffprobe线程: {thread.name}")
                             thread._stop()
-                        except Exception:
-                            pass
+                        except Exception as e:
+                            print(f"[调试] 停止ffprobe线程时出错: {str(e)}")
+                
+                # 关闭线程池
                 self.ffprobe_pool.shutdown(cancel_futures=True)
                 self.ffprobe_pool = None
-            except Exception:
-                pass
+                print("[调试] ffprobe线程池已关闭")
+            except Exception as e:
+                print(f"[调试] 关闭ffprobe线程池时出错: {str(e)}")
         
         # 立即关闭HTTP会话
         if hasattr(self, 'session') and self.session:
             try:
+                print("[调试] 关闭HTTP会话")
                 self.session.close()
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"[调试] 关闭HTTP会话时出错: {str(e)}")
             self.session = None
         
         # 清理外部URL集合
         if hasattr(self, 'processed_external_urls'):
+            print(f"[调试] 清理外部URL集合，当前数量: {len(self.processed_external_urls)}")
             self.processed_external_urls.clear()
         
+        # 清理解析器状态
+        if hasattr(self, 'channels'):
+            print(f"[调试] 清理频道列表，当前数量: {len(self.channels)}")
+            self.channels = []
+        
+        print(f"[调试] 验证器已停止，输出文件: {output_file}")
         return output_file
 
     def _init_http_session(self):
-        """初始化HTTP会话，配置连接池和重试机制"""
-        session = requests.Session()
-        
-        # 配置重试机制
-        retry = Retry(
-            total=3,
-            backoff_factor=0.5,
-            status_forcelist=[429, 500, 502, 503, 504],
-            allowed_methods=["HEAD", "GET"]
-        )
-        
-        # 配置HTTP适配器和连接池
-        adapter = HTTPAdapter(
-            max_retries=retry,
-            pool_connections=50,
-            pool_maxsize=50
-        )
-        
-        # 为http和https协议挂载适配器
-        session.mount('http://', adapter)
-        session.mount('https://', adapter)
-        
-        return session
+        """初始化HTTP会话 - 现在使用统一的session对象"""
+        # 使用统一的session对象，无需重新初始化
+        try:
+            from url_validator import session
+            return session
+        except ImportError:
+            # 如果无法导入，返回本地session
+            return requests.Session()
 
     def _detect_file_type(self):
         """检测输入文件类型，支持本地文件和互联网URL"""
@@ -1083,6 +1164,12 @@ class IPTVValidator:
             # 下载文件并检测类型
             self.input_file = self._download_url(self.input_file)
             print(f"[调试] 下载完成，新文件路径: {self.input_file}")
+            
+            # 检查下载是否成功
+            if self.input_file is None:
+                print("[错误] URL下载失败，无法继续")
+                return None
+                
             # 重新检测下载后的文件类型
             if self.input_file.endswith('.m3u') or self.input_file.endswith('.m3u8'):
                 return 'm3u'
@@ -1091,13 +1178,15 @@ class IPTVValidator:
             else:
                 # 读取文件内容检测
                 try:
-                    with open(self.input_file, 'r', encoding='utf-8') as f:
-                        content = f.read(1024)
-                        if content.startswith('#EXTM3U'):
+                    from file_utils import read_file_with_encoding
+                    content, encoding = read_file_with_encoding(self.input_file)
+                    if content is not None:
+                        content_sample = content[:1024]  # 只读取开头部分
+                        if content_sample.startswith('#EXTM3U'):
                             return 'm3u'
-                        elif content and ('#genre#' in content or '\t' in content):
+                        elif content_sample and ('#genre#' in content_sample or '\t' in content_sample):
                             return 'txt'
-                        elif content:
+                        elif content_sample:
                             return 'txt'
                 except Exception:
                     pass
@@ -1109,13 +1198,15 @@ class IPTVValidator:
         else:
             # 尝试读取文件内容检测
             try:
-                with open(self.input_file, 'r', encoding='utf-8') as f:
-                    content = f.read(1024)
-                    if content.startswith('#EXTM3U'):
+                from file_utils import read_file_with_encoding
+                content, encoding = read_file_with_encoding(self.input_file)
+                if content is not None:
+                    content_sample = content[:1024]  # 只读取开头部分
+                    if content_sample.startswith('#EXTM3U'):
                         return 'm3u'
-                    elif content and ('#genre#' in content or '\t' in content):
+                    elif content_sample and ('#genre#' in content_sample or '\t' in content_sample):
                         return 'txt'
-                    elif content:
+                    elif content_sample:
                         return 'txt'
             except Exception:
                 pass
@@ -1239,9 +1330,11 @@ class IPTVValidator:
         channels = []
         current_category = "未分类"
         
-        with open(self.input_file, 'r', encoding='utf-8') as f:
-            content = f.read()
-            lines = content.splitlines()
+        from file_utils import read_file_with_encoding
+        content, encoding = read_file_with_encoding(self.input_file)
+        if content is None:
+            return []
+        lines = content.splitlines()
             
         for line in lines:
             line = line.strip()
@@ -1268,9 +1361,13 @@ class IPTVValidator:
                     'url': line.strip(),
                     'category': current_category
                 })
-            elif not line.startswith('#'):
-                if self.re_category.match(line):
-                    current_category = self.re_category.match(line).group(1).strip()
+            # 处理分类行
+            elif ',' in line and line.endswith(',#genre#'):
+                current_category = line[:-len(',#genre#')].strip()
+            elif ',' in line and line.endswith(',genre#'):
+                current_category = line[:-len(',genre#')].strip()
+            elif self.re_category.match(line):
+                current_category = self.re_category.match(line).group(1).strip()
                     
         return channels
 
@@ -1279,16 +1376,27 @@ class IPTVValidator:
         channels = []
         current_category = "未分类"
         
-        with open(self.input_file, 'r', encoding='utf-8') as f:
-            lines = f.readlines()
+        from file_utils import read_file_with_encoding
+        content, encoding = read_file_with_encoding(self.input_file)
+        if content is None:
+            return []
+        lines = content.splitlines()
             
+        import re
+        # 使用正则表达式更准确地检测分类行
+        # 支持两种格式：正确的,#genre#和错误的,genre#
+        re_category = re.compile(r'^(.+),#?genre#$')
+        
         for line in lines:
             line = line.strip()
             if not line:
                 continue
             
-            if self.re_category.match(line):
-                current_category = self.re_category.match(line).group(1).strip()
+            # 先检查是否为分类行（优先于注释检查）
+            # 支持格式: <name>,#genre# (正确) 和 <name>,genre# (错误但兼容)
+            match = re_category.match(line)
+            if match:
+                current_category = match.group(1).strip().replace('\n', '')
                 continue
             
             if ',' in line:
@@ -1297,22 +1405,36 @@ class IPTVValidator:
                     name = parts[0].strip()
                     url = parts[1].strip()
                     if url:
-                        channels.append({
+                        # 提取分辨率信息
+                        resolution = self._extract_resolution_from_url(url)
+                        
+                        channel = {
                             'name': name,
                             'url': url,
-                            'category': current_category
-                        })
+                            'category': current_category,
+                            'resolution': resolution if resolution else None
+                        }
+                        channels.append(channel)
+                        # 同时填充到分类结果中
+                        self._categorized_results[current_category].append(channel)
             elif '\t' in line:
                 parts = line.split('\t', 1)
                 if len(parts) == 2:
                     name = parts[0].strip()
                     url = parts[1].strip()
                     if url:
-                        channels.append({
+                        # 提取分辨率信息
+                        resolution = self._extract_resolution_from_url(url)
+                        
+                        channel = {
                             'name': name,
                             'url': url,
-                            'category': current_category
-                        })
+                            'category': current_category,
+                            'resolution': resolution if resolution else None
+                        }
+                        channels.append(channel)
+                        # 同时填充到分类结果中
+                        self._categorized_results[current_category].append(channel)
                         
         return channels
 
@@ -1545,7 +1667,28 @@ class IPTVValidator:
         if self.stop_requested:
             return None
         
-        # 方法4: 如果有MediaInfo作为备选
+        # 方法4: 使用VLC检测（更强的协议支持）
+        try:
+            # 安全的VLC导入，支持模块化运行
+            try:
+                from .vlc_detector import detect_with_vlc
+            except ImportError:
+                from vlc_detector import detect_with_vlc
+                
+            resolution, codec, info = detect_with_vlc(url, timeout)
+            if resolution:
+                return resolution, codec, {**info, 'fallback_level': 4}
+        except ImportError:
+            pass
+        except Exception as e:
+            if self.debug:
+                print(f"[调试] VLC检测失败: {e}")
+        
+        # 检查停止标志
+        if self.stop_requested:
+            return None
+        
+        # 方法5: 如果有MediaInfo作为备选
         if self.mediainfo_available:
             resolution = _mediainfo_get_resolution(url, timeout)
             if resolution:
@@ -1602,7 +1745,15 @@ class IPTVValidator:
                 try:
                     result = future.result()
                     if result:
-                        self.all_results.append(result)
+                        # 性能优化：在验证过程中维护有序结果，避免后期排序
+                        idx = result.get('original_index', 0)
+                        self._original_order_results[idx] = result
+                        
+                        # 性能优化：即时分类，避免后期双重循环
+                        if result['valid']:
+                            category = result['category'] or '未分类'
+                            self._categorized_results[category].append(result)
+                        
                         processed_count += 1
                         
                         # 发送进度更新
@@ -1634,38 +1785,35 @@ class IPTVValidator:
                 self._validation_pool.shutdown(wait=False)
                 self._validation_pool = None
         
-        # 按original_index排序，保持原文件中的频道顺序
-        self.all_results.sort(key=lambda x: x.get('original_index', 0))
+        # 性能优化：转换为有序列表而非排序
+        self.all_results = [self._original_order_results[i] for i in sorted(self._original_order_results.keys())]
         
+        # 添加性能监控信息
         print(f"验证完成，有效频道: {sum(1 for r in self.all_results if r['valid'])}/{len(self.all_results)}")
+        print(f"分类统计: {dict(self._categorized_results)}")
 
     def _generate_m3u_output(self):
         """生成M3U格式输出文件"""
         output_lines = ['#EXTM3U']
         
-        # 按分类组织结果
-        categorized = {}
-        for result in self.all_results:
-            if not result['valid']:
-                continue
-            
-            category = result['category'] or '未分类'
-            if category not in categorized:
-                categorized[category] = []
-            categorized[category].append(result)
-        
-        for category, channels in sorted(categorized.items()):
+        # 性能优化：使用预分类结果
+        for category, channels in sorted(self._categorized_results.items()):
             for channel in channels:
                 extinf = f'#EXTINF:-1 tvg-name="{channel["name"]}" group-title="{category}"'
-                if channel['resolution']:
-                    extinf += f' tvg-shift=1,{channel["name"]}[{channel["resolution"]}]'
+                resolution = channel.get('resolution')
+                
+                # 检查分辨率是否有效（不是None且不是(None, None)）
+                if resolution and resolution != (None, None):
+                    # 将元组格式化为字符串 "宽度x高度"
+                    resolution_str = f"{resolution[0]}x{resolution[1]}"
+                    extinf += f' tvg-shift=1,{channel["name"]}[{resolution_str}]'
                 else:
                     extinf += f',{channel["name"]}'
                 output_lines.append(extinf)
                 output_lines.append(channel['url'])
         
-        with open(self.output_file, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(output_lines))
+        from file_utils import write_file_with_encoding
+        write_file_with_encoding(self.output_file, '\n'.join(output_lines))
         
         print(f"M3U输出已保存到: {self.output_file}")
 
@@ -1673,28 +1821,19 @@ class IPTVValidator:
         """生成TXT格式输出文件"""
         output_lines = []
         
-        # 按分类组织结果
-        categorized = {}
-        for result in self.all_results:
-            if not result['valid']:
-                continue
-            
-            category = result['category'] or '未分类'
-            if category not in categorized:
-                categorized[category] = []
-            categorized[category].append(result)
-        
-        for category, channels in sorted(categorized.items()):
+        # 性能优化：使用预分类结果
+        for category, channels in sorted(self._categorized_results.items()):
             output_lines.append(f"{category},#genre#")
             for channel in channels:
-                if channel['resolution']:
-                    output_lines.append(f'{channel["name"]}[{channel["resolution"]}],{channel["url"]}')
+                resolution = channel['resolution']
+                if resolution and resolution != (None, None):
+                    output_lines.append(f'{channel["name"]}[{resolution}],{channel["url"]}')
                 else:
                     output_lines.append(f'{channel["name"]},{channel["url"]}')
             output_lines.append("")
         
-        with open(self.output_file, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(output_lines))
+        from file_utils import write_file_with_encoding
+        write_file_with_encoding(self.output_file, '\n'.join(output_lines))
         
         print(f"TXT输出已保存到: {self.output_file}")
 
@@ -1766,8 +1905,8 @@ class IPTVValidator:
         import json
         channels = []
         try:
-            with open(self.input_file, 'r', encoding='utf-8') as f:
-                data = json.load(f)
+            from file_utils import read_json_with_encoding
+            data = read_json_with_encoding(self.input_file)
             
             if isinstance(data, list):
                 for item in data:
@@ -1832,17 +1971,8 @@ class IPTVValidator:
 
     def get_results_by_category(self):
         """按分类获取验证结果"""
-        categorized = {}
-        for result in self.all_results:
-            if not result['valid']:
-                continue
-            
-            category = result['category'] or '未分类'
-            if category not in categorized:
-                categorized[category] = []
-            categorized[category].append(result)
-        
-        return categorized
+        # 性能优化：返回预分类结果
+        return dict(self._categorized_results)
 
 
 def validate_ipTV(input_file, output_file=None, max_workers=None, timeout=5, debug=False, original_filename=None, skip_resolution=False, filter_no_audio=False):
@@ -1864,18 +1994,10 @@ def validate_ipTV(input_file, output_file=None, max_workers=None, timeout=5, deb
     """
     # 加载配置
     try:
-        import json
-        CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'iptv_config.json')
-        if os.path.exists(CONFIG_FILE):
-            with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
-                app_config = json.load(f)
-        else:
-            app_config = {}
+        config_manager = get_config_manager()
+        validation_config = config_manager.get_validation_config()
     except Exception:
-        app_config = {}
-    
-    # 从配置中获取默认值
-    validation_config = app_config.get('validation', {})
+        validation_config = {}
     
     # 使用配置中的默认值，如果用户没有提供参数
     if timeout == 5 and validation_config.get('default_timeout'):
