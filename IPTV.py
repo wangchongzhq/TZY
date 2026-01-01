@@ -364,7 +364,7 @@ DEFAULT_CONFIG = {
         "only_4k": False       # 是否只获取4K频道
     },
     "url_testing": {
-        "enable": True,    # 启用URL有效性测试
+        "enable": False,   # 禁用URL有效性测试以避免超时 - 2026-01-01优化
         "timeout": 3,      # URL测试超时时间（秒）- 增加到3秒
         "retries": 0,      # URL测试重试次数
         "workers": 8      # URL测试并发数 - 降低到8个线程避免网络压力
