@@ -346,10 +346,18 @@ class UnifiedOutputGenerator:
     def __init__(self, config):
         self.config = config
         # 从config.py导入的配置
-        self.url_blacklist = getattr(__import__('config'), 'url_blacklist', [])
-        self.ip_priority = getattr(__import__('config'), 'ip_version_priority', 'ipv4')
-        self.epg_urls = getattr(__import__('config'), 'epg_urls', [])
-        self.announcements = getattr(__import__('config'), 'announcements', [])
+        try:
+            config_module = __import__('config')
+            self.url_blacklist = getattr(config_module, 'url_blacklist', [])
+            self.ip_priority = getattr(config_module, 'ip_version_priority', 'ipv4')
+            self.epg_urls = getattr(config_module, 'epg_urls', [])
+            self.announcements = getattr(config_module, 'announcements', [])
+        except ImportError as e:
+            logger.warning(f"无法导入config.py模块: {e}，使用默认配置")
+            self.url_blacklist = []
+            self.ip_priority = 'ipv4'
+            self.epg_urls = []
+            self.announcements = []
     
     def generate_structured_output(self, matched_channels, template_channels):
         """生成结构化输出 - 融合fetch.py的完整功能"""
@@ -511,7 +519,7 @@ class TemplateDrivenProcessor:
         try:
             config_module = __import__('config')
             self.source_urls = getattr(config_module, 'source_urls', [])
-        except ImportError:
+        except (ImportError, AttributeError):
             self.source_urls = self.config.get('sources', {}).get('default', []) + self.config.get('sources', {}).get('custom', [])
         
         # 初始化组件
