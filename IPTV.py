@@ -1,33 +1,30 @@
 #!/usr/bin/env python3
 """
-IPTV直播源自动生成工具
+IPTV直播源自动生成工具 - 简化版
 功能：从多个来源获取IPTV直播源并生成M3U文件
-support：手动更新和通过GitHub Actions工作流定时更新
+核心特性：标准频道分类 + 频道列表别名
+借鉴fetch.py的优秀解析逻辑和错误处理
 """
 
-import asyncio
 import os
 import re
 import sys
-import time
+import json
 import requests
-import datetime
-import threading
 import logging
-import socket
-import multiprocessing
+import time
 import tempfile
-import ast
-from collections import defaultdict, OrderedDict
+import multiprocessing
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from collections import OrderedDict, defaultdict
+from datetime import datetime, timezone, timedelta
 
-# 导入轻量级URL快速检测器
+# 导入配置
 try:
-    from quick_url_checker import QuickURLChecker, create_quick_checker
-    QUICK_CHECKER_AVAILABLE = True
+    import config
 except ImportError:
-    QUICK_CHECKER_AVAILABLE = False
-    print("警告: 快速URL检测器不可用，将使用基础检测")
+    print("错误: 找不到config.py配置文件")
+    sys.exit(1)
 
 # 配置日志
 logging.basicConfig(
@@ -45,838 +42,244 @@ HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 }
 
-# 时间戳跟踪器
-class ValidationTimestamp:
-    """验证时间戳跟踪器 - 参考BlackBird-Player的更新时间记录方式"""
-    
-    _instance = None
-    _timestamp = None
-    
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        return cls._instance
-    
-    @classmethod
-    def get_timestamp(cls):
-        """获取当前验证时间戳"""
-        return cls._timestamp
-    
-    @classmethod
-    def update_timestamp(cls):
-        """更新验证时间戳"""
-        cls._timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        return cls._timestamp
-    
-    @classmethod
-    def reset(cls):
-        """重置时间戳"""
-        cls._timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+def parse_template(template_file):
+    """解析频道模板文件 - 借鉴fetch.py的简洁逻辑"""
+    template_channels = OrderedDict()
+    current_category = None
 
-# ========== 从fetch.py借鉴的模板驱动架构 ==========
+    try:
+        with open(template_file, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#"):
+                    if "#genre#" in line:
+                        current_category = line.split(",")[0].strip()
+                        template_channels[current_category] = []
+                        logger.debug(f"解析分类: {current_category}")
+                    elif current_category:
+                        channel_name = line.split(",")[0].strip()
+                        template_channels[current_category].append(channel_name)
+                        logger.debug(f"解析频道: {channel_name}")
 
-class ChannelTemplate:
-    """频道模板解析器 - 基于fetch.py的设计理念"""
-    
-    def __init__(self, template_file=None):
-        self.template_file = template_file
-        self.template_channels = OrderedDict()
+        logger.info(f"模板解析完成: {len(template_channels)} 个分类")
+        return template_channels
         
-        if template_file and os.path.exists(template_file):
-            self.template_channels = self.parse_template(template_file)
-        else:
-            # 如果没有模板文件，使用默认配置（向后兼容）
-            logger.info("未找到模板文件，使用默认频道配置")
-    
-    def parse_template(self, template_file):
-        """解析频道模板文件 - 借鉴fetch.py的parse_template函数"""
-        template_channels = OrderedDict()
-        current_category = None
+    except Exception as e:
+        logger.error(f"解析模板文件失败 {template_file}: {e}")
+        return OrderedDict()
 
-        try:
-            with open(template_file, "r", encoding="utf-8") as f:
-                for line in f:
-                    line = line.strip()
-                    if line and not line.startswith("#"):
-                        if "#genre#" in line:
-                            current_category = line.split(",")[0].strip()
-                            template_channels[current_category] = []
-                            logger.debug(f"解析分类: {current_category}")
-                        elif current_category:
-                            channel_name = line.split(",")[0].strip()
-                            template_channels[current_category].append(channel_name)
-                            logger.debug(f"解析频道: {channel_name}")
-                            
-            logger.info(f"模板解析完成: {len(template_channels)} 个分类")
-            return template_channels
-            
-        except Exception as e:
-            logger.error(f"解析模板文件失败 {template_file}: {e}")
-            return OrderedDict()
-    
-    def get_categories(self):
-        """获取所有分类"""
-        return list(self.template_channels.keys())
-    
-    def get_channels_by_category(self, category):
-        """获取指定分类的频道"""
-        return self.template_channels.get(category, [])
-    
-    def has_channel(self, channel_name):
-        """检查频道是否在模板中"""
-        for category, channels in self.template_channels.items():
-            if channel_name in channels:
-                return True
-        return False
-    
-    def get_channel_category(self, channel_name):
-        """获取频道所属分类"""
-        for category, channels in self.template_channels.items():
-            if channel_name in channels:
-                return category
-        return None
+def fetch_channels(url):
+    """获取并解析源数据 - 借鉴fetch.py的逻辑"""
+    channels = OrderedDict()
 
-class FormatDetector:
-    """格式自动检测器 - 从fetch.py借鉴"""
-    
-    @staticmethod
-    def auto_detect(content_lines):
-        """自动检测源格式"""
-        # 检查M3U特征
-        if any("#EXTINF" in line for line in content_lines[:15]):
-            logger.debug("检测为M3U格式")
-            return "m3u"
-        
-        # 检查TXT特征（包含#genre#标记）
-        if any("#genre#" in line for line in content_lines[:20]):
-            logger.debug("检测为TXT格式")
-            return "txt"
-        
-        # 默认推断为TXT格式
-        logger.debug("默认推断为TXT格式")
-        return "txt"
-    
-    @staticmethod
-    def detect_from_url(url):
-        """从URL推断格式"""
-        url_lower = url.lower()
-        if '.m3u' in url_lower or 'm3u8' in url_lower:
-            return "m3u"
-        elif '.txt' in url_lower:
-            return "txt"
-        else:
-            return "unknown"
-
-class EnhancedChannelMatcher:
-    """增强的频道匹配器 - 融合fetch.py的精确匹配和IPTV.py的别名匹配"""
-    
-    def __init__(self, channel_mapping=None):
-        self.channel_mapping = channel_mapping or {}
-    
-    def match_channels(self, template_channels, fetched_channels):
-        """精确匹配 + 别名匹配"""
-        matched_channels = OrderedDict()
-        
-        logger.info(f"开始频道匹配: 模板{len(template_channels)}分类, 源{len(fetched_channels)}分类")
-        
-        for category, channel_list in template_channels.items():
-            matched_channels[category] = OrderedDict()
-            logger.debug(f"处理分类: {category} ({len(channel_list)}频道)")
-            
-            for channel_name in channel_list:
-                # 1. 精确匹配
-                exact_matches = self._exact_match(channel_name, category, fetched_channels)
-                if exact_matches:
-                    matched_channels[category][channel_name] = exact_matches
-                    logger.debug(f"精确匹配: {channel_name} -> {len(exact_matches)}个URL")
-                
-                # 2. 别名匹配（IPTV.py的优势）
-                if channel_name in self.channel_mapping:
-                    alias_matches = []
-                    for alias in self.channel_mapping[channel_name]:
-                        alias_result = self._exact_match(channel_name, category, fetched_channels, alias)
-                        if alias_result:
-                            alias_matches.extend(alias_result)
-                    
-                    if alias_matches:
-                        if channel_name in matched_channels:
-                            matched_channels[channel_name].extend(alias_matches)
-                        else:
-                            matched_channels[category][channel_name] = alias_matches
-                        logger.debug(f"别名匹配: {channel_name} -> {len(alias_matches)}个URL")
-        
-        # 统计匹配结果
-        total_matched = sum(len(channels) for channels in matched_channels.values() 
-                          for channels in channels.values())
-        logger.info(f"频道匹配完成: 总计匹配{total_matched}个URL")
-        
-        return matched_channels
-    
-    def _exact_match(self, target_name, category, fetched_channels, match_name=None):
-        """执行精确匹配"""
-        name_to_match = match_name or target_name
-        matches = []
-        
-        for online_category, online_channel_list in fetched_channels.items():
-            for online_channel_name, online_channel_url in online_channel_list:
-                if name_to_match == online_channel_name:
-                    matches.append(online_channel_url)
-        
-        return matches
-
-class SmartFetcher:
-    """智能获取器 - 整合fetch和解析功能"""
-    
-    def __init__(self, format_detector=None):
-        self.format_detector = format_detector or FormatDetector()
-    
-    def fetch_and_parse(self, url):
-        """获取并解析源数据"""
-        try:
-            logger.info(f"获取源数据: {url}")
-            response = requests.get(url, headers=HEADERS, timeout=30)
-            response.raise_for_status()
-            response.encoding = 'utf-8'
-            lines = response.text.split("\n")
-            
-            # 自动检测格式
-            format_type = self.format_detector.auto_detect(lines)
-            logger.info(f"检测到格式: {format_type}")
-            
-            # 解析内容
-            channels = self._parse_by_format(lines, format_type)
-            
-            if channels:
-                categories = ", ".join(channels.keys())
-                logger.info(f"获取成功✅，包含分类: {categories}")
-            else:
-                logger.warning(f"获取失败❌: 未能解析到频道数据")
-            
-            return channels
-            
-        except requests.RequestException as e:
-            logger.error(f"获取失败❌ {url}: {e}")
-            return OrderedDict()
-        except Exception as e:
-            logger.error(f"解析失败❌ {url}: {e}")
-            return OrderedDict()
-    
-    def _parse_by_format(self, lines, format_type):
-        """按格式解析内容"""
-        if format_type == "m3u":
-            return self._parse_m3u(lines)
-        else:
-            return self._parse_txt(lines)
-    
-    def _parse_m3u(self, lines):
-        """解析M3U格式 - 借鉴fetch.py的逻辑"""
-        channels = OrderedDict()
-        current_category = None
-        channel_name = None
-        
-        for line in lines:
-            line = line.strip()
-            if line.startswith("#EXTINF"):
-                match = re.search(r'group-title="(.*?)",(.*)', line)
-                if match:
-                    current_category = match.group(1).strip()
-                    channel_name = match.group(2).strip()
-                    if current_category not in channels:
-                        channels[current_category] = []
-            elif line and not line.startswith("#"):
-                if current_category and channel_name:
-                    channels[current_category].append((channel_name, line.strip()))
-        
-        return channels
-    
-    def _parse_txt(self, lines):
-        """解析TXT格式 - 借鉴fetch.py的逻辑"""
-        channels = OrderedDict()
+    try:
+        logger.info(f"获取源数据: {url}")
+        response = requests.get(url, headers=HEADERS, timeout=30)
+        response.raise_for_status()
+        response.encoding = 'utf-8'
+        lines = response.text.split("\n")
         current_category = None
         
-        for line in lines:
-            line = line.strip()
-            if "#genre#" in line:
-                current_category = line.split(",")[0].strip()
-                channels[current_category] = []
-            elif current_category and line and not line.startswith("#"):
-                match = re.match(r"^(.*?),(.*?)$", line)
-                if match:
-                    channel_name = match.group(1).strip()
-                    channel_url = match.group(2).strip()
-                    channels[current_category].append((channel_name, channel_url))
-                elif line:
-                    channels[current_category].append((line, ''))
-        
-        return channels
+        # 自动检测格式
+        is_m3u = any("#EXTINF" in line for line in lines[:15])
+        source_type = "m3u" if is_m3u else "txt"
+        logger.info(f"检测到格式: {source_type}")
 
-class IPv6Support:
-    """IPv6支持机制 - 从fetch.py借鉴"""
-    
-    @staticmethod
-    def is_ipv6_url(url):
-        """检测IPv6 URL"""
-        return re.match(r'^http://\[[0-9a-fA-F:]+\]', url) is not None
-    
-    @staticmethod
-    def prioritize_urls(urls, ip_version_priority="ipv4"):
-        """URL优先级排序"""
-        def sort_key(url):
-            if ip_version_priority == "ipv6":
-                return (not IPv6Support.is_ipv6_url(url), url)
-            else:
-                return (IPv6Support.is_ipv6_url(url), url)
-        
-        return sorted(urls, key=sort_key)
-    
-    @staticmethod
-    def add_url_suffix(url, url_suffix):
-        """为URL添加后缀标记"""
-        if '$' in url:
-            base_url = url.split('$', 1)[0]
+        if is_m3u:
+            # 解析M3U格式
+            for line in lines:
+                line = line.strip()
+                if line.startswith("#EXTINF"):
+                    match = re.search(r'group-title="(.*?)",(.*)', line)
+                    if match:
+                        current_category = match.group(1).strip()
+                        channel_name = match.group(2).strip()
+                        if current_category not in channels:
+                            channels[current_category] = []
+                elif line and not line.startswith("#"):
+                    channel_url = line.strip()
+                    if current_category and channel_name:
+                        channels[current_category].append((channel_name, channel_url))
         else:
-            base_url = url
-        
-        return f"{base_url}{url_suffix}"
+            # 解析TXT格式
+            for line in lines:
+                line = line.strip()
+                if "#genre#" in line:
+                    current_category = line.split(",")[0].strip()
+                    channels[current_category] = []
+                elif current_category:
+                    match = re.match(r"^(.*?),(.*?)$", line)
+                    if match:
+                        channel_name = match.group(1).strip()
+                        channel_url = match.group(2).strip()
+                        channels[current_category].append((channel_name, channel_url))
+                    elif line:
+                        channels[current_category].append((line, ''))
 
-class UnifiedOutputGenerator:
-    """统一输出生成器 - 融合fetch.py的优秀特性"""
-    
-    def __init__(self, config):
-        self.config = config
-        # 从config.py导入的配置
-        try:
-            config_module = __import__('config')
-            self.url_blacklist = getattr(config_module, 'url_blacklist', [])
-            self.ip_priority = getattr(config_module, 'ip_version_priority', 'ipv4')
-            self.epg_urls = getattr(config_module, 'epg_urls', [])
-            self.announcements = getattr(config_module, 'announcements', [])
-        except ImportError as e:
-            logger.warning(f"无法导入config.py模块: {e}，使用默认配置")
-            self.url_blacklist = []
-            self.ip_priority = 'ipv4'
-            self.epg_urls = []
-            self.announcements = []
-    
-    def generate_structured_output(self, matched_channels, template_channels):
-        """生成结构化输出 - 融合fetch.py的完整功能"""
-        written_urls = set()
-        current_date = datetime.datetime.now().strftime("%Y-%m-%d")
-        
-        # 使用配置中的输出文件路径
-        m3u_file = self.config.get('output', {}).get('m3u_file', 'jieguo.m3u')
-        txt_file = self.config.get('output', {}).get('txt_file', 'jieguo.txt')
-        
-        # 生成M3U和TXT文件
-        with open(m3u_file, "w", encoding="utf-8") as f_m3u, \
-             open(txt_file, "w", encoding="utf-8") as f_txt:
-            
-            # 写入M3U头部 - 融合fetch.py的EPG支持
-            self._write_m3u_header(f_m3u)
-            
-            # 写入公告系统 - fetch.py的优秀特性
-            self._write_announcements(f_m3u, f_txt, current_date)
-            
-            # 处理模板频道
-            for category, channel_list in template_channels.items():
-                if category in matched_channels:
-                    self._write_category_channels(
-                        f_m3u, f_txt, category, channel_list, 
-                        matched_channels[category], written_urls
-                    )
-            
-            logger.info(f"结构化输出生成完成")
-    
-    def _write_m3u_header(self, f_m3u):
-        """写入M3U头部 - 融合fetch.py的EPG URL支持"""
-        if self.epg_urls:
-            epg_line = ','.join(f'"{url}"' for url in self.epg_urls)
-            f_m3u.write(f"#EXTM3U x-tvg-url={epg_line}\n")
+        if channels:
+            categories = ", ".join(channels.keys())
+            logger.info(f"获取成功✅，包含分类: {categories}")
         else:
-            f_m3u.write("#EXTM3U\n")
-    
-    def _write_announcements(self, f_m3u, f_txt, current_date):
-        """写入公告系统 - fetch.py的独特功能"""
-        if not self.announcements:
-            return
-            
-        for group in self.announcements:
-            # 准备公告条目
-            entries = []
-            for announcement in group['entries']:
-                if announcement['name'] is None:
-                    announcement['name'] = current_date
-                entries.append(announcement)
-            
-            # 写入公告分类标题
-            f_txt.write(f"{group['channel']},#genre#\n")
-            
-            # 写入每个公告
-            for announcement in entries:
-                f_m3u.write(f"""#EXTINF:-1 tvg-id="1" tvg-name="{announcement['name']}" tvg-logo="{announcement['logo']}" group-title="{group['channel']}",{announcement['name']}\n""")
-                f_m3u.write(f"{announcement['url']}\n")
-                f_txt.write(f"{announcement['name']},{announcement['url']}\n")
-    
-    def _is_ipv6_url(self, url):
-        """检测IPv6 URL - 融合fetch.py的IPv6支持"""
-        return re.match(r'^http://\[[0-9a-fA-F:]+\]', url) is not None
-    
-    def _prioritize_urls(self, urls):
-        """URL优先级排序 - fetch.py的核心功能"""
-        def sort_key(url):
-            if self.ip_priority == "ipv6":
-                return (not self._is_ipv6_url(url), url)
-            else:
-                return (self._is_ipv6_url(url), url)
-        
-        return sorted(urls, key=sort_key)
-    
-    def _should_exclude_url(self, url):
-        """URL黑名单过滤 - fetch.py的重要特性"""
-        if not url:
-            return True
-        
-        # 检查URL黑名单
-        for blacklist in self.url_blacklist:
-            if blacklist in url:
-                return True
-        
-        return False
-    
+            logger.warning(f"获取失败❌: 未能解析到频道数据")
 
-    
-    def _write_category_channels(self, f_m3u, f_txt, category, channel_list, 
-                                matched_channels, written_urls):
-        """写入分类频道"""
-        f_txt.write(f"{category},#genre#\n")
+    except requests.RequestException as e:
+        logger.error(f"获取失败❌ {url}: {e}")
+    except Exception as e:
+        logger.error(f"解析失败❌ {url}: {e}")
+
+    return channels
+
+def match_channels(template_channels, all_channels, channel_mapping=None):
+    """匹配频道 - 支持别名匹配"""
+    matched_channels = OrderedDict()
+    channel_mapping = channel_mapping or {}
+
+    logger.info(f"开始频道匹配: 模板{len(template_channels)}分类, 源{len(all_channels)}分类")
+
+    for category, channel_list in template_channels.items():
+        matched_channels[category] = OrderedDict()
+        logger.debug(f"处理分类: {category} ({len(channel_list)}频道)")
         
         for channel_name in channel_list:
-            if channel_name in matched_channels:
-                urls = self._filter_and_prioritize_urls(
-                    matched_channels[channel_name], written_urls
-                )
+            # 1. 精确匹配
+            exact_matches = []
+            for online_category, online_channel_list in all_channels.items():
+                for online_channel_name, online_channel_url in online_channel_list:
+                    if channel_name == online_channel_name:
+                        exact_matches.append(online_channel_url)
+            
+            if exact_matches:
+                matched_channels[category][channel_name] = exact_matches
+                logger.debug(f"精确匹配: {channel_name} -> {len(exact_matches)}个URL")
+            
+            # 2. 别名匹配
+            if channel_name in channel_mapping:
+                alias_matches = []
+                for alias in channel_mapping[channel_name]:
+                    for online_category, online_channel_list in all_channels.items():
+                        for online_channel_name, online_channel_url in online_channel_list:
+                            if alias == online_channel_name:
+                                alias_matches.append(online_channel_url)
                 
-                if urls:
-                    total_urls = len(urls)
-                    for index, url in enumerate(urls, start=1):
-                        self._write_single_channel_entry(
-                            f_m3u, f_txt, channel_name, category, url, 
-                            index, total_urls
-                        )
-        
-        f_txt.write("\n")  # 分类间空行
-    
-    def _filter_and_prioritize_urls(self, urls, written_urls):
-        """过滤和优先级排序"""
-        # 1. 去除黑名单
-        filtered = [url for url in urls if not self._should_exclude_url(url)]
-        
-        # 2. 去重
-        filtered = [url for url in filtered if url not in written_urls]
-        written_urls.update(filtered)
-        
-        # 3. IPv4/IPv6优先级排序
-        filtered = self._prioritize_urls(filtered)
-        
-        return filtered
-    
-    def _write_single_channel_entry(self, f_m3u, f_txt, channel_name, category, url, 
-                                   index, total_urls):
-        """写入单个频道条目"""
-        # 生成URL后缀
-        if self._is_ipv6_url(url):
-            url_suffix = f"$LR•IPV6" if total_urls == 1 else f"$LR•IPV6『线路{index}』"
-        else:
-            url_suffix = f"$LR•IPV4" if total_urls == 1 else f"$LR•IPV4『线路{index}』"
-        
-        # 处理URL后缀
-        if '$' in url:
-            base_url = url.split('$', 1)[0]
-        else:
-            base_url = url
-        new_url = f"{base_url}{url_suffix}"
-        
-        # 写入M3U
-        logo_url = f"https://gcore.jsdelivr.net/gh/yuanzl77/TVlogo@master/png/{channel_name}.png"
-        f_m3u.write(f'#EXTINF:-1 tvg-id="{index}" tvg-name="{channel_name}" tvg-logo="{logo_url}" group-title="{category}",{channel_name}\n')
-        f_m3u.write(f"{new_url}\n")
-        
-        # 写入TXT
-        f_txt.write(f"{channel_name},{new_url}\n")
+                if alias_matches:
+                    if channel_name in matched_channels:
+                        matched_channels[channel_name].extend(alias_matches)
+                    else:
+                        matched_channels[category][channel_name] = alias_matches
+                    logger.debug(f"别名匹配: {channel_name} -> {len(alias_matches)}个URL")
 
-class TemplateDrivenProcessor:
-    """模板驱动处理器 - 统一所有功能，融合fetch.py的完整配置"""
+    # 统计匹配结果
+    total_matched = sum(len(channels) for channels in matched_channels.values() 
+                      for channels in channels.values())
+    logger.info(f"频道匹配完成: 总计匹配{total_matched}个URL")
+
+    return matched_channels
+
+def generate_output(matched_channels, template_channels, output_file_m3u="jieguo.m3u", output_file_txt="jieguo.txt"):
+    """生成输出文件 - 简化的版本，只保留核心功能"""
     
-    def __init__(self, config=None):
-        self.config = config or {}
+    logger.info(f"开始生成输出文件: {output_file_m3u}, {output_file_txt}")
+    
+    with open(output_file_m3u, "w", encoding="utf-8") as f_m3u, \
+         open(output_file_txt, "w", encoding="utf-8") as f_txt:
         
-        # 从配置中获取设置
-        template_enabled = self.config.get('template', {}).get('enabled', True)
-        self.template_file = self.config.get('template', {}).get('file') if template_enabled else None
+        # 写入M3U头部
+        f_m3u.write("#EXTM3U\n")
         
-        # 融合config.py中的源URL
+        # 处理每个分类
+        for category, channel_list in template_channels.items():
+            if category in matched_channels:
+                f_txt.write(f"{category},#genre#\n")
+                
+                for channel_name in channel_list:
+                    if channel_name in matched_channels[category]:
+                        urls = matched_channels[category][channel_name]
+                        
+                        for url in urls:
+                            # 写入M3U
+                            logo_url = f"https://gcore.jsdelivr.net/gh/yuanzl77/TVlogo@master/png/{channel_name}.png"
+                            f_m3u.write(f'#EXTINF:-1 tvg-name="{channel_name}" tvg-logo="{logo_url}" group-title="{category}",{channel_name}\n')
+                            f_m3u.write(f"{url}\n")
+                            
+                            # 写入TXT
+                            f_txt.write(f"{channel_name},{url}\n")
+                
+                f_txt.write("\n")  # 分类间空行
+    
+    logger.info(f"输出文件生成完成")
+
+def main():
+    """主函数 - 简化版本"""
+    print("🚀 IPTV直播源自动生成工具")
+    print(f"📅 运行时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("=" * 50)
+    
+    # 读取配置
+    config = {}
+    try:
+        if os.path.exists('iptv_config.json'):
+            with open('iptv_config.json', 'r', encoding='utf-8') as f:
+                config = json.load(f)
+            logger.info("✅ 配置文件加载成功")
+    except Exception as e:
+        logger.error(f"❌ 配置文件加载失败: {e}")
+        config = {}
+    
+    # 获取源URL列表
+    source_urls = getattr(config, 'source_urls', config.get('sources', {}).get('default', []))
+    if not source_urls:
         try:
-            config_module = __import__('config')
-            self.source_urls = getattr(config_module, 'source_urls', [])
-        except (ImportError, AttributeError):
-            self.source_urls = self.config.get('sources', {}).get('default', []) + self.config.get('sources', {}).get('custom', [])
-        
-        # 初始化组件
-        self.template = ChannelTemplate(self.template_file)
-        self.fetcher = SmartFetcher()
-        
-        # 获取频道映射配置
-        channel_mapping = self.config.get('matching', {}).get('channel_mapping', {})
-        self.matcher = EnhancedChannelMatcher(channel_mapping)
-        self.output_generator = UnifiedOutputGenerator(self.config)
+            source_urls = config.source_urls
+        except AttributeError:
+            source_urls = []
     
-    def process_all_sources(self):
-        """处理所有源数据"""
-        all_channels = OrderedDict()
-        
-        logger.info(f"开始处理 {len(self.source_urls)} 个源URL")
-        
-        # 批量获取并解析源数据
-        for url in self.source_urls:
-            channels = self.fetcher.fetch_and_parse(url)
-            self._merge_channels(all_channels, channels)
-        
-        # 模板匹配
-        if self.template.template_channels:
-            logger.info("使用模板驱动匹配")
-            matched_channels = self.matcher.match_channels(
-                self.template.template_channels, 
-                all_channels
-            )
-        else:
-            logger.info("使用默认分类匹配")
-            # 使用默认分类结构
-            default_channels = self._convert_to_default_format(all_channels)
-            matched_channels = default_channels
-        
-        # 生成输出
-        if self.template.template_channels:
-            template_channels = self.template.template_channels
-        else:
-            # 如果没有模板文件，使用获取到的所有频道作为模板
-            template_channels = self._get_all_channels_as_template(all_channels)
-        
-        self.output_generator.generate_structured_output(matched_channels, template_channels)
-        
-        return matched_channels
+    if not source_urls:
+        logger.error("❌ 未找到源URL配置")
+        return
     
-    def _merge_channels(self, target, source):
-        """合并频道数据"""
-        for category, channel_list in source.items():
-            if category not in target:
-                target[category] = []
-            target[category].extend(channel_list)
+    logger.info(f"🔧 使用标准频道分类 + 别名匹配架构")
     
-    def _convert_to_default_format(self, channels):
-        """转换为默认格式 - 直接使用获取到的频道结构"""
-        converted = OrderedDict()
+    # 处理所有源
+    all_channels = OrderedDict()
+    for url in source_urls:
+        channels = fetch_channels(url)
         for category, channel_list in channels.items():
-            converted[category] = OrderedDict()
-            for channel_name, url in channel_list:
-                converted[category].setdefault(channel_name, []).append(url)
-        return converted
+            if category not in all_channels:
+                all_channels[category] = []
+            all_channels[category].extend(channel_list)
     
-    def _get_all_channels_as_template(self, channels):
-        """将所有获取到的频道作为模板"""
-        template = OrderedDict()
-        for category, channel_list in channels.items():
-            template[category] = []
-            # 提取所有频道名称
+    # 获取频道别名映射
+    channel_mapping = getattr(config, 'channel_mapping', {})
+    
+    # 使用默认模板结构
+    template_channels = OrderedDict()
+    # 这里可以添加标准频道分类，或者从模板文件读取
+    
+    # 如果没有模板文件，使用获取到的所有频道
+    if not template_channels:
+        logger.info("未找到模板文件，使用获取到的频道结构")
+        template_channels = OrderedDict()
+        for category, channel_list in all_channels.items():
+            template_channels[category] = []
             seen_channels = set()
             for channel_name, url in channel_list:
                 if channel_name not in seen_channels:
-                    template[category].append(channel_name)
+                    template_channels[category].append(channel_name)
                     seen_channels.add(channel_name)
-        return template
     
-    def _get_default_template(self):
-        """获取默认模板结构"""
-        return CHANNEL_CATEGORIES
-
-# 频道分类（参考BlackBird-Player的分类方式，使用emoji前缀）
-CHANNEL_CATEGORIES = {
-    "🇨🇳 4K频道": ['CCTV4K', 'CCTV8K', 'CCTV16 4K', '北京卫视4K', '北京IPTV4K', '湖南卫视4K', '山东卫视4K','广东卫视4K', '四川卫视4K', '浙江卫视4K', '江苏卫视4K', '东方卫视4K', '深圳卫视4K', '河北卫视4K', '峨眉电影4K', '求索4K', '咪视界4K', '欢笑剧场4K', '苏州4K', '至臻视界4K', '南国都市4K', '翡翠台4K', '百事通电影4K', '百事通少儿4K', '百事通纪实4K', '华数爱上4K'],
-
-    "📺 央视频道": ['CCTV1', 'CCTV2', 'CCTV3', 'CCTV4', 'CCTV4欧洲', 'CCTV4美洲', 'CCTV5', 'CCTV5+', 'CCTV6', 'CCTV7', 'CCTV8', 'CCTV9', 'CCTV10', 'CCTV11', 'CCTV12', 'CCTV13', 'CCTV14', 'CCTV15', 'CCTV16', 'CCTV17', 'CETV1', 'CETV2', 'CETV3', 'CETV4', '早期教育','兵器科技', '风云足球', '风云音乐', '风云剧场', '怀旧剧场', '第一剧场', '女性时尚', '世界地理', '央视台球', '高尔夫网球', '央视文化精品', '卫生健康','电视指南'],
-
-    "📡 卫视频道": ['山东卫视', '浙江卫视', '江苏卫视', '东方卫视', '深圳卫视', '北京卫视', '广东卫视', '广西卫视', '东南卫视', '海南卫视', '河北卫视', '河南卫视', '湖北卫视', '江西卫视', '四川卫视', '重庆卫视', '贵州卫视', '云南卫视', '天津卫视', '安徽卫视', '湖南卫视', '辽宁卫视', '黑龙江卫视', '吉林卫视', '内蒙古卫视', '宁夏卫视', '山西卫视', '陕西卫视', '甘肃卫视', '青海卫视', '新疆卫视', '西藏卫视', '三沙卫视', '厦门卫视', '兵团卫视', '延边卫视', '安多卫视', '康巴卫视', '农林卫视', '山东教育'],
-
-    "🏙️ 北京专属频道": ['北京卫视', '北京财经', '北京纪实', '北京生活', '北京体育休闲', '北京国际', '北京文艺', '北京新闻', '北京淘电影', '北京淘剧场', '北京淘4K', '北京淘娱乐', '北京淘BABY', '北京萌宠TV', '北京卡酷少儿'],
-
-    "🌊 山东专属频道": ['山东卫视', '山东齐鲁', '山东综艺', '山东少儿', '山东生活',
-                 '山东新闻', '山东国际', '山东体育', '山东文旅', '山东农科'],
-
-    "🌏 港澳频道": ['凤凰中文', '凤凰资讯', '凤凰香港', '凤凰电影'],
-
-    "🎬 电影频道": ['CHC动作电影', 'CHC家庭影院', 'CHC影迷电影', '淘电影',
-                 '淘精彩', '淘剧场', '星空卫视', '黑莓电影', '东北热剧',
-                 '中国功夫', '动作电影', '超级电影'],
-
-    "👶 儿童频道": ['动漫秀场', '哒啵电竞', '黑莓动画', '卡酷少儿',
-                 '金鹰卡通', '优漫卡通', '哈哈炫动', '嘉佳卡通'],
-
-    "🔥 iHOT频道": ['iHOT爱喜剧', 'iHOT爱科幻', 'iHOT爱院线', 'iHOT爱悬疑', 'iHOT爱历史', 'iHOT爱谍战', 'iHOT爱旅行', 'iHOT爱幼教', 'iHOT爱玩具', 'iHOT爱体育', 'iHOT爱赛车', 'iHOT爱浪漫', 'iHOT爱奇谈', 'iHOT爱科学', 'iHOT爱动漫'],
-
-    "📊 综合频道": ['重温经典', 'CHANNEL[V]', '求索纪录', '求索科学', '求索生活', '求索动物', '睛彩青少', '睛彩竞技', '睛彩篮球', '睛彩广场舞', '金鹰纪实', '快乐垂钓', '茶频道', '军事评论', '军旅剧场', '乐游', '生活时尚', '都市剧场', '欢笑剧场', '游戏风云', '金色学堂', '法治天地', '哒啵赛事'],
-
-    "⚽ 体育频道": ['天元围棋', '魅力足球', '五星体育', '劲爆体育', '超级体育'],
+    # 匹配频道
+    matched_channels = match_channels(template_channels, all_channels, channel_mapping)
     
-    "🎭 剧场频道": ['古装剧场', '家庭剧场', '惊悚悬疑', '明星大片', '欢乐剧场', '海外剧场', '潮妈辣婆',
-                 '爱情喜剧', '超级电视剧', '超级综艺', '金牌综艺', '武搏世界', '农业致富', '炫舞未来',
-                 '精品体育', '精品大剧', '精品纪录', '精品萌宠', '怡伴健康'],
-
-}
-
-
-# 频道映射（别名 -> 规范名）
-CHANNEL_MAPPING = {
-    # 4K频道
-    "CCTV4K": ["CCTV 4K", "CCTV-4K超高清頻道", "CCTV4K超高清頻道", "CCTV-4K"],
-    "CCTV8K": ["CCTV 8K", "CCTV-8K超高清頻道", "CCTV8K超高清頻道", "CCTV-8K"],
-    "CCTV16 4K": ["CCTV16-4K", "CCTV16 奥林匹克 4K", "CCTV16奥林匹克 4K"],
-    "北京卫视4K": ["北京卫视 4K", "北京卫视4K超高清", "北京卫视-4K"],
-    "北京IPTV4K": ["北京IPTV 4K", "北京IPTV-4K"],
-    "湖南卫视4K": ["湖南卫视 4K", "湖南卫视-4K"],
-    "山东卫视4K": ["山东卫视 4K", "山东卫视-4K"],
-    "广东卫视4K": ["广东卫视 4K", "广东卫视-4K"],
-    "四川卫视4K": ["四川卫视 4K", "四川卫视-4K"],
-    "浙江卫视4K": ["浙江卫视 4K", "浙江卫视-4K"],
-    "江苏卫视4K": ["江苏卫视 4K", "江苏卫视-4K"],
-    "东方卫视4K": ["东方卫视 4K", "东方卫视-4K"],
-    "深圳卫视4K": ["深圳卫视 4K", "深圳卫视-4K"],
-    "河北卫视4K": ["河北卫视 4K", "河北卫视-4K"],
-    "峨眉电影4K": ["峨眉电影 4K", "峨眉电影-4K"],
-    "求索4K": ["求索 4K", "求索-4K"],
-    "咪视界4K": ["咪视界 4K", "咪视界-4K"],
-    "欢笑剧场4K": ["欢笑剧场 4K", "欢笑剧场-4K"],
-    "苏州4K": ["苏州 4K", "苏州-4K"],
-    "至臻视界4K": ["至臻视界 4K", "至臻视界-4K"],
-    "南国都市4K": ["南国都市 4K", "南国都市-4K"],
-    "翡翠台4K": ["翡翠台 4K", "翡翠台-4K"],
-    "百事通电影4K": ["百事通电影 4K", "百事通电影-4K"],
-    "百事通少儿4K": ["百事通少儿 4K", "百事通少儿-4K"],
-    "百事通纪实4K": ["百事通纪实 4K", "百事通纪实-4K"],
-    "华数爱上4K": ["华数爱上 4K", "爱上 4K", "爱上4K",  "爱上-4K", "华数爱上-4K"],
+    # 生成输出
+    output_m3u = config.get('output', {}).get('m3u_file', 'jieguo.m3u')
+    output_txt = config.get('output', {}).get('txt_file', 'jieguo.txt')
     
-    # 央视频道
-    "CCTV1": ["CCTV-1", "CCTV-1 HD", "CCTV1综合", "CCTV-1 综合"],
-    "CCTV2": ["CCTV-2", "CCTV-2 HD", "CCTV2 财经", "CCTV-2 财经"],
-    "CCTV3": ["CCTV-3", "CCTV-3 HD", "CCTV3 综艺", "CCTV-3 综艺"],
-    "CCTV4": ["CCTV-4", "CCTV-4 HD", "CCTV4a", "CCTV4A", "CCTV4 中文国际", "CCTV-4 中文国际"],
-    "CCTV4欧洲": ["CCTV-4欧洲", "CCTV-4欧洲 HD", "CCTV-4 欧洲", "CCTV4o", "CCTV4O", "CCTV-4 中文欧洲", "CCTV4中文欧洲"],
-    "CCTV4美洲": ["CCTV-4美洲", "CCTV-4美洲 HD", "CCTV-4 美洲", "CCTV4m", "CCTV4M", "CCTV-4 中文美洲", "CCTV4中文美洲"],
-    "CCTV5": ["CCTV-5", "CCTV-5 HD", "CCTV5 体育", "CCTV-5 体育"],
-    "CCTV5+": ["CCTV-5+", "CCTV-5+ HD", "CCTV5+ 体育赛事", "CCTV-5+ 体育赛事"],
-    "CCTV6": ["CCTV-6", "CCTV-6 HD", "CCTV6 电影", "CCTV-6 电影"],
-    "CCTV7": ["CCTV-7", "CCTV-7 HD", "CCTV7 国防军事", "CCTV-7 国防军事"],
-    "CCTV8": ["CCTV-8", "CCTV-8 HD", "CCTV8 电视剧", "CCTV-8 电视剧"],
-    "CCTV9": ["CCTV-9", "CCTV-9 HD", "CCTV9 纪录", "CCTV-9 纪录"],
-    "CCTV10": ["CCTV-10", "CCTV-10 HD", "CCTV10 科教", "CCTV-10 科教"],
-    "CCTV11": ["CCTV-11", "CCTV-11 HD", "CCTV11 戏曲", "CCTV-11 戏曲"],
-    "CCTV12": ["CCTV-12", "CCTV-12 HD", "CCTV12 社会与法", "CCTV-12 社会与法"],
-    "CCTV13": ["CCTV-13", "CCTV-13 HD", "CCTV13 新闻", "CCTV-13 新闻"],
-    "CCTV14": ["CCTV-14", "CCTV-14 HD", "CCTV14 少儿", "CCTV-14 少儿"],
-    "CCTV15": ["CCTV-15", "CCTV-15 HD", "CCTV15 音乐", "CCTV-15 音乐"],
-    "CCTV16": ["CCTV-16", "CCTV-16 HD", "CCTV-16 奥林匹克", "CCTV16 奥林匹克"],
-    "CCTV17": ["CCTV-17", "CCTV-17 HD", "CCTV17 农业农村", "CCTV-17 农业农村"],
-    "CETV1": ["CETV-1", "中国教育1", "中国教育台1", "中国教育-1", "中国教育电视台1"],
-    "CETV2": ["CETV-2", "中国教育2", "中国教育台2", "中国教育-2", "中国教育电视台2"],
-    "CETV3": ["CETV-3", "中国教育3", "中国教育台3", "中国教育-3", "中国教育电视台3"],
-    "CETV4": ["CETV-4", "中国教育4", "中国教育台4", "中国教育-4", "中国教育电视台4"],
-    "早期教育": ["CETV-早期教育", "中国教育台-早期教育", "早教", "幼儿教育"],
-    "兵器科技": ["CCTV-兵器科技", "CCTV兵器科技"],
-
-    "风云足球": ["CCTV-风云足球", "CCTV风云足球"],
-    "风云音乐": ["CCTV-风云音乐", "CCTV风云音乐", "风云音乐HD", "风云音乐 HD"],
-    "风云剧场": ["CCTV-风云剧场", "CCTV风云剧场"],
-    "怀旧剧场": ["CCTV-怀旧剧场", "CCTV怀旧剧场"],
-    "第一剧场": ["CCTV-第一剧场", "CCTV第一剧场"],
-    "女性时尚": ["CCTV-女性时尚", "CCTV女性时尚"],
-    "世界地理": ["CCTV-世界地理", "CCTV世界地理"],
-    "央视台球": ["CCTV-央视台球", "CCTV央视台球"],
-    "高尔夫网球": ["CCTV-高尔夫网球", "CCTV央视高网", "CCTV高尔夫网球", "央视高网"],
-    "央视文化精品": ["CCTV-央视文化精品", "CCTV央视文化精品", "CCTV文化精品", "央视文化精品"],
-    "卫生健康": ["CCTV-卫生健康", "CCTV卫生健康"],
-    "电视指南": ["CCTV-电视指南", "CCTV电视指南"],
+    generate_output(matched_channels, template_channels, output_m3u, output_txt)
     
-    # 卫视频道
-    "山东卫视": ["山东卫视 HD", "山东卫视高清", "山东台"],
-    "浙江卫视": ["浙江卫视 HD", "浙江卫视高清", "浙江台"],
-    "江苏卫视": ["江苏卫视 HD", "江苏卫视高清", "江苏台"],
-    "东方卫视": ["东方卫视 HD", "东方卫视高清", "东方台", "上海东方卫视"],
-    "深圳卫视": ["深圳卫视 HD", "深圳卫视高清", "深圳台"],
-    "北京卫视": ["北京卫视 HD", "北京卫视高清", "北京台"],
-    "广东卫视": ["广东卫视 HD", "广东卫视高清", "广东台"],
-    "广西卫视": ["广西卫视 HD", "广西卫视高清", "广西台"],
-    "东南卫视": ["东南卫视 HD", "东南卫视高清", "东南台", "福建东南卫视"],
-    "海南卫视": ["海南卫视 HD", "海南卫视高清", "海南台", "旅游卫视", "旅游卫视 HD"],
-    "河北卫视": ["河北卫视 HD", "河北卫视高清", "河北台"],
-    "河南卫视": ["河南卫视 HD", "河南卫视高清", "河南台"],
-    "湖北卫视": ["湖北卫视 HD", "湖北卫视高清", "湖北台"],
-    "江西卫视": ["江西卫视 HD", "江西卫视高清", "江西台"],
-    "四川卫视": ["四川卫视 HD", "四川卫视高清", "四川台"],
-    "重庆卫视": ["重庆卫视 HD", "重庆卫视高清", "重庆台"],
-    "贵州卫视": ["贵州卫视 HD", "贵州卫视高清", "贵州台"],
-    "云南卫视": ["云南卫视 HD", "云南卫视高清", "云南台"],
-    "天津卫视": ["天津卫视 HD", "天津卫视高清", "天津台"],
-    "安徽卫视": ["安徽卫视 HD", "安徽卫视高清", "安徽台"],
-    "湖南卫视": ["湖南卫视 HD", "湖南卫视高清", "湖南台"],
-    "辽宁卫视": ["辽宁卫视 HD", "辽宁卫视高清", "辽宁台"],
-    "黑龙江卫视": ["黑龙江卫视 HD", "黑龙江卫视高清", "黑龙江台"],
-    "吉林卫视": ["吉林卫视 HD", "吉林卫视高清", "吉林台"],
-    "内蒙古卫视": ["内蒙古卫视 HD", "内蒙古卫视高清", "内蒙古台"],
-    "宁夏卫视": ["宁夏卫视 HD", "宁夏卫视高清", "宁夏台"],
-    "山西卫视": ["山西卫视 HD", "山西卫视高清", "山西台"],
-    "陕西卫视": ["陕西卫视 HD", "陕西卫视高清", "陕西台"],
-    "甘肃卫视": ["甘肃卫视 HD", "甘肃卫视高清", "甘肃台"],
-    "青海卫视": ["青海卫视 HD", "青海卫视高清", "青海台"],
-    "新疆卫视": ["新疆卫视 HD", "新疆卫视高清", "新疆台"],
-    "西藏卫视": ["西藏卫视 HD", "西藏卫视高清", "西藏台"],
-    "三沙卫视": ["三沙卫视 HD", "三沙卫视高清", "三沙台"],
-    "厦门卫视": ["厦门卫视 HD", "厦门卫视高清", "厦门台"],
-    "兵团卫视": ["兵团卫视 HD", "兵团卫视高清", "兵团台"],
-    "延边卫视": ["延边卫视 HD", "延边卫视高清", "延边台"],
-    "安多卫视": ["安多卫视 HD", "安多卫视高清", "安多台"],
-    "康巴卫视": ["康巴卫视 HD", "康巴卫视高清", "康巴台"],
-    "农林卫视": ["农林卫视 HD", "农林卫视高清", "农林台"],
-    "山东教育": ["山东教育 HD", "山东教育高清", "山东教育台", "山东教育卫视"],
+    logger.info("🎉 IPTV源生成完成")
 
-    # 北京专属频道映射
-    "北京财经": ["BTV财经", "BTV-财经"],
-    "北京纪实": ["BTV纪实", "BTV-纪实"],
-    "北京生活": ["BTV生活", "BTV-生活"],
-    "北京体育休闲": ["BTV体育休闲", "BTV-体育休闲"],
-    "北京国际": ["BTV国际", "BTV-国际"],
-    "北京文艺": ["BTV文艺", "BTV-文艺"],
-    "北京新闻": ["BTV新闻", "BTV-新闻"],
-    "北京淘电影": ["BTV淘电影"],
-    "北京淘剧场": ["BTV淘剧场"],
-    "北京淘4K": ["BTV淘4K"],
-    "北京淘娱乐": ["BTV淘娱乐"],
-    "北京淘BABY": ["BTV淘BABY"],
-    "北京萌宠TV": ["BTV萌宠TV"],
-    "北京卡酷少儿": ["卡酷少儿", "卡酷"],
-
-    # 山东专属频道映射
-    "山东齐鲁": ["齐鲁频道"],
-    "山东综艺": ["综艺频道"],
-    "山东少儿": ["少儿频道"],
-    "山东生活": ["生活频道"],
-    "山东新闻": ["新闻频道"],
-    "山东国际": ["国际频道"],
-    "山东体育": ["体育频道"],
-    "山东文旅": ["文旅频道"],
-    "山东农科": ["农科频道"],
-
-    # 港澳频道映射
-    "凤凰中文": ["凤凰卫视中文台"],
-    "凤凰资讯": ["凤凰卫视资讯台"],
-    "凤凰香港": ["凤凰卫视香港台"],
-    "凤凰电影": ["凤凰卫视电影台"],
-
-    # 电影频道映射
-    "CHC动作电影": ["动作电影"],
-    "CHC家庭影院": ["家庭影院"],
-    "CHC影迷电影": ["影迷电影"],
-    "淘电影": ["电影"],
-    "淘精彩": ["精彩"],
-    "淘剧场": ["剧场"],
-    "星空卫视": ["星空"],
-    "黑莓电影": ["电影"],
-    "东北热剧": ["热剧"],
-    "中国功夫": ["功夫"],
-    "动作电影": ["电影动作"],
-    "超级电影": ["电影超级"],
-
-    # 儿童频道映射
-    "动漫秀场": ["动漫"],
-    "哒啵电竞": ["电竞"],
-    "黑莓动画": ["动画"],
-    "卡酷少儿": ["卡酷"],
-    "金鹰卡通": ["金鹰"],
-    "优漫卡通": ["优漫"],
-    "哈哈炫动": ["哈哈"],
-    "嘉佳卡通": ["嘉佳"],
-
-    # iHOT频道映射
-    "iHOT爱喜剧": ["爱喜剧"],
-    "iHOT爱科幻": ["爱科幻"],
-    "iHOT爱院线": ["爱院线"],
-    "iHOT爱悬疑": ["爱悬疑"],
-    "iHOT爱历史": ["爱历史"],
-    "iHOT爱谍战": ["爱谍战"],
-    "iHOT爱旅行": ["爱旅行"],
-    "iHOT爱幼教": ["爱幼教"],
-    "iHOT爱玩具": ["爱玩具"],
-    "iHOT爱体育": ["爱体育"],
-    "iHOT爱赛车": ["爱赛车"],
-    "iHOT爱浪漫": ["爱浪漫"],
-    "iHOT爱奇谈": ["爱奇谈"],
-    "iHOT爱科学": ["爱科学"],
-    "iHOT爱动漫": ["爱动漫"],
-
-    # 综合频道映射
-    "重温经典": ["经典"],
-    "CHANNEL[V]": ["Channel V"],
-    "求索纪录": ["纪录"],
-    "求索科学": ["科学"],
-    "求索生活": ["生活"],
-    "求索动物": ["动物"],
-    "睛彩青少": ["青少"],
-    "睛彩竞技": ["竞技"],
-    "睛彩篮球": ["篮球"],
-    "睛彩广场舞": ["广场舞"],
-    "金鹰纪实": ["纪实"],
-    "快乐垂钓": ["垂钓"],
-    "茶频道": ["茶"],
-    "军事评论": ["军事"],
-    "军旅剧场": ["军旅"],
-    "乐游": ["旅游"],
-    "生活时尚": ["时尚"],
-    "都市剧场": ["都市"],
-    "欢笑剧场": ["欢笑"],
-    "游戏风云": ["游戏"],
-    "金色学堂": ["学堂"],
-    "法治天地": ["法治"],
-    "哒啵赛事": ["赛事"],
-
-    # 体育频道映射
-    "天元围棋": ["围棋"],
-    "魅力足球": ["足球"],
-    "五星体育": ["五星"],
-    "劲爆体育": ["劲爆"],
-    "超级体育": ["超级"],
-
-    # 剧场频道映射
-    "古装剧场": ["古装"],
-    "家庭剧场": ["家庭"],
-    "惊悚悬疑": ["悬疑"],
-    "明星大片": ["大片"],
-    "欢乐剧场": ["欢乐"],
-    "海外剧场": ["海外"],
-    "潮妈辣婆": ["潮妈"],
-    "爱情喜剧": ["爱情"],
-    "超级电视剧": ["电视剧"],
-    "超级综艺": ["综艺"],
-    "金牌综艺": ["金牌"],
-    "武搏世界": ["武搏"],
-    "农业致富": ["农业"],
-    "炫舞未来": ["炫舞"],
-    "精品体育": ["精品"],
-    "精品大剧": ["大剧"],
-    "精品纪录": ["纪录"],
-    "精品萌宠": ["萌宠"],
-    "怡伴健康": ["健康"]
- }
-
-
-# 默认配置
+if __name__ == "__main__":
+    main()
 DEFAULT_CONFIG = {
     "sources": {
         "default": [],  # 从unified_sources导入，可在配置文件中覆盖
@@ -948,7 +351,6 @@ except ImportError:
 config = DEFAULT_CONFIG.copy()
 
 # 直播源内容缓存配置
-import json
 import hashlib
 
 # 缓存字典，格式：{url: (cached_time, content, etag, last_modified)}
@@ -1253,7 +655,7 @@ def is_4k(channel_name, url):
         return True
     
     # 检查频道分类
-    if get_channel_category(channel_name) == "4K频道":
+    if get_simple_category(channel_name) == "4K频道":
         return True
     
     # 检查分辨率
@@ -1366,38 +768,59 @@ def extract_channels_from_m3u(content):
         if any(keyword in channel_name_lower for keyword in shopping_keywords):
             continue
         
-        # 规范化频道名称
-        normalized_name = normalize_channel_name(channel_name)
-        if normalized_name:
-            # 获取频道分类
-            category = get_channel_category(normalized_name)
-            # 只添加CHANNEL_CATEGORIES中定义的频道
-            if category != "其他频道":
-                channels[category].append((normalized_name, url))
+        # 简化处理：直接使用频道名称，简单分类
+        category = get_simple_category(channel_name)
+        channels[category].append((channel_name, url))
     
     return channels
 
-# 获取频道分类
-def get_channel_category(channel_name):
-    """获取频道所属的分类"""
-    for category, channels in CHANNEL_CATEGORIES.items():
-        if channel_name in channels:
-            return category
-    return "其他频道"
-
-# 规范化频道名称
-def normalize_channel_name(name):
-    """将频道名称规范化为标准名称"""
-    name = name.strip()
-    # 检查是否是标准名称
-    for standard_name in CHANNEL_MAPPING:
-        if name == standard_name:
-            return standard_name
-    # 检查是否是别名
-    for standard_name, aliases in CHANNEL_MAPPING.items():
-        if name in aliases:
-            return standard_name
-    return None
+# 简化频道分类
+def get_simple_category(channel_name):
+    """简单的频道分类"""
+    name_lower = channel_name.lower()
+    
+    # 4K频道
+    if any(keyword in name_lower for keyword in ['4k', '2160p', '超高清', 'uhd']):
+        return "4K频道"
+    
+    # 央视频道
+    if any(keyword in name_lower for keyword in ['央视', 'cctv', 'cnn']):
+        return "央视频道"
+    
+    # 卫视频道
+    if any(keyword in name_lower for keyword in ['卫视', '东方卫视', '湖南卫视', '江苏卫视', '浙江卫视']):
+        return "卫视频道"
+    
+    # 港澳台
+    if any(keyword in name_lower for keyword in ['香港', '台湾', '澳门', 'hktv', 'cti', 'ctv']):
+        return "港澳频道"
+    
+    # 电影频道
+    if any(keyword in name_lower for keyword in ['电影', 'movie', 'cinema']):
+        return "电影频道"
+    
+    # 儿童频道
+    if any(keyword in name_lower for keyword in ['儿童', '少儿', '动画', '卡通', 'kids']):
+        return "儿童频道"
+    
+    # 体育频道
+    if any(keyword in name_lower for keyword in ['体育', 'sports', '足球', '篮球']):
+        return "体育频道"
+    
+    # 综艺频道
+    if any(keyword in name_lower for keyword in ['综艺', 'variety', '娱乐']):
+        return "综艺频道"
+    
+    # 新闻频道
+    if any(keyword in name_lower for keyword in ['新闻', 'news', '资讯']):
+        return "新闻频道"
+    
+    # 音乐频道
+    if any(keyword in name_lower for keyword in ['音乐', 'music', 'MTV']):
+        return "音乐频道"
+    
+    # 默认分类
+    return "综合频道"
 
 # 从URL获取M3U内容
 def fetch_m3u_content(url, max_retries=3, timeout=120):
@@ -1498,20 +921,23 @@ def generate_m3u_file(channels, output_path):
     """生成M3U文件"""
     print(f"正在生成 {output_path}...")
     
-    print(f"📝 开始写入文件: {output_path} 时间: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))}")
+    print(f"📝 开始写入文件: {output_path} 时间: {datetime.now(timezone(timedelta(hours=8)))}")
     print(f"📊 写入前文件大小: {os.path.getsize(output_path) if os.path.exists(output_path) else 0} 字节")
-    print(f"📊 写入前文件修改时间: {datetime.datetime.fromtimestamp(os.path.getmtime(output_path)) if os.path.exists(output_path) else '不存在'}")
+    print(f"📊 写入前文件修改时间: {datetime.fromtimestamp(os.path.getmtime(output_path)) if os.path.exists(output_path) else '不存在'}")
     
     with open(output_path, 'w', encoding='utf-8') as f:
         # 写入文件头
         f.write("#EXTM3U x-tvg-url=\"https://kakaxi-1.github.io/IPTV/epg.xml\"\n")
         
         # 写入当前时间作为标记（北京时间UTC+8）
-        f.write(f"# 生成时间: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S.%f')}\n")
+        f.write(f"# 生成时间: {datetime.now(timezone(timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S.%f')}\n")
         
-        # 按CHANNEL_CATEGORIES中定义的顺序写入分类
+        # 按分类顺序写入频道
         written_count = 0
-        for category in CHANNEL_CATEGORIES:
+        # 定义标准分类顺序
+        category_order = ["4K频道", "央视频道", "卫视频道", "港澳频道", "电影频道", "儿童频道", "体育频道", "综艺频道", "新闻频道", "音乐频道", "综合频道"]
+        
+        for category in category_order:
             if category in channels:
                 # 对当前类别的频道按名称升序排序
                 sorted_channels = sorted(channels[category], key=lambda x: x[0])
@@ -1520,12 +946,10 @@ def generate_m3u_file(channels, output_path):
                     f.write(f"#EXTINF:-1 tvg-name=\"{channel_name}\" group-title=\"{category}\",{channel_name}\n")
                     f.write(f"{url}\n")
                     written_count += 1
-        
-        # 不写入其他频道，只包含CHANNEL_CATEGORIES中定义的频道
     
-    print(f"📝 完成写入文件: {output_path} 时间: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))}")
+    print(f"📝 完成写入文件: {output_path} 时间: {datetime.now(timezone(timedelta(hours=8)))}")
     print(f"📊 写入后文件大小: {os.path.getsize(output_path)} 字节")
-    print(f"📊 写入后文件修改时间: {datetime.datetime.fromtimestamp(os.path.getmtime(output_path))}")
+    print(f"📊 写入后文件修改时间: {datetime.fromtimestamp(os.path.getmtime(output_path))}")
     print(f"📊 实际写入频道数: {written_count}")
     return True
 
@@ -1534,20 +958,21 @@ def generate_txt_file(channels, output_path):
     """生成TXT文件（参考BlackBird-Player的result.txt格式）"""
     print(f"正在生成 {output_path}...")
     
-    # 更新验证时间戳
-    timestamp = ValidationTimestamp.update_timestamp()
+    # 更新时间戳
+    timestamp = datetime.now(timezone(timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')
     
     with open(output_path, 'w', encoding='utf-8') as f:
         # 写入更新时间戳（参考BlackBird-Player格式）
         f.write("🕘️更新时间,#genre#\n")
         f.write(f"{timestamp}\n\n")
         
-        # 按CHANNEL_CATEGORIES中定义的顺序写入分类
-        for category in CHANNEL_CATEGORIES:
+        # 按分类顺序写入频道
+        category_order = ["4K频道", "央视频道", "卫视频道", "港澳频道", "电影频道", "儿童频道", "体育频道", "综艺频道", "新闻频道", "音乐频道", "综合频道"]
+        
+        for category in category_order:
             if category in channels and channels[category]:
-                # 写入分组标题，使用格式: 分组名,#genre#（去掉前导#）
-                category_clean = category.replace('🇨🇳 ', '').replace('📺 ', '').replace('📡 ', '').replace('🏙️ ', '').replace('🌊 ', '').replace('🌏 ', '').replace('🎬 ', '').replace('👶 ', '').replace('🔥 ', '').replace('📊 ', '').replace('⚽ ', '').replace('🎭 ', '')
-                f.write(f"{category_clean},#genre#\n")
+                # 写入分组标题，使用格式: 分组名,#genre#
+                f.write(f"{category},#genre#\n")
                 
                 # 对当前类别的频道按名称升序排序
                 sorted_channels = sorted(channels[category], key=lambda x: x[0])
@@ -1558,14 +983,12 @@ def generate_txt_file(channels, output_path):
                 # 分组之间添加空行
                 f.write("\n")
         
-        # 不写入其他频道，只包含CHANNEL_CATEGORIES中定义的频道
-        
         # 在文件末尾添加说明行
         f.write("\n说明,#genre#\n")
         
         # 写入文件头注释到文件末尾
         f.write(f"# IPTV直播源列表\n")
-        f.write(f"# 生成时间: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(f"# 生成时间: {datetime.now(timezone(timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')}\n")
         f.write("# 格式: 频道名称,播放URL\n")
         f.write("# 按分组排列\n")
         f.write("\n")
@@ -1632,14 +1055,9 @@ def extract_channels_from_txt(file_path):
                     if not url.startswith(('http://', 'https://', 'udp://', 'rtsp://', 'rtmp://', 'mms://', 'rtp://')):
                         continue
                     
-                    # 规范化频道名称
-                    normalized_name = normalize_channel_name(channel_name)
-                    if normalized_name:
-                        # 获取频道分类
-                        category = get_channel_category(normalized_name)
-                        # 只添加CHANNEL_CATEGORIES中定义的频道
-                        if category != "其他频道":
-                            channels[category].append((normalized_name, url))
+                    # 简化处理：直接使用频道名称，简单分类
+                    category = get_simple_category(channel_name)
+                    channels[category].append((channel_name, url))
     except Exception as e:
         print(f"解析本地文件 {file_path} 时出错: {e}")
     
@@ -1665,7 +1083,7 @@ def test_channels(channels):
         print("📌 URL测试功能已禁用")
         return channels
     
-    print(f"🔍 开始测试频道URL有效性: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))}")
+    print(f"🔍 开始测试频道URL有效性: {datetime.now(timezone(timedelta(hours=8)))}")
     
     # 收集所有需要测试的频道
     all_channel_items = []
@@ -1723,7 +1141,7 @@ def test_channels(channels):
         print("🔄 使用传统检测方式...")
         return test_channels_traditional(channels)
     
-    print(f"✅ URL测试完成: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))}")
+    print(f"✅ URL测试完成: {datetime.now(timezone(timedelta(hours=8)))}")
     print(f"📊 测试结果: 共测试 {total_channels} 个频道")
     print(f"📊 有效频道: {valid_count} 个")
     print(f"📊 无效频道: {invalid_count} 个")
@@ -1803,7 +1221,7 @@ def test_channels_traditional(channels):
         except Exception as e:
             print(f"⚠️  URL测试过程中发生错误: {e}")
     
-    print(f"✅ URL测试完成: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))}")
+    print(f"✅ URL测试完成: {datetime.now(timezone(timedelta(hours=8)))}")
     print(f"📊 测试结果: 共测试 {total_channels} 个频道")
     print(f"📊 有效频道: {valid_count} 个")
     print(f"📊 无效频道: {invalid_count} 个")
@@ -1843,7 +1261,7 @@ def merge_sources(sources, local_files):
     all_channels = defaultdict(list)
     seen = set()
     
-    print(f"🔍 开始合并直播源: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))}")
+    print(f"🔍 开始合并直播源: {datetime.now(timezone(timedelta(hours=8)))}")
     
     # 将本地文件转换为file:// URL
     local_sources = [f"file://{os.path.abspath(file_path)}" for file_path in local_files if os.path.exists(file_path)]
@@ -1911,7 +1329,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 def update_iptv_sources():
     """更新IPTV直播源"""
     logger.info("🚀 IPTV直播源自动生成工具")
-    logger.info(f"📅 运行时间: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')}")
+    logger.info(f"📅 运行时间: {datetime.now(timezone(timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')}")
     logger.info("=" * 50)
     
     # 加载缓存
@@ -1920,52 +1338,9 @@ def update_iptv_sources():
     start_time = time.time()
     
     # 检查是否启用模板驱动处理
-    template_enabled = config.get('template', {}).get('enabled', True)
-    
-    if template_enabled:
-        # 使用新的模板驱动架构
-        logger.info("🔧 使用模板驱动处理架构")
-        return _update_with_template_driven(start_time)
-    else:
-        # 使用传统的处理方式（向后兼容）
-        logger.info("📡 使用传统处理方式")
-        return _update_with_traditional_method(start_time)
-
-def _update_with_template_driven(start_time):
-    """使用模板驱动架构更新直播源"""
-    try:
-        # 初始化模板驱动处理器
-        processor = TemplateDrivenProcessor(config)
-        
-        # 处理所有源数据
-        matched_channels = processor.process_all_sources()
-        
-        if not matched_channels:
-            logger.error("❌ 模板驱动处理没有获取到任何频道内容！")
-            return False
-        
-        # 统计频道数量
-        total_channels = sum(len(channels) for category_channels in matched_channels.values() 
-                           for channels in category_channels.values())
-        total_groups = len(matched_channels)
-        
-        logger.info("=" * 50)
-        logger.info(f"📊 模板驱动处理统计:")
-        logger.info(f"📺 有效频道组数: {total_groups}")
-        logger.info(f"📚 有效频道总数: {total_channels}")
-        logger.info(f"⏱️  耗时: {format_interval(time.time() - start_time)}")
-        logger.info("=" * 50)
-        
-        if total_channels == 0:
-            logger.error("❌ 模板驱动处理后没有有效频道！")
-            return False
-        
-        logger.info(f"🎉 模板驱动处理完成！")
-        return True
-        
-    except Exception as e:
-        logger.error(f"💥 模板驱动处理失败: {e}")
-        return False
+    # 使用传统处理方式（简化版本）
+    logger.info("📡 使用传统处理方式")
+    return _update_with_traditional_method(start_time)
 
 def _update_with_traditional_method(start_time):
     """使用传统方法更新直播源"""
@@ -2044,10 +1419,10 @@ def _update_with_traditional_method(start_time):
         # 检查文件是否真的更新了
         if os.path.exists(output_file_m3u):
             mtime = os.path.getmtime(output_file_m3u)
-            logger.info(f"📅 {output_file_m3u} 最后修改时间: {datetime.datetime.fromtimestamp(mtime)}")
+            logger.info(f"📅 {output_file_m3u} 最后修改时间: {datetime.fromtimestamp(mtime)}")
         if os.path.exists(output_file_txt):
             mtime = os.path.getmtime(output_file_txt)
-            logger.info(f"📅 {output_file_txt} 最后修改时间: {datetime.datetime.fromtimestamp(mtime)}")
+            logger.info(f"📅 {output_file_txt} 最后修改时间: {datetime.fromtimestamp(mtime)}")
         return True
     else:
         logger.error("💥 生成文件失败！")
