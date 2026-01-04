@@ -63,30 +63,78 @@ simple_test.txt
 109  live 1205 直播源 -减.m3u
 109  live 1205 直播源 -减.txt
 
-# 项目分析报告（保留重要文档）
-# REPOSITORY_OPTIMIZATION_REPORT.md - 仓库优化报告，保留
-# 项目文件关联关系.md - 项目结构文档，保留
-# BUG_REPORT.md - 错误报告文档，保留
+# 文档文件（本地保留，不推送到远程仓库）
+README.md
+BUG_REPORT.md
+REPOSITORY_OPTIMIZATION_REPORT.md
+项目文件关联关系.md
+validator/README.md
+validator/DEVELOPMENT_REPORT.md
+validator/OPTIMIZATION_SUGGESTIONS.md
+validator/USAGE_GUIDE.md
 
-# 批处理脚本
-*.bat
+# 工作脚本和开发工具（本地保留，不推送）
+debug_m3u_parse.py
+analyze_invalid_channels.py
+check_all_syntax.py
+check_files.py
+check_syntax.py
+sync_core.ps1
 
-# 项目分析文件
-IPTV.py 功能分析
+unified_sources.py
+update_sources.py
+validate_workflows.py
+verify_merge.py
+vlc_effectiveness_test.py
+vlc_integration_test.py
+config_manager.py
+url_validator.py
+web_converter.py
+performance_test_m3u.json
+performance_test_txt.json
+test_output.png
 
-# 临时目录
-tmp/
-temp/
-
-# 下载文件
-downloads/
-
-# 配置文件
+# 配置文件（本地配置，不推送）
+iptv_config.json
 *.conf
 *.cfg
 *.ini
 
-# 开发报告文档（保留重要文档）
-REPOSITORY_DEVELOPMENT_REPORT.md - 开发总结，保留
-validator/DEVELOPMENT_REPORT.md - 开发报告，保留
-validator/OPTIMIZATION_SUGGESTIONS.md - 优化建议文档，保留
+# 临时和测试文件
+*.bat
+IPTV.py 功能分析
+tmp/
+temp/
+downloads/
+outputs/
+uploads/
+invalid_channels.txt
+simple_test.txt
+测试用.txt
+测试用.m3u
+109  live 1205 直播源 -减.m3u
+109  live 1205 直播源 -减.txt
+
+# 核心工具文件需要保留（不忽略）
+# convert_m3u_to_txt.py - M3U/TXT转换工具
+# IPTV.py - IPTV直播源自动生成工具
+# IPTVTXT.py - IPTV直播源自动生成工具
+# quick_url_checker.py - 轻量级URL检测器
+# file_utils.py - 文件工具
+# validator/iptv_validator.py - 验证工具核心
+# validator/vlc_detector.py - VLC检测器
+# jieguo*.m3u, jieguo*.txt - 生成的结果文件
+
+# Validator 目录下的辅助工具（本地保留，不推送）
+validator/analyze_m3u8_formats.py
+validator/compare_channels.py
+validator/web_app.py
+validator/vlc_detector_old_backup.py
+validator/__init__.py
+
+# IDE 和工具配置文件（本地保留，不推送）
+.trae/
+templates/
+
+# GitHub 工作流程文件（保留，用于自动化部署）
+.github/

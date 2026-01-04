@@ -18,6 +18,7 @@ import socket
 import multiprocessing
 import tempfile
 import ast
+import difflib
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -73,6 +74,153 @@ class ValidationTimestamp:
     def reset(cls):
         """重置时间戳"""
         cls._timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+class TemplateDrivenProcessor:
+    """模板驱动的频道处理器"""
+    
+    def __init__(self, config_dict=None):
+        """初始化处理器"""
+        self.config = config_dict or {}
+        self.channel_mapping = self.config.get('matching', {}).get('channel_mapping', {})
+        self.url_blacklist = self.config.get('network', {}).get('url_blacklist', [])
+        
+        # 增强匹配配置
+        self.fuzzy_threshold = self.config.get('matching', {}).get('fuzzy_threshold', 0.8)
+        self.enable_fuzzy_match = self.config.get('matching', {}).get('enable_fuzzy_match', True)
+        self.case_sensitive = self.config.get('matching', {}).get('case_sensitive', False)
+        
+        # 分辨率过滤配置
+        self.enable_resolution_filter = self.config.get('filter', {}).get('resolution', True)
+        self.min_resolution = self.config.get('filter', {}).get('min_resolution', [1920, 1080])
+        self.only_4k = self.config.get('filter', {}).get('only_4k', False)
+        
+        # URL测试配置
+        self.enable_url_testing = self.config.get('url_testing', {}).get('enable', False)
+        self.url_timeout = self.config.get('url_testing', {}).get('timeout', 3)
+        self.url_retries = self.config.get('url_testing', {}).get('retries', 0)
+        
+        # 尝试从config模块获取黑名单
+        if not self.url_blacklist:
+            try:
+                import config as config_module
+                self.url_blacklist = getattr(config_module, 'url_blacklist', [])
+            except ImportError:
+                self.url_blacklist = []
+        
+        logger.info(f"TemplateDrivenProcessor初始化完成")
+        logger.info(f"频道映射: {len(self.channel_mapping)} 条记录")
+        logger.info(f"URL黑名单: {len(self.url_blacklist)} 条记录")
+        logger.info(f"模糊匹配: {'启用' if self.enable_fuzzy_match else '禁用'} (阈值: {self.fuzzy_threshold})")
+        logger.info(f"分辨率过滤: {'启用' if self.enable_resolution_filter else '禁用'}")
+        logger.info(f"URL测试: {'启用' if self.enable_url_testing else '禁用'}")
+    
+    def is_url_blacklisted(self, url):
+        """检查URL是否在黑名单中"""
+        if not self.url_blacklist:
+            return False
+        
+        url_lower = url.lower()
+        for blacklist_item in self.url_blacklist:
+            if blacklist_item and blacklist_item in url_lower:
+                return True
+        return False
+    
+    def fuzzy_match(self, name1, name2):
+        """模糊匹配算法"""
+        if not self.enable_fuzzy_match:
+            return name1 == name2
+        
+        # 使用difflib进行模糊匹配
+        similarity = difflib.SequenceMatcher(None, name1.lower(), name2.lower()).ratio()
+        return similarity >= self.fuzzy_threshold
+    
+    def match_channels(self, online_channels, template_channels):
+        """模板驱动的频道匹配"""
+        matched_channels = {}
+        
+        for template_category, template_channel_list in template_channels.items():
+            matched_channels[template_category] = {}
+            
+            for template_channel_name in template_channel_list:
+                best_match = None
+                best_score = 0
+                
+                # 精确匹配
+                for online_category, online_channel_list in online_channels.items():
+                    for online_channel_name, online_url in online_channel_list:
+                        # 精确匹配
+                        if template_channel_name == online_channel_name:
+                            if not self.is_url_blacklisted(online_url):
+                                best_match = (online_channel_name, online_url)
+                                best_score = 1.0
+                                break
+                        
+                        # 模糊匹配
+                        elif self.fuzzy_match(template_channel_name, online_channel_name):
+                            similarity = difflib.SequenceMatcher(None, template_channel_name.lower(), online_channel_name.lower()).ratio()
+                            if similarity > best_score and not self.is_url_blacklisted(online_url):
+                                best_match = (online_channel_name, online_url)
+                                best_score = similarity
+                
+                # 如果找到匹配，添加到结果中
+                if best_match:
+                    matched_channels[template_category][template_channel_name] = [best_match[1]]
+        
+        return matched_channels
+    
+    def is_valid_resolution(self, url):
+        """检查URL的视频分辨率是否满足要求"""
+        if not self.enable_resolution_filter:
+            return True
+        
+        # 从URL中提取分辨率信息
+        # 这里可以扩展为从URL参数、查询字符串或流信息中获取分辨率
+        # 目前简单检查URL中是否包含分辨率标识
+        
+        resolution_patterns = {
+            '4K': ['4k', 'uhd', '2160', '3840x2160', '4096x2160'],
+            '1080p': ['1080', '1920x1080', 'fhd'],
+            '720p': ['720', '1280x720', 'hd']
+        }
+        
+        url_lower = url.lower()
+        
+        # 如果只要求4K
+        if self.only_4k:
+            for pattern in resolution_patterns['4K']:
+                if pattern in url_lower:
+                    return True
+            return False
+        
+        # 检查最小分辨率
+        for pattern in resolution_patterns['4K']:
+            if pattern in url_lower:
+                return True
+        
+        for pattern in resolution_patterns['1080p']:
+            if pattern in url_lower:
+                width, height = 1920, 1080
+                return (width >= self.min_resolution[0] and height >= self.min_resolution[1])
+        
+        for pattern in resolution_patterns['720p']:
+            if pattern in url_lower:
+                width, height = 1280, 720
+                return (width >= self.min_resolution[0] and height >= self.min_resolution[1])
+        
+        # 如果没有找到明确的分辨率信息，根据URL质量判断
+        # 高质量URL通常包含特定的域名或路径标识
+        high_quality_indicators = [
+            'cctv', '央视', '卫视', 'iptv', 'live', 'stream'
+        ]
+        
+        for indicator in high_quality_indicators:
+            if indicator in url_lower:
+                # 假设这些是高质量源，默认满足最低分辨率要求
+                width, height = 1920, 1080  # 默认1080p
+                return (width >= self.min_resolution[0] and height >= self.min_resolution[1])
+        
+        # 默认返回True，允许没有明确分辨率信息的URL通过
+        return True
 
 # 频道分类（参考BlackBird-Player的分类方式，使用emoji前缀）
 CHANNEL_CATEGORIES = {
@@ -787,23 +935,58 @@ def check_ipv6_support():
         logger.error(f"IPv6支持检查失败: {e}")
         return False
 
+# IPv6优化相关功能
+def prioritize_ipv6_urls(channels):
+    """优先选择IPv6 URL"""
+    if not config.ip_version_priority == "ipv6":
+        return channels
+    
+    prioritized_channels = {}
+    for category, channel_list in channels.items():
+        prioritized_channels[category] = []
+        for channel_name, url in channel_list:
+            # 检查URL是否包含IPv6地址
+            if '[' in url and ']' in url:
+                # IPv6 URL，优先添加
+                prioritized_channels[category].append((channel_name, url))
+            else:
+                # IPv4 URL，延后添加
+                prioritized_channels[category].append((channel_name, url))
+    
+    return prioritized_channels
+
+# URL黑名单检查
+def is_url_blacklisted(url):
+    """检查URL是否在黑名单中"""
+    try:
+        if not config.url_blacklist:
+            return False
+        
+        url_lower = url.lower()
+        for blacklist_item in config.url_blacklist:
+            if blacklist_item and blacklist_item in url_lower:
+                return True
+        return False
+    except Exception as e:
+        logger.error(f"检查URL黑名单时出错: {e}")
+        return False
+
 # 从M3U文件中提取频道信息
 def extract_channels_from_m3u(content):
-    """从M3U内容中提取频道信息"""
+    """从M3U内容中提取频道信息（使用增强匹配算法）"""
     channels = defaultdict(list)
     matches = re.findall(M3U_CHANNEL_PATTERN, content)
+    
+    # 初始化增强处理器
+    processor = TemplateDrivenProcessor()
     
     for match in matches:
         tvg_name = match[0].strip() if match[0] else match[2].strip()
         channel_name = match[2].strip()
         url = match[3].strip()
         
-        # 检查频道名是否为空
-        if not channel_name:
-            continue
-        
-        # 检查频道名是否为纯数字
-        if channel_name.isdigit():
+        # 基础过滤检查
+        if not channel_name or channel_name.isdigit():
             continue
         
         # 购物频道过滤
@@ -812,14 +995,49 @@ def extract_channels_from_m3u(content):
         if any(keyword in channel_name_lower for keyword in shopping_keywords):
             continue
         
-        # 规范化频道名称
-        normalized_name = normalize_channel_name(channel_name)
-        if normalized_name:
+        # URL黑名单检查
+        if processor.is_url_blacklisted(url):
+            logger.debug(f"URL在黑名单中，跳过: {url}")
+            continue
+        
+        # 分辨率过滤检查
+        if processor.enable_resolution_filter and not processor.is_valid_resolution(url):
+            logger.debug(f"URL分辨率不满足要求，跳过: {url}")
+            continue
+        
+        # 增强频道名称匹配
+        matched_name = None
+        best_match_score = 0
+        
+        # 遍历所有标准频道名称进行匹配
+        for standard_name in CHANNEL_MAPPING.keys():
+            # 精确匹配
+            if channel_name == standard_name:
+                matched_name = standard_name
+                best_match_score = 1.0
+                break
+            
+            # 检查别名匹配
+            if channel_name in CHANNEL_MAPPING[standard_name]:
+                matched_name = standard_name
+                best_match_score = 1.0
+                break
+            
+            # 模糊匹配（如果启用）
+            if processor.enable_fuzzy_match:
+                similarity = processor.fuzzy_match(channel_name, standard_name)
+                if similarity >= processor.fuzzy_threshold and similarity > best_match_score:
+                    matched_name = standard_name
+                    best_match_score = similarity
+        
+        # 如果找到匹配的频道
+        if matched_name:
             # 获取频道分类
-            category = get_channel_category(normalized_name)
+            category = get_channel_category(matched_name)
             # 只添加CHANNEL_CATEGORIES中定义的频道
             if category != "其他频道":
-                channels[category].append((normalized_name, url))
+                channels[category].append((matched_name, url))
+                logger.debug(f"匹配成功: {channel_name} -> {matched_name} (相似度: {best_match_score:.2f})")
     
     return channels
 
