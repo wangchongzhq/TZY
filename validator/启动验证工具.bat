@@ -1,51 +1,77 @@
 @echo off
-chcp 65001 >nul
-title 直播源验证工具启动器
+chcp 936 >nul
+title IPTV Validator Launcher
 
 echo ================================================
-echo     直播源验证工具启动器
+echo     IPTV Validator Launcher
 echo ================================================
 echo.
 
 cd /d "%~dp0"
-echo 当前目录: %CD%
+echo Current directory: %CD%
 echo.
 
+REM Check for EXE version first
 if exist "dist\直播源验证工具.exe" (
-    echo ✓ 找到EXE文件: %CD%\dist\直播源验证工具.exe
+    echo [OK] Found EXE file: %CD%\dist\直播源验证工具.exe
     echo.
-    echo 正在启动验证工具...
+    echo Starting validator...
     echo.
     start "" "dist\直播源验证工具.exe"
-    echo ✓ 工具已启动！
+    echo [OK] Validator started!
     echo.
-    echo 如果工具没有出现，请检查:
-    echo 1. 是否有杀毒软件拦截
-    echo 2. 是否允许运行未知程序
-    echo 3. 查看错误信息
+    echo If the tool doesn't appear, please check:
+    echo 1. Anti-virus software blocking
+    echo 2. Unknown program execution permission
+    echo 3. Error messages
+    goto :end
 ) else (
-    echo ✗ 未找到EXE文件，尝试使用Python版本
+    echo [WARN] EXE file not found, trying Python version
     echo.
+    REM Check if Python version exists
     if exist "integrated_validator.py" (
-        echo ✓ 找到验证工具: %CD%\integrated_validator.py
+        echo [OK] Found validator: %CD%\integrated_validator.py
         echo.
-        echo 正在启动验证工具...
+        echo Starting validator...
         echo.
+        
+        REM Check if we have a GUI environment
+        echo Checking GUI environment...
+        
+        REM Try to run the validator
         python integrated_validator.py
-        echo.
-        echo ✓ 验证工具已退出
+        
+        REM Check exit code
+        if errorlevel 1 (
+            echo.
+            echo [ERROR] Validator failed to start
+            echo Possible reasons:
+            echo 1. No GUI environment (running in console mode)
+            echo 2. Missing dependencies
+            echo 3. Permission issues
+            echo.
+            echo Solutions:
+            echo 1. Run on a desktop environment
+            echo 2. Check Python dependencies: pip install -r requirements.txt
+            echo 3. Try running from Windows Explorer
+            echo.
+        ) else (
+            echo.
+            echo [OK] Validator exited normally
+        )
     ) else (
-        echo ✗ 错误: 未找到任何可用的验证工具
-        echo 预期文件: 
-        echo 1. dist\直播源验证工具.exe (EXE版本)
-        echo 2. integrated_validator.py (Python版本)
+        echo [ERROR] No validator found
+        echo Expected files:
+        echo 1. dist\直播源验证工具.exe (EXE version)
+        echo 2. integrated_validator.py (Python version)
         echo.
-        echo 解决方案:
-        echo 1. 运行 build_exe.py 构建EXE文件
-        echo 2. 确保integrated_validator.py文件存在
+        echo Solutions:
+        echo 1. Run build_exe.py to build EXE file
+        echo 2. Ensure integrated_validator.py exists
     )
 )
 
+:end
 echo.
-echo 按任意键退出...
+echo Press any key to exit...
 pause >nul
