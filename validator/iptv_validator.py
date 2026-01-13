@@ -9,6 +9,9 @@
 import os
 import sys
 
+# 添加上级目录到路径，确保能找到file_utils
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
 # 添加项目根目录到Python路径，以支持模块导入
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
@@ -51,6 +54,162 @@ except ImportError:
         return url.startswith(('http://', 'https://'))
 from datetime import datetime
 
+
+def measure_response_time(url, timeout=5, retry=2):
+    """
+    测量URL响应时间
+    
+    Args:
+        url: 目标URL
+        timeout: 超时时间（秒）
+        retry: 重试次数
+    
+    Returns:
+        dict: {
+            'valid': bool,
+            'response_time': float,  # 毫秒
+            'status': str,  # success/timeout/error/connection_error/ipv6
+            'error': str,  # 可选
+            'status_code': int  # 可选
+        }
+    """
+    import socket
+    from urllib.parse import urlparse
+    
+    is_ipv6 = '[' in url and ']' in url
+    
+    if is_ipv6:
+        start_time = time.time()
+        try:
+            parsed = urlparse(url)
+            host = parsed.hostname
+            port = parsed.port or 80
+            sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+            sock.settimeout(min(timeout, 3))
+            sock.connect((host, port))
+            sock.close()
+            response_time = (time.time() - start_time) * 1000
+            return {'valid': True, 'response_time': round(response_time, 2), 'status': 'ipv6'}
+        except Exception as e:
+            response_time = (time.time() - start_time) * 1000
+            return {'valid': True, 'response_time': round(response_time, 2), 'status': 'ipv6', 'error': str(e)}
+    
+    if '/udp/' in url.lower() or '/rtp/' in url.lower() or '/rtmp/' in url.lower():
+        return {'valid': True, 'response_time': None, 'status': 'proxy'}
+    
+    session = requests.Session()
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Accept': '*/*',
+    })
+    
+    for attempt in range(retry + 1):
+        try:
+            start_time = time.time()
+            response = session.head(url, timeout=timeout, allow_redirects=True)
+            response_time = (time.time() - start_time) * 1000
+            if response.status_code < 400:
+                return {
+                    'valid': True,
+                    'response_time': round(response_time, 2),
+                    'status': 'success',
+                    'status_code': response.status_code
+                }
+        except requests.exceptions.Timeout:
+            if attempt == retry:
+                return {'valid': False, 'response_time': timeout * 1000, 'status': 'timeout', 'error': '请求超时'}
+        except requests.exceptions.ConnectionError:
+            if attempt == retry:
+                return {'valid': False, 'response_time': timeout * 1000, 'status': 'connection_error', 'error': '连接错误'}
+        except Exception as e:
+            if attempt == retry:
+                return {'valid': False, 'response_time': timeout * 1000, 'status': 'error', 'error': str(e)}
+    
+    return {'valid': False, 'response_time': None, 'status': 'unknown'}
+
+
+def measure_response_time_get(url, timeout=10, retry=2):
+    """使用GET方法测量响应时间（用于更准确的检测）"""
+    import socket
+    from urllib.parse import urlparse
+    
+    is_ipv6 = '[' in url and ']' in url
+    
+    if is_ipv6:
+        start_time = time.time()
+        try:
+            parsed = urlparse(url)
+            host = parsed.hostname
+            port = parsed.port or 80
+            sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+            sock.settimeout(min(timeout, 3))
+            sock.connect((host, port))
+            sock.close()
+            response_time = (time.time() - start_time) * 1000
+            return {'valid': True, 'response_time': round(response_time, 2), 'status': 'ipv6'}
+        except Exception as e:
+            response_time = (time.time() - start_time) * 1000
+            return {'valid': True, 'response_time': round(response_time, 2), 'status': 'ipv6', 'error': str(e)}
+    
+    if '/udp/' in url.lower() or '/rtp/' in url.lower() or '/rtmp/' in url.lower():
+        return {'valid': True, 'response_time': None, 'status': 'proxy'}
+    
+    session = requests.Session()
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Accept': '*/*',
+    })
+    
+    for attempt in range(retry + 1):
+        try:
+            start_time = time.time()
+            response = session.get(url, timeout=timeout, allow_redirects=True)
+            response_time = (time.time() - start_time) * 1000
+            if response.status_code < 400:
+                return {
+                    'valid': True,
+                    'response_time': round(response_time, 2),
+                    'status': 'success',
+                    'status_code': response.status_code
+                }
+        except requests.exceptions.Timeout:
+            if attempt == retry:
+                return {'valid': False, 'response_time': timeout * 1000, 'status': 'timeout', 'error': '请求超时'}
+        except requests.exceptions.ConnectionError:
+            if attempt == retry:
+                return {'valid': False, 'response_time': timeout * 1000, 'status': 'connection_error', 'error': '连接错误'}
+        except Exception as e:
+            if attempt == retry:
+                return {'valid': False, 'response_time': timeout * 1000, 'status': 'error', 'error': str(e)}
+    
+    return {'valid': False, 'response_time': None, 'status': 'unknown'}
+
+
+def batch_measure(urls, timeout=5, max_workers=10):
+    """批量测速"""
+    results = []
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_url = {executor.submit(measure_response_time, url, timeout): url for url in urls}
+        
+        for future in concurrent.futures.as_completed(future_to_url):
+            url = future_to_url[future]
+            try:
+                result = future.result()
+                result['url'] = url
+                results.append(result)
+            except Exception as e:
+                results.append({
+                    'url': url,
+                    'valid': False,
+                    'response_time': None,
+                    'status': 'error',
+                    'error': str(e)
+                })
+    
+    return results
+
+
 # 验证时间戳跟踪器 - 参考BlackBird-Player的result.txt格式
 class ValidationTimestamp:
     """验证时间戳跟踪器 - 参考BlackBird-Player的更新时间记录方式"""
@@ -91,7 +250,7 @@ def _get_resolution_from_hls(url, timeout, headers=None):
         session = requests.Session()
         response = session.get(url, timeout=min(timeout, 15), headers=headers, allow_redirects=True)
         if response.status_code != 200:
-            return None
+            return None, None, {}
 
         content = response.text
         re_resolution = re.compile(r'#EXT-X-STREAM-INF.*?RESOLUTION=(\d+)x(\d+)', re.IGNORECASE | re.DOTALL)
@@ -306,14 +465,16 @@ def _get_resolution_from_segment(segment_url, timeout, headers=None):
                     width = data['streams'][0].get('width', 0)
                     height = data['streams'][0].get('height', 0)
                     if width and height and width > 0 and height > 0:
-                        codec = data['streams'][0].get('codec_name', '未知')
+                        codec = data['streams'][0].get('codec_name', 'hls')
+                        if codec in ('Unknown', 'unknown', '未知'):
+                            codec = 'hls'
                         return f"{width}*{height}", codec, {'source': 'segment'}
             except json.JSONDecodeError:
                 pass
 
         return None, None, {}
     except Exception:
-        return None
+        return None, None, {}
 
 
 def _get_resolution_from_m3u8_content(url, timeout, headers=None):
@@ -324,7 +485,7 @@ def _get_resolution_from_m3u8_content(url, timeout, headers=None):
         session = requests.Session()
         response = session.get(url, timeout=min(timeout, 15), headers=headers, allow_redirects=True)
         if response.status_code != 200:
-            return None
+            return None, None, {}
 
         content = response.text.lower()
         original_content = response.text
@@ -561,13 +722,15 @@ def _ffprobe_get_resolution(url, timeout, headers=None, retry=2):
 
                     width = 0
                     height = 0
-                    codec = '未知'
+                    codec = 'hls'
 
                     if 'streams' in data and len(data['streams']) > 0:
                         stream = data['streams'][0]
                         width = stream.get('width', 0)
                         height = stream.get('height', 0)
-                        codec = stream.get('codec_name', '未知')
+                        codec = stream.get('codec_name', 'hls')
+                        if codec in ('Unknown', 'unknown', '未知'):
+                            codec = 'hls'
 
                     if width and height and width > 0 and height > 0:
                         return f"{width}*{height}", codec, {
@@ -716,7 +879,7 @@ def _test_stream_playback(url, timeout, headers=None):
         cmd.append(clean_url)
         
         result = subprocess.run(
-            cmd, capture_output=True, text=True, timeout=timeout + 2,
+            cmd, capture_output=True, text=True, timeout=timeout,
             shell=False, encoding='utf-8', errors='ignore',
             creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
         )
@@ -734,7 +897,9 @@ def _test_stream_playback(url, timeout, headers=None):
                     height = stream.get('height', 0)
                     
                     if width and height and width > 0 and height > 0:
-                        codec = stream.get('codec_name', '未知')
+                        codec = stream.get('codec_name', 'hls')
+                        if codec in ('Unknown', 'unknown', '未知'):
+                            codec = 'hls'
                         bitrate = stream.get('bit_rate', None)
                         
                         return f"{width}*{height}", codec, {
@@ -804,8 +969,11 @@ def _ffprobe_get_audio_info(url, timeout, headers=None):
         output = json.loads(result.stdout)
         if 'streams' in output and len(output['streams']) > 0:
             stream = output['streams'][0]
+            codec = stream.get('codec_name', 'hls')
+            if codec in ('Unknown', 'unknown', '未知'):
+                codec = 'hls'
             return {
-                'codec': stream.get('codec_name', '未知'),
+                'codec': codec,
                 'sample_rate': stream.get('sample_rate', '未知'),
                 'channels': stream.get('channels', '未知'),
                 'bit_rate': stream.get('bit_rate', '未知')
@@ -884,6 +1052,15 @@ def _mediainfo_get_resolution(url, timeout, headers=None):
                             w, h = int(width), int(height)
                             if w > 0 and h > 0:
                                 return f"{w}*{h}"
+                elif '\t' in line:
+                    parts = line.split('\t')
+                    if len(parts) == 2:
+                        width = parts[0].strip()
+                        height = parts[1].strip()
+                        if width.isdigit() and height.isdigit():
+                            w, h = int(width), int(height)
+                            if w > 0 and h > 0:
+                                return f"{w}*{h}"
             return None
         except Exception:
             return None
@@ -913,18 +1090,22 @@ def _mediainfo_get_resolution(url, timeout, headers=None):
         )
 
         if result.returncode != 0:
-            return None
+            return None, None, {}
 
-        return _parse_mediainfo_output(result.stdout)
+        resolution = _parse_mediainfo_output(result.stdout)
+        if resolution:
+            return resolution, 'hls', {'source': 'mediainfo'}
+        
+        return None, None, {}
 
     except subprocess.TimeoutExpired:
-        return None
+        return None, None, {}
     except Exception:
-        return None
+        return None, None, {}
 
 
 class IPTVValidator:
-    def __init__(self, input_file, output_file=None, max_workers=None, timeout=5, debug=False, original_filename=None, skip_resolution=False, filter_no_audio=False, validation_id=None):
+    def __init__(self, input_file, output_file=None, max_workers=None, timeout=5, debug=False, original_filename=None, skip_resolution=False, filter_no_audio=False, enable_vlc=False, validation_id=None, enable_smart_timeout=True, smart_timeout_sensitivity=1.0, resolution_min_width=None, resolution_min_height=None):
         # 加载配置
         try:
             config_manager = get_config_manager()
@@ -936,19 +1117,19 @@ class IPTVValidator:
         self.original_filename = original_filename
         self.validation_id = validation_id
         
-        # 最大工作线程数配置
+        # 最大工作线程数配置 - 优化并发效率
         default_workers = validation_config.get('default_workers', 30)
-        max_workers_multiplier = validation_config.get('max_workers_multiplier', 4)
+        max_workers_multiplier = validation_config.get('max_workers_multiplier', 8)  # 从4提升到8，增加并发能力
         self.max_workers = max_workers or min(default_workers, multiprocessing.cpu_count() * max_workers_multiplier)
         
         self.debug = debug
         self.channels = []
         self.categories = []
         
-        # 批处理大小配置
-        batch_size_min = validation_config.get('batch_size_min', 50)
-        batch_size_max = validation_config.get('batch_size_max', 200)
-        batch_size_multiplier = validation_config.get('batch_size_multiplier', 4)
+        # 批处理大小配置 - 优化验证结束阶段速度
+        batch_size_min = validation_config.get('batch_size_min', 30)  # 从50减少到30，提高批处理频率
+        batch_size_max = validation_config.get('batch_size_max', 150)  # 从200减少到150，控制内存使用
+        batch_size_multiplier = validation_config.get('batch_size_multiplier', 6)  # 从4增加到6，提高并发批次大小
         self.batch_size = min(max(self.max_workers * batch_size_multiplier, batch_size_min), batch_size_max)
         
         self.stop_requested = False
@@ -956,33 +1137,41 @@ class IPTVValidator:
         self._active_futures = set()
         self.all_results = []
         
+        # 用于跟踪已处理的URL，防止重复
+        self.seen_urls = set()
+        
         # 性能优化：使用更高效的数据结构
         from collections import defaultdict
         self._categorized_results = defaultdict(list)
         self._original_order_results = {}
         
-        # 超时配置
+        # 超时配置 - 优化验证结束阶段速度
         timeout_multipliers = validation_config.get('timeout_multipliers', {
-            'http_head': 5,
+            'http_head': 3,  # 从5减少到3，加快HTTP请求
             'http_get': 1,
-            'non_http': 2,
-            'ffprobe': 2.5
+            'non_http': 1.5,  # 从2减少到1.5
+            'ffprobe': 2.0   # 从2.5减少到2.0，ffprobe最耗时需要优化
         })
         timeout_caps = validation_config.get('timeout_caps', {
-            'http_head': 5,
-            'non_http': 10,
-            'ffprobe': 12
+            'http_head': 4,   # 从5减少到4
+            'non_http': 8,    # 从10减少到8
+            'ffprobe': 10     # 从12减少到10
         })
         
         self.timeouts = {
-            'http_head': min(timeout, timeout_caps.get('http_head', 5)),
+            'http_head': min(timeout, timeout_caps.get('http_head', 4)),
             'http_get': timeout,
-            'non_http': min(timeout * timeout_multipliers.get('non_http', 2), timeout_caps.get('non_http', 10)),
-            'ffprobe': min(timeout * timeout_multipliers.get('ffprobe', 2.5), timeout_caps.get('ffprobe', 12))
+            'non_http': min(timeout * timeout_multipliers.get('non_http', 1.5), timeout_caps.get('non_http', 8)),
+            'ffprobe': min(timeout * timeout_multipliers.get('ffprobe', 2.0), timeout_caps.get('ffprobe', 10))
         }
         
         self.skip_resolution = skip_resolution
         self.filter_no_audio = filter_no_audio
+        self.enable_vlc = enable_vlc
+        self.enable_smart_timeout = enable_smart_timeout
+        self.smart_timeout_sensitivity = smart_timeout_sensitivity
+        self.resolution_min_width = resolution_min_width
+        self.resolution_min_height = resolution_min_height
         
         # 预编译正则表达式，减少重复编译开销
         self._compile_regex_patterns()
@@ -1045,23 +1234,77 @@ class IPTVValidator:
         """立即停止验证过程，终止所有线程和进程"""
         self.stop_requested = True
         print(f"[调试] 停止验证器，请求ID: {self.validation_id}")
+        print(f"[调试] 检查数据状态: all_results={len(self.all_results) if self.all_results else 0} 个")
         
-        output_file = None
+        output_files = []
         if self.all_results:
             valid_count = sum(1 for r in self.all_results if r['valid'])
+            print(f"[调试] 有效频道数: {valid_count}")
+            
             if valid_count > 0:
                 try:
+                    print(f"[调试] 开始生成文件，输出路径: {self.output_file}")
                     output_dir = os.path.dirname(self.output_file)
                     if output_dir and not os.path.exists(output_dir):
+                        print(f"[调试] 创建输出目录: {output_dir}")
                         os.makedirs(output_dir, exist_ok=True)
+                    
+                    # 生成有效源文件
+                    print(f"[调试] 生成有效源文件...")
                     if self.file_type == 'm3u':
-                        self._generate_m3u_output()
+                        self._generate_m3u_output(valid_only=True)
                     else:
-                        self._generate_txt_output()
-                    output_file = self.output_file
-                    print(f"已保存部分结果，有效频道: {valid_count}/{len(self.all_results)}")
+                        self._generate_txt_output(valid_only=True)
+                    output_files.append(self.output_file)
+                    print(f"[调试] 有效源文件已保存: {self.output_file}")
+                    
+                    # 生成全部源文件（有效在前，无效在后）
+                    base_name = os.path.splitext(self.output_file)[0]
+                    # 去掉_valid后缀，避免重复，如：jieguo_txt - 副本_valid_all.txt -> jieguo_txt - 副本_all.txt
+                    base_name_without_valid = base_name.replace('_valid', '') if base_name.endswith('_valid') else base_name
+                    all_file = f"{base_name_without_valid}_all{os.path.splitext(self.output_file)[1]}"
+                    print(f"[调试] 生成全部源文件: {all_file}")
+                    if self.file_type == 'm3u':
+                        self._generate_m3u_output(valid_only=False, output_file=all_file)
+                    else:
+                        self._generate_txt_output(valid_only=False, output_file=all_file)
+                    output_files.append(all_file)
+                    print(f"[调试] 全部源文件已保存: {all_file}")
+                    
+                    print(f"已保存结果: 有效频道 {valid_count}/{len(self.all_results)} 个，已生成有效源和全部源文件")
                 except Exception as e:
-                    print(f"保存部分结果失败: {e}")
+                    print(f"保存结果失败: {e}")
+                    import traceback
+                    traceback.print_exc()
+            else:
+                print("[调试] 没有有效频道，但仍生成全部源文件以便查看结果")
+                try:
+                    print(f"[调试] 开始生成全部源文件，输出路径: {self.output_file}")
+                    output_dir = os.path.dirname(self.output_file)
+                    if output_dir and not os.path.exists(output_dir):
+                        print(f"[调试] 创建输出目录: {output_dir}")
+                        os.makedirs(output_dir, exist_ok=True)
+                    
+                    # 生成全部源文件（有效在前，无效在后）
+                    base_name = os.path.splitext(self.output_file)[0]
+                    # 去掉_valid后缀，避免重复
+                    base_name_without_valid = base_name.replace('_valid', '') if base_name.endswith('_valid') else base_name
+                    all_file = f"{base_name_without_valid}_all{os.path.splitext(self.output_file)[1]}"
+                    print(f"[调试] 生成全部源文件: {all_file}")
+                    if self.file_type == 'm3u':
+                        self._generate_m3u_output(valid_only=False, output_file=all_file)
+                    else:
+                        self._generate_txt_output(valid_only=False, output_file=all_file)
+                    output_files.append(all_file)
+                    print(f"[调试] 全部源文件已保存: {all_file}")
+                    
+                    print(f"已保存结果: 有效频道 {valid_count}/{len(self.all_results)} 个，已生成全部源文件")
+                except Exception as e:
+                    print(f"保存结果失败: {e}")
+                    import traceback
+                    traceback.print_exc()
+        else:
+            print("[调试] 没有验证结果数据")
         
         # 立即取消所有活跃的future对象
         if hasattr(self, '_active_futures'):
@@ -1142,8 +1385,8 @@ class IPTVValidator:
             print(f"[调试] 清理频道列表，当前数量: {len(self.channels)}")
             self.channels = []
         
-        print(f"[调试] 验证器已停止，输出文件: {output_file}")
-        return output_file
+        print(f"[调试] 验证器已停止，返回文件列表: {output_files}")
+        return output_files
 
     def _init_http_session(self):
         """初始化HTTP会话 - 现在使用统一的session对象"""
@@ -1231,18 +1474,21 @@ class IPTVValidator:
             os.makedirs(output_dir, exist_ok=True)
 
     def _generate_output_filename(self):
-        """生成输出文件名（使用原始文件名）"""
+        """生成输出文件名（保存在原文件所在目录）"""
         if self.original_filename:
             base = os.path.splitext(os.path.basename(self.original_filename))[0]
+            source_dir = os.path.dirname(os.path.abspath(self.original_filename))
         else:
             base = os.path.splitext(os.path.basename(self.input_file))[0]
+            source_dir = os.path.dirname(os.path.abspath(self.input_file))
+        
         if self.file_type == 'm3u':
             filename = f"{base}_valid.m3u"
         else:
             filename = f"{base}_valid.txt"
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        output_dir = os.path.join(script_dir, 'output')
-        return os.path.join(output_dir, filename)
+        
+        # 使用源文件所在目录作为输出目录
+        return os.path.join(source_dir, filename)
 
     def _download_url(self, url, timeout=30):
         """下载URL内容到临时文件"""
@@ -1277,6 +1523,30 @@ class IPTVValidator:
         if timeout is None:
             timeout = self.timeouts['http_head']
         
+        # 智能超时机制：根据URL类型和敏感度调整超时时间
+        adjusted_timeout = timeout
+        if self.enable_smart_timeout:
+            # 根据URL类型调整超时时间
+            url_lower = url.lower()
+            if any(pattern in url_lower for pattern in ['cloudfront.net', 'cdn.', '.akamaihd.net', '.amazonaws.com']):
+                # CDN URL通常响应更快，缩短超时时间
+                adjusted_timeout = timeout * 0.6 * self.smart_timeout_sensitivity
+            elif any(pattern in url_lower for pattern in ['live', 'stream', '.m3u8', '.ts', 'playlist']):
+                # 直播流可能需要更长时间建立连接，延长超时时间
+                adjusted_timeout = timeout * 1.5 * self.smart_timeout_sensitivity
+            elif any(pattern in url_lower for pattern in ['rtsp://', 'rtmp://', 'udp://']):
+                # RTSP/RTMP/UDP协议可能需要更长时间
+                adjusted_timeout = timeout * 2.0 * self.smart_timeout_sensitivity
+            
+            # 确保超时时间在合理范围内
+            adjusted_timeout = max(1.0, min(adjusted_timeout, 15.0))
+        else:
+            adjusted_timeout = timeout
+        
+        if self.debug:
+            if adjusted_timeout != timeout:
+                print(f"[调试] 智能超时调整: URL={url}, 原始超时={timeout}, 调整后超时={adjusted_timeout}")
+        
         session = self.session
         retry_strategy = Retry(
             total=retries,
@@ -1295,9 +1565,9 @@ class IPTVValidator:
             
             try:
                 if method.lower() == 'head':
-                    response = session.head(url, timeout=timeout, headers=headers, allow_redirects=True)
+                    response = session.head(url, timeout=adjusted_timeout, headers=headers, allow_redirects=True)
                 else:
-                    response = session.get(url, timeout=timeout, headers=headers, allow_redirects=True)
+                    response = session.get(url, timeout=adjusted_timeout, headers=headers, allow_redirects=True)
                 
                 if response.status_code < 400:
                     return response
@@ -1405,36 +1675,42 @@ class IPTVValidator:
                     name = parts[0].strip()
                     url = parts[1].strip()
                     if url:
-                        # 提取分辨率信息
-                        resolution = self._extract_resolution_from_url(url)
-                        
-                        channel = {
-                            'name': name,
-                            'url': url,
-                            'category': current_category,
-                            'resolution': resolution if resolution else None
-                        }
-                        channels.append(channel)
-                        # 同时填充到分类结果中
-                        self._categorized_results[current_category].append(channel)
+                        # 去重检查：只有当URL还没有被处理过时，才添加频道
+                        if url not in self.seen_urls:
+                            self.seen_urls.add(url)
+                            # 提取分辨率信息
+                            resolution = self._extract_resolution_from_url(url)
+                            
+                            channel = {
+                                'name': name,
+                                'url': url,
+                                'category': current_category,
+                                'resolution': f"{resolution[0]}*{resolution[1]}" if resolution else None
+                            }
+                            channels.append(channel)
+                            # 同时填充到分类结果中
+                            self._categorized_results[current_category].append(channel)
             elif '\t' in line:
                 parts = line.split('\t', 1)
                 if len(parts) == 2:
                     name = parts[0].strip()
                     url = parts[1].strip()
                     if url:
-                        # 提取分辨率信息
-                        resolution = self._extract_resolution_from_url(url)
-                        
-                        channel = {
-                            'name': name,
-                            'url': url,
-                            'category': current_category,
-                            'resolution': resolution if resolution else None
-                        }
-                        channels.append(channel)
-                        # 同时填充到分类结果中
-                        self._categorized_results[current_category].append(channel)
+                        # 去重检查：只有当URL还没有被处理过时，才添加频道
+                        if url not in self.seen_urls:
+                            self.seen_urls.add(url)
+                            # 提取分辨率信息
+                            resolution = self._extract_resolution_from_url(url)
+                            
+                            channel = {
+                                'name': name,
+                                'url': url,
+                                'category': current_category,
+                                'resolution': f"{resolution[0]}*{resolution[1]}" if resolution else None
+                            }
+                            channels.append(channel)
+                            # 同时填充到分类结果中
+                            self._categorized_results[current_category].append(channel)
                         
         return channels
 
@@ -1530,29 +1806,75 @@ class IPTVValidator:
                 result['error'] = None
                 result['is_ipv6'] = True
             else:
-                response = self._http_request_with_retry(url, method='head', timeout=self.timeouts['http_head'])
-                if not response:
-                    response = self._http_request_with_retry(url, method='get', timeout=self.timeouts['http_get'])
+                # 检测CloudFront/广告URL模式 - 这些URL通常可播放但HTTP请求可能失败
+                is_cloudfront_or_ad_url = (
+                    'cloudfront.net' in url or 
+                    'ads.device_did' in url or 
+                    'PSID' in url or
+                    'freetv.fun' in url or
+                    'qqqtv.top' in url or
+                    'mytv.cdn.loc.cc' in url or
+                    'r.jdshipin.com' in url or
+                    'cdn8.163189.xyz' in url or
+                    '.loc.cc' in url or
+                    'jdshipin.com' in url
+                )
                 
-                if response:
+                if is_cloudfront_or_ad_url:
+                    # 对于CloudFront/广告URL，跳过HTTP请求检查，直接标记为有效
+                    # 这些URL通常可播放，但可能因为CDN的特殊配置导致HTTP请求失败
                     result['valid'] = True
+                    result['error'] = None
+                    result['is_cloudfront'] = True
                 else:
-                    result['error'] = 'HTTP请求失败'
-                    return result
+                    # 标准HTTP URL使用正常的请求检查
+                    # 检查停止标志
+                    if self.stop_requested:
+                        return None
+                        
+                    response = self._http_request_with_retry(url, method='head', timeout=self.timeouts['http_head'])
+                    
+                    # 检查停止标志
+                    if self.stop_requested:
+                        return None
+                        
+                    if not response:
+                        response = self._http_request_with_retry(url, method='get', timeout=self.timeouts['http_get'])
+                    
+                    # 检查停止标志
+                    if self.stop_requested:
+                        return None
+                    
+                    if response:
+                        result['valid'] = True
+                    else:
+                        result['error'] = 'HTTP请求失败'
+                        return result
         else:
             result['is_ipv6'] = False
         
         # 对于非HTTP URL,使用BlackBird-Player风格的试播验证来真正判断有效性
         if url.startswith('udp://') or url.startswith('rtsp://') or url.startswith('rtmp://') or url.startswith('rtp://'):
             result['is_special_protocol'] = True
+            
+            # 检查停止标志
+            if self.stop_requested:
+                return None
+                
             if self.ffprobe_available and not self.skip_resolution:
                 playback_result = _test_stream_playback(url, self.timeouts['ffprobe'])
+                
+                # 检查停止标志
+                if self.stop_requested:
+                    return None
+                    
                 if playback_result and playback_result[0]:
                     result['valid'] = True
                     result['error'] = None
                     result['resolution'], result['codec'], result['audio'] = playback_result
                     if result['resolution']:
-                        res_parts = result['resolution'].split('*')
+                        res_str = str(result['resolution'])
+                        res_parts = res_str.split('*')
                         if len(res_parts) == 2:
                             result['resolution_width'] = res_parts[0]
                             result['resolution_height'] = res_parts[1]
@@ -1574,14 +1896,25 @@ class IPTVValidator:
         # IPv6 URL使用BlackBird-Player风格的试播验证
         # 采用BlackBird-Player的策略：对于特殊格式的直播源（UDP/RTSP/RTMP/IPv6），通过试播真正验证有效性
         if result.get('is_ipv6'):
+            
+            # 检查停止标志
+            if self.stop_requested:
+                return None
+                
             if self.ffprobe_available and not self.skip_resolution:
                 playback_result = _test_stream_playback(url, self.timeouts['ffprobe'])
+                
+                # 检查停止标志
+                if self.stop_requested:
+                    return None
+                    
                 if playback_result and playback_result[0]:
                     result['valid'] = True
                     result['error'] = None
                     result['resolution'], result['codec'], result['audio'] = playback_result
                     if result['resolution']:
-                        res_parts = result['resolution'].split('*')
+                        res_str = str(result['resolution'])
+                        res_parts = res_str.split('*')
                         if len(res_parts) == 2:
                             result['resolution_width'] = res_parts[0]
                             result['resolution_height'] = res_parts[1]
@@ -1612,9 +1945,13 @@ class IPTVValidator:
         if self.ffprobe_available and not self.skip_resolution and result['valid']:
             resolution_info = self._get_resolution_with_fallback(url)
             if resolution_info:
-                result['resolution'], result['codec'], result['audio'] = resolution_info
+                if isinstance(resolution_info, tuple) and len(resolution_info) >= 2:
+                    result['resolution'], result['codec'], result['audio'] = resolution_info[0], resolution_info[1], resolution_info[2] if len(resolution_info) > 2 else None
+                else:
+                    result['resolution'], result['codec'], result['audio'] = resolution_info, None, None
                 if result['resolution']:
-                    res_parts = result['resolution'].split('*')
+                    res_str = str(result['resolution'])
+                    res_parts = res_str.split('*')
                     if len(res_parts) == 2:
                         result['resolution_width'] = res_parts[0]
                         result['resolution_height'] = res_parts[1]
@@ -1627,6 +1964,18 @@ class IPTVValidator:
             if not has_audio:
                 result['valid'] = False
                 result['error'] = '无音频流'
+        
+        # 测速（对所有URL进行，measure_response_time会处理不同协议）
+        try:
+            speed_result = measure_response_time(url, timeout=5, retry=2)
+            if speed_result and speed_result.get('response_time') and speed_result.get('response_time') < 10000:
+                result['response_time'] = speed_result['response_time']
+                # 测速成功说明频道有效，更新验证结果
+                if not result.get('valid', False):
+                    result['valid'] = True
+                    result['error'] = None
+        except Exception:
+            pass
         
         return result
 
@@ -1692,7 +2041,7 @@ class IPTVValidator:
         if self.mediainfo_available:
             resolution = _mediainfo_get_resolution(url, timeout)
             if resolution:
-                return resolution, 'unknown', {'source': 'mediainfo'}
+                return resolution
         
         return None
 
@@ -1712,6 +2061,31 @@ class IPTVValidator:
         total_channels = len(self.channels)
         print(f"共发现 {total_channels} 个频道")
         
+        # 先发送所有频道的初始信息（用于显示在中间窗口）
+        if progress_callback:
+            for idx, channel in enumerate(self.channels):
+                channel_info = {
+                    'name': channel.get('name', '未知频道') or '未知频道',
+                    'url': channel.get('url', '') or '',
+                    'valid': None,
+                    'resolution': '',
+                    'response_time': None,
+                    'error': '',
+                    'status': '待验证',
+                    'original_index': idx,
+                    'display_index': idx + 1,
+                    'category': channel.get('category', '')
+                }
+                progress_callback({
+                    'progress': 5,
+                    'total_channels': total_channels,
+                    'processed': idx,
+                    'message': f'正在加载频道列表: {channel_info["name"]}',
+                    'stage': 'loading_channels',
+                    'channel': channel_info
+                })
+                time.sleep(0.01)  # 短暂延迟，确保前端能处理
+        
         # 发送解析完成进度
         if progress_callback:
             progress_callback({
@@ -1725,6 +2099,8 @@ class IPTVValidator:
         # 创建验证线程池并保存到实例变量
         self._validation_pool = concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers)
         
+        print(f"[调试] 线程池创建完成，共提交 {len(self.channels)} 个频道任务")
+        
         try:
             futures = []
             for idx, channel in enumerate(self.channels):
@@ -1735,15 +2111,34 @@ class IPTVValidator:
                 futures.append(future)
                 self._active_futures.add(future)
             
-            # 收集结果并发送进度更新
+            print(f"[调试] 所有任务已提交，开始收集结果...")
+            
+            # 收集结果并发送进度更新 - 优化结束阶段速度
             processed_count = 0
+            last_progress_update = 0  # 减少进度更新频率
+            
             for future in concurrent.futures.as_completed(futures):
                 self._active_futures.discard(future)
+                print(f"[调试] 收到一个结果，已处理 {processed_count + 1}/{len(futures)}")
+                
+                # 检查停止标志，如果已请求停止则立即退出
                 if self.stop_requested:
-                    continue
+                    print("[调试] 检测到停止请求，立即退出验证")
+                    # 立即取消所有剩余的future
+                    for remaining_future in futures:
+                        if remaining_future not in self._active_futures:
+                            continue
+                        try:
+                            remaining_future.cancel()
+                            self._active_futures.discard(remaining_future)
+                        except Exception:
+                            pass
+                    break
                     
                 try:
                     result = future.result()
+                    processed_count += 1
+                    
                     if result:
                         # 性能优化：在验证过程中维护有序结果，避免后期排序
                         idx = result.get('original_index', 0)
@@ -1753,32 +2148,54 @@ class IPTVValidator:
                         if result['valid']:
                             category = result['category'] or '未分类'
                             self._categorized_results[category].append(result)
-                        
-                        processed_count += 1
-                        
-                        # 发送进度更新
+                    
+                    # 每次验证完成都发送进度更新
+                    current_progress = int(processed_count / total_channels * 80)
+                    if True:  # 每次验证完成都更新
+                        last_progress_update = current_progress
                         if progress_callback:
-                            progress_callback({
-                                'progress': 10 + int(processed_count / total_channels * 80),
-                                'total_channels': total_channels,
-                                'processed': processed_count,
-                                'message': f'验证中: {result.get("name", "未知频道")} - {result.get("status", "")}',
-                                'stage': 'validation',
-                                'channel': result
-                            })
+                            try:
+                                # 创建简化的频道信息，避免发送复杂对象
+                                channel_info = {
+                                    'name': result.get('name', '') if result else '',
+                                    'url': result.get('url', '') if result else '',
+                                    'valid': result.get('valid', False) if result else False,
+                                    'resolution': str(result.get('resolution', '')) if result and result.get('resolution') else '',
+                                    'resolution_width': result.get('resolution_width') if result else None,
+                                    'resolution_height': result.get('resolution_height') if result else None,
+                                    'response_time': result.get('response_time') if result else None,
+                                    'error': result.get('error', '') if result else '',
+                                    'status': '有效' if result and result.get('valid') else '无效' if result else '未知',
+                                    'original_index': result.get('original_index', 0) if result else 0
+                                }
+                                progress_callback({
+                                    'progress': 10 + current_progress,
+                                    'total_channels': total_channels,
+                                    'processed': processed_count,
+                                    'message': f'验证中: {channel_info.get("name", "未知频道")} - {channel_info.get("status", "")}',
+                                    'stage': 'validation',
+                                    'channel': channel_info
+                                })
+                            except Exception as callback_err:
+                                print(f"[调试] 进度回调出错: {str(callback_err)}")
                 except Exception as e:
-                    if self.debug:
-                        print(f"[调试] 验证过程出错: {str(e)}")
+                    print(f"[调试] 验证过程出错: {str(e)}")
+                    import traceback
+                    traceback.print_exc()
                     
                     processed_count += 1
-                    if progress_callback:
-                        progress_callback({
-                            'progress': 10 + int(processed_count / total_channels * 80),
-                            'total_channels': total_channels,
-                            'processed': processed_count,
-                            'message': f'验证出错: {str(e)}',
-                            'stage': 'validation'
-                        })
+                    # 错误情况下也减少进度更新频率
+                    current_progress = int(processed_count / total_channels * 80)
+                    if current_progress - last_progress_update >= 10:  # 错误时更新频率更低
+                        last_progress_update = current_progress
+                        if progress_callback:
+                            progress_callback({
+                                'progress': 10 + current_progress,
+                                'total_channels': total_channels,
+                                'processed': processed_count,
+                                'message': f'验证出错: {str(e)}',
+                                'stage': 'validation'
+                            })
         finally:
             # 确保关闭线程池
             if self._validation_pool:
@@ -1788,54 +2205,226 @@ class IPTVValidator:
         # 性能优化：转换为有序列表而非排序
         self.all_results = [self._original_order_results[i] for i in sorted(self._original_order_results.keys())]
         
+        # 发送验证完成进度
+        if progress_callback:
+            progress_callback({
+                'progress': 100,
+                'total_channels': total_channels,
+                'processed': total_channels,
+                'message': f'验证完成，有效频道: {sum(1 for r in self.all_results if r["valid"])}/{len(self.all_results)}',
+                'stage': 'validation_completed'
+            })
+        
         # 添加性能监控信息
         print(f"验证完成，有效频道: {sum(1 for r in self.all_results if r['valid'])}/{len(self.all_results)}")
         print(f"分类统计: {dict(self._categorized_results)}")
 
-    def _generate_m3u_output(self):
-        """生成M3U格式输出文件"""
+    def _generate_m3u_output(self, valid_only=True, output_file=None):
+        """生成M3U格式输出文件
+        
+        Args:
+            valid_only: 如果为True，只保存有效频道；如果为False，保存所有频道（有效在前，无效在后）
+            output_file: 指定输出文件路径，如果为None则使用默认路径
+        """
+        if output_file is None:
+            output_file = self.output_file
+            
         output_lines = ['#EXTM3U']
         
-        # 性能优化：使用预分类结果
-        for category, channels in sorted(self._categorized_results.items()):
-            for channel in channels:
-                extinf = f'#EXTINF:-1 tvg-name="{channel["name"]}" group-title="{category}"'
-                resolution = channel.get('resolution')
+        # 分别处理有效和无效频道 - 从所有结果中分离，而不是从分类结果中分离
+        valid_channels = []
+        invalid_channels = []
+        
+        # 直接从all_results分离，保持分类逻辑性能
+        for result in self.all_results:
+            if result.get('valid', False):
+                valid_channels.append(result)
+            else:
+                invalid_channels.append(result)
+        
+        if valid_only:
+            # 只保存有效频道
+            channels_to_save = valid_channels
+            # 按分类组织频道
+            categorized_channels = {}
+            for channel in channels_to_save:
+                category = channel.get('category', '未分类')
+                if category not in categorized_channels:
+                    categorized_channels[category] = []
+                categorized_channels[category].append(channel)
+            
+            # 生成输出内容
+            for category, channels in sorted(categorized_channels.items()):
+                for channel in channels:
+                    extinf = f'#EXTINF:-1 tvg-name="{channel["name"]}" group-title="{category}"'
+                    resolution = channel.get('resolution')
+                    
+                    # 检查分辨率是否有效（不是None且不是(None, None)）
+                    if resolution and resolution != (None, None):
+                        # 将元组格式化为字符串 "宽度x高度"
+                        resolution_str = f"{resolution[0]}x{resolution[1]}"
+                        extinf += f' tvg-shift=1,{channel["name"]}[{resolution_str}]'
+                    else:
+                        extinf += f',{channel["name"]}'
+                    output_lines.append(extinf)
+                    output_lines.append(channel['url'])
+        else:
+            # 保存所有频道（有效在前，无效在后）
+            
+            # 先处理有效频道
+            valid_categorized = {}
+            for channel in valid_channels:
+                category = channel.get('category', '未分类')
+                if category not in valid_categorized:
+                    valid_categorized[category] = []
+                valid_categorized[category].append(channel)
+            
+            for category, channels in sorted(valid_categorized.items()):
+                for channel in channels:
+                    extinf = f'#EXTINF:-1 tvg-name="{channel["name"]}" group-title="{category}"'
+                    resolution = channel.get('resolution')
+                    
+                    # 检查分辨率是否有效（不是None且不是(None, None)）
+                    if resolution and resolution != (None, None):
+                        # 将元组格式化为字符串 "宽度x高度"
+                        resolution_str = f"{resolution[0]}x{resolution[1]}"
+                        extinf += f' tvg-shift=1,{channel["name"]}[{resolution_str}]'
+                    else:
+                        extinf += f',{channel["name"]}'
+                    output_lines.append(extinf)
+                    output_lines.append(channel['url'])
+            
+            # 添加分界标记 - 增强版
+            if invalid_channels:
+                output_lines.append("")
+                output_lines.append("#" + "=" * 50)
+                output_lines.append(f"# === 无效频道开始 ({len(invalid_channels)} 个) ===")
+                output_lines.append("#" + "=" * 50)
+                output_lines.append("")
                 
-                # 检查分辨率是否有效（不是None且不是(None, None)）
-                if resolution and resolution != (None, None):
-                    # 将元组格式化为字符串 "宽度x高度"
-                    resolution_str = f"{resolution[0]}x{resolution[1]}"
-                    extinf += f' tvg-shift=1,{channel["name"]}[{resolution_str}]'
-                else:
-                    extinf += f',{channel["name"]}'
-                output_lines.append(extinf)
-                output_lines.append(channel['url'])
+                # 再处理无效频道
+                invalid_categorized = {}
+                for channel in invalid_channels:
+                    category = channel.get('category', '未分类')
+                    if category not in invalid_categorized:
+                        invalid_categorized[category] = []
+                    invalid_categorized[category].append(channel)
+                
+                for category, channels in sorted(invalid_categorized.items()):
+                    for channel in channels:
+                        extinf = f'#EXTINF:-1 tvg-name="{channel["name"]}" group-title="{category}"'
+                        resolution = channel.get('resolution')
+                        
+                        # 检查分辨率是否有效（不是None且不是(None, None)）
+                        if resolution and resolution != (None, None):
+                            # 将元组格式化为字符串 "宽度x高度"
+                            resolution_str = f"{resolution[0]}x{resolution[1]}"
+                            extinf += f' tvg-shift=1,{channel["name"]}[{resolution_str}]'
+                        else:
+                            extinf += f',{channel["name"]}'
+                        output_lines.append(extinf)
+                        output_lines.append(channel['url'])
         
         from file_utils import write_file_with_encoding
-        write_file_with_encoding(self.output_file, '\n'.join(output_lines))
+        write_file_with_encoding(output_file, '\n'.join(output_lines))
         
-        print(f"M3U输出已保存到: {self.output_file}")
+        print(f"M3U输出已保存到: {output_file}")
 
-    def _generate_txt_output(self):
-        """生成TXT格式输出文件"""
+    def _generate_txt_output(self, valid_only=True, output_file=None):
+        """生成TXT格式输出文件
+        
+        Args:
+            valid_only: 如果为True，只保存有效频道；如果为False，保存所有频道（有效在前，无效在后）
+            output_file: 指定输出文件路径，如果为None则使用默认路径
+        """
+        if output_file is None:
+            output_file = self.output_file
+            
         output_lines = []
         
-        # 性能优化：使用预分类结果
-        for category, channels in sorted(self._categorized_results.items()):
-            output_lines.append(f"{category},#genre#")
-            for channel in channels:
-                resolution = channel['resolution']
-                if resolution and resolution != (None, None):
-                    output_lines.append(f'{channel["name"]}[{resolution}],{channel["url"]}')
-                else:
-                    output_lines.append(f'{channel["name"]},{channel["url"]}')
-            output_lines.append("")
+        # 分别处理有效和无效频道 - 从所有结果中分离，而不是从分类结果中分离
+        valid_channels = []
+        invalid_channels = []
+        
+        # 直接从all_results分离，保持分类逻辑性能
+        for result in self.all_results:
+            if result.get('valid', False):
+                valid_channels.append(result)
+            else:
+                invalid_channels.append(result)
+        
+        if valid_only:
+            # 只保存有效频道
+            channels_to_save = valid_channels
+            # 按分类组织频道
+            categorized_channels = {}
+            for channel in channels_to_save:
+                category = channel.get('category', '未分类')
+                if category not in categorized_channels:
+                    categorized_channels[category] = []
+                categorized_channels[category].append(channel)
+            
+            # 生成输出内容
+            for category, channels in sorted(categorized_channels.items()):
+                output_lines.append(f"{category},#genre#")
+                for channel in channels:
+                    resolution = channel['resolution']
+                    if resolution and resolution != (None, None):
+                        output_lines.append(f'{channel["name"]}[{resolution}],{channel["url"]}')
+                    else:
+                        output_lines.append(f'{channel["name"]},{channel["url"]}')
+                output_lines.append("")
+        else:
+            # 保存所有频道（有效在前，无效在后）
+            
+            # 先处理有效频道
+            valid_categorized = {}
+            for channel in valid_channels:
+                category = channel.get('category', '未分类')
+                if category not in valid_categorized:
+                    valid_categorized[category] = []
+                valid_categorized[category].append(channel)
+            
+            for category, channels in sorted(valid_categorized.items()):
+                output_lines.append(f"{category},#genre#")
+                for channel in channels:
+                    resolution = channel['resolution']
+                    if resolution and resolution != (None, None):
+                        output_lines.append(f'{channel["name"]}[{resolution}],{channel["url"]}')
+                    else:
+                        output_lines.append(f'{channel["name"]},{channel["url"]}')
+                output_lines.append("")
+            
+            # 添加分界标记 - 增强版
+            if invalid_channels:
+                output_lines.append("")
+                output_lines.append("=" * 60)
+                output_lines.append(f"=== 无效频道开始 ({len(invalid_channels)} 个) ===")
+                output_lines.append("=" * 60)
+                output_lines.append("")
+                
+                # 再处理无效频道
+                invalid_categorized = {}
+                for channel in invalid_channels:
+                    category = channel.get('category', '未分类')
+                    if category not in invalid_categorized:
+                        invalid_categorized[category] = []
+                    invalid_categorized[category].append(channel)
+                
+                for category, channels in sorted(invalid_categorized.items()):
+                    output_lines.append(f"{category},#genre#")
+                    for channel in channels:
+                        resolution = channel['resolution']
+                        if resolution and resolution != (None, None):
+                            output_lines.append(f'{channel["name"]}[{resolution}],{channel["url"]}')
+                        else:
+                            output_lines.append(f'{channel["name"]},{channel["url"]}')
+                    output_lines.append("")
         
         from file_utils import write_file_with_encoding
-        write_file_with_encoding(self.output_file, '\n'.join(output_lines))
+        write_file_with_encoding(output_file, '\n'.join(output_lines))
         
-        print(f"TXT输出已保存到: {self.output_file}")
+        print(f"TXT输出已保存到: {output_file}")
 
     def run(self):
         """运行完整的验证过程"""
@@ -1933,7 +2522,7 @@ class IPTVValidator:
         self._run_validation(progress_callback=progress_callback)
         if progress_callback:
             progress_callback({
-                'progress': 90,
+                'progress': 100,
                 'total_channels': len(self.channels),
                 'processed': len(self.all_results),
                 'message': f'验证完成，有效频道: {sum(1 for r in self.all_results if r["valid"])}/{len(self.all_results)}',
@@ -2027,7 +2616,7 @@ def validate_ipTV(input_file, output_file=None, max_workers=None, timeout=5, deb
         
         if summary['resolution_stats']:
             print(f"  分辨率分布:")
-            for res, count in sorted(summary['resolution_stats'].items(), key=lambda x: int(x[0].split('*')[1]), reverse=True):
+            for res, count in sorted(summary['resolution_stats'].items(), key=lambda x: int(str(x[0]).split('*')[1]) if '*' in str(x[0]) else 0, reverse=True):
                 print(f"    {res}: {count}个")
     
     return summary

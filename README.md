@@ -1,12 +1,14 @@
-# IPTV 直播源处理工具集
+# 全媒体播放器与IPTV工具集
 
 ## 📋 项目介绍
 
-本项目包含两个核心工具：
+本项目包含三个核心组件：
 
 1. **直播源自动生成工具**：核心脚本为 `IPTV.py`，能够自动生成高质量的 M3U 播放列表和 TXT 格式直播源文件，支持质量筛选、智能分类和定时更新。
 
 2. **直播源验证工具**：位于 `validator/` 目录，支持多协议（HTTP/HTTPS/RTSP/RTMP/MMS/UDP/RTP）验证，提供命令行和Web界面两种使用方式，能够批量验证直播源有效性并生成仅包含有效频道的输出文件。工具更名为 **直播源有效性验证工具ZHQ**。
+
+3. **全媒体播放器**：位于 `All Media Player/` 目录，提供桌面GUI和Web两种界面，支持播放M3U/M3U8/TXT格式的直播源，包含直播源检测、分组管理和播放控制等功能。
 
 ## ✨ 功能特性
 
@@ -38,6 +40,18 @@
 - **分辨率检测**：自动检测视频流分辨率（需要 FFmpeg）
 - **频道比较工具**：`compare_channels.py` 用于比较原始文件和有效文件，找出被标记为无效的频道
 - **自动目录管理**：验证完成后自动创建 output 目录（若不存在），确保输出文件能正常生成
+
+### 全媒体播放器（All Media Player/）
+- **双界面支持**：提供桌面GUI和Web界面两种使用方式
+- **多格式支持**：支持播放M3U、M3U8和TXT格式的直播源文件
+- **直播源检测**：支持批量检测直播源的有效性
+- **分组管理**：自动将频道按分组进行管理，支持快速切换查看
+- **播放控制**：包含播放、暂停、停止、音量调节等基本控制功能
+- **智能排序**：支持按频道名称、分组等进行排序
+- **编码自适应**：自动支持UTF-8和GBK编码的文件
+- **详细错误提示**：提供具体的错误信息，便于问题排查
+- **性能优化**：优化分组排序逻辑，提高大数据量处理效率
+- **安全设计**：使用环境变量管理密钥，避免硬编码安全风险
 
 ## 📋 环境要求
 
@@ -99,6 +113,36 @@ pip install -r requirements.txt
 │   ├── test_validity.py         # 有效性测试
 │   ├── test_web_app.py          # Web应用测试
 │   └── output/                  # 验证工具输出目录
+├── All Media Player/            # 全媒体播放器目录
+│   ├── web/                     # Web界面相关文件
+│   │   ├── static/              # 静态资源
+│   │   │   ├── css/             # CSS样式
+│   │   │   └── js/              # JavaScript文件
+│   ├── media_player_engine.py   # 媒体播放器核心引擎
+│   ├── player_gui.py            # 桌面GUI界面
+│   ├── run_player.py            # 播放器运行脚本
+│   ├── web_player.py            # Web界面服务器
+│   ├── requirements.txt         # 依赖包列表
+│   ├── setup.py                 # 安装配置文件
+│   ├── test_channel_category_fix.py  # 分类修复测试
+│   ├── test_channel_detection.py  # 频道检测测试
+│   ├── test_complete_format_fix.py  # 格式修复测试
+│   ├── test_detection.py        # 检测功能测试
+│   ├── test_empty_groups.py     # 空分组测试
+│   ├── test_filename_generation.py  # 文件名生成测试
+│   ├── test_fix.py              # 修复功能测试
+│   ├── test_genre_format_fix.py  # 分类格式修复测试
+│   ├── test_grouping.py         # 分组功能测试
+│   ├── test_invalid_group_format.py  # 无效分组格式测试
+│   ├── test_m3u_comprehensive.py  # M3U综合测试
+│   ├── test_m3u_parse.py        # M3U解析测试
+│   ├── test_modifications.py    # 修改功能测试
+│   ├── test_playlist_import.py  # 播放列表导入测试
+│   ├── test_playlist_parsing.py  # 播放列表解析测试
+│   ├── test_save_functionality.py  # 保存功能测试
+│   ├── test_simple_format_fix.py  # 简单格式修复测试
+│   ├── test_user_issue_fix.py   # 用户问题修复测试
+│   └── test_valid_group_format.py  # 有效分组格式测试
 ```
 
 ## 🎯 使用指南
@@ -227,6 +271,39 @@ python validator/web_app.py
 - **结果展示**：显示有效频道数和详细信息
 - **文件下载**：可下载验证后的有效直播源文件
 
+### 全媒体播放器（All Media Player/）
+
+#### 运行桌面GUI界面
+
+```bash
+cd "All Media Player"
+python player_gui.py
+```
+
+##### GUI界面功能
+
+- **文件导入**：支持导入M3U、M3U8和TXT格式的直播源文件
+- **直播源检测**：批量检测直播源的有效性
+- **分组查看**：按分组查看频道列表
+- **播放控制**：播放、暂停、停止等基本控制
+- **频道管理**：添加、删除和编辑频道信息
+
+#### 运行Web界面
+
+```bash
+cd "All Media Player"
+SECRET_KEY="your_secure_secret_key" python web_player.py
+```
+
+然后在浏览器中访问：`http://localhost:5000`
+
+##### Web界面功能
+
+- **响应式设计**：适配不同屏幕尺寸
+- **文件上传**：支持上传直播源文件
+- **频道播放**：直接在浏览器中播放直播源
+- **实时状态**：显示当前播放状态和频道信息
+
 #### 文件格式支持
 
 ##### M3U/M3U8格式
@@ -296,6 +373,22 @@ CCTV-13新闻,https://example.com/cctv13.m3u8
 - ✅ 优化验证结果滚动：实现双模式滚动逻辑，自动定位最新验证结果
 - ✅ 新增快速停止机制：点击停止后0.5秒内立即响应，解决大型文件停止延迟问题
 - ✅ 改进外部URL处理：添加实时进度反馈，消除用户等待焦虑
+
+### 全媒体播放器（All Media Player/）改进
+- ✅ **安全修复**：将硬编码的 SECRET_KEY 替换为环境变量，提高生产环境安全性
+- ✅ **性能优化**：将分组排序逻辑从 O(n² log n) 优化到 O(n log n)，提高大数据量处理效率
+- ✅ **用户体验提升**：
+  - 改进了文件导入的错误提示，提供更具体的错误信息
+  - 支持UTF-8和GBK编码自动检测，解决编码问题
+  - 优化了异常处理，提高了程序稳定性
+- ✅ **测试套件完善**：
+  - 修复了所有测试失败问题，23个测试用例全部通过
+  - 解决了datetime导入错误和player未定义等问题
+  - 增强了测试覆盖范围，提高了代码质量
+- ✅ **代码质量改进**：
+  - 移除了冗余的临时文件
+  - 优化了代码结构，提高了可读性
+  - 增强了错误处理和边界情况处理
 
 ## ⚠️ 注意事项
 

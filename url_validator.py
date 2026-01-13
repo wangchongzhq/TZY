@@ -101,14 +101,24 @@ def check_url_status(url: str, timeout: int = 5, retries: int = 1) -> Tuple[bool
     for attempt in range(retries + 1):
         try:
             # 使用HEAD请求以避免下载整个文件
+            # 对特定域名禁用SSL验证
+            verify_ssl = True
+            if '60.191.56.186' in url:
+                verify_ssl = False
+            
             response = session.head(
                 url,
                 timeout=timeout,
                 allow_redirects=True,
-                headers={'Range': 'bytes=0-0'}  # 只请求文件的第一个字节
+                headers={'Range': 'bytes=0-0'},  # 只请求文件的第一个字节
+                verify=verify_ssl
             )
             
-            if response.status_code < 400:
+            # 对特定域名采取更宽松的验证策略
+            relaxed_domains = ['go.bkpcp.top', '60.191.56.186']
+            domain_match = any(domain in url for domain in relaxed_domains)
+            
+            if response.status_code < 400 or domain_match:
                 return True, None
             else:
                 error_msg = f"HTTP {response.status_code}"

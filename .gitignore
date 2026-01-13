@@ -63,6 +63,43 @@ simple_test.txt
 109  live 1205 直播源 -减.m3u
 109  live 1205 直播源 -减.txt
 
+# 媒体播放器相关文件
+player.log
+*.mp4
+*.mkv
+*.avi
+*.flv
+*.wmv
+*.mov
+*.ts
+
+# 媒体播放器配置文件
+player_config.json
+player_settings.ini
+*.settings
+
+# 媒体播放器缓存
+player_cache/
+media_cache/
+*.cache
+
+# 媒体播放器日志
+media_player.log
+player_gui.log
+web_player.log
+
+# 媒体播放器测试文件
+test_player_*.txt
+test_player_*.m3u
+player_test_*.txt
+player_test_*.m3u
+
+# 媒体播放器临时文件
+player_temp/
+temp_playlists/
+*.tmp.m3u
+*.tmp.txt
+
 # 文档文件（本地保留，不推送到远程仓库）
 README.md
 BUG_REPORT.md

@@ -496,8 +496,8 @@ def parse_args():
     
     return parser.parse_args()
 
-# URL格式验证正则表达式（支持http, https, udp, rtsp, rtmp, mms, rtp等常见流媒体协议）
-URL_REGEX = re.compile(r'(?:https?|udp|rtsp|rtmp|mms|rtp)://', re.IGNORECASE)
+# URL格式验证正则表达式（支持http, https, udp, rtmp, mms, rtp等常见流媒体协议，但排除rtsp）
+URL_REGEX = re.compile(r'(?:https?|udp|rtmp|mms|rtp)://', re.IGNORECASE)
 
 # URL规范化函数，用于去重相同来源的不同URL
 def normalize_url(url):
@@ -961,8 +961,8 @@ def extract_channels_from_txt(content):
         if not line or line.startswith('#'):
             continue
         
-        # 检测URL（支持http, https, udp, rtsp, rtmp, mms, rtp等常见流媒体协议）
-        protocols = ['http://', 'https://', 'udp://', 'rtsp://', 'rtmp://', 'mms://', 'rtp://']
+        # 检测URL（支持http, https, udp, rtmp, mms, rtp等常见流媒体协议，但排除rtsp）
+        protocols = ['http://', 'https://', 'udp://', 'rtmp://', 'mms://', 'rtp://']
         found_protocol = None
         for protocol in protocols:
             if protocol in line:
@@ -974,6 +974,12 @@ def extract_channels_from_txt(content):
             parts = line.split(found_protocol)
             channel_name = parts[0].strip()
             url = found_protocol + parts[1].strip()
+            
+            # 排除包含"rtsp://"、"freetv"或"stream"的URL（包括片段部分）
+            url_lower = url.lower()
+            if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower:
+                logger.debug(f"排除包含'rtsp://'、'freetv'或'stream'的URL: {url}")
+                continue
             
             # 处理空频道名称
             if not channel_name:
@@ -1062,9 +1068,19 @@ def generate_txt_file(channels, output_file='jieguo_txt.txt'):
             # 按CHANNEL_CATEGORIES中定义的顺序写入分类
             for category in CHANNEL_CATEGORIES:
                 if category in channels and channels[category]:
-                    # 写入分组标题，使用格式: 分组名,#genre#（去掉前导#和emoji）
+                    # 写入分组标题，使用格式: 分组名,#genre#
                     category_clean = category.replace('🇨🇳 ', '').replace('📺 ', '').replace('📡 ', '').replace('🏙️ ', '').replace('🌊 ', '').replace('🌏 ', '').replace('🎬 ', '').replace('👶 ', '').replace('🔥 ', '').replace('📊 ', '').replace('⚽ ', '').replace('🎭 ', '')
-                    f.write(f"{category_clean},#genre#\n")
+                    
+                    # 特殊处理：4K频道不需要#符号
+                    if category_clean == "4K频道":
+                        cleaned_category = "4K频道"
+                    else:
+                        # 移除所有#号，确保分类名前后没有#
+                        cleaned_category = category_clean.strip('#')
+                    
+                    # 确保分组行格式正确：分组名,#genre#
+                    group_line = f"{cleaned_category},#genre#"
+                    f.write(f"{group_line}\n")
                     
                     # 对当前类别的频道按名称升序排序
                     sorted_channels = sorted(channels[category], key=lambda x: x[0])

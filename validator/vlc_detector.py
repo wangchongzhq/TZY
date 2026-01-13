@@ -111,11 +111,16 @@ class VLCStreamDetectorV2:
                 return None, None, {'error': 'stream_not_playing', 'url': url}
             
             # 收集信息
-            video_info = self._get_video_info()
+            resolution = self._get_video_info()
             audio_info = self._get_audio_info()
             stream_info = self._get_stream_info()
             
-            return video_info, audio_info, stream_info
+            # 提取编解码器信息
+            codec = None
+            if audio_info and isinstance(audio_info, dict) and 'codec' in audio_info:
+                codec = audio_info['codec']
+            
+            return resolution, codec, stream_info
             
         finally:
             self._running = False
@@ -143,7 +148,6 @@ class VLCStreamDetectorV2:
             # 安全获取视频信息，设置默认值
             video_width = 0
             video_height = 0
-            codec_name = 'Unknown'
             
             try:
                 video_width = self.player.video_get_width()
@@ -151,29 +155,23 @@ class VLCStreamDetectorV2:
             except:
                 pass
             
-            try:
-                video_codec = self.player.video_get_codec()
-                codec_name = self._get_codec_name(video_codec)
-            except:
-                pass
-            
             # 如果检测到有效视频，返回分辨率
             if video_width > 0 and video_height > 0:
-                return f"{video_width}*{video_height}", codec_name
+                return f"{video_width}*{video_height}"
             
             # 检查播放状态
             try:
                 if self.player.get_state().value == 3:  # Playing state
                     # 假设是HD分辨率作为fallback
-                    return "1920*1080", codec_name
+                    return "1920*1080"
             except:
                 pass
             
-            return None, None
+            return None
             
         except Exception as e:
             print(f"[VLC-V2] 视频信息获取失败: {e}")
-            return None, None
+            return None
     
     def _get_audio_info(self):
         """获取音频信息 - 安全版本"""
@@ -248,7 +246,12 @@ class VLCStreamDetectorV2:
             0x76747039: 'vp90',     # VP9
             0x47504d4a: 'mjpg',     # MJPG
         }
-        return codec_names.get(codec, f'Unknown(0x{codec:08x})')
+        known_codec = codec_names.get(codec)
+        if known_codec:
+            return known_codec
+        if codec == 0:
+            return 'hls'
+        return 'hls'
 
 def detect_with_vlc_v2(url, timeout=15):
     """使用VLC检测流信息 - 重构版本"""

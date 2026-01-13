@@ -116,10 +116,15 @@ class TemplateDrivenProcessor:
     
     def is_url_blacklisted(self, url):
         """检查URL是否在黑名单中"""
+        url_lower = url.lower()
+        
+        # 排除包含"rtsp://"、"freetv"或"stream"的URL（包括片段部分）
+        if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower:
+            return True
+            
         if not self.url_blacklist:
             return False
         
-        url_lower = url.lower()
         for blacklist_item in self.url_blacklist:
             if blacklist_item and blacklist_item in url_lower:
                 return True
@@ -724,8 +729,8 @@ HD_PATTERNS = [
 
 HD_REGEX = re.compile('|'.join(HD_PATTERNS), re.IGNORECASE)
 
-# 预编译常用正则表达式
-URL_REGEX = re.compile(r'(?:https?|udp|rtsp|rtmp|mms|rtp)://', re.IGNORECASE)
+# 预编译常用正则表达式（支持http, https, udp, rtmp, mms, rtp等常见流媒体协议，但排除rtsp）
+URL_REGEX = re.compile(r'(?:https?|udp|rtmp|mms|rtp)://', re.IGNORECASE)
 
 # 预编译分辨率和质量相关的正则表达式
 HIGH_DEF_PATTERNS = re.compile(r'(1080[pdi]|1440[pdi]|2160[pdi]|fhd|uhd|超高清)', re.IGNORECASE)
@@ -959,10 +964,15 @@ def prioritize_ipv6_urls(channels):
 def is_url_blacklisted(url):
     """检查URL是否在黑名单中"""
     try:
+        url_lower = url.lower()
+        
+        # 排除包含"rtsp://"、"freetv"或"stream"的URL（包括片段部分）
+        if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower:
+            return True
+            
         if not config.url_blacklist:
             return False
         
-        url_lower = url.lower()
         for blacklist_item in config.url_blacklist:
             if blacklist_item and blacklist_item in url_lower:
                 return True
@@ -1209,9 +1219,19 @@ def generate_txt_file(channels, output_path):
         # 按CHANNEL_CATEGORIES中定义的顺序写入分类
         for category in CHANNEL_CATEGORIES:
             if category in channels and channels[category]:
-                # 写入分组标题，使用格式: 分组名,#genre#（去掉前导#）
+                # 写入分组标题，使用格式: 分组名,#genre#
                 category_clean = category.replace('🇨🇳 ', '').replace('📺 ', '').replace('📡 ', '').replace('🏙️ ', '').replace('🌊 ', '').replace('🌏 ', '').replace('🎬 ', '').replace('👶 ', '').replace('🔥 ', '').replace('📊 ', '').replace('⚽ ', '').replace('🎭 ', '')
-                f.write(f"{category_clean},#genre#\n")
+                
+                # 特殊处理：4K频道不需要#符号
+                if category_clean == "4K频道":
+                    cleaned_category = "4K频道"
+                else:
+                    # 移除所有#号，确保分类名前后没有#
+                    cleaned_category = category_clean.strip('#')
+                
+                # 确保分组行格式正确：分组名,#genre#
+                group_line = f"{cleaned_category},#genre#"
+                f.write(f"{group_line}\n")
                 
                 # 对当前类别的频道按名称升序排序
                 sorted_channels = sorted(channels[category], key=lambda x: x[0])
@@ -1292,8 +1312,13 @@ def extract_channels_from_txt(file_path):
                     if any(keyword in channel_name_lower for keyword in shopping_keywords):
                         continue
                     
-                    # 跳过无效的URL（允许http, https, udp, rtsp, rtmp等常见流媒体协议）
-                    if not url.startswith(('http://', 'https://', 'udp://', 'rtsp://', 'rtmp://', 'mms://', 'rtp://')):
+                    # 跳过无效的URL（允许http, https, udp, rtmp等常见流媒体协议，但排除rtsp）
+                    if not url.startswith(('http://', 'https://', 'udp://', 'rtmp://', 'mms://', 'rtp://')):
+                        continue
+                    
+                    # 排除包含"rtsp://"、"freetv"或"stream"的URL（包括片段部分）
+                    url_lower = url.lower()
+                    if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower:
                         continue
                     
                     # 规范化频道名称

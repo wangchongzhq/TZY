@@ -20,7 +20,7 @@ import base64
 import secrets
 from flask import Flask, request, render_template_string, send_file, flash
 from flask_socketio import SocketIO, emit
-from validator.iptv_validator import IPTVValidator, validate_ipTV
+from validator.iptv_validator import IPTVValidator, validate_ipTV, measure_response_time, measure_response_time_get, batch_measure
 
 # 导入统一的配置管理器
 try:
@@ -90,10 +90,10 @@ MAX_CONTENT_LENGTH = web_config.get('max_content_length', 16 * 1024 * 1024)
 MAX_HTTP_BUFFER_SIZE = web_config.get('max_http_buffer_size', 100 * 1024 * 1024)
 PING_TIMEOUT = web_config.get('ping_timeout', 120)
 PING_INTERVAL = web_config.get('ping_interval', 30)
-DEFAULT_TIMEOUT = web_config.get('default_timeout', 5)
+DEFAULT_TIMEOUT = web_config.get('default_timeout', 3)  # 优化：提升验证速度
 ALLOWED_EXTENSIONS = set(web_config.get('allowed_extensions', ['m3u', 'm3u8', 'txt', 'json']))
 
-DEFAULT_VALIDATION_TIMEOUT = validation_config.get('default_timeout', 5)
+DEFAULT_VALIDATION_TIMEOUT = validation_config.get('default_timeout', 3)  # 优化：提升验证速度
 DEFAULT_VALIDATION_WORKERS = validation_config.get('default_workers', 30)
 
 WEB_LOG_FILE = logging_config.get('web_log_file', 'web_validation.log')
@@ -234,8 +234,8 @@ HTML_TEMPLATE = '''
         /* 表单行样式 - 用于将多个表单组放在同一行 */
         .form-row {
             display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
+            gap: 10px;
+            margin-bottom: 8px;
         }
         
         .form-row .form-group {
@@ -247,14 +247,14 @@ HTML_TEMPLATE = '''
         button {
             background: linear-gradient(135deg, #667eea 0%, #8e9bef 100%);
             color: white;
-            padding: 10px 20px;
+            padding: 8px 16px;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.2);
         }
         
         button:hover {
@@ -336,43 +336,59 @@ HTML_TEMPLATE = '''
         }
 
         /* 为URL列添加截断效果 */
-        .results-table td:nth-child(2) {
+        .results-table td:nth-child(3) {
             max-width: 280px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .results-table td:nth-child(2) a {
+        .results-table td:nth-child(3) a {
             display: inline-block;
             max-width: 100%;
             overflow: hidden;
             text-overflow: ellipsis;
         }
         
-        /* 设置各列宽度 */
+        /* 设置各列宽度 - 可调节 */
         .results-table th:nth-child(1),
         .results-table td:nth-child(1) {
-            width: 120px;
-            max-width: 120px;
+            width: 50px;
+            min-width: 50px;
+            text-align: center;
         }
         .results-table th:nth-child(2),
         .results-table td:nth-child(2) {
-            width: auto;
+            width: 120px;
+            min-width: 120px;
         }
         .results-table th:nth-child(3),
         .results-table td:nth-child(3) {
-            width: 70px;
-            text-align: center;
+            min-width: 200px;
+            max-width: 300px;
         }
         .results-table th:nth-child(4),
         .results-table td:nth-child(4) {
             width: 60px;
+            min-width: 60px;
             text-align: center;
         }
         .results-table th:nth-child(5),
         .results-table td:nth-child(5) {
             width: 60px;
+            min-width: 60px;
+            text-align: center;
+        }
+        .results-table th:nth-child(6),
+        .results-table td:nth-child(6) {
+            width: 60px;
+            min-width: 60px;
+            text-align: center;
+        }
+        .results-table th:nth-child(7),
+        .results-table td:nth-child(7) {
+            width: 70px;
+            min-width: 70px;
             text-align: center;
         }
         
@@ -604,23 +620,47 @@ HTML_TEMPLATE = '''
                     <label for="file">选择直播源文件 (.m3u, .m3u8, .txt, .json)</label>
                     <input type="file" id="file" name="file" accept=".m3u,.m3u8,.txt,.json" required>
                 </div>
-                <div class="form-row" style="align-items: flex-end; gap: 15px;">
+                <div class="form-row" style="align-items: flex-end; gap: 15px; flex-wrap: wrap;">
                     <div class="form-group" style="flex: 0 0 150px;">
                         <label for="workers">并发工作线程数</label>
                         <input type="number" id="workers" name="workers" value="20" min="1" max="100">
                     </div>
                     <div class="form-group" style="flex: 0 0 150px;">
                         <label for="timeout">超时时间（秒）</label>
-                        <input type="number" id="timeout" name="timeout" value="5" min="1" max="60">
+                        <input type="number" id="timeout" name="timeout" value="3" min="1" max="60" title="建议设置为3-5秒以加快验证速度">
+                    </div>
+                    <div class="form-group" style="flex: 0 0 auto; align-self: flex-end;">
+                        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                            <input type="checkbox" id="enable_smart_timeout" name="enable_smart_timeout" style="width: auto;" checked>
+                            <span>启用智能超时</span>
+                        </label>
+                    </div>
+                    <div class="form-group" style="flex: 0 0 180px; align-self: flex-end;">
+                        <label for="smart_timeout_sensitivity" style="margin-bottom: 5px; display: block;">智能超时灵敏度</label>
+                        <input type="range" id="smart_timeout_sensitivity" name="smart_timeout_sensitivity" value="1.0" min="0.1" max="3.0" step="0.1" style="width: 100%;">
+                        <div style="text-align: center; font-size: 12px; margin-top: 2px;"><span id="sensitivity_value">1.0</span></div>
                     </div>
                     <div class="form-group" style="flex: 0 0 auto;">
                         <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
-                            <input type="checkbox" id="filter_no_audio" name="filter_no_audio" style="width: auto;">
+                            <input type="checkbox" id="filter_no_audio" name="filter_no_audio" style="width: auto;" checked title="过滤无音频源可提高验证速度">
                             <span>过滤无音频源</span>
                         </label>
                     </div>
-                    <div style="flex: 1;"></div>
-                    <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex: 0 0 auto;">
+                         <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                             <input type="checkbox" id="enable_vlc" name="enable_vlc" style="width: auto;" title="VLC检测（需要安装VLC播放器，默认关闭以提高速度）">
+                             <span>启用VLC检测</span>
+                         </label>
+                     </div>
+                    <div class="form-group" style="flex: 0 0 150px;">
+                        <label for="filter_min_width">最小宽度</label>
+                        <input type="number" id="filter_min_width" name="filter_min_width" placeholder="最小宽度" min="0" value="1280">
+                    </div>
+                    <div class="form-group" style="flex: 0 0 150px;">
+                        <label for="filter_min_height">最小高度</label>
+                        <input type="number" id="filter_min_height" name="filter_min_height" placeholder="最小高度" min="0" value="720">
+                    </div>
+                    <div style="display: flex; gap: 6px; margin-left: auto; align-items: flex-end;">
                         <button type="button" id="start-btn1" onclick="startFileValidation()">开始验证</button>
                         <button type="button" id="stop-btn1" onclick="stopValidation()" disabled>停止</button>
                         <button type="button" onclick="clearList()">清空列表</button>
@@ -640,23 +680,47 @@ HTML_TEMPLATE = '''
                     <label for="category">分类名称</label>
                     <input type="text" id="category" name="category" value="默认分类">
                 </div>
-                <div class="form-row" style="align-items: flex-end; gap: 15px;">
+                <div class="form-row" style="align-items: flex-end; gap: 15px; flex-wrap: wrap;">
                     <div class="form-group" style="flex: 0 0 150px;">
                         <label for="workers2">并发工作线程数</label>
                         <input type="number" id="workers2" name="workers2" value="20" min="1" max="100">
                     </div>
                     <div class="form-group" style="flex: 0 0 150px;">
                         <label for="timeout2">超时时间（秒）</label>
-                        <input type="number" id="timeout2" name="timeout2" value="5" min="1" max="60">
+                        <input type="number" id="timeout2" name="timeout2" value="3" min="1" max="60" title="建议设置为3-5秒以加快验证速度">
+                    </div>
+                    <div class="form-group" style="flex: 0 0 auto; align-self: flex-end;">
+                        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                            <input type="checkbox" id="enable_smart_timeout2" name="enable_smart_timeout2" style="width: auto;" checked>
+                            <span>启用智能超时</span>
+                        </label>
+                    </div>
+                    <div class="form-group" style="flex: 0 0 180px; align-self: flex-end;">
+                        <label for="smart_timeout_sensitivity2" style="margin-bottom: 5px; display: block;">智能超时灵敏度</label>
+                        <input type="range" id="smart_timeout_sensitivity2" name="smart_timeout_sensitivity2" value="1.0" min="0.1" max="3.0" step="0.1" style="width: 100%;">
+                        <div style="text-align: center; font-size: 12px; margin-top: 2px;"><span id="sensitivity_value2">1.0</span></div>
                     </div>
                     <div class="form-group" style="flex: 0 0 auto;">
                         <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
-                            <input type="checkbox" id="filter_no_audio2" name="filter_no_audio2" style="width: auto;">
+                            <input type="checkbox" id="filter_no_audio2" name="filter_no_audio2" style="width: auto;" checked title="过滤无音频源可提高验证速度">
                             <span>过滤无音频源</span>
                         </label>
                     </div>
-                    <div style="flex: 1;"></div>
-                    <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex: 0 0 auto;">
+                        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                            <input type="checkbox" id="enable_vlc2" name="enable_vlc2" style="width: auto;" title="禁用VLC检测可显著提高验证速度，但准确性会稍有降低">
+                            <span>启用VLC检测</span>
+                        </label>
+                    </div>
+                    <div class="form-group" style="flex: 0 0 150px;">
+                        <label for="filter_min_width2">最小宽度</label>
+                        <input type="number" id="filter_min_width2" name="filter_min_width2" placeholder="最小宽度" min="0" value="1280">
+                    </div>
+                    <div class="form-group" style="flex: 0 0 150px;">
+                        <label for="filter_min_height2">最小高度</label>
+                        <input type="number" id="filter_min_height2" name="filter_min_height2" placeholder="最小高度" min="0" value="720">
+                    </div>
+                    <div style="display: flex; gap: 6px; margin-left: auto; align-items: flex-end;">
                         <button type="button" id="start-btn2" onclick="startUrlValidation()">开始验证</button>
                         <button type="button" id="stop-btn2" onclick="stopValidation()" disabled>停止</button>
                         <button type="button" onclick="clearList()">清空列表</button>
@@ -672,23 +736,47 @@ HTML_TEMPLATE = '''
                     <label for="source_url">输入互联网直播源文件URL (.m3u, .m3u8, .txt)</label>
                     <input type="text" id="source_url" name="source_url" placeholder="http://example.com/live_channels.m3u">
                 </div>
-                <div class="form-row" style="align-items: flex-end; gap: 15px;">
+                <div class="form-row" style="align-items: flex-end; gap: 15px; flex-wrap: wrap;">
                     <div class="form-group" style="flex: 0 0 150px;">
                         <label for="workers3">并发工作线程数</label>
                         <input type="number" id="workers3" name="workers3" value="20" min="1" max="100">
                     </div>
                     <div class="form-group" style="flex: 0 0 150px;">
                         <label for="timeout3">超时时间（秒）</label>
-                        <input type="number" id="timeout3" name="timeout3" value="5" min="1" max="60">
+                        <input type="number" id="timeout3" name="timeout3" value="3" min="1" max="60" title="建议设置为3-5秒以加快验证速度">
+                    </div>
+                    <div class="form-group" style="flex: 0 0 auto; align-self: flex-end;">
+                        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                            <input type="checkbox" id="enable_smart_timeout3" name="enable_smart_timeout3" style="width: auto;" checked>
+                            <span>启用智能超时</span>
+                        </label>
+                    </div>
+                    <div class="form-group" style="flex: 0 0 180px; align-self: flex-end;">
+                        <label for="smart_timeout_sensitivity3" style="margin-bottom: 5px; display: block;">智能超时灵敏度</label>
+                        <input type="range" id="smart_timeout_sensitivity3" name="smart_timeout_sensitivity3" value="1.0" min="0.1" max="3.0" step="0.1" style="width: 100%;">
+                        <div style="text-align: center; font-size: 12px; margin-top: 2px;"><span id="sensitivity_value3">1.0</span></div>
                     </div>
                     <div class="form-group" style="flex: 0 0 auto;">
                         <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
-                            <input type="checkbox" id="filter_no_audio3" name="filter_no_audio3" style="width: auto;">
+                            <input type="checkbox" id="filter_no_audio3" name="filter_no_audio3" style="width: auto;" checked title="过滤无音频源可提高验证速度">
                             <span>过滤无音频源</span>
                         </label>
                     </div>
-                    <div style="flex: 1;"></div>
-                    <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex: 0 0 auto;">
+                        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                            <input type="checkbox" id="enable_vlc3" name="enable_vlc3" style="width: auto;" title="禁用VLC检测可显著提高验证速度，但准确性会稍有降低">
+                            <span>启用VLC检测</span>
+                        </label>
+                    </div>
+                    <div class="form-group" style="flex: 0 0 150px;">
+                        <label for="filter_min_width3">最小宽度</label>
+                        <input type="number" id="filter_min_width3" name="filter_min_width3" placeholder="最小宽度" min="0" value="1280">
+                    </div>
+                    <div class="form-group" style="flex: 0 0 150px;">
+                        <label for="filter_min_height3">最小高度</label>
+                        <input type="number" id="filter_min_height3" name="filter_min_height3" placeholder="最小高度" min="0" value="720">
+                    </div>
+                    <div style="display: flex; gap: 6px; margin-left: auto; align-items: flex-end;">
                         <button type="button" id="start-btn3" onclick="startWebSourceValidation()">开始验证</button>
                         <button type="button" id="stop-btn3" onclick="stopValidation()" disabled>停止</button>
                         <button type="button" onclick="clearList()">清空列表</button>
@@ -703,11 +791,13 @@ HTML_TEMPLATE = '''
             <div class="table-container">
                 <table class="results-table">
                     <tr>
+                        <th>序号</th>
                         <th>频道名称</th>
                         <th>播放地址</th>
                         <th>有效性</th>
                         <th>视频宽</th>
                         <th>视频高</th>
+                        <th>响应速度</th>
                     </tr>
                     <tbody id="results-table-body">
                     </tbody>
@@ -779,6 +869,22 @@ HTML_TEMPLATE = '''
     <!-- Socket.IO客户端库 -->
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
+        // 更新智能超时灵敏度显示值
+        function updateSensitivityDisplay(id, value) {
+            document.getElementById(id).textContent = parseFloat(value).toFixed(1);
+        }
+
+        // 为所有灵敏度滑块添加事件监听器
+        document.getElementById('smart_timeout_sensitivity').addEventListener('input', function() {
+            updateSensitivityDisplay('sensitivity_value', this.value);
+        });
+        document.getElementById('smart_timeout_sensitivity2').addEventListener('input', function() {
+            updateSensitivityDisplay('sensitivity_value2', this.value);
+        });
+        document.getElementById('smart_timeout_sensitivity3').addEventListener('input', function() {
+            updateSensitivityDisplay('sensitivity_value3', this.value);
+        });
+
         // 初始化Socket.io连接
         let socket = io(window.location.origin, {
             reconnection: true,
@@ -865,6 +971,11 @@ HTML_TEMPLATE = '''
             const workers = document.getElementById('workers').value;
             const timeout = document.getElementById('timeout').value;
             const filter_no_audio = document.getElementById('filter_no_audio').checked;
+            const enable_vlc = document.getElementById('enable_vlc').checked;
+            const filter_min_width = document.getElementById('filter_min_width').value;
+            const filter_min_height = document.getElementById('filter_min_height').value;
+            const enable_smart_timeout = document.getElementById('enable_smart_timeout').checked;
+            const smart_timeout_sensitivity = document.getElementById('smart_timeout_sensitivity').value;
             
             if (!fileInput.files.length) {
                 alert('请选择文件');
@@ -875,7 +986,7 @@ HTML_TEMPLATE = '''
             const fileContent = await readFileAsBase64(file);
             const extension = '.' + file.name.split('.').pop();
             
-            await startValidation('file', { file_data: { content: fileContent, extension, filename: file.name } }, workers, timeout, filter_no_audio);
+            await startValidation('file', { file_data: { content: fileContent, extension, filename: file.name } }, workers, timeout, filter_no_audio, enable_vlc, filter_min_width, filter_min_height, enable_smart_timeout, smart_timeout_sensitivity);
         }
         
         // URL输入验证
@@ -885,13 +996,18 @@ HTML_TEMPLATE = '''
             const workers = document.getElementById('workers2').value;
             const timeout = document.getElementById('timeout2').value;
             const filter_no_audio = document.getElementById('filter_no_audio2').checked;
+            const enable_vlc = document.getElementById('enable_vlc2').checked;
+            const filter_min_width = document.getElementById('filter_min_width2').value;
+            const filter_min_height = document.getElementById('filter_min_height2').value;
+            const enable_smart_timeout = document.getElementById('enable_smart_timeout2').checked;
+            const smart_timeout_sensitivity = document.getElementById('smart_timeout_sensitivity2').value;
             
             if (!urlsText.trim()) {
                 alert('请输入URL');
                 return;
             }
             
-            await startValidation('url', { urls: urlsText, category }, workers, timeout, filter_no_audio);
+            await startValidation('url', { urls: urlsText, category }, workers, timeout, filter_no_audio, enable_vlc, filter_min_width, filter_min_height, enable_smart_timeout, smart_timeout_sensitivity);
         }
         
         // 互联网直播源验证
@@ -900,17 +1016,22 @@ HTML_TEMPLATE = '''
             const workers = document.getElementById('workers3').value;
             const timeout = document.getElementById('timeout3').value;
             const filter_no_audio = document.getElementById('filter_no_audio3').checked;
+            const enable_vlc = document.getElementById('enable_vlc3').checked;
+            const filter_min_width = document.getElementById('filter_min_width3').value;
+            const filter_min_height = document.getElementById('filter_min_height3').value;
+            const enable_smart_timeout = document.getElementById('enable_smart_timeout3').checked;
+            const smart_timeout_sensitivity = document.getElementById('smart_timeout_sensitivity3').value;
             
             if (!sourceUrl.trim()) {
                 alert('请输入互联网直播源文件URL');
                 return;
             }
             
-            await startValidation('network', { url: sourceUrl }, workers, timeout, filter_no_audio);
+            await startValidation('network', { url: sourceUrl }, workers, timeout, filter_no_audio, enable_vlc, filter_min_width, filter_min_height, enable_smart_timeout, smart_timeout_sensitivity);
         }
         
-        // 通用开始验证函数
-        async function startValidation(type, data, workers, timeout, filter_no_audio=false) {
+        // 通用开始验证函数 - 优化：默认启用音频过滤以提高速度
+        async function startValidation(type, data, workers, timeout, filter_no_audio=true, enable_vlc=false, filter_min_width='', filter_min_height='', enable_smart_timeout=true, smart_timeout_sensitivity=1.0) {
             // 首先确保任何现有的验证都已停止
             try {
                 // 如果有正在进行的验证，先停止
@@ -969,6 +1090,11 @@ HTML_TEMPLATE = '''
                 workers: parseInt(workers) || 20,
                 timeout: parseInt(timeout) || 5,
                 filter_no_audio: filter_no_audio,
+                enable_vlc: enable_vlc,
+                filter_min_width: filter_min_width ? parseInt(filter_min_width) : null,
+                filter_min_height: filter_min_height ? parseInt(filter_min_height) : null,
+                enable_smart_timeout: enable_smart_timeout,
+                smart_timeout_sensitivity: parseFloat(smart_timeout_sensitivity) || 1.0,
                 validation_id: validation_id
             });
             
@@ -1017,6 +1143,24 @@ HTML_TEMPLATE = '''
         // 验证开始事件
         socket.on('validation_started', function(data) {
             console.log('验证开始:', data.message);
+            // 重置计数器
+            validCount = 0;
+            resolutionValidCount = 0;
+            invalidCount = 0;
+            timeoutCount = 0;
+            
+            // 更新统计显示
+            document.getElementById('valid-count').textContent = '0';
+            document.getElementById('resolution-valid-count').textContent = '0';
+            document.getElementById('invalid-count').textContent = '0';
+            document.getElementById('timeout-count').textContent = '0';
+            
+            // 清空表格
+            const tbody = document.getElementById('results-table-body');
+            if (tbody) {
+                tbody.innerHTML = '';
+            }
+            
             // 显示进度区域，直接显示验证进度（跳过读取进度显示）
             document.getElementById('progress-container').style.display = 'block';
             // 直接显示验证阶段进度，不显示读取阶段
@@ -1085,27 +1229,6 @@ HTML_TEMPLATE = '''
                 reconnectionAttempts: 5
             });
             
-            // 复制事件监听器
-            oldSocket.listeners('validation_progress').forEach(listener => {
-                socket.on('validation_progress', listener);
-            });
-            
-            oldSocket.listeners('validation_completed').forEach(listener => {
-                socket.on('validation_completed', listener);
-            });
-            
-            oldSocket.listeners('validation_error').forEach(listener => {
-                socket.on('validation_error', listener);
-            });
-            
-            oldSocket.listeners('validation_stopped').forEach(listener => {
-                socket.on('validation_stopped', listener);
-            });
-            
-            oldSocket.listeners('validation_started').forEach(listener => {
-                socket.on('validation_started', listener);
-            });
-            
             // 等待新连接建立
             return new Promise((resolve, reject) => {
                 const timeoutId = setTimeout(() => {
@@ -1115,6 +1238,8 @@ HTML_TEMPLATE = '''
                 socket.once('connect', () => {
                     clearTimeout(timeoutId);
                     console.log('新WebSocket连接已建立');
+                    // 重新设置所有事件监听器
+                    setupEventListeners();
                     resolve();
                 });
                 
@@ -1126,84 +1251,349 @@ HTML_TEMPLATE = '''
             });
         }
         
-        // 进度更新事件
-        socket.on('validation_progress', function(data) {
-            console.log('进度更新:', data);
+        // 设置所有事件监听器
+        function setupEventListeners() {
+            // 连接事件
+            socket.on('connection_established', function(data) {
+                console.log('WebSocket连接已建立:', data.message);
+            });
             
-            // 检查验证ID是否匹配当前验证会话
-            // 如果data中没有validation_id，也应该接受（向后兼容）
-            if (data.validation_id && currentValidationId && data.validation_id !== currentValidationId) {
-                console.log('忽略不属于当前验证会话的进度更新');
-                return;
-            }
+            // 重连事件
+            socket.on('reconnect', function(attemptNumber) {
+                console.log('WebSocket重连成功，尝试次数:', attemptNumber);
+            });
             
-            // 始终保持在验证进度显示区域，显示所有频道的检测实况
-            document.getElementById('reading-progress-container').style.display = 'none';
-            document.getElementById('external-url-progress-container').style.display = 'none';
-            document.getElementById('validation-progress-container').style.display = 'block';
+            socket.on('reconnect_attempt', function(attemptNumber) {
+                console.log('WebSocket正在重连，尝试次数:', attemptNumber);
+            });
             
-            const progressFill = document.getElementById('validation-progress-fill');
-            const progressPercentage = document.getElementById('validation-progress-percentage');
-            const progressStats = document.getElementById('validation-progress-stats');
+            socket.on('reconnect_error', function(error) {
+                console.log('WebSocket重连错误:', error);
+            });
             
-            // 计算总进度（基于已处理的频道数，不区分阶段）
-            const totalChannels = data.total_channels || 0;
-            const processedChannels = data.processed || 0;
-            const progress = totalChannels > 0 ? Math.round((processedChannels / totalChannels) * 100) : 0;
+            socket.on('reconnect_failed', function() {
+                console.log('WebSocket重连失败');
+            });
             
-            if (progressFill) progressFill.style.width = progress + '%';
-            if (progressPercentage) progressPercentage.textContent = progress + '%';
-            if (progressStats) progressStats.textContent = `${processedChannels}/${totalChannels} 频道`;
+            // 断开连接事件
+            socket.on('disconnect', function(reason) {
+                console.log('WebSocket连接已断开:', reason);
+            });
             
-            // 更新计数器逻辑
-            if (data.channel) {
-                if (data.channel.status === 'timeout') {
-                    timeoutCount++;
-                } else if ('valid' in data.channel) {
-                    if (data.channel.valid === null || data.channel.valid === undefined) {
-                        // 未验证完成，不更新计数器
-                    } else if (data.channel.valid) {
-                        validCount++;
-                        // 检查是否有分辨率
-                        if (data.channel.resolution) {
-                            resolutionValidCount++;
-                        }
-                    } else {
-                        invalidCount++;
-                    }
-                } else if (data.channel.status === 'invalid') {
-                    // 处理没有'valid'字段但状态为'invalid'的情况
-                    invalidCount++;
+            // 验证事件
+            socket.on('validation_progress', function(data) {
+                console.log('进度更新:', data);
+                
+                // 检查验证ID是否匹配当前验证会话
+                // 如果data中没有validation_id，也应该接受（向后兼容）
+                if (data.validation_id && currentValidationId && data.validation_id !== currentValidationId) {
+                    console.log('忽略不属于当前验证会话的进度更新');
+                    return;
                 }
                 
-                // 更新进度统计
+                // 始终保持在验证进度显示区域，显示所有频道的检测实况
+                document.getElementById('reading-progress-container').style.display = 'none';
+                document.getElementById('external-url-progress-container').style.display = 'none';
+                document.getElementById('validation-progress-container').style.display = 'block';
+                
+                const progressFill = document.getElementById('validation-progress-fill');
+                const progressPercentage = document.getElementById('validation-progress-percentage');
+                const progressStats = document.getElementById('validation-progress-stats');
+                
+                // 计算总进度（基于已处理的频道数，不区分阶段）
+                const totalChannels = data.total_channels || 0;
+                const processedChannels = data.processed || 0;
+                let progress = 0;
+                
+                // 使用后端发送的进度值
+                if (data.progress !== undefined) {
+                    progress = data.progress;
+                } else if (data.stage === 'loading_channels') {
+                    // 加载阶段：0-5%
+                    progress = totalChannels > 0 ? Math.round((processedChannels / totalChannels) * 5) : 0;
+                } else {
+                    // 验证阶段：10-90%
+                    progress = totalChannels > 0 ? Math.round(10 + (processedChannels / totalChannels) * 80) : 0;
+                }
+                
+                // 根据阶段显示不同的进度容器
+                if (data.stage === 'loading_channels') {
+                    document.getElementById('reading-progress-container').style.display = 'block';
+                    document.getElementById('validation-progress-container').style.display = 'none';
+                    document.getElementById('external-url-progress-container').style.display = 'none';
+                } else {
+                    document.getElementById('reading-progress-container').style.display = 'none';
+                    document.getElementById('validation-progress-container').style.display = 'block';
+                    document.getElementById('external-url-progress-container').style.display = 'none';
+                }
+                
+                if (progressFill) progressFill.style.width = progress + '%';
+                if (progressPercentage) progressPercentage.textContent = progress + '%';
+                
+                // 根据阶段显示不同的进度信息
+                if (data.stage === 'loading_channels') {
+                    if (progressStats) progressStats.textContent = `加载中: ${processedChannels}/${totalChannels} 频道`;
+                } else {
+                    if (progressStats) progressStats.textContent = `${processedChannels}/${totalChannels} 频道`;
+                }
+                
+                // 更新计数器逻辑
+                if (data.channel) {
+                    if (data.channel.status === 'timeout') {
+                        timeoutCount++;
+                    } else if ('valid' in data.channel) {
+                        if (data.channel.valid === null || data.channel.valid === undefined) {
+                            // 未验证完成，不更新计数器
+                        } else if (data.channel.valid) {
+                            validCount++;
+                            // 检查是否有分辨率
+                            if (data.channel.resolution) {
+                                resolutionValidCount++;
+                            }
+                        } else {
+                            invalidCount++;
+                        }
+                    } else if (data.channel.status === 'invalid') {
+                        // 处理没有'valid'字段但状态为'invalid'的情况
+                        invalidCount++;
+                    }
+                    
+                    // 更新进度统计
+                    const validCountEl = document.getElementById('valid-count');
+                    const resolutionValidCountEl = document.getElementById('resolution-valid-count');
+                    const invalidCountEl = document.getElementById('invalid-count');
+                    const timeoutCountEl = document.getElementById('timeout-count');
+                    
+                    if (validCountEl) validCountEl.textContent = validCount;
+                    if (resolutionValidCountEl) resolutionValidCountEl.textContent = resolutionValidCount;
+                    if (invalidCountEl) invalidCountEl.textContent = invalidCount;
+                    if (timeoutCountEl) timeoutCountEl.textContent = timeoutCount;
+                }
+                
+                // 只在收到实际验证结果时添加到表格
+                if (data.channel && typeof data.channel === 'object') {
+                    console.log('收到频道数据:', data.stage, data.channel.name, data.channel.url ? '有URL' : '无URL');
+                    
+                    // 忽略虚拟频道
+                    if (data.channel.name === '完成解析文件') {
+                        console.log('忽略虚拟频道：', data.channel.name);
+                    }
+                    // 加载阶段显示所有频道
+                    else if (data.stage === 'loading_channels' && data.channel.url) {
+                        console.log('加载频道到表格:', data.channel.name);
+                        addResultToTable(data.channel);
+                    }
+                    // 验证阶段显示检测结果
+                    else if ((data.stage === 'validation' || data.stage === 'validation_started' || data.stage === 'parsing_completed') && data.channel.url) {
+                        console.log('添加到表格:', data.channel.name);
+                        addResultToTable(data.channel);
+                    }
+                }
+            });
+            
+            // 验证完成事件
+            socket.on('validation_completed', function(data) {
+                console.log('验证完成:', data);
+                
+                // 检查验证ID是否匹配当前验证会话
+                if (data.validation_id && data.validation_id !== currentValidationId) {
+                    console.log('忽略不属于当前验证会话的完成事件');
+                    return;
+                }
+                
+                // 使用后端返回的最终统计更新显示
+                const validCountEl = document.getElementById('valid-count');
+                const resolutionValidCountEl = document.getElementById('resolution-valid-count');
+                const invalidCountEl = document.getElementById('invalid-count');
+                
+                if (data.valid_count !== undefined && validCountEl) {
+                    validCountEl.textContent = data.valid_count;
+                }
+                if (data.resolution_valid_count !== undefined && resolutionValidCountEl) {
+                    resolutionValidCountEl.textContent = data.resolution_valid_count;
+                }
+                if (data.invalid_count !== undefined && invalidCountEl) {
+                    invalidCountEl.textContent = data.invalid_count;
+                }
+                
+                // 更新所有仍显示"检测中"的行
+                const checkingRows = document.querySelectorAll('#results-table-body tr');
+                checkingRows.forEach(row => {
+                    const validCell = row.querySelector('td:nth-child(3)');
+                    if (validCell && validCell.textContent === '检测中') {
+                        validCell.textContent = '未知';
+                        validCell.className = 'unknown';
+                    }
+                });
+                
+                // 显示完成信息
+                const message = `验证完成！总频道数: ${data.total_channels}, 有效频道数: ${data.valid_count || data.valid_channels}`;
+                let saveButtons = '';
+                
+                if (data.valid_output_file || data.all_output_file) {
+                    if (data.valid_output_file) {
+                        saveButtons += `<a href="/download/${data.valid_output_file}" class="btn btn-primary" style="margin-right: 10px; margin-top: 15px; display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; text-decoration: none; border-radius: 5px; cursor: pointer;">只保存有效直播源</a>`;
+                    }
+                    
+                    if (data.all_output_file) {
+                        saveButtons += `<a href="/download/${data.all_output_file}" class="btn btn-secondary" style="margin-top: 15px; display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%); color: white; text-decoration: none; border-radius: 5px; cursor: pointer;">保存全部直播源（有效+无效）</a>`;
+                    }
+                } else if (data.output_file) {
+                    // 向后兼容旧版本
+                    saveButtons = `<a href="/download/${data.output_file}" class="btn btn-primary" style="margin-top: 15px; display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #8e9bef 100%); color: white; text-decoration: none; border-radius: 5px; cursor: pointer;">保存有效直播源</a>`;
+                }
+                
+                // 创建完成提示
+                const container = document.querySelector('.container');
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = '<p>' + message + '</p>' + saveButtons;
+                container.appendChild(resultDiv);
+                
+                // 重新启用所有开始按钮，禁用所有停止按钮
+                document.getElementById('start-btn1').removeAttribute('disabled');
+                document.getElementById('start-btn2').removeAttribute('disabled');
+                document.getElementById('start-btn3').removeAttribute('disabled');
+                document.getElementById('stop-btn1').setAttribute('disabled', 'disabled');
+                document.getElementById('stop-btn2').setAttribute('disabled', 'disabled');
+                document.getElementById('stop-btn3').setAttribute('disabled', 'disabled');
+            });
+            
+            // 验证错误事件
+            socket.on('validation_error', function(data) {
+                console.error('验证错误:', data);
+                
+                // 检查验证ID是否匹配当前验证会话
+                if (data.validation_id && data.validation_id !== currentValidationId) {
+                    console.log('忽略不属于当前验证会话的错误事件');
+                    return;
+                }
+                
+                // 创建错误提示
+                const container = document.querySelector('.container');
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '<p>' + data.message + '</p>';
+                container.appendChild(resultDiv);
+                
+                // 重新启用所有开始按钮，禁用所有停止按钮
+                document.getElementById('start-btn1').removeAttribute('disabled');
+                document.getElementById('start-btn2').removeAttribute('disabled');
+                document.getElementById('start-btn3').removeAttribute('disabled');
+                document.getElementById('stop-btn1').setAttribute('disabled', 'disabled');
+                document.getElementById('stop-btn2').setAttribute('disabled', 'disabled');
+                document.getElementById('stop-btn3').setAttribute('disabled', 'disabled');
+            });
+            
+            // 验证停止事件
+            socket.on('validation_stopped', function(data) {
+                console.log('验证停止:', data);
+                console.log('valid_output_file:', data.valid_output_file);
+                console.log('all_output_file:', data.all_output_file);
+                console.log('valid_count:', data.valid_count);
+                
+                // 检查验证ID是否匹配当前验证会话
+                if (data.validation_id && data.validation_id !== currentValidationId) {
+                    console.log('忽略不属于当前验证会话的停止事件');
+                    return;
+                }
+                
+                // 重新启用所有开始按钮，禁用所有停止按钮
+                document.getElementById('start-btn1').removeAttribute('disabled');
+                document.getElementById('start-btn2').removeAttribute('disabled');
+                document.getElementById('start-btn3').removeAttribute('disabled');
+                document.getElementById('stop-btn1').setAttribute('disabled', 'disabled');
+                document.getElementById('stop-btn2').setAttribute('disabled', 'disabled');
+                document.getElementById('stop-btn3').setAttribute('disabled', 'disabled');
+                
+                // 清除现有的结果消息
+                const existingResults = document.querySelectorAll('.result');
+                existingResults.forEach(div => div.remove());
+                
+                // 重置进度条
+                const progressFill = document.querySelector('.progress-fill');
+                const progressPercentage = document.getElementById('progress-percentage');
+                const progressStats = document.getElementById('progress-stats');
+                if (progressFill) progressFill.style.width = '0%';
+                if (progressPercentage) progressPercentage.textContent = '0%';
+                if (progressStats) progressStats.textContent = '0/0 频道';
+                
+                // 重置进度统计计数器
+                validCount = 0;
+                resolutionValidCount = 0;
+                invalidCount = 0;
+                timeoutCount = 0;
+                
+                // 重置统计显示
                 const validCountEl = document.getElementById('valid-count');
                 const resolutionValidCountEl = document.getElementById('resolution-valid-count');
                 const invalidCountEl = document.getElementById('invalid-count');
                 const timeoutCountEl = document.getElementById('timeout-count');
                 
-                if (validCountEl) validCountEl.textContent = validCount;
-                if (resolutionValidCountEl) resolutionValidCountEl.textContent = resolutionValidCount;
-                if (invalidCountEl) invalidCountEl.textContent = invalidCount;
-                if (timeoutCountEl) timeoutCountEl.textContent = timeoutCount;
-            }
+                if (validCountEl) validCountEl.textContent = '0';
+                if (resolutionValidCountEl) resolutionValidCountEl.textContent = '0';
+                if (invalidCountEl) invalidCountEl.textContent = '0';
+                if (timeoutCountEl) timeoutCountEl.textContent = '0';
+                
+                // 创建停止提示
+                const container = document.querySelector('.container');
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'result';
+                let html = '<p>' + data.message + '</p>';
+                
+                if (data.valid_output_file || data.all_output_file) {
+                    const validCount = data.valid_count || 0;
+                    const totalCount = data.total_channels || 0;
+                    
+                    html += `<div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">`;
+                    html += `<p style="margin: 0 0 10px 0; color: #495057;"><strong>保存统计:</strong></p>`;
+                    html += `<p style="margin: 0 0 10px 0; color: #28a745;">有效频道: ${validCount}/${totalCount}</p>`;
+                    
+                    if (data.valid_output_file) {
+                        html += `<a href="/download/${data.valid_output_file}" class="btn btn-primary" style="margin-right: 10px; margin-bottom: 5px; display: inline-block; padding: 8px 16px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; text-decoration: none; border-radius: 5px; cursor: pointer; font-size: 14px;">只保存有效直播源</a>`;
+                    }
+                    
+                    if (data.all_output_file) {
+                        html += `<a href="/download/${data.all_output_file}" class="btn btn-secondary" style="margin-bottom: 5px; display: inline-block; padding: 8px 16px; background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%); color: white; text-decoration: none; border-radius: 5px; cursor: pointer; font-size: 14px;">保存全部直播源（有效+无效）</a>`;
+                    }
+                    
+                    html += `</div>`;
+                }
+                resultDiv.innerHTML = html;
+                container.appendChild(resultDiv);
+            });
             
-            // 只在收到实际验证结果时添加到表格
-            if (data.channel) {
-                // 忽略虚拟频道
-                if (data.channel.name === '完成解析文件') {
-                    console.log('忽略虚拟频道：', data.channel.name);
+            // 验证开始事件
+            socket.on('validation_started', function(data) {
+                console.log('验证开始:', data.message);
+                // 重置计数器
+                validCount = 0;
+                resolutionValidCount = 0;
+                invalidCount = 0;
+                timeoutCount = 0;
+                
+                // 更新统计显示
+                document.getElementById('valid-count').textContent = '0';
+                document.getElementById('resolution-valid-count').textContent = '0';
+                document.getElementById('invalid-count').textContent = '0';
+                document.getElementById('timeout-count').textContent = '0';
+                
+                // 清空表格
+                const tbody = document.getElementById('results-table-body');
+                if (tbody) {
+                    tbody.innerHTML = '';
                 }
-                // 解析阶段显示频道名称（标记为待验证）
-                else if (data.stage === 'parsing' && data.channel.url) {
-                    addResultToTable(data.channel);
-                }
-                // 验证阶段显示检测结果
-                else if ((data.stage === 'validation' || data.stage === 'validation_started') && data.channel.url) {
-                    addResultToTable(data.channel);
-                }
-            }
-        });
+                
+                // 显示进度区域，直接显示验证进度（跳过读取进度显示）
+                document.getElementById('progress-container').style.display = 'block';
+                // 直接显示验证阶段进度，不显示读取阶段
+                document.getElementById('reading-progress-container').style.display = 'none';
+                document.getElementById('external-url-progress-container').style.display = 'none';
+                document.getElementById('validation-progress-container').style.display = 'block';
+            });
+        }
+        
+
         
         // 验证完成事件
         socket.on('validation_completed', function(data) {
@@ -1242,13 +1632,26 @@ HTML_TEMPLATE = '''
             
             // 显示完成信息
             const message = `验证完成！总频道数: ${data.total_channels}, 有效频道数: ${data.valid_count || data.valid_channels}`;
-            const saveButton = `<a href="/download/${data.output_file}" class="btn btn-primary" style="margin-top: 15px; display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #8e9bef 100%); color: white; text-decoration: none; border-radius: 5px; cursor: pointer;">保存有效直播源</a>`;
+            let saveButtons = '';
+            
+            if (data.valid_output_file || data.all_output_file) {
+                if (data.valid_output_file) {
+                    saveButtons += `<a href="/download/${data.valid_output_file}" class="btn btn-primary" style="margin-right: 10px; margin-top: 15px; display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; text-decoration: none; border-radius: 5px; cursor: pointer;">只保存有效直播源</a>`;
+                }
+                
+                if (data.all_output_file) {
+                    saveButtons += `<a href="/download/${data.all_output_file}" class="btn btn-secondary" style="margin-top: 15px; display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%); color: white; text-decoration: none; border-radius: 5px; cursor: pointer;">保存全部直播源（有效+无效）</a>`;
+                }
+            } else if (data.output_file) {
+                // 向后兼容旧版本
+                saveButtons = `<a href="/download/${data.output_file}" class="btn btn-primary" style="margin-top: 15px; display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #8e9bef 100%); color: white; text-decoration: none; border-radius: 5px; cursor: pointer;">保存有效直播源</a>`;
+            }
             
             // 创建完成提示
             const container = document.querySelector('.container');
             const resultDiv = document.createElement('div');
             resultDiv.className = 'result success';
-            resultDiv.innerHTML = '<p>' + message + '</p>' + saveButton;
+            resultDiv.innerHTML = '<p>' + message + '</p>' + saveButtons;
             container.appendChild(resultDiv);
             
             // 重新启用所有开始按钮，禁用所有停止按钮
@@ -1289,7 +1692,8 @@ HTML_TEMPLATE = '''
         // 验证停止事件
         socket.on('validation_stopped', function(data) {
             console.log('验证停止:', data);
-            console.log('output_file:', data.output_file);
+            console.log('valid_output_file:', data.valid_output_file);
+            console.log('all_output_file:', data.all_output_file);
             console.log('valid_count:', data.valid_count);
             
             // 检查验证ID是否匹配当前验证会话
@@ -1340,18 +1744,34 @@ HTML_TEMPLATE = '''
             const resultDiv = document.createElement('div');
             resultDiv.className = 'result';
             let html = '<p>' + data.message + '</p>';
-            if (data.output_file) {
+            
+            if (data.valid_output_file || data.all_output_file) {
                 const validCount = data.valid_count || 0;
-                html += `<p style="color: #28a745; margin-top: 10px;">已保存 ${validCount} 个有效频道</p>`;
-                html += `<a href="/download/${data.output_file}" class="btn btn-primary" style="margin-top: 15px; display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #8e9bef 100%); color: white; text-decoration: none; border-radius: 5px; cursor: pointer;">保存有效直播源</a>`;
+                const totalCount = data.total_channels || 0;
+                
+                html += `<div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">`;
+                html += `<p style="margin: 0 0 10px 0; color: #495057;"><strong>保存统计:</strong></p>`;
+                html += `<p style="margin: 0 0 10px 0; color: #28a745;">有效频道: ${validCount}/${totalCount}</p>`;
+                
+                if (data.valid_output_file) {
+                    html += `<a href="/download/${data.valid_output_file}" class="btn btn-primary" style="margin-right: 10px; margin-bottom: 5px; display: inline-block; padding: 8px 16px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; text-decoration: none; border-radius: 5px; cursor: pointer; font-size: 14px;">只保存有效直播源</a>`;
+                }
+                
+                if (data.all_output_file) {
+                    html += `<a href="/download/${data.all_output_file}" class="btn btn-secondary" style="margin-bottom: 5px; display: inline-block; padding: 8px 16px; background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%); color: white; text-decoration: none; border-radius: 5px; cursor: pointer; font-size: 14px;">保存全部直播源（有效+无效）</a>`;
+                }
+                
+                html += `</div>`;
             }
             resultDiv.innerHTML = html;
             container.appendChild(resultDiv);
         });
         
-        // 添加结果到表格
+        // 添加结果到表格（按original_index顺序插入或更新）
         function addResultToTable(result) {
+            console.log('addResultToTable被调用:', result.name, 'original_index:', result.original_index);
             const tbody = document.getElementById('results-table-body');
+            console.log('tbody元素:', tbody);
             
             // 检查必要字段，处理不完整数据
             if (!result || !result.name) {
@@ -1359,82 +1779,158 @@ HTML_TEMPLATE = '''
                 return;
             }
             
-            const row = document.createElement('tr');
+            // 尝试找到已存在的行（基于original_index）
+            const originalIndex = result.original_index !== undefined ? result.original_index : -1;
+            let row = null;
+            let existingRow = null;
             
-            // 存储原始索引用于排序，默认使用频道名称的哈希值或当前时间戳
-            const originalIndex = result.original_index !== undefined ? result.original_index : 
-                (result.name ? result.name.charCodeAt(0) * 1000 + (result.url ? result.url.length : 0) : Date.now());
-            row.dataset.originalIndex = originalIndex;
-            
-            const nameCell = document.createElement('td');
-            nameCell.textContent = result.name;
-            
-            const urlCell = document.createElement('td');
-            if (result.url) {
-                const urlLink = document.createElement('a');
-                urlLink.href = result.url;
-                urlLink.target = '_blank';
-                urlLink.textContent = result.url;
-                urlCell.appendChild(urlLink);
-            } else {
-                urlCell.textContent = '(无URL)';
-                urlCell.style.color = '#999';
+            if (originalIndex >= 0) {
+                existingRow = tbody.querySelector(`tr[data-original-index="${originalIndex}"]`);
             }
             
-            const validCell = document.createElement('td');
-            if (result.status === 'timeout') {
-                validCell.textContent = '超时';
-                validCell.className = 'timeout';
-            } else if (result.status === 'checking' || result.valid === null || result.valid === undefined) {
-                // 未验证完成时显示为"检测中"
-                validCell.textContent = '检测中';
-                validCell.className = 'checking';
-                validCell.style.color = '#667eea';
-            } else if ('valid' in result) {
-                validCell.textContent = result.valid ? '有效' : '无效';
-                validCell.className = result.valid ? 'valid' : 'invalid';
+            if (existingRow) {
+                // 更新已存在的行
+                console.log('更新已有行:', originalIndex);
+                row = existingRow;
             } else {
-                validCell.textContent = '待验证';
-                validCell.className = 'checking';
-            }
-            
-            // 拆分分辨率为视频宽和视频高
-            let width = '';
-            let height = '';
-            if (result.resolution) {
-                const resolutionParts = result.resolution.split('*');
-                if (resolutionParts.length === 2) {
-                    width = resolutionParts[0];
-                    height = resolutionParts[1];
+                // 创建新行
+                console.log('创建新行');
+                row = document.createElement('tr');
+                row.dataset.originalIndex = originalIndex;
+                
+                // 创建所有单元格
+                const indexCell = document.createElement('td');
+                indexCell.textContent = result.display_index || (originalIndex >= 0 ? originalIndex + 1 : tbody.children.length + 1);
+                row.appendChild(indexCell);
+                
+                const nameCell = document.createElement('td');
+                nameCell.textContent = result.name;
+                row.appendChild(nameCell);
+                
+                const urlCell = document.createElement('td');
+                row.appendChild(urlCell);
+                
+                const validCell = document.createElement('td');
+                row.appendChild(validCell);
+                
+                const widthCell = document.createElement('td');
+                row.appendChild(widthCell);
+                
+                const heightCell = document.createElement('td');
+                row.appendChild(heightCell);
+                
+                const speedCell = document.createElement('td');
+                row.appendChild(speedCell);
+                
+                // 按original_index顺序插入到正确位置
+                const existingRows = tbody.querySelectorAll('tr');
+                let inserted = false;
+                for (let i = 0; i < existingRows.length; i++) {
+                    const existingRowCheck = existingRows[i];
+                    const existingIndex = parseInt(existingRowCheck.dataset.originalIndex) || 0;
+                    if (originalIndex >= 0 && originalIndex < existingIndex) {
+                        tbody.insertBefore(row, existingRowCheck);
+                        inserted = true;
+                        break;
+                    }
+                }
+                if (!inserted) {
+                    tbody.appendChild(row);
                 }
             }
             
-            const widthCell = document.createElement('td');
-            widthCell.textContent = width;
+            // 更新行的内容
+            const cells = row.querySelectorAll('td');
             
-            const heightCell = document.createElement('td');
-            heightCell.textContent = height;
-            
-            row.appendChild(nameCell);
-            row.appendChild(urlCell);
-            row.appendChild(validCell);
-            row.appendChild(widthCell);
-            row.appendChild(heightCell);
-            
-            // 根据原始索引将行插入到正确位置
-            const rows = Array.from(tbody.children);
-            const insertIndex = rows.findIndex(r => parseInt(r.dataset.originalIndex) > result.original_index);
-            
-            if (insertIndex === -1) {
-                tbody.appendChild(row);
-                const tableContainer = document.querySelector('.table-container');
-                if (tableContainer) {
-                    tableContainer.scrollTop = tableContainer.scrollHeight;
-                }
-            } else {
-                tbody.insertBefore(row, rows[insertIndex]);
-                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // 序号（如果已存在且有display_index则更新）
+            if (result.display_index && cells[0]) {
+                cells[0].textContent = result.display_index;
             }
+            
+            // 名称
+            if (cells[1]) {
+                cells[1].textContent = result.name;
+            }
+            
+            // URL
+            if (cells[2]) {
+                cells[2].innerHTML = '';
+                if (result.url) {
+                    const urlLink = document.createElement('a');
+                    urlLink.href = result.url;
+                    urlLink.target = '_blank';
+                    urlLink.textContent = result.url;
+                    cells[2].appendChild(urlLink);
+                } else {
+                    cells[2].textContent = '(无URL)';
+                    cells[2].style.color = '#999';
+                }
+            }
+            
+            // 有效性状态
+            if (cells[3]) {
+                if (result.status === 'timeout') {
+                    cells[3].textContent = '超时';
+                    cells[3].className = 'timeout';
+                } else if (result.status === 'checking' || result.valid === null || result.valid === undefined) {
+                    cells[3].textContent = '检测中';
+                    cells[3].className = 'checking';
+                    cells[3].style.color = '#667eea';
+                } else if ('valid' in result) {
+                    cells[3].textContent = result.valid ? '有效' : '无效';
+                    cells[3].className = result.valid ? 'valid' : 'invalid';
+                } else if (result.status === '待验证') {
+                    cells[3].textContent = '待验证';
+                    cells[3].className = 'checking';
+                } else {
+                    cells[3].textContent = '未知';
+                    cells[3].className = 'unknown';
+                }
+            }
+            
+            // 分辨率 - 优先使用分离的宽高信息，其次从resolution字符串中解析
+            let width = result.resolution_width || '';
+            let height = result.resolution_height || '';
+            
+            // 如果没有分离的宽高信息，则尝试从resolution字符串中解析
+            if (!width || !height) {
+                if (result.resolution) {
+                    if (typeof result.resolution === 'string') {
+                        // 字符串格式 "1920*1080"
+                        const resolutionParts = result.resolution.split('*');
+                        if (resolutionParts.length === 2) {
+                            width = resolutionParts[0];
+                            height = resolutionParts[1];
+                        }
+                    } else if (Array.isArray(result.resolution) || result.resolution instanceof Array) {
+                        // 元组/数组格式 ('1920', '1080', 'Unknown') 或 ['1920', '1080']
+                        width = result.resolution[0] || '';
+                        height = result.resolution[1] || '';
+                    } else if (typeof result.resolution === 'object') {
+                        // 对象格式 {width, height}
+                        width = result.resolution.width || result.resolution[0] || '';
+                        height = result.resolution.height || result.resolution[1] || '';
+                    }
+                }
+            }
+            
+            if (cells[4]) {
+                cells[4].textContent = width;
+            }
+            if (cells[5]) {
+                cells[5].textContent = height;
+            }
+            
+            // 响应速度
+            if (cells[6]) {
+                if (result.response_time) {
+                    cells[6].textContent = result.response_time + 'ms';
+                } else {
+                    cells[6].textContent = '';
+                }
+            }
+            
+            console.log('行已更新/插入，表格行数:', tbody.children.length);
         }
 
 
@@ -1558,8 +2054,10 @@ def run_validation(data):
         # 获取参数
         workers = data.get('workers', 20)
         timeout = data.get('timeout', 5)
+        enable_smart_timeout = data.get('enable_smart_timeout', True)
+        smart_timeout_sensitivity = data.get('smart_timeout_sensitivity', 1.0)
         if DEBUG_MODE:
-            logger.debug(f"参数: workers={workers}, timeout={timeout}")
+            logger.debug(f"参数: workers={workers}, timeout={timeout}, enable_smart_timeout={enable_smart_timeout}, smart_timeout_sensitivity={smart_timeout_sensitivity}")
         
         # 生成唯一验证ID
         validation_id = data.get('validation_id', '')
@@ -1582,6 +2080,8 @@ def run_validation(data):
         # 注意：validation_id 在回调定义时已经可用
         def thread_safe_progress_callback(progress_data):
             try:
+                print(f"[调试] 收到进度回调: processed={progress_data.get('processed')}/{progress_data.get('total_channels')}, progress={progress_data.get('progress')}")
+                
                 # 确保validation_id始终存在
                 if 'validation_id' not in progress_data:
                     progress_data['validation_id'] = validation_id
@@ -1597,10 +2097,13 @@ def run_validation(data):
                         channel['valid'] = None
                         channel['status'] = 'processing'
                 
+                print(f"[调试] 发送 validation_progress 事件到 room={sid}")
                 socketio.emit('validation_progress', progress_data, room=sid)
+                print(f"[调试] validation_progress 事件已发送")
             except Exception as e:
-                if DEBUG_MODE:
-                    logger.debug(f"发送进度事件时出错: {str(e)}")
+                print(f"[调试] 发送进度事件时出错: {str(e)}")
+                import traceback
+                traceback.print_exc()
         
         # 根据验证类型处理
         if data.get('type') == 'file':
@@ -1664,10 +2167,31 @@ def run_validation(data):
                 logger.debug(f"开始创建IPTVValidator，文件路径: {temp_path}")
             
             try:
+                # 确保output目录存在
+                script_dir = os.path.dirname(os.path.abspath(__file__))
+                output_dir = os.path.join(script_dir, 'output')
+                if not os.path.exists(output_dir):
+                    os.makedirs(output_dir)
+                    if DEBUG_MODE:
+                        logger.debug(f"已创建output目录: {output_dir}")
+                
+                # 生成输出文件名（保存在output目录中，供Web界面下载）
+                base_name = os.path.splitext(original_filename)[0]
+                extension = file_data.get('extension', '.m3u')
+                if extension.lower() == '.m3u':
+                    output_file = os.path.join(output_dir, f"{base_name}_valid.m3u")
+                else:
+                    output_file = os.path.join(output_dir, f"{base_name}_valid.txt")
+                
                 # 为当前会话创建一个新的验证器
-                local_validator = IPTVValidator(temp_path, max_workers=workers, timeout=timeout, 
+                local_validator = IPTVValidator(temp_path, output_file=output_file, max_workers=workers, timeout=timeout, 
                                               original_filename=original_filename, 
                                               filter_no_audio=data.get('filter_no_audio', False), 
+                                              enable_vlc=data.get('enable_vlc', False), 
+                                              resolution_min_width=data.get('filter_min_width'),
+                                              resolution_min_height=data.get('filter_min_height'),
+                                              enable_smart_timeout=enable_smart_timeout,
+                                              smart_timeout_sensitivity=smart_timeout_sensitivity,
                                               validation_id=data.get('validation_id'))
                 
                 # 将验证器关联到当前会话
@@ -1691,91 +2215,57 @@ def run_validation(data):
             
             if DEBUG_MODE:
                 logger.debug(f"开始解析文件: {local_validator.file_type}")
-            # 根据文件类型解析文件内容
-            try:
-                if local_validator.file_type == 'm3u':
-                    if DEBUG_MODE:
-                        logger.debug("调用 read_m3u_file")
-                    local_validator.read_m3u_file(progress_callback=thread_safe_progress_callback)
-                elif local_validator.file_type == 'json':
-                    if DEBUG_MODE:
-                        logger.debug("调用 read_json_file")
-                    local_validator.read_json_file(progress_callback=thread_safe_progress_callback)
-                else:
-                    if DEBUG_MODE:
-                        logger.debug("调用 read_txt_file")
-                    local_validator.read_txt_file(progress_callback=thread_safe_progress_callback)
-                
-                if DEBUG_MODE:
-                    logger.debug(f"文件解析完成, 找到 {len(local_validator.channels)} 个频道")
-            except Exception as parse_error:
-                if DEBUG_MODE:
-                    logger.debug(f"文件解析失败: {str(parse_error)}")
-                socketio.emit('validation_error', {'message': f'文件解析失败: {str(parse_error)}'}, room=sid)
-                return
             
-            # 发送解析完成的进度更新
-            thread_safe_progress_callback({
-                'progress': 10,
-                'total_channels': len(local_validator.channels),
-                'processed': 0,
-                'message': f'文件解析完成，共找到{len(local_validator.channels)}个频道，开始验证频道有效性',
-                'stage': 'parsing_completed'
-            })
+            # 直接执行验证（_run_validation会内部处理文件解析，避免重复）
+            local_validator._run_validation(progress_callback=thread_safe_progress_callback)
+            
+            if DEBUG_MODE:
+                logger.debug(f"验证完成, 共找到 {len(local_validator.channels)} 个频道")
                 
             # 检查是否请求停止
             if local_validator.stop_requested:
-                output_file = local_validator.stop()
+                output_files = local_validator.stop()
                 valid_count = sum(1 for r in local_validator.all_results if r['valid'])
-                output_basename = os.path.basename(output_file) if output_file else None
+                valid_output_file = os.path.basename(output_files[0]) if len(output_files) > 0 else None
+                all_output_file = os.path.basename(output_files[1]) if len(output_files) > 1 else None
                 if DEBUG_MODE:
-                    logger.debug(f"停止时output_file: {output_file}, valid_count: {valid_count}")
+                    logger.debug(f"停止时output_files: {output_files}, valid_count: {valid_count}")
                 # 发送停止消息
                 socketio.emit('validation_stopped', {
                     'message': '验证过程已停止',
                     'validation_id': validation_id,
-                    'output_file': output_basename,
+                    'valid_output_file': valid_output_file,
+                    'all_output_file': all_output_file,
                     'valid_count': valid_count
                 }, room=sid)
                 return
                 
-            # 执行验证
-            local_validator.validate_channels(progress_callback=thread_safe_progress_callback)
-            
             # 计算有效频道数
             valid_count = sum(1 for r in local_validator.all_results if r['valid'])
             valid_channels = [r for r in local_validator.all_results if r['valid']]
             
-            # 检查是否请求停止
-            if local_validator.stop_requested:
-                output_file = local_validator.stop()
-                valid_count = sum(1 for r in local_validator.all_results if r['valid'])
-                output_basename = os.path.basename(output_file) if output_file else None
-                if DEBUG_MODE:
-                    logger.debug(f"停止时output_file: {output_file}, valid_count: {valid_count}")
-                socketio.emit('validation_stopped', {
-                    'message': '验证过程已停止',
-                    'validation_id': validation_id,
-                    'output_file': output_basename,
-                    'valid_count': valid_count
-                }, room=sid)
-                return
-            
-            # 生成输出文件
-            output_file = os.path.basename(local_validator.generate_output_files())
+            # 生成输出文件（生成两个文件：有效源和全部源）
+            output_files = local_validator.stop()  # 使用stop方法生成两个文件
+            valid_output_file = os.path.basename(output_files[0]) if len(output_files) > 0 else None
+            all_output_file = os.path.basename(output_files[1]) if len(output_files) > 1 else None
             if DEBUG_MODE:
-                logger.debug(f"输出文件: {output_file}")
+                logger.debug(f"输出文件: {output_files}")
             
             # 发送验证完成事件
             try:
+                # 计算正确的总频道数和无效频道数
+                total_processed = len(local_validator.all_results)
+                invalid_count = total_processed - valid_count if total_processed > 0 else 0
+                
                 socketio.emit('validation_completed', {
                     'message': '验证完成',
-                    'total_channels': len(local_validator.channels),
+                    'total_channels': len(local_validator.all_results),
                     'valid_channels': len(valid_channels),
                     'valid_count': valid_count,
-                    'invalid_count': len(local_validator.channels) - valid_count,
-                    'resolution_valid_count': sum(1 for r in valid_channels if r.get('resolution')),
-                    'output_file': output_file,
+                    'invalid_count': invalid_count,
+                    'resolution_valid_count': sum(1 for r in local_validator.all_results if r['valid'] and r.get('resolution')),
+                    'valid_output_file': valid_output_file,
+                    'all_output_file': all_output_file,
                     'validation_id': validation_id
                 }, room=sid)
                 if DEBUG_MODE:
@@ -1816,7 +2306,7 @@ def run_validation(data):
                 socketio.emit('validation_error', {'message': f'创建临时文件失败: {str(temp_error)}'}, room=sid)
                 return
                 
-            local_validator = IPTVValidator(temp_path, max_workers=workers, timeout=timeout, original_filename="url_channels.m3u", filter_no_audio=data.get('filter_no_audio', False), validation_id=data.get('validation_id'))
+            local_validator = IPTVValidator(temp_path, max_workers=workers, timeout=timeout, original_filename="url_channels.m3u", filter_no_audio=data.get('filter_no_audio', False), enable_vlc=data.get('enable_vlc', False), resolution_min_width=data.get('filter_min_width'), resolution_min_height=data.get('filter_min_height'), validation_id=data.get('validation_id'))
             global_validator = local_validator  # 更新全局引用
             
             # 发送验证开始的进度更新
@@ -1828,41 +2318,51 @@ def run_validation(data):
                 'stage': 'validation_started'
             })
             
-            valid_channels = local_validator.validate_channels(progress_callback=thread_safe_progress_callback)
+            # 执行验证（使用_run_validation避免重复解析）
+            local_validator._run_validation(progress_callback=thread_safe_progress_callback)
             
             # 计算有效频道数
             valid_count = sum(1 for r in local_validator.all_results if r['valid'])
             
             # 检查是否请求停止
             if local_validator.stop_requested:
-                output_file = local_validator.stop()
+                output_files = local_validator.stop()
                 valid_count = sum(1 for r in local_validator.all_results if r['valid'])
-                output_basename = os.path.basename(output_file) if output_file else None
+                valid_output_file = os.path.basename(output_files[0]) if len(output_files) > 0 else None
+                all_output_file = os.path.basename(output_files[1]) if len(output_files) > 1 else None
                 if DEBUG_MODE:
-                    logger.debug(f"停止时output_file: {output_file}, valid_count: {valid_count}")
+                    logger.debug(f"停止时output_files: {output_files}, valid_count: {valid_count}")
                 socketio.emit('validation_stopped', {
                     'message': '验证过程已停止',
                     'validation_id': validation_id,
-                    'output_file': output_basename,
+                    'valid_output_file': valid_output_file,
+                    'all_output_file': all_output_file,
                     'valid_count': valid_count
                 }, room=sid)
                 return
             
-            # 生成输出文件
-            output_file = os.path.basename(local_validator.generate_output_files())
+            # 生成输出文件（生成两个文件：有效源和全部源）
+            output_files = local_validator.stop()  # 使用stop方法生成两个文件
+            valid_output_file = os.path.basename(output_files[0]) if len(output_files) > 0 else None
+            all_output_file = os.path.basename(output_files[1]) if len(output_files) > 1 else None
             if DEBUG_MODE:
-                logger.debug(f"输出文件: {output_file}")
+                logger.debug(f"输出文件: {output_files}")
             
             # 发送验证完成事件
             try:
+                # 计算正确的总频道数和无效频道数
+                total_processed = len(local_validator.all_results)
+                invalid_count = total_processed - valid_count if total_processed > 0 else 0
+                
                 socketio.emit('validation_completed', {
                     'message': '验证完成',
-                    'total_channels': len(local_validator.channels),
+                    'total_channels': len(local_validator.all_results),
                     'valid_channels': len(valid_channels),
                     'valid_count': valid_count,
-                    'invalid_count': len(local_validator.channels) - valid_count,
+                    'invalid_count': invalid_count,
                     'resolution_valid_count': sum(1 for r in local_validator.all_results if r['valid'] and r.get('resolution')),
-                    'output_file': output_file,
+                    'valid_output_file': valid_output_file,
+                    'all_output_file': all_output_file,
                     'validation_id': validation_id
                 }, room=sid)
                 if DEBUG_MODE:
@@ -1878,7 +2378,7 @@ def run_validation(data):
                 socketio.emit('validation_error', {'message': '网络源URL为空'}, room=sid)
                 return
                 
-            local_validator = IPTVValidator(url, max_workers=workers, timeout=timeout, filter_no_audio=data.get('filter_no_audio', False), validation_id=data.get('validation_id'))
+            local_validator = IPTVValidator(url, max_workers=workers, timeout=timeout, filter_no_audio=data.get('filter_no_audio', False), enable_vlc=data.get('enable_vlc', False), resolution_min_width=data.get('filter_min_width'), resolution_min_height=data.get('filter_min_height'), validation_id=data.get('validation_id'))
             global_validator = local_validator  # 更新全局引用
             
             # 发送验证开始的进度更新
@@ -1890,35 +2390,23 @@ def run_validation(data):
                 'stage': 'validation_started'
             })
             
-            # 根据文件类型解析文件内容
-            if local_validator.file_type == 'm3u':
-                local_validator.read_m3u_file(progress_callback=thread_safe_progress_callback)
-            elif local_validator.file_type == 'json':
-                local_validator.read_json_file(progress_callback=thread_safe_progress_callback)
-            else:
-                local_validator.read_txt_file(progress_callback=thread_safe_progress_callback)
-            
-            # 发送解析完成的进度更新
-            thread_safe_progress_callback({
-                'progress': 10,
-                'total_channels': len(local_validator.channels),
-                'processed': 0,
-                'message': f'网络源解析完成，共找到{len(local_validator.channels)}个频道，开始验证频道有效性',
-                'stage': 'parsing_completed'
-            })
+            # 直接执行验证（_run_validation会内部处理文件解析，避免重复）
+            local_validator._run_validation(progress_callback=thread_safe_progress_callback)
                 
             # 检查是否请求停止
             if local_validator.stop_requested:
-                output_file = local_validator.stop()
+                output_files = local_validator.stop()
                 valid_count = sum(1 for r in local_validator.all_results if r['valid'])
-                output_basename = os.path.basename(output_file) if output_file else None
+                valid_output_file = os.path.basename(output_files[0]) if len(output_files) > 0 else None
+                all_output_file = os.path.basename(output_files[1]) if len(output_files) > 1 else None
                 if DEBUG_MODE:
-                    logger.debug(f"停止时output_file: {output_file}, valid_count: {valid_count}")
+                    logger.debug(f"停止时output_files: {output_files}, valid_count: {valid_count}")
                 # 发送停止消息
                 socketio.emit('validation_stopped', {
                     'message': '验证过程已停止',
                     'validation_id': validation_id,
-                    'output_file': output_basename,
+                    'valid_output_file': valid_output_file,
+                    'all_output_file': all_output_file,
                     'valid_count': valid_count
                 }, room=sid)
                 return
@@ -1930,34 +2418,43 @@ def run_validation(data):
             
             # 检查是否请求停止
             if local_validator.stop_requested:
-                output_file = local_validator.stop()
+                output_files = local_validator.stop()
                 valid_count = sum(1 for r in local_validator.all_results if r['valid'])
-                output_basename = os.path.basename(output_file) if output_file else None
+                valid_output_file = os.path.basename(output_files[0]) if len(output_files) > 0 else None
+                all_output_file = os.path.basename(output_files[1]) if len(output_files) > 1 else None
                 if DEBUG_MODE:
-                    logger.debug(f"停止时output_file: {output_file}, valid_count: {valid_count}")
+                    logger.debug(f"停止时output_files: {output_files}, valid_count: {valid_count}")
                 socketio.emit('validation_stopped', {
                     'message': '验证过程已停止',
                     'validation_id': validation_id,
-                    'output_file': output_basename,
+                    'valid_output_file': valid_output_file,
+                    'all_output_file': all_output_file,
                     'valid_count': valid_count
                 }, room=sid)
                 return
             
-            # 生成输出文件
-            output_file = os.path.basename(local_validator.generate_output_files())
+            # 生成输出文件（生成两个文件：有效源和全部源）
+            output_files = local_validator.stop()  # 使用stop方法生成两个文件
+            valid_output_file = os.path.basename(output_files[0]) if len(output_files) > 0 else None
+            all_output_file = os.path.basename(output_files[1]) if len(output_files) > 1 else None
             if DEBUG_MODE:
-                logger.debug(f"输出文件: {output_file}")
+                logger.debug(f"输出文件: {output_files}")
             
             # 发送验证完成事件
             try:
+                # 计算正确的总频道数和无效频道数
+                total_processed = len(local_validator.all_results)
+                invalid_count = total_processed - valid_count if total_processed > 0 else 0
+                
                 socketio.emit('validation_completed', {
                     'message': '验证完成',
-                    'total_channels': len(local_validator.channels),
+                    'total_channels': len(local_validator.all_results),
                     'valid_channels': len(valid_channels),
                     'valid_count': valid_count,
-                    'invalid_count': len(local_validator.channels) - valid_count,
+                    'invalid_count': invalid_count,
                     'resolution_valid_count': sum(1 for r in local_validator.all_results if r['valid'] and r.get('resolution')),
-                    'output_file': output_file,
+                    'valid_output_file': valid_output_file,
+                    'all_output_file': all_output_file,
                     'validation_id': validation_id
                 }, room=sid)
                 if DEBUG_MODE:
@@ -2037,27 +2534,35 @@ def stop_validation():
     sid = request.sid
     
     # 检查当前会话是否有活跃的验证器
-    output_file = None
+    output_files = []
     valid_count = 0
     
     if sid in validator_sessions:
         local_validator = validator_sessions[sid]
         if local_validator:
             try:
-                # 停止验证器并获取输出文件
-                output_file = local_validator.stop()
+                # 停止验证器并获取输出文件列表
+                output_files = local_validator.stop()
                 valid_count = sum(1 for r in local_validator.all_results if r['valid'])
-                output_basename = os.path.basename(output_file) if output_file else None
                 
                 if DEBUG_MODE:
-                    logger.debug(f"停止验证器 - output_file: {output_file}, valid_count: {valid_count}")
+                    logger.debug(f"停止验证器 - output_files: {output_files}, valid_count: {valid_count}")
                 
-                # 发送停止消息包含有效结果信息
+                # 处理输出文件列表
+                valid_file = None
+                all_file = None
+                if output_files:
+                    valid_file = os.path.basename(output_files[0]) if len(output_files) > 0 else None
+                    all_file = os.path.basename(output_files[1]) if len(output_files) > 1 else None
+                
+                # 发送停止消息包含两个文件信息
                 socketio.emit('validation_stopped', {
                     'message': '验证过程已停止',
                     'validation_id': '',
-                    'output_file': output_basename,
-                    'valid_count': valid_count
+                    'valid_output_file': valid_file,
+                    'all_output_file': all_file,
+                    'valid_count': valid_count,
+                    'total_channels': len(local_validator.all_results) if local_validator.all_results else 0
                 }, room=sid)
                 
             except Exception as e:
@@ -2093,11 +2598,16 @@ def index():
 
 @app.route('/download/<filename>')
 def download_file(filename):
-    # 确保只允许下载验证工具生成的有效文件
+    # 确保只允许下载验证工具生成的有效文件和全部源文件
     safe_filename = os.path.basename(filename)  # 防止路径遍历攻击
     script_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(script_dir, 'output', safe_filename)
-    if os.path.exists(file_path) and (file_path.endswith('_valid.m3u') or file_path.endswith('_valid.txt')):
+    if os.path.exists(file_path) and (
+        file_path.endswith('_valid.m3u') or 
+        file_path.endswith('_valid.txt') or
+        file_path.endswith('_all.m3u') or 
+        file_path.endswith('_all.txt')
+    ):
         return send_file(file_path, as_attachment=True, download_name=safe_filename)
     else:
         flash('文件不存在或不允许下载', 'error')
