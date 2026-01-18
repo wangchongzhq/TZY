@@ -975,10 +975,10 @@ def extract_channels_from_txt(content):
             channel_name = parts[0].strip()
             url = found_protocol + parts[1].strip()
             
-            # 排除包含"rtsp://"、"freetv"或"stream"的URL（包括片段部分）
+            # 排除包含"rtsp://"、"freetv"、"stream"或"kkk"的URL（包括片段部分）
             url_lower = url.lower()
-            if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower:
-                logger.debug(f"排除包含'rtsp://'、'freetv'或'stream'的URL: {url}")
+            if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower or "kkk" in url_lower:
+                logger.debug(f"排除包含'rtsp://'、'freetv'、'stream'或'kkk'的URL: {url}")
                 continue
             
             # 处理空频道名称

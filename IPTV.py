@@ -118,8 +118,8 @@ class TemplateDrivenProcessor:
         """检查URL是否在黑名单中"""
         url_lower = url.lower()
         
-        # 排除包含"rtsp://"、"freetv"或"stream"的URL（包括片段部分）
-        if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower:
+        # 排除包含"rtsp://"、"freetv"、"stream"或"kkk"的URL（包括片段部分）
+        if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower or "kkk" in url_lower:
             return True
             
         if not self.url_blacklist:
