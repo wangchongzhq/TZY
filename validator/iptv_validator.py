@@ -253,6 +253,12 @@ def _get_resolution_from_hls(url, timeout, headers=None):
             return None, None, {}
 
         content = response.text
+        url_lower = url.lower()
+
+        # 特殊处理中国移动IPTV
+        if 'otttv.bj.chinamobile.com' in url_lower:
+            return "1920*1080", 'hls', {'source': 'cmcc_iptv_special'}
+
         re_resolution = re.compile(r'#EXT-X-STREAM-INF.*?RESOLUTION=(\d+)x(\d+)', re.IGNORECASE | re.DOTALL)
         matches = re_resolution.findall(content)
 
@@ -569,6 +575,7 @@ def _get_resolution_from_m3u8_content(url, timeout, headers=None):
             '163189.xyz': "3840*2160",  # 163189.xyz通常是4K源
             'qqqtv.top': "1920*1080",  # qqqtv.top通常是HD源
             'wulinsy.cn': "1920*1080",  # wulinsy.cn通常是HD源
+            'otttv.bj.chinamobile.com': "1920*1080",  # 中国移动IPTV通常是HD源
         }
         
         for server, resolution in server_patterns.items():
