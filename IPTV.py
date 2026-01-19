@@ -966,8 +966,8 @@ def is_url_blacklisted(url):
     try:
         url_lower = url.lower()
         
-        # 排除包含"rtsp://"、"freetv"或"stream"的URL（包括片段部分）
-        if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower:
+        # 排除包含"rtsp://"、"freetv"、"stream"或"kkk"的URL（包括片段部分）
+        if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower or "kkk" in url_lower:
             return True
             
         if not config.url_blacklist:
@@ -1316,9 +1316,9 @@ def extract_channels_from_txt(file_path):
                     if not url.startswith(('http://', 'https://', 'udp://', 'rtmp://', 'mms://', 'rtp://')):
                         continue
                     
-                    # 排除包含"rtsp://"、"freetv"或"stream"的URL（包括片段部分）
+                    # 排除包含"rtsp://"、"freetv"、"stream"或"kkk"的URL（包括片段部分）
                     url_lower = url.lower()
-                    if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower:
+                    if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower or "kkk" in url_lower:
                         continue
                     
                     # 规范化频道名称
@@ -1572,6 +1572,10 @@ def merge_sources(sources, local_files):
                 
                 for group_title, channel_list in result.items():
                     for channel_name, url in channel_list:
+                        # 黑名单过滤
+                        url_lower = url.lower()
+                        if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower or "kkk" in url_lower:
+                            continue
                         # 4K过滤
                         if config["filter"]["only_4k"] and not is_4k(channel_name, url):
                             continue
