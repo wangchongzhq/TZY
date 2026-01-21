@@ -51,7 +51,7 @@ DEFAULT_CONFIG = {
     },
     "url_testing": {
             "enable": True,    # 启用URL有效性测试
-            "timeout": 2,      # URL测试超时时间（秒）
+            "timeout": 1,      # URL测试超时时间（秒）- 减少到1秒以提高速度
             "retries": 0,      # URL测试重试次数
             "workers": 32      # URL测试并发数（降低并发数避免资源耗尽）
         },
@@ -564,29 +564,99 @@ HD_PATTERNS = [
 HD_REGEX = re.compile('|'.join(HD_PATTERNS), re.IGNORECASE)
 
 # URL测试函数
-def check_url(url, timeout=2, retries=0):
+def check_url(url, timeout=1, retries=0, is_4k=False):
     """测试URL是否可用
     
     参数:
         url: 要测试的URL
         timeout: 超时时间（秒）
         retries: 重试次数（当前已禁用）
+        is_4k: 是否是4K频道（4K频道采用更宽松的验证标准）
     
     返回:
         bool: URL是否可用
     """
-    if not URL_REGEX.match(url):
-        return False
-    
-    # 对于非HTTP/HTTPS协议的URL，直接返回True（这些协议无法通过HTTP请求验证）
-    if not url.startswith(('http://', 'https://')):
+    # 4K频道：直接返回True，不进行任何验证
+    if is_4k:
         return True
     
+    # 1. 基本URL格式验证
+    if not url or url.strip() == "":
+        return False
+    
+    # 2. 过滤掉明显不是URL的内容
+    if url.startswith('#'):
+        return False
+    
+    # 3. 快速预过滤：基于已知的无效域名或模式
+    invalid_patterns = [
+        '127.0.0.1', 'localhost', 'example.com', 'test.com',
+        '.local', '.internal',
+        'deadlink', 'expired', 'invalid', 'notfound'
+    ]
+    url_lower = url.lower()
+    for pattern in invalid_patterns:
+        if pattern in url_lower:
+            return False
+    
+    # 4. 检查协议
+    if '://' not in url and not url.startswith('//'):
+        return False
+    
+    # 5. 对于非HTTP/HTTPS协议的URL，进行基本验证
+    if not url.startswith(('http://', 'https://')):
+        # 对于UDP, RTSP等协议，只进行基本格式验证
+        # 这些协议无法通过HTTP请求验证，但我们需要确保它们的格式正确
+        parsed = urlparse(url)
+        if not parsed.scheme or parsed.scheme not in ['udp', 'rtsp', 'rtmp', 'rtp']:
+            return False
+        # 确保有主机名
+        if not parsed.hostname:
+            return False
+        # 4K频道：非HTTP/HTTPS协议的URL，只要格式正确就认为是有效的
+        if is_4k:
+            return True
+        return True
+    
+    # 6. HTTP/HTTPS协议验证
     try:
-        # 只使用HEAD请求，减少网络流量和服务器负担
+        # 使用HEAD请求以避免下载整个文件（仅适用于HTTP/HTTPS）
+        # 添加Range头减少流量，只请求文件的第一个字节
         response = session.head(url, timeout=timeout, allow_redirects=True, 
                                 headers={'Range': 'bytes=0-0'})  # 添加Range头，请求只返回部分内容
-        return response.status_code < 400
+        
+        # 检查状态码
+        status_code = response.status_code
+        
+        # 200-399状态码：成功
+        if 200 <= status_code < 400:
+            # 4K频道：只要状态码是200-399，就认为是有效的
+            if is_4k:
+                return True
+            
+            # 非4K频道：需要更严格的验证
+            # 检查内容类型，确保是流媒体或视频/音频内容
+            content_type = response.headers.get('Content-Type', '').lower()
+            has_streaming_content = any(ct in content_type for ct in 
+                ['video/', 'audio/', 'application/vnd.apple.mpegurl', 'application/x-mpegURL'])
+            
+            # 检查URL是否是流媒体格式
+            url_lower = url.lower()
+            is_streaming_format = any(ext in url_lower for ext in 
+                ['.m3u8', '.ts', '.flv', '.mp4', '.m4v', '.webm', '.wmv', '.m3u', '.mpeg', '.mov', '.avi', '.mkv'])
+            
+            # 要么有流媒体内容类型，要么是流媒体格式，要么是200状态码
+            if has_streaming_content or is_streaming_format or status_code == 200:
+                return True
+            
+        # 400-499状态码：客户端错误，通常是无效的
+        elif 400 <= status_code < 500:
+            return False
+        
+        # 500+状态码：服务器错误，通常是无效的
+        else:
+            return False
+            
     except requests.exceptions.ConnectionError:
         # 连接错误直接返回False
         return False
@@ -599,20 +669,25 @@ def check_url(url, timeout=2, retries=0):
 
 def test_channels(channels):
     """测试所有频道的URL有效性（使用快速检测器优化）"""
+    print(f"🔍 URL测试配置: {config['url_testing']}")
     if not config["url_testing"]["enable"]:
         print("📌 URL测试功能已禁用")
         return channels
     
     print(f"🔍 开始测试频道URL有效性...")
     
-    # 收集所有需要测试的频道
+    # 收集所有需要测试的频道，优先处理4K频道
     all_channel_items = []
+    four_k_channel_items = []
     for category, channel_list in channels.items():
         for channel_name, url in channel_list:
-            all_channel_items.append((category, channel_name, url))
+            if category == "4K频道" or is_ultra_high_quality(url, channel_name):
+                four_k_channel_items.append((category, channel_name, url))
+            else:
+                all_channel_items.append((category, channel_name, url))
     
-    total_channels = len(all_channel_items)
-    print(f"📺 待测试频道总数: {total_channels}")
+    total_channels = len(all_channel_items) + len(four_k_channel_items)
+    print(f"📺 待测试频道总数: {total_channels} (4K频道: {len(four_k_channel_items)}, 其他频道: {len(all_channel_items)})")
     
     if total_channels == 0:
         return channels
@@ -622,51 +697,89 @@ def test_channels(channels):
     valid_count = 0
     invalid_count = 0
     
-    # 尝试使用快速检测器
-    if QUICK_CHECKER_AVAILABLE and total_channels > 50:
-        print("🚀 使用轻量级快速检测器进行批量检测...")
+    # 处理4K频道：直接添加到有效频道列表，不进行任何测试
+    if four_k_channel_items:
+        print("📺 4K频道：直接添加到有效频道列表，不进行任何测试")
+        for category, channel_name, url in four_k_channel_items:
+            valid_channels[category].append((channel_name, url))
+            valid_count += 1
+            if (valid_count) % 10 == 0:
+                print(f"📊 4K频道处理进度: {valid_count}/{len(four_k_channel_items)} ({valid_count}有效, 0无效)")
+        print(f"📊 4K频道测试结果: 有效: {len(four_k_channel_items)} 个, 无效: 0 个")
+    
+    # 处理非4K频道
+    if all_channel_items:
+        print(f"🔍 开始测试非4K频道URL有效性...")
         
-        try:
-            # 准备URL列表
-            urls = [(category, channel_name, url) for category, channel_name, url in all_channel_items]
+        # 尝试使用快速检测器
+        if QUICK_CHECKER_AVAILABLE and len(all_channel_items) > 50:
+            print("🚀 使用轻量级快速检测器进行批量检测...")
             
-            # 创建快速检测器
-            checker = create_quick_checker(
-                timeout=config["url_testing"]["timeout"],
-                max_workers=min(32, config["url_testing"]["workers"]),
-                enable_dns_check=True
-            )
-            
-            # 批量检测
-            results = checker.batch_check([url for _, _, url in urls], show_progress=True)
-            
-            # 处理结果
-            for i, result in enumerate(results):
-                category, channel_name, url = urls[i]
+            try:
+                # 准备URL列表
+                urls = [(category, channel_name, url) for category, channel_name, url in all_channel_items]
                 
-                if result['valid']:
-                    valid_channels[category].append((channel_name, url))
-                    valid_count += 1
-                else:
-                    invalid_count += 1
+                # 创建快速检测器
+                checker = create_quick_checker(
+                    timeout=config["url_testing"]["timeout"],
+                    max_workers=min(32, config["url_testing"]["workers"]),
+                    enable_dns_check=True
+                )
+                
+                # 批量检测
+                results = checker.batch_check([url for _, _, url in urls], show_progress=True)
+                
+                # 处理结果
+                for i, result in enumerate(results):
+                    category, channel_name, url = urls[i]
                     
-                if (i + 1) % 100 == 0:
-                    print(f"📊 处理进度: {i+1}/{len(results)} ({valid_count}有效, {invalid_count}无效)")
-            
-            print(f"✅ 快速检测完成: {valid_count}个有效, {invalid_count}个无效")
-            
-        except Exception as e:
-            print(f"⚠️ 快速检测器出错: {e}")
-            print("🔄 回退到传统检测方式...")
-            return test_channels_traditional(channels)
-    else:
-        print("🔄 使用传统检测方式...")
-        return test_channels_traditional(channels)
+                    if result['valid']:
+                        valid_channels[category].append((channel_name, url))
+                        valid_count += 1
+                    else:
+                        invalid_count += 1
+                        
+                    if (i + 1) % 100 == 0:
+                        print(f"📊 处理进度: {i+1}/{len(results)} ({valid_count}有效, {invalid_count}无效)")
+                
+                print(f"✅ 快速检测完成: {valid_count}个有效, {invalid_count}个无效")
+                
+            except Exception as e:
+                print(f"⚠️ 快速检测器出错: {e}")
+                print("🔄 回退到传统检测方式...")
+                # 回退到传统检测方式处理非4K频道
+                non_4k_channels = {}
+                for category, channel_list in channels.items():
+                    non_4k_channel_list = []
+                    for channel_name, url in channel_list:
+                        if not (category == "4K频道" or is_ultra_high_quality(url, channel_name)):
+                            non_4k_channel_list.append((channel_name, url))
+                    if non_4k_channel_list:
+                        non_4k_channels[category] = non_4k_channel_list
+                non_4k_valid_channels = test_channels_traditional(non_4k_channels)
+                # 合并4K频道和非4K频道的测试结果
+                for category, channel_list in non_4k_valid_channels.items():
+                    valid_channels[category].extend(channel_list)
+        else:
+            print("🔄 使用传统检测方式...")
+            # 使用传统检测方式处理非4K频道
+            non_4k_channels = {}
+            for category, channel_list in channels.items():
+                non_4k_channel_list = []
+                for channel_name, url in channel_list:
+                    if not (category == "4K频道" or is_ultra_high_quality(url, channel_name)):
+                        non_4k_channel_list.append((channel_name, url))
+                if non_4k_channel_list:
+                    non_4k_channels[category] = non_4k_channel_list
+            non_4k_valid_channels = test_channels_traditional(non_4k_channels)
+            # 合并4K频道和非4K频道的测试结果
+            for category, channel_list in non_4k_valid_channels.items():
+                valid_channels[category].extend(channel_list)
     
     print(f"📊 测试结果: 共测试 {total_channels} 个频道")
-    print(f"📊 有效频道: {valid_count} 个")
-    print(f"📊 无效频道: {invalid_count} 个")
-    print(f"📊 有效率: {valid_count/total_channels*100:.1f}%")
+    print(f"📊 有效频道: {len([item for sublist in valid_channels.values() for item in sublist])} 个")
+    print(f"📊 无效频道: {total_channels - len([item for sublist in valid_channels.values() for item in sublist])} 个")
+    print(f"📊 有效率: {len([item for sublist in valid_channels.values() for item in sublist])/total_channels*100:.1f}%")
     
     return valid_channels
 
@@ -681,11 +794,12 @@ def test_channels_traditional(channels):
             normalized = normalize_url(url)
             if (category, channel_name, normalized) not in seen_items:
                 seen_items.add((category, channel_name, normalized))
-                if is_ultra_high_quality(url, channel_name):
+                channel_is_4k = is_ultra_high_quality(url, channel_name)
+                if channel_is_4k:
                     timeout = 5  # 4K频道超时5秒
                 else:
                     timeout = config["url_testing"]["timeout"]  # 使用配置中的超时时间
-                test_items.append((category, channel_name, url, timeout))
+                test_items.append((category, channel_name, url, timeout, channel_is_4k))
     
     # 并发测试URL
     tested_channels = defaultdict(list)
@@ -705,8 +819,8 @@ def test_channels_traditional(channels):
     try:
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
             # 提交所有测试任务，future_to_test直接包含完整信息
-            future_to_test = {executor.submit(check_url, url, timeout, config["url_testing"]["retries"]): (category, channel_name, url) 
-                             for category, channel_name, url, timeout in test_items}
+            future_to_test = {executor.submit(check_url, url, timeout, config["url_testing"]["retries"], channel_is_4k): (category, channel_name, url) 
+                             for category, channel_name, url, timeout, channel_is_4k in test_items}
             
             # 收集测试结果，设置超时，防止单个任务阻塞
             for future in concurrent.futures.as_completed(future_to_test, timeout=total_tested * 2):
@@ -975,10 +1089,10 @@ def extract_channels_from_txt(content):
             channel_name = parts[0].strip()
             url = found_protocol + parts[1].strip()
             
-            # 排除包含"rtsp://"、"freetv"、"stream"或"kkk"的URL（包括片段部分）
+            # 排除包含"rtsp://"、"freetv"、"stream"、"kkk"或"migu"的URL（包括片段部分）
             url_lower = url.lower()
-            if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower or "kkk" in url_lower:
-                logger.debug(f"排除包含'rtsp://'、'freetv'、'stream'或'kkk'的URL: {url}")
+            if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower or "kkk" in url_lower or "migu" in url_lower:
+                logger.debug(f"排除包含'rtsp://'、'freetv'、'stream'、'kkk'或'migu'的URL: {url}")
                 continue
             
             # 处理空频道名称
@@ -1255,7 +1369,14 @@ def main():
 
         logger.info(f"去重后剩余 {sum(len(channels_list) for channels_list in unique_channels.values())} 个频道")
     
-    # URL测试处理
+        # URL测试处理
+        print(f"🔍 开始URL测试处理")
+        print(f"🔍 URL测试配置: {config['url_testing']}")
+        
+        # 强制启用URL测试
+        config["url_testing"]["enable"] = True
+        print(f"🔍 强制启用URL测试")
+        
         tested_channels = test_channels(unique_channels)
         if not tested_channels:
             logger.error("URL测试失败或没有可用频道")
