@@ -941,19 +941,6 @@ def check_url(url, timeout=0.5, retries=0, is_4k=False):
     except:
         # 任何错误都认为是无效的，不进行重试
         return False
-                
-            # 400-499状态码：客户端错误，通常是无效的
-            elif 400 <= status_code < 500:
-                return False
-            
-            # 500+状态码：服务器错误，通常是无效的
-            else:
-                return False
-                
-        except requests.exceptions.RequestException as e:
-            # 如果是最后一次尝试或者是特定错误，返回False
-            if attempt == retries:
-                return False
 
 # 格式化时间间隔
 def format_interval(seconds):
