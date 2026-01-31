@@ -1,0 +1,69 @@
+{
+  "sources": [
+    {
+      "name": "Supprise0901",
+      "url": "https://ghfast.top/https://raw.githubusercontent.com/Supprise0901/TVBox_live/refs/heads/main/live.txt",
+      "enabled": true
+    },
+    {
+      "name": "qingtingjjjjjjj",
+      "url": "https://ghfast.top/https://raw.githubusercontent.com/qingtingjjjjjjj/Web-Scraping/main/live.txt",
+      "enabled": true
+    },
+    {
+      "name": "kimwang1978",
+      "url": "https://ghfast.top/https://raw.githubusercontent.com/kimwang1978/collect-txt/main/bbxx.txt",
+      "enabled": true
+    },
+    {
+      "name": "xisohi",
+      "url": "https://ghfast.top/raw.githubusercontent.com/xisohi/CHINA-IPTV/main/TV/live.txt",
+      "enabled": true
+    },
+    {
+      "name": "jiangnan1224",
+      "url": "https://ghfast.top/raw.githubusercontent.com/jiangnan1224/iptv_ipv4_live/main/iptv.txt",
+      "enabled": true
+    },
+    {
+      "name": "zbds",
+      "url": "https://zbds.org/tv/iptv4.txt",
+      "enabled": true
+    },
+    {
+      "name": "ffmking",
+      "url": "https://ghfast.top/raw.githubusercontent.com/ffmking/tv1/main/888.txt",
+      "enabled": true
+    },
+    {
+      "name": "Heiwk",
+      "url": "https://ghfast.top/https://raw.githubusercontent.com/Heiwk/iptv67/refs/heads/main/iptv.m3u",
+      "enabled": true
+    },
+    {
+      "name": "fuxinyi0505",
+      "url": "https://ghfast.top/https://raw.githubusercontent.com/fuxinyi0505/Ku9-IPTV-source/refs/heads/main/Ku9-IPTV-source.txt",
+      "enabled": true
+    },
+    {
+      "name": "huangsuming",
+      "url": "https://ghfast.top/https://github.com/huangsuming/iptv/raw/refs/heads/main/list/iptv.txt",
+      "enabled": true
+    },
+    {
+      "name": "xiao-ping2",
+      "url": "https://gitee.com/xiao-ping2/iptv-api/raw/master/output/xp_result.txt",
+      "enabled": true
+    },
+    {
+      "name": "Guovin",
+      "url": "https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt",
+      "enabled": true
+    },
+    {
+      "name": "yifoo",
+      "url": "https://ghfast.top/https://raw.githubusercontent.com/yifoo/autoiptv/refs/heads/main/live_sources.m3u",
+      "enabled": true
+    }
+  ]
+}
