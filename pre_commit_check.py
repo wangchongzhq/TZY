@@ -20,7 +20,6 @@ class CodeValidator:
         self.errors = []
         self.warnings = []
         self.project_root = Path(__file__).parent
-        self.validator_dir = self.project_root / "validator"
         
     def log_error(self, message: str, file_path: str = "", line: int = 0):
         """记录错误"""
@@ -124,42 +123,7 @@ class CodeValidator:
             print("安全检查通过")
         return security_ok
 
-    def check_gui_requirements(self) -> bool:
-        """检查GUI应用要求"""
-        print("检查GUI应用要求...")
-        
-        gui_ok = True
-        main_gui_files = [
-            self.validator_dir / "integrated_validator.py",
-            self.validator_dir / "智能启动器.py",
-            self.validator_dir / "一键启动.py",
-        ]
-        
-        for gui_file in main_gui_files:
-            if gui_file.exists():
-                try:
-                    with open(gui_file, 'r', encoding='utf-8') as f:
-                        content = f.read()
-                        
-                    # 检查是否正确处理__main__模块
-                    if 'if __name__ == "__main__":' not in content:
-                        self.log_warning(f"GUI应用缺少main模块检查", str(gui_file))
-                        
-                    # 检查异常处理
-                    if 'except Exception as e:' not in content and 'except:' not in content:
-                        self.log_warning(f"GUI应用缺少异常处理", str(gui_file))
-                        
-                    # 检查资源清理
-                    if 'root.destroy()' not in content and 'sys.exit()' not in content:
-                        self.log_warning(f"GUI应用建议添加资源清理", str(gui_file))
-                        
-                except Exception as e:
-                    self.log_error(f"GUI检查失败: {e}", str(gui_file))
-                    gui_ok = False
-                    
-        if gui_ok:
-            print("GUI应用要求检查通过")
-        return gui_ok
+
 
     def check_file_handling(self) -> bool:
         """检查文件处理安全性"""
@@ -423,8 +387,8 @@ class CodeValidator:
         
         # 只检查核心文件和目录，提高检查效率
         self.python_files = []
-        core_directories = ['validator']
-        core_files = ['IPTV.py', 'IPTVTXT.py', 'convert_m3u_to_txt.py', 'file_utils.py', 'pre_commit_check.py']
+        core_directories = []
+        core_files = ['IPTV.py', 'IPTVTXT.py', 'convert_m3u_to_txt.py', 'pre_commit_check.py']
         
         # 添加核心文件
         for file in core_files:
@@ -445,7 +409,6 @@ class CodeValidator:
             self.check_python_syntax,
             self.check_encoding_declarations,
             self.check_security_issues,
-            self.check_gui_requirements,
             self.check_file_handling,
             self.check_network_requests,
             self.check_logging_completeness,

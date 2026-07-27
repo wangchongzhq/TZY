@@ -1,117 +1,106 @@
-# 直播源自动生成工具
+# IPTV直播源自动生成工具
 
-## 📋 项目介绍
+## 项目介绍
 
- **直播源自动生成工具**：核心脚本为 `IPTV.py`，能够自动生成高质量的 M3U 播放列表和 TXT 格式直播源文件，支持质量筛选、智能分类和定时更新。
+这是一个自动化的 IPTV 直播源生成工具，能够从多个来源获取直播源并生成 M3U 和 TXT 格式的文件，方便在各种播放器中使用。
 
+## 功能特性
 
-## ✨ 功能特性
+- **多源获取**：从多个可靠来源获取直播源
+- **自动更新**：支持手动更新和通过 GitHub Actions 定时更新
+- **质量过滤**：自动过滤低质量和无效的直播源
+- **分类整理**：将直播源按频道类型分类
+- **4K 支持**：支持筛选 4K 高清频道
+- **URL 测试**：自动测试直播源的可用性
+- **缓存机制**：缓存直播源内容，提高更新速度
 
-### 直播源自动生成工具（IPTV.py）
-- **多格式支持**：生成 M3U 播放列表和 TXT 格式直播源
-- **智能分类**：自动将频道分类为央视频道、卫视频道、4K 频道等
-- **质量控制**：支持筛选高清（HD）和 4K 直播源
-- **并发处理**：使用线程池实现高效的网络请求处理
-- **本地文件支持**：支持 `file://` 协议读取本地直播源文件
-- **重试机制**：网络请求失败时自动重试，提高可靠性
-- **定时更新**：通过 GitHub Actions 实现每日自动更新
+## 文件结构
 
-## 📋 环境要求
-
-- Python 3.6 或更高版本
-- Git 版本控制工具
-- GitHub 账号（用于自动化工作流）
-
-### 依赖安装
-
-```bash
-pip install -r requirements.txt
+```
+├── IPTV.py            # 主脚本，生成 jieguo.m3u 和 jieguo.txt
+├── IPTVTXT.py         # 辅助脚本，生成 jieguo_txt.m3u 和 jieguo_txt.txt
+├── update_sources.py  # 播放源更新脚本
+├── sources.json       # 直播源配置文件
+├── unified_sources.py # 自动生成的统一播放源文件
+├── iptv_config.json   # 配置文件
+├── source_cache.json  # 缓存文件
+└── .github/workflows/ # GitHub Actions 工作流
 ```
 
-**可选依赖**：
-- FFmpeg：用于视频分辨率检测
+## 使用方法
 
-## 🚀 快速开始
+### 手动更新
 
-### 1. 克隆仓库
+1. **更新播放源**：
+   ```bash
+   python update_sources.py
+   ```
 
-```bash
-git clone https://github.com/your-username/TZY.git
-cd TZY
+2. **生成直播源文件**：
+   ```bash
+   python IPTV.py --update
+   ```
+
+3. **只获取 4K 频道**：
+   ```bash
+   python IPTV.py --filter-4k
+   ```
+
+4. **检查脚本语法**：
+   ```bash
+   python IPTV.py --check-syntax
+   ```
+
+### 自动更新
+
+项目配置了 GitHub Actions 工作流，会定期自动更新直播源并推送到仓库。
+
+## 直播源配置
+
+在 `sources.json` 文件中添加或修改直播源：
+
+```json
+{
+  "sources": [
+    {
+      "name": "源名称",
+      "url": "直播源URL",
+      "enabled": true
+    }
+  ]
+}
 ```
 
-### 2. 安装依赖
+## 输出文件
 
-```bash
-pip install -r requirements.txt
-```
+- **jieguo.m3u**：生成的 M3U 格式直播源文件
+- **jieguo.txt**：生成的 TXT 格式直播源文件
+- **jieguo_txt.m3u**：备选 M3U 格式直播源文件
+- **jieguo_txt.txt**：备选 TXT 格式直播源文件
 
-## 🎯 使用指南
+## 注意事项
 
-### 直播源自动生成工具（IPTV.py）
+- 请确保网络连接正常，以便获取直播源
+- 部分直播源可能会随时间失效，工具会自动过滤无效源
+- 生成过程可能需要几分钟时间，取决于网络速度和直播源数量
 
-#### 运行核心脚本
+## 依赖项
 
-```bash
-python IPTV.py --update
-```
+- Python 3.x
+- requests
+- schedule
 
-#### 检查输出文件状态
+## 许可证
 
-```bash
-python check_files.py
-```
+本项目仅供个人学习和研究使用，请勿用于商业用途。
 
-#### 自定义直播源
+## 更新日志
 
-您可以直接在 `unified_sources.py` 中添加自定义直播源：
-
-```python
-UNIFIED_SOURCES = [
-    "https://iptv-org.github.io/iptv/countries/cn.m3u",
-    # 添加本地文件直播源
-    "file:///path/to/your/local/live.txt",
-    # 或直接添加单个直播源URL
-    "http://example.com/custom-channel",
-]
-```
-
-#### 验证生成结果
-
-运行脚本后，检查输出文件是否成功生成：
-
-```bash
-# 查看输出文件状态
-python check_files.py
-
-# 检查特定频道是否存在（以CCTV1为例）
-# 例如: grep -n "CCTV1" jieguo.txt
-```
-
-#### 配置直播源
-
-编辑 `unified_sources.py` 文件，添加或修改直播源：
-
-```python
-UNIFIED_SOURCES = [
-    "https://iptv-org.github.io/iptv/countries/cn.m3u",
-    # 添加本地文件直播源（示例）
-    "file:///path/to/your/local/live.txt",
-    # 添加更多直播源...
-]
-```
-
-## 📄 免责声明
-
-本项目仅供学习交流用途，接口数据均来源于网络，如有侵权，请联系删除。
-
-本工具仅用于技术研究和学习目的，请勿用于商业用途。使用本工具获取的播放源时，请确保您已获得合法授权。使用者应对使用内容的合法性负责，作者不对任何法律责任负责。
-
-## 📧 联系方式
-
-如有问题或建议，欢迎提交 Issue 或 Pull Request。
+- **2026-03-28**：添加 Node.js 24 支持，更新 GitHub Actions 配置
+- **2026-03-27**：添加新的直播源，优化过滤算法
+- **2026-03-26**：修复 URL 测试逻辑，提高检测速度
+- **2026-03-07**：初始版本发布
 
 ---
 
-**更新时间**: 2025-12-24
-
+**提示**：使用 VLC、PotPlayer、Kodi 等播放器打开生成的 M3U 文件即可观看直播。

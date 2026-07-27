@@ -18,19 +18,21 @@ on:
 jobs:
   update-iptv:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     permissions:
       contents: write
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
     - name: Checkout代码
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         repository: wangchongzhq/TZY
         persist-credentials: true
 
     - name: 设置Python环境
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.x'
         cache: 'pip'
@@ -38,21 +40,9 @@ jobs:
     - name: 安装依赖
       run: |
         python -m pip install --upgrade pip
-        pip install requests schedule
-
-    - name: 运行IPTV脚本
-      run: |
-        python IPTV.py --update
-
-    - name: 检查文件变更
-      id: check_changes
-      run: |
-        # 检查所有可能的输出文件名
-        git add jieguo.m3u jieguo.txt
-        git diff --staged --quiet || echo "changes=true" >> $GITHUB_OUTPUT
+        pip install -r requirements.txt
 
     - name: 提交更新
-      if: steps.check_changes.outputs.changes == 'true'
       run: |
         # 配置git身份和行为
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
@@ -72,8 +62,8 @@ jobs:
         
         echo "本地仓库已重置为远程最新状态"
         
-        # 重新执行脚本确保生成最新文件
-        echo "重新执行脚本生成最新文件..."
+        # 执行脚本生成最新文件
+        echo "执行脚本生成最新文件..."
         python IPTV.py --update
         
         # 检查文件是否存在

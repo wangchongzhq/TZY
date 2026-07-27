@@ -44,7 +44,6 @@ validator/output/
 
 # 源文件缓存
 source_cache.json
-sources.json
 
 # 输出目录（临时文件，不上传）
 outputs/
@@ -101,7 +100,6 @@ temp_playlists/
 *.tmp.txt
 
 # 文档文件（本地保留，不推送到远程仓库）
-README.md
 BUG_REPORT.md
 REPOSITORY_OPTIMIZATION_REPORT.md
 项目文件关联关系.md
@@ -118,19 +116,6 @@ check_files.py
 check_syntax.py
 sync_core.ps1
 
-unified_sources.py
-update_sources.py
-validate_workflows.py
-verify_merge.py
-vlc_effectiveness_test.py
-vlc_integration_test.py
-config_manager.py
-url_validator.py
-web_converter.py
-performance_test_m3u.json
-performance_test_txt.json
-test_output.png
-
 # 配置文件（本地配置，不推送）
 iptv_config.json
 *.conf
@@ -145,22 +130,28 @@ temp/
 downloads/
 outputs/
 uploads/
-invalid_channels.txt
-simple_test.txt
-测试用.txt
-测试用.m3u
 109  live 1205 直播源 -减.m3u
 109  live 1205 直播源 -减.txt
 
-# 核心工具文件需要保留（不忽略）
-# convert_m3u_to_txt.py - M3U/TXT转换工具
-# IPTV.py - IPTV直播源自动生成工具
-# IPTVTXT.py - IPTV直播源自动生成工具
-# quick_url_checker.py - 轻量级URL检测器
-# file_utils.py - 文件工具
-# validator/iptv_validator.py - 验证工具核心
-# validator/vlc_detector.py - VLC检测器
-# jieguo*.m3u, jieguo*.txt - 生成的结果文件
+# 本地调试与测试脚本
+check_cache.py
+test_*.py
+
+# 本地测试结果数据
+comparison_results*.json
+
+# 本地文档（不推送）
+调整黑鸟验证判断标准.md
+
+# 临时验证文件
+109  livevalid.txt
+*livevalid.txt
+
+# 媒体播放器应用（本地使用，不推送）
+AllMediaPlayer/
+
+# 频道名清理工具（独立使用，不推送）
+频道名清理工具/
 
 # Validator 目录下的辅助工具（本地保留，不推送）
 validator/analyze_m3u8_formats.py
@@ -173,5 +164,14 @@ validator/__init__.py
 .trae/
 templates/
 
-# GitHub 工作流程文件（保留，用于自动化部署）
-.github/
+# 本地辅助工具（保留，不推送）
+validate_workflows.py
+verify_merge.py
+vlc_effectiveness_test.py
+vlc_integration_test.py
+config_manager.py
+url_validator.py
+web_converter.py
+performance_test_m3u.json
+performance_test_txt.json
+test_output.png

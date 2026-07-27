@@ -2,7 +2,7 @@ name: IPTVTXT Update Workflow
 
 on:
   schedule:
-    - cron: '0 18 * * *'
+    - cron: '0 19 * * *'  # 比 update_iptv.yml 晚1小时，避免同时执行导致git冲突
   workflow_dispatch:
     inputs:
       logLevel:
@@ -21,16 +21,18 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: write  # 授予写入内容的权限
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
     - name: Checkout代码
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         repository: wangchongzhq/TZY
         persist-credentials: true  # 保持凭据以便推送
 
     - name: 设置Python环境
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.x'
         cache: 'pip'
@@ -42,7 +44,7 @@ jobs:
 
     - name: 运行IPTVTXT脚本
       run: |
-        python IPTVTXT.py
+        python IPTVTXT.py --update
 
     - name: 检查文件变更
       id: check_changes
@@ -73,7 +75,7 @@ jobs:
         
         # 重新执行脚本确保生成最新文件
         echo "重新执行脚本生成最新文件..."
-        python IPTVTXT.py
+        python IPTVTXT.py --update
         
         # 检查文件是否存在
         if [ ! -f "jieguo_txt.m3u" ] || [ ! -f "jieguo_txt.txt" ]; then

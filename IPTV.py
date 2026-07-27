@@ -5,22 +5,20 @@ IPTV直播源自动生成工具
 support：手动更新和通过GitHub Actions工作流定时更新
 """
 
-import asyncio
 import os
 import re
 import sys
 import time
 import requests
 import datetime
-import threading
 import logging
-import socket
 import multiprocessing
 import tempfile
 import ast
 import difflib
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from urllib.parse import urlparse
 
 # 导入轻量级URL快速检测器
 try:
@@ -118,8 +116,8 @@ class TemplateDrivenProcessor:
         """检查URL是否在黑名单中"""
         url_lower = url.lower()
         
-        # 排除包含"rtsp://"、"freetv"、"stream"、"kkk"、"migu"或"catvod"的URL（包括片段部分）
-        if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower or "kkk" in url_lower or "migu" in url_lower or "catvod" in url_lower:
+        # 排除包含"rtsp://"、"freetv"、"stream"、"kkk"、"migu"、"catvod"或"mgtv"的URL（包括片段部分）
+        if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower or "kkk" in url_lower or "migu" in url_lower or "catvod" in url_lower or "mgtv" in url_lower:
             return True
             
         if not self.url_blacklist:
@@ -696,56 +694,7 @@ def update_global_vars_from_config():
     CACHE_FILE = config["cache"]["file"]
     cache_expiry_time = config["cache"]["expiry_time"]
 
-# 清晰度正则表达式 - 用于识别高清线路
-HD_PATTERNS = [
-    # 4K及以上
-    r'[48]k',
-    r'2160[pdi]',
-    r'uhd',
-    r'超高清',
-    r'4k',
-    # 2K
-    r'1440[pdi]',
-    r'qhd',
-    # 1080P及以上
-    r'1080[pdi]',
-    r'fhd',
-    # 其他高清标识
-    r'高清',
-    r'超清',
-    r'hd',
-    r'high.?definition',
-    r'high.?def',
-    # 特定的高清标识
-    r'hdmi',
-    r'蓝光',
-    r'blue.?ray',
-    r'hd.?live',
-    # 码率标识
-    r'[89]m',
-    r'[1-9]\d+m',
-    # 特定的URL参数标识
-    r'quality=high',
-    r'resolution=[1-9]\d{3}',
-    r'hd=true',
-    r'fhd=true'
-]
 
-HD_REGEX = re.compile('|'.join(HD_PATTERNS), re.IGNORECASE)
-
-# 预编译常用正则表达式（支持http, https, udp, rtmp, mms, rtp等常见流媒体协议，但排除rtsp）
-URL_REGEX = re.compile(r'(?:https?|udp|rtmp|mms|rtp)://', re.IGNORECASE)
-
-# 预编译分辨率和质量相关的正则表达式
-HIGH_DEF_PATTERNS = re.compile(r'(1080[pdi]|1440[pdi]|2160[pdi]|fhd|uhd|超高清)', re.IGNORECASE)
-RES_PATTERNS = [
-    re.compile(r'(\d{3,4})[pdi]'),  # 如1080p, 2160i
-    re.compile(r'(\d+)x(\d+)'),     # 如1920x1080, 3840x2160
-    re.compile(r'(\d+)_(\d+)'),     # 如1920_1080
-    re.compile(r'res=([1-9]\d+)'),       # 如res=1080
-    re.compile(r'resolution=([1-9]\d+)x?([1-9]\d+)'),  # 如resolution=1920x1080
-    re.compile(r'width=([1-9]\d+).*?height=([1-9]\d+)'),  # 如width=1920 height=1080
-]
 
 # 预编译4K相关的正则表达式
 K4_PATTERNS = re.compile(r'(2160[pdi]|4k|8k|uhd|3840x2160|7680x4320|超高清)', re.IGNORECASE)
@@ -760,90 +709,9 @@ M3U_CHANNEL_PATTERN = re.compile(r'#EXTINF:.*?tvg-name="([^"]*)".*?(?:group-titl
 # 预编译内容清理正则表达式
 CLEAN_CONTENT_PATTERN = re.compile(r'[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f-\x9f\u20ac\ue000-\uf8ff]')
 
-# 获取URL列表
-def get_urls_from_file(file_path):
-    """从文件中读取URL列表"""
-    urls = []
-    if os.path.exists(file_path):
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                urls = [line.strip() for line in f if line.strip() and not line.startswith('#')]
-        except Exception as e:
-            print(f"读取URL文件时出错: {e}")
-    return urls
 
-# 测试频道过滤
-def should_exclude_url(url):
-    """检查是否应该排除特定URL（测试频道过滤）"""
-    if not url:
-        return True
-    
-    # 测试频道过滤：过滤example、demo、sample等关键词
-    test_patterns = ['example', 'demo', 'sample', 'samples']
-    url_lower = url.lower()
-    for pattern in test_patterns:
-        if pattern in url_lower:
-            return True
-    
-    # 过滤example域名
-    if 'example.com' in url_lower or 'example.org' in url_lower:
-        return True
-    
-    return False
 
-# 分辨率过滤
 
-def is_high_quality(line):
-    """判断线路是否为高清线路（1080P以上）"""
-    # 从line中提取频道名称和URL
-    if 'http://' in line or 'https://' in line:
-        # 提取URL之前的部分作为频道名称
-        channel_name = line.split('http://')[0].split('https://')[0].strip()
-        # 提取URL部分
-        url_part = line[len(channel_name):].strip()
-    else:
-        channel_name = line.strip()
-        url_part = ''
-    
-    # 检查频道名称中的高清标识
-    if HIGH_DEF_PATTERNS.search(channel_name):
-        return True
-    
-    # 检查其他高清标识
-    channel_name_lower = channel_name.lower()
-    # 高清标识列表
-    hd_keywords = ['高清', '超清', 'hd', 'high definition', 'high def']
-    # 低质量标识列表
-    low_quality_keywords = ['360', '480', '576', '标清', 'sd', 'low']
-    
-    # 检查是否包含高清标识且不包含低质量标识
-    if any(hd in channel_name_lower for hd in hd_keywords) and not any(low in channel_name_lower for low in low_quality_keywords):
-        return True
-    
-    # 分辨率过滤：如果开启了分辨率过滤，检查是否满足最小分辨率要求
-    if config["filter"]["resolution"]:
-        # 增强的分辨率检测
-        combined_text = channel_name + ' ' + url_part
-        
-        for pattern in RES_PATTERNS:
-            res_match = pattern.search(combined_text)
-            if res_match:
-                try:
-                    if len(res_match.groups()) == 1:
-                        # 垂直分辨率（如1080p）
-                        res_value = int(res_match.group(1))
-                        if res_value >= config["filter"]["min_resolution"][1]:
-                            return True
-                    elif len(res_match.groups()) == 2:
-                        # 完整分辨率（如1920x1080）
-                        width = int(res_match.group(1))
-                        height = int(res_match.group(2))
-                        if width >= config["filter"]["min_resolution"][0] and height >= config["filter"]["min_resolution"][1]:
-                            return True
-                except ValueError:
-                    pass
-    
-    return False
 
 def is_4k(channel_name, url):
     """判断频道是否为4K频道"""
@@ -925,7 +793,7 @@ def check_url(url, timeout=0.5, retries=0, is_4k=False):
     if not url.startswith(('http://', 'https://')):
         # 对于UDP, RTSP等协议，只进行基本格式验证
         parsed = urlparse(url)
-        if not parsed.scheme or parsed.scheme not in ['udp', 'rtsp', 'rtmp', 'rtp']:
+        if not parsed.scheme or parsed.scheme not in ['udp', 'rtmp', 'rtp']:
             return False
         if not parsed.hostname:
             return False
@@ -959,69 +827,7 @@ def format_interval(seconds):
         minutes, seconds = divmod(remainder, 60)
         return f"{int(hours)}时{int(minutes)}分{int(seconds)}秒"
 
-# 获取IP地址
-def get_ip_address():
-    """获取本地IP地址"""
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(('8.8.8.8', 80))
-        ip = s.getsockname()[0]
-        s.close()
-        return ip
-    except Exception as e:
-        logger.error(f"获取IP地址失败: {e}")
-        return "127.0.0.1"
 
-# 检查IPv6支持
-def check_ipv6_support():
-    """检查系统是否支持IPv6"""
-    try:
-        socket.inet_pton(socket.AF_INET6, '::1')
-        return True
-    except Exception as e:
-        logger.error(f"IPv6支持检查失败: {e}")
-        return False
-
-# IPv6优化相关功能
-def prioritize_ipv6_urls(channels):
-    """优先选择IPv6 URL"""
-    if not config.ip_version_priority == "ipv6":
-        return channels
-    
-    prioritized_channels = {}
-    for category, channel_list in channels.items():
-        prioritized_channels[category] = []
-        for channel_name, url in channel_list:
-            # 检查URL是否包含IPv6地址
-            if '[' in url and ']' in url:
-                # IPv6 URL，优先添加
-                prioritized_channels[category].append((channel_name, url))
-            else:
-                # IPv4 URL，延后添加
-                prioritized_channels[category].append((channel_name, url))
-    
-    return prioritized_channels
-
-# URL黑名单检查
-def is_url_blacklisted(url):
-    """检查URL是否在黑名单中"""
-    try:
-        url_lower = url.lower()
-        
-        # 排除包含"rtsp://"、"freetv"、"stream"、"kkk"或"migu"的URL（包括片段部分）
-        if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower or "kkk" in url_lower or "migu" in url_lower:
-            return True
-            
-        if not config.url_blacklist:
-            return False
-        
-        for blacklist_item in config.url_blacklist:
-            if blacklist_item and blacklist_item in url_lower:
-                return True
-        return False
-    except Exception as e:
-        logger.error(f"检查URL黑名单时出错: {e}")
-        return False
 
 # 从M3U文件中提取频道信息
 def extract_channels_from_m3u(content):
@@ -1395,9 +1201,6 @@ def test_channels(channels):
     # 强制启用URL测试
     config["url_testing"]["enable"] = True
     print("🔍 强制启用URL测试")
-    if not config["url_testing"]["enable"]:
-        print("📌 URL测试功能已禁用")
-        return channels
     
     print(f"🔍 开始测试频道URL有效性: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))}")
     
@@ -1706,7 +1509,7 @@ def merge_sources(sources, local_files):
                     for channel_name, url in channel_list:
                         # 黑名单过滤
                         url_lower = url.lower()
-                        if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower or "kkk" in url_lower or "migu" in url_lower:
+                        if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower or "kkk" in url_lower or "migu" in url_lower or "catvod" in url_lower:
                             continue
                         # 4K过滤
                         if config["filter"]["only_4k"] and not is_4k(channel_name, url):
@@ -1777,18 +1580,6 @@ def update_iptv_sources():
     if total_channels == 0:
         logger.error("❌ 所有频道URL测试均无效！")
         return False
-    
-    # 统计频道数量
-    total_channels = sum(len(channel_list) for channel_list in all_channels.values())
-    total_groups = len(all_channels)
-    
-    logger.info("=" * 50)
-    logger.info(f"📊 统计信息:")
-    logger.info(f"📡 直播源数量: {len(all_sources)}")
-    logger.info(f"📺 频道组数: {total_groups}")
-    logger.info(f"📚 总频道数: {total_channels}")
-    logger.info(f"⏱️  耗时: {format_interval(time.time() - start_time)}")
-    logger.info("=" * 50)
     
     # 显示频道组信息
     logger.info("📋 频道组详情:")

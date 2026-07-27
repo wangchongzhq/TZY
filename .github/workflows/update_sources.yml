@@ -13,15 +13,17 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: 检出代码仓库
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           persist-credentials: true
       
       - name: 设置Python环境
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
           cache: 'pip'
@@ -76,10 +78,10 @@ jobs:
             exit 1
           fi
           
-          # 添加所有更改的文件
+          # 添加所有更改的文件（仅添加update_sources.py实际修改的文件）
           echo "添加更改的文件..."
           git add ./unified_sources.py
-          git add ./*.py  # 添加所有Python脚本文件
+          git add ./IPTV.py ./IPTVTXT.py  # update_script() 会修改这两个文件
           git add jieguo.txt || true  # 只添加实际生成的TXT文件
           
           # 检查是否有更改

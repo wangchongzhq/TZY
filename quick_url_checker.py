@@ -42,8 +42,8 @@ RISKY_PATTERNS = [
 # 可信域名白名单（降低检测严格度）
 TRUSTED_DOMAINS = [
     'cctv.cn', 'cctv.com', 'cctv.net.cn',
-    'hnrtv.com', 'sdrtv.com', 'jsrtv.com', 'zjrtv.com', 'jsrtv.com',
-    'btv.org.cn', 'jstv.cn', 'hnrtv.com', 'gdrtv.com', 'xjrtv.com',
+    'hnrtv.com', 'sdrtv.com', 'jsrtv.com', 'zjrtv.com',
+    'btv.org.cn', 'jstv.cn', 'gdrtv.com', 'xjrtv.com',
     'tianjinweishi.com', 'ahapp.tv', 'hunantv.com', 'lntv.cn', 'hljtv.cn',
     'jilinweishi.com', 'nmtv.cn', 'nxtv.cn', 'sxrtv.cn', 'sxtv.cn',
     'gsrtv.cn', 'qhrtv.cn', 'xjrtv.cn', 'xzrtv.com', 'xjtv.com.cn'
