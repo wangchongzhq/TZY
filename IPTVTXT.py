@@ -116,8 +116,10 @@ class TemplateDrivenProcessor:
         """检查URL是否在黑名单中"""
         url_lower = url.lower()
         
-        # 排除包含"rtsp://"、"freetv"、"stream"、"kkk"、"migu"、"catvod"或"mgtv"的URL（包括片段部分）
-        if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower or "kkk" in url_lower or "migu" in url_lower or "catvod" in url_lower or "mgtv" in url_lower:
+        # 排除黑名单关键词（stream精确匹配独立组件，避免误杀livestream等合法域名）
+        if "rtsp://" in url_lower or "freetv" in url_lower or "kkk" in url_lower or "migu" in url_lower or "catvod" in url_lower or "mgtv" in url_lower:
+            return True
+        if STREAM_BLACKLIST_RE.search(url_lower):
             return True
             
         if not self.url_blacklist:
@@ -520,9 +522,9 @@ DEFAULT_CONFIG = {
     },
     "url_testing": {
         "enable": True,    # 启用URL有效性测试
-        "timeout": 0.5,    # URL测试超时时间（秒）- 进一步减少到0.5秒以提高速度
-        "retries": 0,      # URL测试重试次数 - 不重试以提高速度
-        "workers": 32      # URL测试并发数 - 增加到32个线程以提高速度
+        "timeout": 2,      # URL测试超时时间（秒）
+        "retries": 1,      # URL测试重试次数
+        "workers": 32      # URL测试并发数
     },
     "cache": {
         "expiry_time": 3600,  # 缓存有效期（秒）
@@ -709,6 +711,9 @@ M3U_CHANNEL_PATTERN = re.compile(r'#EXTINF:.*?tvg-name="([^"]*)".*?(?:group-titl
 # 预编译内容清理正则表达式
 CLEAN_CONTENT_PATTERN = re.compile(r'[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f-\x9f\u20ac\ue000-\uf8ff]')
 
+# 预编译黑名单"stream"关键词正则（仅匹配独立组件，避免误杀livestream等合法域名）
+STREAM_BLACKLIST_RE = re.compile(r'(?<![a-z])stream(?![a-z])|streaming', re.IGNORECASE)
+
 
 
 
@@ -749,22 +754,17 @@ def is_4k(channel_name, url):
     return False
 
 # 检查URL是否有效
-def check_url(url, timeout=0.5, retries=0, is_4k=False):
+def check_url(url, timeout=2, retries=1):
     """检查URL是否可访问，支持重试机制
     
     参数:
         url: 要测试的URL
         timeout: 超时时间（秒）
         retries: 重试次数
-        is_4k: 是否是4K频道（4K频道采用更宽松的验证标准）
     
     返回:
         bool: URL是否可用
     """
-    # 4K频道：直接返回True，不进行任何验证
-    if is_4k:
-        return True
-    
     # 1. 基本URL格式验证
     if not url or url.strip() == "":
         return False
@@ -1112,6 +1112,7 @@ def generate_txt_file(channels, output_path):
 def extract_channels_from_txt(file_path):
     """从本地TXT文件提取频道信息"""
     channels = defaultdict(list)
+    processor = TemplateDrivenProcessor()
     
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -1164,9 +1165,14 @@ def extract_channels_from_txt(file_path):
                     if not url.startswith(('http://', 'https://', 'udp://', 'rtmp://', 'mms://', 'rtp://')):
                         continue
                     
-                    # 排除包含"rtsp://"、"freetv"、"stream"、"kkk"或"migu"的URL（包括片段部分）
+                    # 排除黑名单URL（stream精确匹配独立组件，避免误杀livestream等合法域名）
                     url_lower = url.lower()
-                    if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower or "kkk" in url_lower or "migu" in url_lower:
+                    if "rtsp://" in url_lower or "freetv" in url_lower or "kkk" in url_lower or "migu" in url_lower or "catvod" in url_lower or "mgtv" in url_lower:
+                        continue
+                    if STREAM_BLACKLIST_RE.search(url_lower):
+                        continue
+                    # 分辨率过滤
+                    if processor.enable_resolution_filter and not processor.is_valid_resolution(url):
                         continue
                     
                     # 规范化频道名称
@@ -1248,7 +1254,7 @@ def test_channels(channels):
                 for category, channel_name, url in four_k_channel_items:
                     channel_is_4k = is_4k(channel_name, url)
                     timeout = 4 if channel_is_4k else config["url_testing"]["timeout"]
-                    is_valid = check_url(url, timeout=timeout, retries=config["url_testing"]["retries"], is_4k=channel_is_4k)
+                    is_valid = check_url(url, timeout=timeout, retries=config["url_testing"]["retries"])
                     if is_valid:
                         valid_channels[category].append((channel_name, url))
                         valid_count += 1
@@ -1350,7 +1356,7 @@ def test_channels_traditional(channels, valid_channels=None, processed_count=0):
         for category, channel_name, url in four_k_channel_items:
             channel_is_4k = is_4k(channel_name, url)
             timeout = 4 if channel_is_4k else config["url_testing"]["timeout"]
-            is_valid = check_url(url, timeout=timeout, retries=config["url_testing"]["retries"], is_4k=channel_is_4k)
+            is_valid = check_url(url, timeout=timeout, retries=config["url_testing"]["retries"])
             if is_valid:
                 valid_channels[category].append((channel_name, url))
     
@@ -1381,7 +1387,7 @@ def test_channels_traditional(channels, valid_channels=None, processed_count=0):
         # 对于4K频道使用稍长的超时时间（但不要过长）
         channel_is_4k = is_4k(channel_name, url)
         timeout = 4 if channel_is_4k else config["url_testing"]["timeout"]
-        is_valid = check_url(url, timeout=timeout, retries=config["url_testing"]["retries"], is_4k=channel_is_4k)
+        is_valid = check_url(url, timeout=timeout, retries=config["url_testing"]["retries"])
         return (category, channel_name, url, is_valid)
     
     # 计算总超时时间（基于并发数和每个任务的最大超时时间）
@@ -1507,9 +1513,11 @@ def merge_sources(sources, local_files):
                 
                 for group_title, channel_list in result.items():
                     for channel_name, url in channel_list:
-                        # 黑名单过滤
+                        # 黑名单过滤（stream精确匹配独立组件，避免误杀livestream等合法域名）
                         url_lower = url.lower()
-                        if "rtsp://" in url_lower or "freetv" in url_lower or "stream" in url_lower or "kkk" in url_lower or "migu" in url_lower or "catvod" in url_lower:
+                        if "rtsp://" in url_lower or "freetv" in url_lower or "kkk" in url_lower or "migu" in url_lower or "catvod" in url_lower or "mgtv" in url_lower:
+                            continue
+                        if STREAM_BLACKLIST_RE.search(url_lower):
                             continue
                         # 4K过滤
                         if config["filter"]["only_4k"] and not is_4k(channel_name, url):
