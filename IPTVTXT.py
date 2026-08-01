@@ -542,8 +542,10 @@ CONFIG_FILE = "iptv_config.json"
 # 从统一播放源文件导入
 try:
     from unified_sources import UNIFIED_SOURCES
-    # 将UNIFIED_SOURCES设置为默认直播源
-    DEFAULT_CONFIG["sources"]["default"] = UNIFIED_SOURCES
+    # IPTVTXT.py只使用.txt源的URL，过滤掉.m3u后缀的源
+    TXT_SOURCES = [url for url in UNIFIED_SOURCES if not url.lower().endswith('.m3u')]
+    logger.info(f"IPTVTXT: 过滤掉{len(UNIFIED_SOURCES) - len(TXT_SOURCES)}个.m3u源，保留{len(TXT_SOURCES)}个.txt源")
+    DEFAULT_CONFIG["sources"]["default"] = TXT_SOURCES
 except ImportError:
     print("警告: 无法导入unified_sources模块，默认直播源为空")
 
@@ -754,7 +756,7 @@ def is_4k(channel_name, url):
     return False
 
 # 检查URL是否有效
-def check_url(url, timeout=2, retries=1):
+def check_url(url, timeout=1.5, retries=1):
     """检查URL是否可访问，支持重试机制
     
     参数:
@@ -922,7 +924,7 @@ def normalize_channel_name(name):
     return None
 
 # 从URL获取M3U内容
-def fetch_m3u_content(url, max_retries=2, timeout=180):
+def fetch_m3u_content(url, max_retries=1, timeout=30):
     """从URL或本地文件获取M3U内容，支持超时、重试机制和增量更新"""
     # 处理本地文件路径
     if url.startswith('file://'):
@@ -1397,7 +1399,7 @@ def test_channels_traditional(channels, valid_channels=None, processed_count=0):
     
     # 简化计算：直接设置总超时时间为10分钟（600秒）
     # 这样可以确保在GitHub Actions的时间限制内完成
-    total_timeout = 600  # 10分钟总超时时间
+    total_timeout = 300  # 5分钟总超时时间（IPTVTXT.py优化）
     
     # 并发测试所有频道
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
