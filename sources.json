@@ -75,6 +75,86 @@
       "name": "sky06walker",
       "url": "https://gh.catmak.name/https://raw.githubusercontent.com/sky06walker/iptv-api/master/output/result.txt",
       "enabled": true
+    },
+    {
+      "name": "rihou",
+      "url": "http://rihou.cc:555/gggg.nzk",
+      "enabled": true
+    },
+    {
+      "name": "kstore-ds9",
+      "url": "https://d.kstore.dev/download/12441/ds9.txt",
+      "enabled": true
+    },
+    {
+      "name": "develop202-migu_video",
+      "url": "https://fastgit.cc/https://raw.githubusercontent.com/develop202/migu_video/refs/heads/main/interface.txt",
+      "enabled": true
+    },
+    {
+      "name": "dgtv",
+      "url": "http://1.94.31.214/live/live9/dgtv.txt",
+      "enabled": true
+    },
+    {
+      "name": "shaonv",
+      "url": "http://west.shaonv.me/tvbox/live.txt",
+      "enabled": true
+    },
+    {
+      "name": "nianxinmj",
+      "url": "https://fastgit.cc/https://raw.githubusercontent.com/nianxinmj/nxpz/refs/heads/main/lib/live.txt",
+      "enabled": true
+    },
+    {
+      "name": "Wirili",
+      "url": "https://fastgit.cc/https://raw.githubusercontent.com/Wirili/IPTV/main/live.txt",
+      "enabled": true
+    },
+    {
+      "name": "fafa002",
+      "url": "https://tvv.tw/github.com/fafa002/yf2025/blob/main/yiyifafa.txt",
+      "enabled": true
+    },
+    {
+      "name": "Supprise0901-fastgit",
+      "url": "https://fastgit.cc/https://raw.githubusercontent.com/Supprise0901/TVBox_live/main/live.txt",
+      "enabled": true
+    },
+    {
+      "name": "dsj-cos",
+      "url": "https://dsj-1312694395.cos.ap-guangzhou.myqcloud.com/dsj10.1.txt",
+      "enabled": true
+    },
+    {
+      "name": "fy-iptv",
+      "url": "http://iptv.4666888.xyz/FYTV.txt",
+      "enabled": true
+    },
+    {
+      "name": "TianmuTNT",
+      "url": "https://fastgit.cc/https://raw.githubusercontent.com/TianmuTNT/iptv/main/iptv.txt",
+      "enabled": true
+    },
+    {
+      "name": "Jsnzkpg",
+      "url": "https://fastgit.cc/https://raw.githubusercontent.com/Jsnzkpg/Jsnzkpg/Jsnzkpg/Jsnzkpg1.m3u",
+      "enabled": true
+    },
+    {
+      "name": "210-live",
+      "url": "http://210.245.166.84:1299/live/live.txt",
+      "enabled": true
+    },
+    {
+      "name": "Kimentanm",
+      "url": "https://fastgit.cc/https://github.com/Kimentanm/aptv/raw/master/m3u/iptv.m3u",
+      "enabled": true
+    },
+    {
+      "name": "Guovin-m3u",
+      "url": "https://fastgit.cc/https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.m3u",
+      "enabled": true
     }
   ]
 }

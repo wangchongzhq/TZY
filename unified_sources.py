@@ -18,7 +18,23 @@ UNIFIED_SOURCES = [
     "https://gh.catmak.name/https://raw.githubusercontent.com/alantang1977/pg/refs/heads/main/live.txt",
     "https://kakaxi.indevs.in/iptv.txt",
     "https://kakaxi.indevs.in/ipv4.txt",
-    "https://gh.catmak.name/https://raw.githubusercontent.com/sky06walker/iptv-api/master/output/result.txt"
+    "https://gh.catmak.name/https://raw.githubusercontent.com/sky06walker/iptv-api/master/output/result.txt",
+    "http://rihou.cc:555/gggg.nzk",
+    "https://d.kstore.dev/download/12441/ds9.txt",
+    "https://fastgit.cc/https://raw.githubusercontent.com/develop202/migu_video/refs/heads/main/interface.txt",
+    "http://1.94.31.214/live/live9/dgtv.txt",
+    "http://west.shaonv.me/tvbox/live.txt",
+    "https://fastgit.cc/https://raw.githubusercontent.com/nianxinmj/nxpz/refs/heads/main/lib/live.txt",
+    "https://fastgit.cc/https://raw.githubusercontent.com/Wirili/IPTV/main/live.txt",
+    "https://tvv.tw/github.com/fafa002/yf2025/blob/main/yiyifafa.txt",
+    "https://fastgit.cc/https://raw.githubusercontent.com/Supprise0901/TVBox_live/main/live.txt",
+    "https://dsj-1312694395.cos.ap-guangzhou.myqcloud.com/dsj10.1.txt",
+    "http://iptv.4666888.xyz/FYTV.txt",
+    "https://fastgit.cc/https://raw.githubusercontent.com/TianmuTNT/iptv/main/iptv.txt",
+    "https://fastgit.cc/https://raw.githubusercontent.com/Jsnzkpg/Jsnzkpg/Jsnzkpg/Jsnzkpg1.m3u",
+    "http://210.245.166.84:1299/live/live.txt",
+    "https://fastgit.cc/https://github.com/Kimentanm/aptv/raw/master/m3u/iptv.m3u",
+    "https://fastgit.cc/https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.m3u"
 ]
 
 # 带名称的播放源列表
@@ -37,5 +53,21 @@ SOURCES_WITH_NAMES = [
     ("alantang1977", "https://gh.catmak.name/https://raw.githubusercontent.com/alantang1977/pg/refs/heads/main/live.txt"),
     ("kakaxi-iptv", "https://kakaxi.indevs.in/iptv.txt"),
     ("kakaxi-ipv4", "https://kakaxi.indevs.in/ipv4.txt"),
-    ("sky06walker", "https://gh.catmak.name/https://raw.githubusercontent.com/sky06walker/iptv-api/master/output/result.txt")
+    ("sky06walker", "https://gh.catmak.name/https://raw.githubusercontent.com/sky06walker/iptv-api/master/output/result.txt"),
+    ("rihou", "http://rihou.cc:555/gggg.nzk"),
+    ("kstore-ds9", "https://d.kstore.dev/download/12441/ds9.txt"),
+    ("develop202-migu_video", "https://fastgit.cc/https://raw.githubusercontent.com/develop202/migu_video/refs/heads/main/interface.txt"),
+    ("dgtv", "http://1.94.31.214/live/live9/dgtv.txt"),
+    ("shaonv", "http://west.shaonv.me/tvbox/live.txt"),
+    ("nianxinmj", "https://fastgit.cc/https://raw.githubusercontent.com/nianxinmj/nxpz/refs/heads/main/lib/live.txt"),
+    ("Wirili", "https://fastgit.cc/https://raw.githubusercontent.com/Wirili/IPTV/main/live.txt"),
+    ("fafa002", "https://tvv.tw/github.com/fafa002/yf2025/blob/main/yiyifafa.txt"),
+    ("Supprise0901-fastgit", "https://fastgit.cc/https://raw.githubusercontent.com/Supprise0901/TVBox_live/main/live.txt"),
+    ("dsj-cos", "https://dsj-1312694395.cos.ap-guangzhou.myqcloud.com/dsj10.1.txt"),
+    ("fy-iptv", "http://iptv.4666888.xyz/FYTV.txt"),
+    ("TianmuTNT", "https://fastgit.cc/https://raw.githubusercontent.com/TianmuTNT/iptv/main/iptv.txt"),
+    ("Jsnzkpg", "https://fastgit.cc/https://raw.githubusercontent.com/Jsnzkpg/Jsnzkpg/Jsnzkpg/Jsnzkpg1.m3u"),
+    ("210-live", "http://210.245.166.84:1299/live/live.txt"),
+    ("Kimentanm", "https://fastgit.cc/https://github.com/Kimentanm/aptv/raw/master/m3u/iptv.m3u"),
+    ("Guovin-m3u", "https://fastgit.cc/https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.m3u")
 ]
