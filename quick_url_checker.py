@@ -61,6 +61,57 @@ DANGEROUS_PATTERNS = [
     r'\${.*}', r'\(.*\)',  # 模板变量
 ]
 
+def classify_stream_chunk(chunk):
+    """分类GET读到的流首字节。
+    策略：识别已知可播封装 + 明确拒绝错误页，其余无法识别但非错误页的一律放行，
+    避免用格式白名单误杀 FLV/fMP4 等合法直播封装。
+    返回 (is_valid, reason)
+    """
+    if not chunk:
+        return False, "响应体为空"
+
+    # m3u8：容忍前导 BOM/空白/换行
+    if chunk.lstrip(b'\xef\xbb\xbf \t\r\n').startswith(b'#EXTM3U'):
+        return True, "m3u8流(#EXTM3U头)"
+
+    # FLV: "FLV" + 版本号(0x01)
+    if len(chunk) >= 4 and chunk[:3] == b'FLV' and chunk[3] == 0x01:
+        return True, "FLV流"
+
+    # fMP4: [4字节size]["ftyp"/"styp"/"moov"等box类型]
+    if len(chunk) >= 8 and chunk[4:8] in (
+        b'ftyp', b'styp', b'moov', b'moof', b'mdat', b'free', b'skip'
+    ):
+        return True, "fMP4流"
+
+    # MPEG-TS: 0x47 同步字节
+    if chunk[0] == 0x47:
+        return True, "MPEG-TS流(0x47同步字节)"
+
+    # 其他高位二进制(可能是未知二进制封装)
+    if chunk[0] >= 0x80:
+        return True, "二进制流"
+
+    # 以下为 ASCII 可打印内容：只明确拒绝错误页/错误JSON，其余放行
+    head = chunk[:512].lower()
+    if b'<html' in head or b'<!doctype' in head or b'<?xml' in head:
+        return False, "返回HTML/XML错误页"
+    if b'<error' in head or b'<message' in head or b'<rescode' in head:
+        return False, "返回错误标记"
+    # 合法流首字节不会是 { 或 [，可安全判定 JSON 错误响应
+    if chunk[:1] in (b'{', b'[') and (
+        b'error' in head or b'"code":404' in head or b'404' in head
+        or b'fail' in head or b'denied' in head
+    ):
+        return False, "返回JSON错误响应"
+    if b'404 not found' in head or b'not found' in head \
+       or b'access denied' in head or b'forbidden' in head or b'bad request' in head:
+        return False, "返回文本错误页"
+
+    # 非明确错误页：放行(宁可保留少量不可播，也不误杀未知封装的有效流)
+    return True, "可访问内容(未识别封装,放行)"
+
+
 class QuickURLChecker:
     """轻量级URL快速检测器"""
     
@@ -144,61 +195,26 @@ class QuickURLChecker:
         return True, "预筛选通过"
     
     def check_http_url(self, url):
-        """检测HTTP/HTTPS URL - 增强版：HEAD失败回退GET读取字节验证流内容"""
+        """检测HTTP/HTTPS URL - 直接GET读取流首字节验证
+
+        废弃HEAD：直播CDN对HEAD兼容性差(常返回403/404/405但GET正常出流)，
+        且无论HEAD成败都需GET验证内容，故直接GET一次拿到状态码+内容，更准且不增加请求。
+        """
         try:
-            # 尝试HEAD请求
-            response = self.session.head(
-                url,
-                timeout=self.timeout,
-                allow_redirects=True
-            )
-
-            # 检查状态码
-            if response.status_code in VALID_STATUS_CODES:
-                # HEAD通过，但需GET验证流内容(防HTML错误页/空响应)
-                pass
-            elif response.status_code in (405, 501):
-                # 方法不允许，直接走GET
-                response = self.session.get(
-                    url,
-                    timeout=(self.timeout, self.get_read_timeout),
-                    stream=True,
-                    headers={'Range': 'bytes=0-1023'}
-                )
-                if response.status_code not in VALID_STATUS_CODES:
-                    return False, f"GET HTTP {response.status_code}"
-            else:
-                return False, f"HTTP状态码: {response.status_code}"
-
-            # GET读取前1KB验证流内容(read超时收紧，避免慢直播流首字节拖尾)
-            get_resp = self.session.get(
+            resp = self.session.get(
                 url,
                 timeout=(self.timeout, self.get_read_timeout),
                 stream=True,
                 headers={'Range': 'bytes=0-1023'},
                 allow_redirects=True
             )
-            if get_resp.status_code not in VALID_STATUS_CODES:
-                return False, f"GET HTTP {get_resp.status_code}"
 
-            chunk = next(get_resp.iter_content(chunk_size=1024), b'')
-            get_resp.close()
-            if not chunk:
-                return False, "响应体为空"
+            if resp.status_code not in VALID_STATUS_CODES:
+                return False, f"HTTP {resp.status_code}"
 
-            # 验证流内容
-            if chunk.startswith(b'#EXTM3U'):
-                return True, "m3u8流(#EXTM3U头)"
-            if chunk and chunk[0] == 0x47:
-                return True, "MPEG-TS流(0x47同步字节)"
-            if chunk and chunk[0] >= 0x80:
-                return True, "二进制流"
-            head = chunk[:256].lower()
-            if b'<html' in head or b'<!doctype' in head:
-                return False, "返回HTML错误页"
-            if b'<error' in head or b'404' in head:
-                return False, "返回错误页内容"
-            return False, "响应非流媒体内容"
+            chunk = next(resp.iter_content(chunk_size=1024), b'')
+            resp.close()
+            return classify_stream_chunk(chunk)
 
         except requests.exceptions.Timeout:
             return False, "连接超时"

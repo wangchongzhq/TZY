@@ -120,68 +120,77 @@ def _prefilter_url(url):
 
 def _verify_stream_content(chunk):
     """验证读取到的字节是否为有效的流数据
+    策略：识别已知可播封装 + 明确拒绝错误页，其余非错误页一律放行，
+    避免用格式白名单误杀 FLV/fMP4 等合法直播封装。
     返回 (is_valid, reason)
     """
     if not chunk:
         return False, "响应为空"
 
-    # m3u8 文本流
-    if chunk.startswith(M3U8_MAGIC):
+    # m3u8：容忍前导 BOM/空白/换行
+    if chunk.lstrip(b'\xef\xbb\xbf \t\r\n').startswith(M3U8_MAGIC):
         return True, "m3u8流(#EXTM3U头)"
 
-    # TS 流: 同步字节 0x47 每 188 字节出现
+    # FLV: "FLV" + 版本号0x01
+    if len(chunk) >= 4 and chunk[:3] == b'FLV' and chunk[3] == 0x01:
+        return True, "FLV流"
+
+    # fMP4: [4字节size][box类型 ftyp/styp/moov/...]
+    if len(chunk) >= 8 and chunk[4:8] in (
+        b'ftyp', b'styp', b'moov', b'moof', b'mdat', b'free', b'skip'
+    ):
+        return True, "fMP4流"
+
+    # TS 流: 同步字节 0x47
     if chunk[0] == TS_SYNC_BYTE:
         return True, "MPEG-TS流(0x47同步字节)"
 
-    # 非 ASCII 二进制 → 可能是 TS / FLV 等二进制流，宽松放行
+    # 其他高位二进制(未知二进制封装)
     if chunk[0] >= 0x80:
         return True, "二进制流"
 
-    # 检测 HTML 错误页
-    head = chunk[:256].lower()
-    if b'<html' in head or b'<!doctype' in head:
-        return False, "返回HTML错误页"
-    if b'<error' in head or b'404' in head or b'not found' in head:
-        return False, "返回错误页内容"
+    # 以下为 ASCII 可打印内容：只明确拒绝错误页/错误JSON
+    head = chunk[:512].lower()
+    if b'<html' in head or b'<!doctype' in head or b'<?xml' in head:
+        return False, "返回HTML/XML错误页"
+    if b'<error' in head or b'<message' in head or b'<rescode' in head:
+        return False, "返回错误标记"
+    if chunk[:1] in (b'{', b'[') and (
+        b'error' in head or b'"code":404' in head or b'404' in head
+        or b'fail' in head or b'denied' in head
+    ):
+        return False, "返回JSON错误响应"
+    if b'404 not found' in head or b'not found' in head \
+       or b'access denied' in head or b'forbidden' in head or b'bad request' in head:
+        return False, "返回文本错误页"
 
-    # 其他文本但非 m3u8 → 不可播放
-    return False, "响应非流媒体内容"
+    # 非明确错误页：放行(宁可保留少量不可播，也不误杀未知封装的有效流)
+    return True, "可访问内容(未识别封装,放行)"
 
 
 def _check_http_url(url, session, timeout, retries):
-    """HTTP/HTTPS URL 检测: HEAD 失败回退 GET + 读取字节验证"""
+    """HTTP/HTTPS URL 检测: 直接GET读取流首字节验证
+
+    废弃HEAD：直播CDN对HEAD兼容性差(常返回403/404/405但GET正常出流)，
+    且无论HEAD成败都需GET验证内容，故直接GET一次拿到状态码+内容，更准且不增加请求。
+    """
+    # connect超时用timeout，read超时收紧到1.5s抑制慢流拖尾
+    req_timeout = (timeout, min(timeout, 1.5))
     last_err = None
     for attempt in range(retries + 1):
         try:
-            # 1. HEAD 请求快速验证
-            resp = session.head(url, timeout=timeout, allow_redirects=True)
-            if resp.status_code in VALID_STATUS_CODES:
-                # HEAD 成功，但仍需 GET 验证流内容(防HTML错误页)
-                pass
-            elif resp.status_code in (405, 501):
-                # 方法不允许 → 直接走 GET
-                resp = session.get(
-                    url, timeout=timeout, stream=True,
-                    headers=DEFAULT_HEADERS, allow_redirects=True
-                )
-                if resp.status_code not in VALID_STATUS_CODES:
-                    return False, f"HTTP {resp.status_code}"
-            else:
+            resp = session.get(
+                url, timeout=req_timeout, stream=True,
+                headers=DEFAULT_HEADERS, allow_redirects=True
+            )
+            if resp.status_code not in VALID_STATUS_CODES:
                 last_err = f"HTTP {resp.status_code}"
                 if attempt < retries:
                     continue
                 return False, last_err
 
-            # 2. GET 流验证(读取前1KB)
-            get_resp = session.get(
-                url, timeout=timeout, stream=True,
-                headers=DEFAULT_HEADERS, allow_redirects=True
-            )
-            if get_resp.status_code not in VALID_STATUS_CODES:
-                return False, f"GET HTTP {get_resp.status_code}"
-
-            chunk = next(get_resp.iter_content(chunk_size=1024), b'')
-            get_resp.close()
+            chunk = next(resp.iter_content(chunk_size=1024), b'')
+            resp.close()
             return _verify_stream_content(chunk)
 
         except requests.exceptions.Timeout:
