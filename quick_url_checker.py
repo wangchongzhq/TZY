@@ -50,7 +50,8 @@ TRUSTED_DOMAINS = [
 ]
 
 # HTTP状态码白名单（认为是有效的）
-VALID_STATUS_CODES = {200, 201, 202, 203, 204, 206, 301, 302, 303, 304, 307, 308}
+# 注：移除304(Not Modified)，HEAD请求不应返回304，对HEAD返回304视作异常
+VALID_STATUS_CODES = {200, 201, 202, 203, 204, 206, 301, 302, 303, 307, 308}
 
 # 危险的URL模式（跳过检测）
 DANGEROUS_PATTERNS = [
@@ -137,33 +138,62 @@ class QuickURLChecker:
         return True, "预筛选通过"
     
     def check_http_url(self, url):
-        """检测HTTP/HTTPS URL"""
+        """检测HTTP/HTTPS URL - 增强版：HEAD失败回退GET读取字节验证流内容"""
         try:
             # 尝试HEAD请求
             response = self.session.head(
-                url, 
-                timeout=self.timeout, 
+                url,
+                timeout=self.timeout,
                 allow_redirects=True
             )
-            
+
             # 检查状态码
             if response.status_code in VALID_STATUS_CODES:
-                return True, f"HTTP {response.status_code}"
-            
-            # 如果HEAD失败，尝试GET请求（限制响应大小）
-            if response.status_code in (405, 501):  # 方法不允许
+                # HEAD通过，但需GET验证流内容(防HTML错误页/空响应)
+                pass
+            elif response.status_code in (405, 501):
+                # 方法不允许，直接走GET
                 response = self.session.get(
-                    url, 
+                    url,
                     timeout=self.timeout,
                     stream=True,
-                    headers={'Range': 'bytes=0-1023'}  # 只获取1KB
+                    headers={'Range': 'bytes=0-1023'}
                 )
-                
-                if response.status_code in VALID_STATUS_CODES:
-                    return True, f"HTTP GET {response.status_code}"
-            
-            return False, f"HTTP状态码: {response.status_code}"
-            
+                if response.status_code not in VALID_STATUS_CODES:
+                    return False, f"GET HTTP {response.status_code}"
+            else:
+                return False, f"HTTP状态码: {response.status_code}"
+
+            # GET读取前1KB验证流内容
+            get_resp = self.session.get(
+                url,
+                timeout=self.timeout,
+                stream=True,
+                headers={'Range': 'bytes=0-1023'},
+                allow_redirects=True
+            )
+            if get_resp.status_code not in VALID_STATUS_CODES:
+                return False, f"GET HTTP {get_resp.status_code}"
+
+            chunk = next(get_resp.iter_content(chunk_size=1024), b'')
+            get_resp.close()
+            if not chunk:
+                return False, "响应体为空"
+
+            # 验证流内容
+            if chunk.startswith(b'#EXTM3U'):
+                return True, "m3u8流(#EXTM3U头)"
+            if chunk and chunk[0] == 0x47:
+                return True, "MPEG-TS流(0x47同步字节)"
+            if chunk and chunk[0] >= 0x80:
+                return True, "二进制流"
+            head = chunk[:256].lower()
+            if b'<html' in head or b'<!doctype' in head:
+                return False, "返回HTML错误页"
+            if b'<error' in head or b'404' in head:
+                return False, "返回错误页内容"
+            return False, "响应非流媒体内容"
+
         except requests.exceptions.Timeout:
             return False, "连接超时"
         except requests.exceptions.ConnectionError:
@@ -201,19 +231,24 @@ class QuickURLChecker:
             }
         
         # 对于可信域名，使用更宽松的检测
+        # 注：不再跳过流内容验证，可信域名下具体频道URL仍可能失效
         if self.is_trusted_domain(url):
-            # 可信域名只做基础检测
+            # 可信域名放宽超时到一半，但仍走完整HTTP+流内容验证
             try:
-                response = self.session.head(url, timeout=self.timeout//2, allow_redirects=True)
-                if response.status_code < 400:
-                    return {
-                        'url': url,
-                        'valid': True,
-                        'reason': '可信域名快速通过',
-                        'method': 'trusted_fast'
-                    }
-            except Exception:
-                pass
+                is_valid, reason = self.check_http_url(url)
+                return {
+                    'url': url,
+                    'valid': is_valid,
+                    'reason': f'可信域名-{reason}',
+                    'method': 'trusted_http_verify'
+                }
+            except Exception as e:
+                return {
+                    'url': url,
+                    'valid': False,
+                    'reason': f'可信域名检测异常: {str(e)[:30]}',
+                    'method': 'trusted_error'
+                }
         
         # 标准HTTP检测
         if url.startswith(('http://', 'https://')):

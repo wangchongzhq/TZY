@@ -28,6 +28,14 @@ except ImportError:
     QUICK_CHECKER_AVAILABLE = False
     print("警告: 快速URL检测器不可用，将使用基础检测")
 
+# 导入统一增强流验证模块
+try:
+    import stream_validator
+    STREAM_VALIDATOR_AVAILABLE = True
+except ImportError:
+    STREAM_VALIDATOR_AVAILABLE = False
+    print("警告: stream_validator 不可用，将使用基础检测")
+
 # 配置日志
 logging.basicConfig(
     level=logging.INFO,
@@ -116,9 +124,32 @@ class TemplateDrivenProcessor:
         """检查URL是否在黑名单中"""
         url_lower = url.lower()
         
-        # 排除黑名单关键词（stream精确匹配独立组件，避免误杀livestream等合法域名）
-        if "rtsp://" in url_lower or "freetv" in url_lower or "kkk" in url_lower or "migu" in url_lower or "catvod" in url_lower or "mgtv" in url_lower:
-            return True
+        # 排除黑名单(配置化：protocols/keywords/words)
+        try:
+            bl = config.get("blacklist", {})
+            bl_protocols = bl.get("protocols", ["rtsp://"])
+            bl_keywords = bl.get("keywords", ["freetv", "migu", "catvod", "mgtv"])
+            bl_words = bl.get("words", ["stream", "streaming"])
+        except Exception:
+            bl_protocols = ["rtsp://"]
+            bl_keywords = ["freetv", "migu", "catvod", "mgtv"]
+            bl_words = ["stream", "streaming"]
+
+        # 使用统一的黑名单匹配(词边界，避免误杀 livestream 等合法域名)
+        if STREAM_VALIDATOR_AVAILABLE:
+            if stream_validator.is_url_blacklisted(
+                url, custom_keywords=bl_keywords,
+                custom_protocols=bl_protocols, custom_words=bl_words
+            ):
+                return True
+        else:
+            # stream_validator 缺失时的降级硬编码匹配
+            for proto in bl_protocols:
+                if proto in url_lower:
+                    return True
+            for kw in bl_keywords:
+                if kw and kw in url_lower:
+                    return True
         if STREAM_BLACKLIST_RE.search(url_lower):
             return True
             
@@ -543,7 +574,14 @@ DEFAULT_CONFIG = {
         "enable": True,    # 启用URL有效性测试
         "timeout": 2,      # URL测试超时时间（秒）
         "retries": 1,      # URL测试重试次数
-        "workers": 32      # URL测试并发数
+        "workers": 32,     # URL测试并发数
+        "use_ffprobe": False,    # 是否启用ffprobe深度验证
+        "ffprobe_timeout": 10    # ffprobe超时时间(秒)
+    },
+    "blacklist": {
+        "protocols": ["rtsp://"],          # 协议黑名单
+        "keywords": ["freetv", "migu", "catvod", "mgtv"],  # 关键词黑名单(子串匹配)
+        "words": ["stream", "streaming"]   # 独立词黑名单(词边界匹配)
     },
     "cache": {
         "expiry_time": 3600,  # 缓存有效期（秒）
@@ -776,64 +814,47 @@ def is_4k(channel_name, url):
 
 # 检查URL是否有效
 def check_url(url, timeout=1.5, retries=1):
-    """检查URL是否可访问，支持重试机制
-    
+    """检查URL是否可访问 + 流可播放(增强版)
+
+    接口与旧版兼容，但底层委托给 stream_validator 模块:
+    - HTTP/HTTPS: HEAD + GET读取前1KB验证 #EXTM3U/0x47同步字节/排除HTML错误页
+    - UDP/RTMP/RTP: 端口可达性测试
+    - retries 参数真正生效(失败时重试)
+    - use_ffprobe 由 config["url_testing"]["use_ffprobe"] 控制
+
     参数:
         url: 要测试的URL
         timeout: 超时时间（秒）
         retries: 重试次数
-    
+
     返回:
-        bool: URL是否可用
+        bool: URL是否可用且流可播放
     """
-    # 1. 基本URL格式验证
-    if not url or url.strip() == "":
-        return False
-    
-    # 2. 过滤掉明显不是URL的内容
-    if url.startswith('#'):
-        return False
-    
-    # 3. 快速预过滤：基于已知的无效域名或模式
-    invalid_patterns = [
-        '127.0.0.1', 'localhost', 'example.com', 'test.com',
-        '.local', '.internal',
-        'deadlink', 'expired', 'invalid', 'notfound',
-        'suspended', 'blocked', 'error', '404', 'not found'
-    ]
-    url_lower = url.lower()
-    for pattern in invalid_patterns:
-        if pattern in url_lower:
+    # stream_validator 缺失时降级为旧版简单HEAD检测，保证CI环境下不会NameError
+    if not STREAM_VALIDATOR_AVAILABLE:
+        if not url or url.startswith('#') or '://' not in url:
             return False
-    
-    # 4. 检查协议
-    if '://' not in url and not url.startswith('//'):
-        return False
-    
-    # 5. 对于非HTTP/HTTPS协议的URL，进行基本验证
-    if not url.startswith(('http://', 'https://')):
-        # 对于UDP, RTSP等协议，只进行基本格式验证
-        parsed = urlparse(url)
-        if not parsed.scheme or parsed.scheme not in ['udp', 'rtmp', 'rtp']:
+        if not url.startswith(('http://', 'https://')):
+            parsed = urlparse(url)
+            return bool(parsed.hostname) and parsed.scheme in ('udp', 'rtmp', 'rtp')
+        try:
+            response = session.head(url, timeout=timeout, allow_redirects=True)
+            return 200 <= response.status_code < 400
+        except Exception:
             return False
-        if not parsed.hostname:
-            return False
-        return True
-    
-    # 6. HTTP/HTTPS协议验证 - 简化版
+
     try:
-        # 使用HEAD请求快速验证
-        response = session.head(
-            url, 
-            timeout=timeout, 
-            allow_redirects=True
-        )
-        
-        # 只要状态码是200-399就认为是有效的
-        return 200 <= response.status_code < 400
-    except:
-        # 任何错误都认为是无效的，不进行重试
-        return False
+        use_ffprobe = config.get("url_testing", {}).get("use_ffprobe", False)
+        ffprobe_timeout = config.get("url_testing", {}).get("ffprobe_timeout", 10)
+    except Exception:
+        use_ffprobe = False
+        ffprobe_timeout = 10
+
+    return stream_validator.enhanced_check_url(
+        url, timeout=timeout, retries=retries,
+        session=session, use_ffprobe=use_ffprobe,
+        ffprobe_timeout=ffprobe_timeout
+    )
 
 # 格式化时间间隔
 def format_interval(seconds):
@@ -1186,10 +1207,20 @@ def extract_channels_from_txt(file_path):
                     if not url.startswith(('http://', 'https://', 'udp://', 'rtmp://', 'mms://', 'rtp://')):
                         continue
                     
-                    # 排除黑名单URL（stream精确匹配独立组件，避免误杀livestream等合法域名）
+                    # 排除黑名单URL(配置化，stream精确匹配独立组件，避免误杀livestream等合法域名)
                     url_lower = url.lower()
-                    if "rtsp://" in url_lower or "freetv" in url_lower or "kkk" in url_lower or "migu" in url_lower or "catvod" in url_lower or "mgtv" in url_lower:
-                        continue
+                    try:
+                        _bl = config.get("blacklist", {})
+                        if stream_validator.is_url_blacklisted(
+                            url,
+                            custom_keywords=_bl.get("keywords", ["freetv", "migu", "catvod", "mgtv"]),
+                            custom_protocols=_bl.get("protocols", ["rtsp://"]),
+                            custom_words=_bl.get("words", ["stream", "streaming"])
+                        ):
+                            continue
+                    except Exception:
+                        if "rtsp://" in url_lower or "freetv" in url_lower or "migu" in url_lower or "catvod" in url_lower or "mgtv" in url_lower:
+                            continue
                     if STREAM_BLACKLIST_RE.search(url_lower):
                         continue
                     # 分辨率过滤
@@ -1258,16 +1289,28 @@ def test_channels(channels):
         
         if QUICK_CHECKER_AVAILABLE and len(four_k_channel_items) > 10:
             print("🚀 使用轻量级快速检测器测试4K频道...")
-            
+
             try:
-                # 4K频道：直接添加到有效频道列表，不进行任何测试
-                print("📺 4K频道：直接添加到有效频道列表，不进行任何测试")
-                for category, channel_name, url in four_k_channel_items:
-                    valid_channels[category].append((channel_name, url))
-                    valid_count += 1
-                    if (valid_count) % 10 == 0:
-                        print(f"📊 4K频道处理进度: {valid_count}/{len(four_k_channel_items)} ({valid_count}有效, 0无效)")
-                
+                # 4K频道同样需要验证流可播放性(原逻辑跳过验证会导致失效URL残留)
+                print("📺 4K频道：使用快速检测器验证流可播放性")
+                checker = create_quick_checker(
+                    timeout=4,  # 4K 流放宽超时
+                    max_workers=min(32, config["url_testing"]["workers"]),
+                    enable_dns_check=True
+                )
+                results = checker.batch_check(
+                    [url for _, _, url in four_k_channel_items], show_progress=True
+                )
+                for i, result in enumerate(results):
+                    category, channel_name, url = four_k_channel_items[i]
+                    if result['valid']:
+                        valid_channels[category].append((channel_name, url))
+                        valid_count += 1
+                    else:
+                        invalid_count += 1
+                    if (i + 1) % 10 == 0:
+                        print(f"📊 4K频道处理进度: {i+1}/{len(results)} ({valid_count}有效, {invalid_count}无效)")
+
             except Exception as e:
                 print(f"⚠️ 处理4K频道时出错: {e}")
                 print("🔄 回退到传统检测方式...")
@@ -1283,12 +1326,18 @@ def test_channels(channels):
                         invalid_count += 1
         else:
             # 使用传统检测方式测试4K频道
-            print("📺 4K频道：直接添加到有效频道列表，不进行任何测试")
+            print("📺 4K频道：使用传统检测方式验证流可播放性")
             for category, channel_name, url in four_k_channel_items:
-                valid_channels[category].append((channel_name, url))
-                valid_count += 1
-                if (valid_count) % 10 == 0:
-                    print(f"📊 4K频道处理进度: {valid_count}/{len(four_k_channel_items)} ({valid_count}有效, 0无效)")
+                channel_is_4k = is_4k(channel_name, url)
+                timeout = 4 if channel_is_4k else config["url_testing"]["timeout"]
+                is_valid = check_url(url, timeout=timeout, retries=config["url_testing"]["retries"])
+                if is_valid:
+                    valid_channels[category].append((channel_name, url))
+                    valid_count += 1
+                else:
+                    invalid_count += 1
+                if (valid_count + invalid_count) % 10 == 0:
+                    print(f"📊 4K频道处理进度: {valid_count + invalid_count}/{len(four_k_channel_items)} ({valid_count}有效, {invalid_count}无效)")
         
         print(f"📊 4K频道测试结果: 有效: {len(valid_channels.get('4K频道', []))} 个, 无效: {len(four_k_channel_items) - len(valid_channels.get('4K频道', []))} 个")
     
@@ -1534,10 +1583,20 @@ def merge_sources(sources, local_files):
                 
                 for group_title, channel_list in result.items():
                     for channel_name, url in channel_list:
-                        # 黑名单过滤（stream精确匹配独立组件，避免误杀livestream等合法域名）
+                        # 黑名单过滤(配置化，stream精确匹配独立组件，避免误杀livestream等合法域名)
                         url_lower = url.lower()
-                        if "rtsp://" in url_lower or "freetv" in url_lower or "kkk" in url_lower or "migu" in url_lower or "catvod" in url_lower or "mgtv" in url_lower:
-                            continue
+                        try:
+                            _bl = config.get("blacklist", {})
+                            if stream_validator.is_url_blacklisted(
+                                url,
+                                custom_keywords=_bl.get("keywords", ["freetv", "migu", "catvod", "mgtv"]),
+                                custom_protocols=_bl.get("protocols", ["rtsp://"]),
+                                custom_words=_bl.get("words", ["stream", "streaming"])
+                            ):
+                                continue
+                        except Exception:
+                            if "rtsp://" in url_lower or "freetv" in url_lower or "migu" in url_lower or "catvod" in url_lower or "mgtv" in url_lower:
+                                continue
                         if STREAM_BLACKLIST_RE.search(url_lower):
                             continue
                         # 4K过滤

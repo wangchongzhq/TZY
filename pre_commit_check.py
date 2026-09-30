@@ -388,7 +388,9 @@ class CodeValidator:
         # 只检查核心文件和目录，提高检查效率
         self.python_files = []
         core_directories = []
-        core_files = ['IPTV.py', 'IPTVTXT.py', 'convert_m3u_to_txt.py', 'pre_commit_check.py']
+        core_files = ['IPTV.py', 'IPTVTXT.py', 'convert_m3u_to_txt.py',
+                      'quick_url_checker.py', 'stream_validator.py',
+                      'pre_commit_check.py']
         
         # 添加核心文件
         for file in core_files:

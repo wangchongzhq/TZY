@@ -42,6 +42,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: 安装ffmpeg（可选，供ffprobe深度验证使用）
+      continue-on-error: true
+      run: |
+        sudo apt-get update && sudo apt-get install -y ffmpeg
+        ffprobe -version | head -n 1 || echo "ffprobe不可用，将跳过深度验证"
+
     - name: 提交更新
       run: |
         # 配置git身份和行为

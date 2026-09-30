@@ -42,6 +42,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: 安装ffmpeg（可选，供ffprobe深度验证使用）
+      continue-on-error: true
+      run: |
+        sudo apt-get update && sudo apt-get install -y ffmpeg
+        ffprobe -version | head -n 1 || echo "ffprobe不可用，将跳过深度验证"
+
     - name: 运行IPTVTXT脚本
       run: |
         python IPTVTXT.py --update
