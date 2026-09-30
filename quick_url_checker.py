@@ -10,6 +10,7 @@ import requests
 import socket
 from urllib.parse import urlparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import TimeoutError as FuturesTimeoutError
 import logging
 
 logger = logging.getLogger(__name__)
@@ -63,10 +64,15 @@ DANGEROUS_PATTERNS = [
 class QuickURLChecker:
     """轻量级URL快速检测器"""
     
-    def __init__(self, timeout=2, max_workers=32, enable_dns_check=True):
+    def __init__(self, timeout=2, max_workers=32, enable_dns_check=True,
+                 total_timeout=None, get_read_timeout=1.5):
         self.timeout = timeout
         self.max_workers = max_workers
         self.enable_dns_check = enable_dns_check
+        # 批量检测的墙钟总预算(秒)，None表示不限；防止慢流拖尾撑爆CI job超时
+        self.total_timeout = total_timeout
+        # GET读取流首字节的read超时(秒)，独立于connect超时，收紧以抑制慢直播流拖尾
+        self.get_read_timeout = min(get_read_timeout, timeout)
         
         # 创建优化的Session
         self.session = requests.Session()
@@ -155,7 +161,7 @@ class QuickURLChecker:
                 # 方法不允许，直接走GET
                 response = self.session.get(
                     url,
-                    timeout=self.timeout,
+                    timeout=(self.timeout, self.get_read_timeout),
                     stream=True,
                     headers={'Range': 'bytes=0-1023'}
                 )
@@ -164,10 +170,10 @@ class QuickURLChecker:
             else:
                 return False, f"HTTP状态码: {response.status_code}"
 
-            # GET读取前1KB验证流内容
+            # GET读取前1KB验证流内容(read超时收紧，避免慢直播流首字节拖尾)
             get_resp = self.session.get(
                 url,
-                timeout=self.timeout,
+                timeout=(self.timeout, self.get_read_timeout),
                 stream=True,
                 headers={'Range': 'bytes=0-1023'},
                 allow_redirects=True
@@ -269,57 +275,89 @@ class QuickURLChecker:
             }
     
     def batch_check(self, urls, show_progress=True):
-        """批量检测URL"""
-        results = []
+        """批量检测URL
+
+        若设置 total_timeout，则采用墙钟总预算：超时后未完成的URL一律标记为无效，
+        保证检测阶段有界返回，避免慢流拖尾撑爆CI job超时。
+        """
         total = len(urls)
-        
+        results = [None] * total
+
         logger.info(f"开始批量检测 {total} 个URL...")
         start_time = time.time()
-        
+        deadline = (start_time + self.total_timeout) if self.total_timeout else None
+        timed_out = False
+
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
-            # 提交所有任务
-            future_to_url = {
-                executor.submit(self.check_url, url): url 
-                for url in urls
+            # 提交所有任务，记录 future -> 输入索引(保证结果严格按输入顺序返回)
+            future_to_idx = {
+                executor.submit(self.check_url, url): idx
+                for idx, url in enumerate(urls)
             }
-            
-            # 处理结果
-            for i, future in enumerate(as_completed(future_to_url), 1):
-                try:
-                    result = future.result()
-                    results.append(result)
-                    
-                    if show_progress and i % 100 == 0:
+
+            remaining = (deadline - time.time()) if deadline else None
+            done_count = 0
+            try:
+                for future in as_completed(future_to_idx, timeout=remaining):
+                    idx = future_to_idx[future]
+                    try:
+                        results[idx] = future.result()
+                    except Exception as e:
+                        results[idx] = {
+                            'url': urls[idx],
+                            'valid': False,
+                            'reason': f"检测异常: {str(e)[:30]}",
+                            'method': 'error'
+                        }
+                    done_count += 1
+                    if show_progress and done_count % 100 == 0:
                         elapsed = time.time() - start_time
-                        rate = i / elapsed if elapsed > 0 else 0
-                        logger.info(f"进度: {i}/{total} ({i/total*100:.1f}%) - 速率: {rate:.1f} URL/s")
-                        
-                except Exception as e:
-                    url = future_to_url[future]
-                    results.append({
-                        'url': url,
-                        'valid': False,
-                        'reason': f"检测异常: {str(e)[:30]}",
-                        'method': 'error'
-                    })
-        
+                        rate = done_count / elapsed if elapsed > 0 else 0
+                        logger.info(f"进度: {done_count}/{total} ({done_count/total*100:.1f}%) - 速率: {rate:.1f} URL/s")
+            except FuturesTimeoutError:
+                timed_out = True
+
+            # 总预算耗尽：未完成任务标记无效(单任务仍有requests timeout兜底，shutdown不会久挂)
+            pending_count = 0
+            if timed_out:
+                for f, idx in future_to_idx.items():
+                    if not f.done():
+                        f.cancel()
+                        results[idx] = {
+                            'url': urls[idx],
+                            'valid': False,
+                            'reason': '超出批量检测总预算',
+                            'method': 'batch_timeout'
+                        }
+                        pending_count += 1
+                logger.warning(
+                    f"批量检测达到总预算 {self.total_timeout}s，"
+                    f"{pending_count}/{total} 个URL未完成，已标记无效"
+                )
+
         elapsed = time.time() - start_time
-        valid_count = sum(1 for r in results if r['valid'])
-        logger.info(f"检测完成: {total} 个URL，{valid_count} 个有效 ({valid_count/total*100:.1f}%)，耗时: {elapsed:.2f}秒")
-        
+        valid_count = sum(1 for r in results if r and r['valid'])
+        pct = valid_count/total*100 if total else 0
+        logger.info(f"检测完成: {total} 个URL，{valid_count} 个有效 ({pct:.1f}%)，耗时: {elapsed:.2f}秒")
+
         return results
 
-def create_quick_checker(timeout=2, max_workers=32, enable_dns_check=True):
+def create_quick_checker(timeout=2, max_workers=32, enable_dns_check=True,
+                         total_timeout=None, get_read_timeout=1.5):
     """创建快速检测器实例"""
     return QuickURLChecker(
         timeout=timeout,
         max_workers=max_workers,
-        enable_dns_check=enable_dns_check
+        enable_dns_check=enable_dns_check,
+        total_timeout=total_timeout,
+        get_read_timeout=get_read_timeout
     )
 
-def quick_check_urls(urls, timeout=2, max_workers=32, enable_dns_check=True):
+def quick_check_urls(urls, timeout=2, max_workers=32, enable_dns_check=True,
+                     total_timeout=None):
     """快速检测URL列表的便捷函数"""
-    checker = create_quick_checker(timeout, max_workers, enable_dns_check)
+    checker = create_quick_checker(timeout, max_workers, enable_dns_check,
+                                   total_timeout=total_timeout)
     return checker.batch_check(urls)
 
 if __name__ == "__main__":

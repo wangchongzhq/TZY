@@ -576,7 +576,9 @@ DEFAULT_CONFIG = {
         "retries": 1,      # URL测试重试次数
         "workers": 32,     # URL测试并发数
         "use_ffprobe": False,    # 是否启用ffprobe深度验证
-        "ffprobe_timeout": 10    # ffprobe超时时间(秒)
+        "ffprobe_timeout": 10,   # ffprobe超时时间(秒)
+        "batch_timeout": 720,    # 普通频道批量检测墙钟总预算(秒)，防止慢流拖尾撑爆CI
+        "fourk_batch_timeout": 180  # 4K频道批量检测墙钟总预算(秒)
     },
     "blacklist": {
         "protocols": ["rtsp://"],          # 协议黑名单
@@ -1296,7 +1298,8 @@ def test_channels(channels):
                 checker = create_quick_checker(
                     timeout=4,  # 4K 流放宽超时
                     max_workers=min(32, config["url_testing"]["workers"]),
-                    enable_dns_check=True
+                    enable_dns_check=True,
+                    total_timeout=config["url_testing"].get("fourk_batch_timeout", 180)
                 )
                 results = checker.batch_check(
                     [url for _, _, url in four_k_channel_items], show_progress=True
@@ -1356,7 +1359,8 @@ def test_channels(channels):
                 checker = create_quick_checker(
                     timeout=config["url_testing"]["timeout"],
                     max_workers=min(32, config["url_testing"]["workers"]),
-                    enable_dns_check=True
+                    enable_dns_check=True,
+                    total_timeout=config["url_testing"].get("batch_timeout", 720)
                 )
                 
                 # 批量检测
