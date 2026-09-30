@@ -56,6 +56,10 @@ uploads/
 invalid_channels.txt
 simple_test.txt
 
+# 频道标准名和别名（本地维护，不推送）
+demo.txt
+alias.txt
+
 # 测试文件（不上传）
 测试用.txt
 测试用.m3u
