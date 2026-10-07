@@ -1,23 +1,21 @@
 #EXTM3U x-tvg-url="https://kakaxi-1.github.io/IPTV/epg.xml"
-# 生成时间: 2026-10-07 06:57:34.974860
+# 生成时间: 2026-10-08 07:29:38.801922
 #EXTINF:-1 tvg-name="CCTV4K" group-title="🇨🇳 4K频道",CCTV4K
 http://183.236.43.98:4013/udp/239.77.0.194:5146$广东电信11
 #EXTINF:-1 tvg-name="CCTV4K" group-title="🇨🇳 4K频道",CCTV4K
-http://124.112.241.143:4022/rtp/238.1.78.137:6968$安徽电信11
-#EXTINF:-1 tvg-name="CCTV4K" group-title="🇨🇳 4K频道",CCTV4K
 http://106.59.2.196:55555/rtp/239.200.200.202:8784$云南电信11
 #EXTINF:-1 tvg-name="CCTV4K" group-title="🇨🇳 4K频道",CCTV4K
-http://183.236.43.98:4013/udp/239.77.0.174:5146$广东电信12
+http://124.112.241.143:4022/rtp/238.1.78.137:6968$安徽电信11
 #EXTINF:-1 tvg-name="CCTV4K" group-title="🇨🇳 4K频道",CCTV4K
-http://118.248.155.220:8889/udp/239.76.254.64:9000$湖南电信12
+http://183.236.43.98:4013/udp/239.77.0.174:5146$广东电信12
+#EXTINF:-1 tvg-name="东方卫视4K" group-title="🇨🇳 4K频道",东方卫视4K
+http://bp-resource-dfl.bestv.cn/148/3/video.m3u8
+#EXTINF:-1 tvg-name="东方卫视4K" group-title="🇨🇳 4K频道",东方卫视4K
+https://bp-resource-dfl.bestv.cn/148/3/video.m3u8
 #EXTINF:-1 tvg-name="北京卫视4K" group-title="🇨🇳 4K频道",北京卫视4K
 http://120.211.62.180:8000/hls/35/index.m3u8
 #EXTINF:-1 tvg-name="四川卫视4K" group-title="🇨🇳 4K频道",四川卫视4K
 https://live.chinacert.cftest5.cn/zgst/live/sichuan4k
-#EXTINF:-1 tvg-name="山东卫视4K" group-title="🇨🇳 4K频道",山东卫视4K
-https://live.chinacert.cftest5.cn/zgst/live/shandong4k
-#EXTINF:-1 tvg-name="江苏卫视4K" group-title="🇨🇳 4K频道",江苏卫视4K
-https://live.chinacert.cftest5.cn/zgst/live/jiangsu4k
 #EXTINF:-1 tvg-name="浙江卫视4K" group-title="🇨🇳 4K频道",浙江卫视4K
 http://ali-xwl.cztv.com/live/channel4k2160p.m3u8
 #EXTINF:-1 tvg-name="湖南卫视4K" group-title="🇨🇳 4K频道",湖南卫视4K
@@ -29,42 +27,6 @@ https://tylive.kan0512.com/norecord/csztv4k_4k.m3u8
 #EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
 http://204.12.221.218:8181/3m1080p/cctv1.m3u8
 #EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
-http://183.236.43.98:4013/udp/239.77.1.144:5146$广东电信11
-#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
-http://118.248.155.220:8889/udp/239.76.253.151:9000$湖南电信11
-#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
-http://39.77.23.205:4002/rtp/239.253.254.77:8000$山东联通11
-#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
-http://1.192.242.239:8188/rtp/239.16.20.1:10010$河南电信11
-#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
-http://171.119.206.69:6000/rtp/226.0.2.153:9136$山西联通11
-#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
-http://115.171.216.32:4000/rtp/225.1.8.1:8008$北京电信11
-#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
-http://121.237.245.243:8888/rtp/239.49.8.19:9614$江苏电信12
-#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
-http://39.77.23.205:4002/rtp/239.253.254.89:8000$山东联通12
-#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
-http://115.171.216.32:4000/rtp/225.1.8.33:8002$北京电信12
-#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
-http://106.59.2.196:55555/udp/239.200.200.70:8008$云南电信12
-#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
-http://106.59.2.196:55555/udp/239.200.200.95:8044$云南电信13
-#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
-http://115.171.216.32:4000/rtp/225.1.8.81:8176$北京电信14
-#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
-http://171.119.206.118:6000/rtp/226.0.2.153:9136$山西联通21
-#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
-http://171.8.138.13:8800/rtp/239.16.20.1:10010$河南电信21
-#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
-http://111.196.130.121:20000/rtp/239.3.1.129:8008$北京联通31
-#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
-http://114.240.111.49:7788/608807420$仅供娱乐
-#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
-http://118.113.40.13:1234/608807420$切勿商用
-#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
-http://182.85.163.86:1234/608807420$免费分享
-#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
 http://183.11.239.36:808/hls/19/index.m3u8
 #EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
 http://219.147.245.238:25480/newlive/live/hls/1/live.m3u8
@@ -75,11 +37,45 @@ http://58.56.162.102:4466/newlive/live/hls/1/live.m3u8
 #EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
 http://222.169.85.8:9901/tsfile/live/0001_1.m3u8?key=txiptv&playlive=1&authid=0
 #EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
+http://my1nas.dpdns.org:1234/608807420
+#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
+http://www.20260809.xyz:1234/608807420
+#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
+https://tv.zhuhongxuan.cn/608807420
+#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
+http://njdm.i234.me:1234/608807420
+#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
+https://live.chinacert.cftest5.cn/cnmg/live/608807420
+#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
 http://bztv.tvbus.cc:8081/cdnlive/cctv1.m3u8
 #EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
 http://173.208.212.130:8181/1080p/cctv1.m3u8
 #EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
 http://120.76.248.139/live/bfgd/4200000488.m3u8
+#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
+http://39.77.23.205:4002/rtp/239.253.254.77:8000$山东联通11
+#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
+http://183.236.43.98:4013/udp/239.77.1.144:5146$广东电信11
+#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
+http://115.171.216.32:4000/rtp/225.1.8.1:8008$北京电信11
+#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
+http://171.119.206.69:6000/rtp/226.0.2.153:9136$山西联通11
+#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
+http://1.192.242.239:8188/rtp/239.16.20.1:10010$河南电信11
+#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
+http://39.77.23.205:4002/rtp/239.253.254.89:8000$山东联通12
+#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
+http://121.237.245.243:8888/rtp/239.49.8.19:9614$江苏电信12
+#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
+http://115.171.216.32:4000/rtp/225.1.8.33:8002$北京电信12
+#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
+http://106.59.2.196:55555/udp/239.200.200.70:8008$云南电信12
+#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
+http://115.171.216.32:4000/rtp/225.1.8.81:8176$北京电信14
+#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
+http://171.119.206.118:6000/rtp/226.0.2.153:9136$山西联通21
+#EXTINF:-1 tvg-name="CCTV1" group-title="📺 央视频道",CCTV1
+http://111.196.130.121:20000/rtp/239.3.1.129:8008$北京联通31
 #EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
 http://204.12.221.218:8181/3m1080p/cctv10.m3u8
 #EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
@@ -87,161 +83,161 @@ http://bztv.tvbus.cc:8081/cdnlive/cctv10.m3u8
 #EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
 http://69.30.245.50/live/cctv10.m3u8
 #EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
-http://183.236.43.98:4013/udp/239.77.0.134:5146$广东电信11
-#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
-http://118.248.155.220:8889/udp/239.76.253.160:9000$湖南电信11
-#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
-http://39.77.23.205:4002/rtp/239.253.254.234:8000$山东联通11
-#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
-http://124.112.241.143:4022/rtp/238.1.78.241:7800$安徽电信11
-#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
-http://1.192.242.239:8188/rtp/239.16.20.10:10100$河南电信11
-#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
-http://171.119.206.69:6000/rtp/226.0.2.162:9208$山西联通11
-#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
-http://115.171.216.32:4000/rtp/225.1.8.10:8116$北京电信11
-#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
-http://118.248.155.220:8889/udp/239.76.246.160:1234$湖南电信12
-#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
-http://171.119.206.118:6000/rtp/226.0.2.162:9208$山西联通21
-#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
-http://171.8.138.13:8800/rtp/239.16.20.10:10100$河南电信21
-#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
-http://36.36.238.246:7788/624878405
-#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
-http://118.113.40.13:1234/624878405
-#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
 http://183.11.239.36:808/hls/28/index.m3u8
 #EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
 http://113.25.252.226:9901/tsfile/live/1014_1.m3u8?key=txiptv&playlive=1&authid=0
 #EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
+http://smartzhu.cn:1234/624878405
+#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
+http://my1nas.dpdns.org:1234/624878405
+#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
+http://www.20260809.xyz:1234/624878405
+#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
+https://tv.zhuhongxuan.cn/624878405
+#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
+http://njdm.i234.me:1234/624878405
+#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
+https://live.chinacert.cftest5.cn/cnmg/live/624878405
+#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
 http://173.208.212.130:8181/1080p/cctv10.m3u8
 #EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
 http://120.76.248.139/live/bfgd/4200000129.m3u8
+#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
+http://39.77.23.205:4002/rtp/239.253.254.234:8000$山东联通11
+#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
+http://183.236.43.98:4013/udp/239.77.0.134:5146$广东电信11
+#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
+http://115.171.216.32:4000/rtp/225.1.8.10:8116$北京电信11
+#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
+http://171.119.206.69:6000/rtp/226.0.2.162:9208$山西联通11
+#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
+http://1.192.242.239:8188/rtp/239.16.20.10:10100$河南电信11
+#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
+http://124.112.241.143:4022/rtp/238.1.78.241:7800$安徽电信11
+#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
+http://121.237.245.243:8888/rtp/239.49.8.54:9818$江苏电信12
+#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
+http://171.119.206.118:6000/rtp/226.0.2.162:9208$山西联通21
+#EXTINF:-1 tvg-name="CCTV10" group-title="📺 央视频道",CCTV10
+http://111.196.130.121:20000/rtp/239.3.1.63:8116$北京联通31
 #EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
 http://204.12.221.218:8181/3m1080p/cctv11.m3u8
-#EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
-http://183.236.43.98:4013/udp/239.77.1.238:5146$广东电信11
-#EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
-http://39.77.23.205:4002/rtp/239.253.254.169:8000$山东联通11
-#EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
-http://124.112.241.143:4022/rtp/238.1.78.206:7502$安徽电信11
-#EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
-http://1.192.242.239:8188/rtp/239.16.20.11:10110$河南电信11
-#EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
-http://115.171.216.32:4000/rtp/225.1.8.73:8120$北京电信11
-#EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
-http://171.8.138.13:8800/rtp/239.16.20.11:10110$河南电信21
-#EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
-http://111.196.130.121:20000/rtp/239.3.1.152:8120$北京联通31
 #EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
 http://183.11.239.36:808/hls/29/index.m3u8
 #EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
 http://113.25.252.226:9901/tsfile/live/1015_1.m3u8?key=txiptv&playlive=1&authid=0
+#EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
+http://my1nas.dpdns.org:1234/667987558
+#EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
+http://www.20260809.xyz:1234/667987558
+#EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
+https://tv.zhuhongxuan.cn/667987558
+#EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
+http://njdm.i234.me:1234/667987558
 #EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
 http://bztv.tvbus.cc:8081/cdnlive/cctv11.m3u8
 #EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
 http://173.208.212.130:8181/1080p/cctv11.m3u8
 #EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
 http://120.76.248.139/live/bfgd/4200000130.m3u8
+#EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
+http://39.77.23.205:4002/rtp/239.253.254.169:8000$山东联通11
+#EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
+http://183.236.43.98:4013/udp/239.77.1.238:5146$广东电信11
+#EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
+http://115.171.216.32:4000/rtp/225.1.8.73:8120$北京电信11
+#EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
+http://106.59.2.196:55555/rtp/239.200.201.125:8480$云南电信11
+#EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
+http://1.192.242.239:8188/rtp/239.16.20.11:10110$河南电信11
+#EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
+http://124.112.241.143:4022/rtp/238.1.78.206:7502$安徽电信11
+#EXTINF:-1 tvg-name="CCTV11" group-title="📺 央视频道",CCTV11
+http://111.196.130.121:20000/rtp/239.3.1.152:8120$北京联通31
 #EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
 http://204.12.221.218:8181/3m1080p/cctv12.m3u8
 #EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
-http://183.236.43.98:4013/udp/239.77.0.136:5146$广东电信11
-#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
-http://118.248.155.220:8889/udp/239.76.253.162:9000$湖南电信11
-#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
-http://39.77.23.205:4002/rtp/239.253.254.235:8000$山东联通11
-#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
-http://124.112.241.143:4022/rtp/238.1.78.242:7808$安徽电信11
-#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
-http://1.192.242.239:8188/rtp/239.16.20.12:10120$河南电信11
-#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
-http://171.119.206.69:6000/rtp/226.0.2.164:9224$山西联通11
-#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
-http://115.171.216.32:4000/rtp/225.1.8.12:8124$北京电信11
-#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
-http://121.237.245.243:8888/rtp/239.49.8.55:9822$江苏电信12
-#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
-http://171.119.206.118:6000/rtp/226.0.2.164:9224$山西联通21
-#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
-http://171.8.138.13:8800/rtp/239.16.20.12:10120$河南电信21
-#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
-http://111.196.130.121:20000/rtp/239.3.1.64:8124$北京联通31
+http://183.11.239.36:808/hls/30/index.m3u8
 #EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
 http://124.165.251.82:85/tsfile/live/0012_1.m3u8?key=txiptv&playlive=1&authid=0$LR•9•IPV4『线路1』
 #EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
+http://113.25.252.226:9901/tsfile/live/1016_1.m3u8?key=txiptv&playlive=1&authid=0
+#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
 http://124.165.251.82:85/tsfile/live/0012_1.m3u8?key=txiptv&playlive=1&authid=0
 #EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
-http://183.11.239.36:808/hls/30/index.m3u8
+http://my1nas.dpdns.org:1234/673168185
 #EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
-http://113.25.252.226:9901/tsfile/live/1016_1.m3u8?key=txiptv&playlive=1&authid=0
+http://www.20260809.xyz:1234/673168185
+#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
+https://tv.zhuhongxuan.cn/673168185
+#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
+http://njdm.i234.me:1234/673168185
 #EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
 http://bztv.tvbus.cc:8081/cdnlive/cctv12.m3u8
 #EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
 http://173.208.212.130:8181/1080p/cctv12.m3u8
 #EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
 http://120.76.248.139/live/bfgd/4200000131.m3u8
+#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
+http://39.77.23.205:4002/rtp/239.253.254.235:8000$山东联通11
+#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
+http://183.236.43.98:4013/udp/239.77.0.136:5146$广东电信11
+#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
+http://115.171.216.32:4000/rtp/225.1.8.12:8124$北京电信11
+#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
+http://171.119.206.69:6000/rtp/226.0.2.164:9224$山西联通11
+#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
+http://106.59.2.196:55555/udp/239.200.200.108:8124$云南电信11
+#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
+http://1.192.242.239:8188/rtp/239.16.20.12:10120$河南电信11
+#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
+http://124.112.241.143:4022/rtp/238.1.78.242:7808$安徽电信11
+#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
+http://171.119.206.118:6000/rtp/226.0.2.164:9224$山西联通21
+#EXTINF:-1 tvg-name="CCTV12" group-title="📺 央视频道",CCTV12
+http://111.196.130.121:20000/rtp/239.3.1.64:8124$北京联通31
 #EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
 http://120.76.248.139/live/bfgd/4200000067.m3u8
 #EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
 http://bztv.tvbus.cc:8081/cdnlive/cctv13.m3u8
 #EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
-http://183.236.43.98:4013/udp/239.253.43.196:5146$广东电信11
-#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
-http://118.248.155.220:8889/udp/239.76.253.93:9000$湖南电信11
-#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
-http://39.77.23.205:4002/rtp/239.253.254.175:8000$山东联通11
-#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
-http://124.112.241.143:4022/rtp/238.1.79.35:4392$安徽电信11
-#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
-http://1.192.242.239:8188/rtp/239.16.20.13:10130$河南电信11
-#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
-http://171.119.206.69:6000/rtp/226.0.2.165:9232$山西联通11
-#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
-http://115.171.216.32:4000/rtp/225.1.8.168:8130$北京电信11
-#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
-http://106.59.2.196:55555/udp/239.200.201.170:8620$云南电信11
-#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
-http://171.119.206.118:6000/rtp/226.0.2.165:9232$山西联通21
-#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
-http://171.8.138.13:8800/rtp/239.16.20.13:10130$河南电信21
-#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
-http://111.196.130.121:20000/rtp/239.3.1.124:8128$北京联通31
+http://183.11.239.36:808/hls/31/index.m3u8
 #EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
 http://ali-m-l.cztv.com/channels/lantian/channel21/1080p.m3u8$LR•11•IPV4『线路2』
 #EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
 http://120.76.248.139/live/bfgd/4200000067.m3u8$LR•11•IPV4『线路10』
 #EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
-http://183.11.239.36:808/hls/31/index.m3u8
-#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
 https://event.pull.hebtv.com/jishi/cp1.m3u8
 #EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
 http://120.40.39.246:352/newlive/live/hls/14/live.m3u8
 #EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
+http://my1nas.dpdns.org:1234/608807423
+#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
+http://www.20260809.xyz:1234/608807423
+#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
+https://tv.zhuhongxuan.cn/608807423
+#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
+http://njdm.i234.me:1234/608807423
+#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
 http://173.208.212.130:8181/1080p/cctv13.m3u8
+#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
+http://39.77.23.205:4002/rtp/239.253.254.175:8000$山东联通11
+#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
+http://183.236.43.98:4013/udp/239.253.43.196:5146$广东电信11
+#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
+http://115.171.216.32:4000/rtp/225.1.8.168:8130$北京电信11
+#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
+http://171.119.206.69:6000/rtp/226.0.2.165:9232$山西联通11
+#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
+http://1.192.242.239:8188/rtp/239.16.20.13:10130$河南电信11
+#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
+http://124.112.241.143:4022/rtp/238.1.79.35:4392$安徽电信11
+#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
+http://171.119.206.118:6000/rtp/226.0.2.165:9232$山西联通21
+#EXTINF:-1 tvg-name="CCTV13" group-title="📺 央视频道",CCTV13
+http://111.196.130.121:20000/rtp/239.3.1.124:8128$北京联通31
 #EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
 http://204.12.221.218:8181/3m1080p/cctv14.m3u8
-#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
-http://183.236.43.98:4013/udp/239.77.1.161:5146$广东电信11
-#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
-http://39.77.23.205:4002/rtp/239.253.254.236:8000$山东联通11
-#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
-http://124.112.241.143:4022/rtp/238.1.78.243:7816$安徽电信11
-#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
-http://1.192.242.239:8188/rtp/239.16.20.14:10140$河南电信11
-#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
-http://171.119.206.69:6000/rtp/226.0.2.166:9240$山西联通11
-#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
-http://115.171.216.32:4000/rtp/225.1.8.14:8132$北京电信11
-#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
-http://106.59.2.196:55555/udp/239.200.200.109:8132$云南电信11
-#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
-http://171.119.206.118:6000/rtp/226.0.2.166:9240$山西联通21
-#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
-http://171.8.138.13:8800/rtp/239.16.20.14:10140$河南电信21
-#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
-http://111.196.130.121:20000/rtp/239.3.1.65:8132$北京联通31
 #EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
 http://183.11.239.36:808/hls/32/index.m3u8
 #EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
@@ -251,81 +247,83 @@ http://173.208.212.130:8181/1080p/cctv14.m3u8
 #EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
 http://113.25.252.226:9901/tsfile/live/1018_1.m3u8?key=txiptv&playlive=1&authid=0
 #EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
+http://my1nas.dpdns.org:1234/624878440
+#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
+http://www.20260809.xyz:1234/624878440
+#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
+https://tv.zhuhongxuan.cn/624878440
+#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
+http://njdm.i234.me:1234/624878440
+#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
 http://bztv.tvbus.cc:8081/cdnlive/cctv14.m3u8
 #EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
 http://120.76.248.139/live/bfgd/4200000132.m3u8
+#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
+http://39.77.23.205:4002/rtp/239.253.254.236:8000$山东联通11
+#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
+http://183.236.43.98:4013/udp/239.77.1.161:5146$广东电信11
+#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
+http://115.171.216.32:4000/rtp/225.1.8.14:8132$北京电信11
+#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
+http://171.119.206.69:6000/rtp/226.0.2.166:9240$山西联通11
+#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
+http://1.192.242.239:8188/rtp/239.16.20.14:10140$河南电信11
+#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
+http://124.112.241.143:4022/rtp/238.1.78.243:7816$安徽电信11
+#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
+http://171.119.206.118:6000/rtp/226.0.2.166:9240$山西联通21
+#EXTINF:-1 tvg-name="CCTV14" group-title="📺 央视频道",CCTV14
+http://111.196.130.121:20000/rtp/239.3.1.65:8132$北京联通31
 #EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
 http://204.12.221.218:8181/3m1080p/cctv15.m3u8
 #EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
-http://183.236.43.98:4013/udp/239.77.1.239:5146$广东电信11
-#EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
-http://118.248.155.220:8889/udp/239.76.252.252:9000$湖南电信11
-#EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
-http://39.77.23.205:4002/rtp/239.253.254.170:8000$山东联通11
-#EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
-http://124.112.241.143:4022/rtp/238.1.78.222:7648$安徽电信11
-#EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
-http://1.192.242.239:8188/rtp/239.16.20.15:10150$河南电信11
-#EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
-http://115.171.216.32:4000/rtp/225.1.8.74:8136$北京电信11
-#EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
-http://106.59.2.196:55555/rtp/239.200.201.112:8496$云南电信11
-#EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
-http://171.8.138.13:8800/rtp/239.16.20.15:10150$河南电信21
-#EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
-http://111.196.130.121:20000/rtp/239.3.1.153:8136$北京联通31
+http://183.11.239.36:808/hls/102/index.m3u8
 #EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
 http://120.76.248.139/live/bfgd/4200000133.m3u8$LR•15•IPV4『线路3』
 #EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
-http://183.11.239.36:808/hls/102/index.m3u8
+http://my1nas.dpdns.org:1234/673168223
+#EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
+http://www.20260809.xyz:1234/673168223
+#EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
+https://tv.zhuhongxuan.cn/673168223
+#EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
+http://njdm.i234.me:1234/673168223
 #EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
 http://bztv.tvbus.cc:8081/cdnlive/cctv15.m3u8
 #EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
 http://173.208.212.130:8181/1080p/cctv15.m3u8
 #EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
 http://120.76.248.139/live/bfgd/4200000133.m3u8
+#EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
+http://39.77.23.205:4002/rtp/239.253.254.170:8000$山东联通11
+#EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
+http://183.236.43.98:4013/udp/239.77.1.239:5146$广东电信11
+#EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
+http://115.171.216.32:4000/rtp/225.1.8.74:8136$北京电信11
+#EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
+http://1.192.242.239:8188/rtp/239.16.20.15:10150$河南电信11
+#EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
+http://124.112.241.143:4022/rtp/238.1.78.222:7648$安徽电信11
+#EXTINF:-1 tvg-name="CCTV15" group-title="📺 央视频道",CCTV15
+http://111.196.130.121:20000/rtp/239.3.1.153:8136$北京联通31
 #EXTINF:-1 tvg-name="CCTV16" group-title="📺 央视频道",CCTV16
 http://207.56.13.146:81/cdnlive/cctv16.m3u8
-#EXTINF:-1 tvg-name="CCTV16" group-title="📺 央视频道",CCTV16
-http://183.236.43.98:4013/udp/239.77.0.165:5146$广东电信11
-#EXTINF:-1 tvg-name="CCTV16" group-title="📺 央视频道",CCTV16
-http://118.248.155.220:8889/udp/239.76.253.98:9000$湖南电信11
-#EXTINF:-1 tvg-name="CCTV16" group-title="📺 央视频道",CCTV16
-http://171.119.206.69:6000/rtp/226.0.2.169:9264$山西联通11
-#EXTINF:-1 tvg-name="CCTV16" group-title="📺 央视频道",CCTV16
-http://171.119.206.118:6000/rtp/226.0.2.169:9264$山西联通21
-#EXTINF:-1 tvg-name="CCTV16" group-title="📺 央视频道",CCTV16
-http://111.196.130.121:20000/rtp/239.3.1.184:8001$北京联通31
 #EXTINF:-1 tvg-name="CCTV16" group-title="📺 央视频道",CCTV16
 http://183.11.239.36:808/hls/169/index.m3u8
 #EXTINF:-1 tvg-name="CCTV16" group-title="📺 央视频道",CCTV16
 http://bztv.tvbus.cc:8081/cdnlive/cctv16.m3u8
 #EXTINF:-1 tvg-name="CCTV16" group-title="📺 央视频道",CCTV16
 http://173.208.212.130:8181/1080p/cctv16.m3u8
+#EXTINF:-1 tvg-name="CCTV16" group-title="📺 央视频道",CCTV16
+http://171.119.206.69:6000/rtp/226.0.2.169:9264$山西联通11
+#EXTINF:-1 tvg-name="CCTV16" group-title="📺 央视频道",CCTV16
+http://171.119.206.118:6000/rtp/226.0.2.169:9264$山西联通21
 #EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
 https://live.264788.xyz/channel/cctv17?streamid=348c8c0c04a6d2b900e5a3bcb4af8ce1&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk
 #EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
 https://live.264788.xyz/channel/cctv17?streamid=f9c36f1e95b5b35eac89cc89583e7c0a&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk
 #EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
-http://183.236.43.98:4013/udp/239.77.1.121:5146$广东电信11
-#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
-http://118.248.155.220:8889/udp/239.76.252.238:9000$湖南电信11
-#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
-http://39.77.23.205:4002/rtp/239.253.254.168:8000$山东联通11
-#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
-http://124.112.241.143:4022/rtp/238.1.78.178:7296$安徽电信11
-#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
-http://1.192.242.239:8188/rtp/239.16.20.7:10070$河南电信11
-#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
-http://171.119.206.69:6000/rtp/226.0.2.170:9272$山西联通11
-#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
-http://115.171.216.32:4000/rtp/225.1.8.17:8144$北京电信11
-#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
-http://171.119.206.118:6000/rtp/226.0.2.170:9272$山西联通21
-#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
-http://171.8.138.13:8800/rtp/239.16.20.7:10070$河南电信21
-#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
-http://111.196.130.121:20000/rtp/239.3.1.151:8144$北京联通31
+http://183.11.239.36:808/hls/35/index.m3u8
 #EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
 http://120.76.248.139/live/bfgd/4200000204.m3u8$LR•8•IPV4『线路2』
 #EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
@@ -333,79 +331,109 @@ https://live.264788.xyz/channel/cctv17?streamid=348c8c0c04a6d2b900e5a3bcb4af8ce1
 #EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
 https://live.264788.xyz/channel/cctv17?streamid=f9c36f1e95b5b35eac89cc89583e7c0a&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk$LR•8•IPV4『线路5』
 #EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
-http://183.11.239.36:808/hls/35/index.m3u8
+http://my1nas.dpdns.org:1234/673168256
+#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
+http://www.20260809.xyz:1234/673168256
+#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
+https://tv.zhuhongxuan.cn/673168256
+#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
+http://njdm.i234.me:1234/673168256
 #EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
 http://bztv.tvbus.cc:8081/cdnlive/cctv17.m3u8
 #EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
 http://173.208.212.130:8181/1080p/cctv17.m3u8
 #EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
 http://120.76.248.139/live/bfgd/4200000204.m3u8
+#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
+http://39.77.23.205:4002/rtp/239.253.254.168:8000$山东联通11
+#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
+http://183.236.43.98:4013/udp/239.77.1.121:5146$广东电信11
+#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
+http://115.171.216.32:4000/rtp/225.1.8.17:8144$北京电信11
+#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
+http://171.119.206.69:6000/rtp/226.0.2.170:9272$山西联通11
+#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
+http://1.192.242.239:8188/rtp/239.16.20.7:10070$河南电信11
+#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
+http://124.112.241.143:4022/rtp/238.1.78.178:7296$安徽电信11
+#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
+http://171.119.206.118:6000/rtp/226.0.2.170:9272$山西联通21
+#EXTINF:-1 tvg-name="CCTV17" group-title="📺 央视频道",CCTV17
+http://111.196.130.121:20000/rtp/239.3.1.151:8144$北京联通31
 #EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
 http://204.12.221.218:8181/3m1080p/cctv2.m3u8
 #EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
 http://bztv.tvbus.cc:8081/cdnlive/cctv2.m3u8
 #EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
-http://183.236.43.98:4013/udp/239.77.1.158:5146$广东电信11
-#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
-http://118.248.155.220:8889/udp/239.76.253.152:9000$湖南电信11
-#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
-http://39.77.23.205:4002/rtp/239.253.254.232:8000$山东联通11
-#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
-http://124.112.241.143:4022/rtp/238.1.78.235:7752$安徽电信11
-#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
-http://1.192.242.239:8188/rtp/239.16.20.2:10020$河南电信11
-#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
-http://171.119.206.69:6000/rtp/226.0.2.154:9144$山西联通11
-#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
-http://115.171.216.32:4000/rtp/225.1.8.2:8084$北京电信11
-#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
-http://118.248.155.220:8889/udp/239.76.246.152:1234$湖南电信12
-#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
-http://171.119.206.118:6000/rtp/226.0.2.154:9144$山西联通21
-#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
-http://171.8.138.13:8800/rtp/239.16.20.2:10020$河南电信21
-#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
-http://111.196.130.121:20000/rtp/239.3.1.60:8084$北京联通31
-#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
 http://183.11.239.36:808/hls/20/index.m3u8
 #EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
 http://58.56.162.102:4466/newlive/live/hls/2/live.m3u8
 #EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
+http://my1nas.dpdns.org:1234/631780532
+#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
+http://www.20260809.xyz:1234/631780532
+#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
+https://tv.zhuhongxuan.cn/631780532
+#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
+http://njdm.i234.me:1234/631780532
+#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
 http://173.208.212.130:8181/1080p/cctv2.m3u8
 #EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
 http://120.76.248.139/live/bfgd/4200000061.m3u8
+#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
+http://39.77.23.205:4002/rtp/239.253.254.232:8000$山东联通11
+#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
+http://183.236.43.98:4013/udp/239.77.1.158:5146$广东电信11
+#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
+http://115.171.216.32:4000/rtp/225.1.8.2:8084$北京电信11
+#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
+http://171.119.206.69:6000/rtp/226.0.2.154:9144$山西联通11
+#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
+http://106.59.2.196:55555/udp/239.200.200.104:8084$云南电信11
+#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
+http://1.192.242.239:8188/rtp/239.16.20.2:10020$河南电信11
+#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
+http://124.112.241.143:4022/rtp/238.1.78.235:7752$安徽电信11
+#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
+http://171.119.206.118:6000/rtp/226.0.2.154:9144$山西联通21
+#EXTINF:-1 tvg-name="CCTV2" group-title="📺 央视频道",CCTV2
+http://111.196.130.121:20000/rtp/239.3.1.60:8084$北京联通31
 #EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
 http://69.30.245.50/live/cctv3.m3u8
-#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
-http://183.236.43.98:4013/udp/239.77.0.169:5146$广东电信11
-#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
-http://39.77.23.205:4002/rtp/239.253.254.191:8000$山东联通11
-#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
-http://124.112.241.143:4022/rtp/238.1.78.170:7232$安徽电信11
-#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
-http://1.192.242.239:8188/rtp/239.16.20.3:10030$河南电信11
-#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
-http://171.119.206.69:6000/rtp/226.0.2.208:9576$山西联通11
-#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
-http://115.171.216.32:4000/rtp/225.1.8.88:8000$北京电信11
-#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
-http://118.248.155.220:8889/udp/239.76.246.153:1234$湖南电信12
-#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
-http://171.119.206.118:6000/rtp/226.0.2.208:9576$山西联通21
-#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
-http://171.8.138.13:8800/rtp/239.16.20.3:10030$河南电信21
-#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
-http://111.196.130.121:20000/rtp/239.3.1.172:8001$北京联通31
 #EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
 http://222.169.85.8:9901/tsfile/live/0003_1.m3u8?key=txiptv&playlive=1&authid=0$LR•6•IPV4『线路3』
 #EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
 http://219.147.245.238:25480/newlive/live/hls/3/live.m3u8
+#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
+http://my1nas.dpdns.org:1234/624878271
+#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
+http://www.20260809.xyz:1234/624878271
+#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
+https://tv.zhuhongxuan.cn/624878271
+#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
+http://njdm.i234.me:1234/624878271
 #EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
 http://bztv.tvbus.cc:8081/cdnlive/cctv3.m3u8
 #EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
 http://173.208.212.130:8181/1080p/cctv3.m3u8
 #EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
 http://120.76.248.139/live/bfgd/4200000062.m3u8
+#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
+http://39.77.23.205:4002/rtp/239.253.254.191:8000$山东联通11
+#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
+http://183.236.43.98:4013/udp/239.77.0.169:5146$广东电信11
+#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
+http://115.171.216.32:4000/rtp/225.1.8.88:8000$北京电信11
+#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
+http://171.119.206.69:6000/rtp/226.0.2.208:9576$山西联通11
+#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
+http://1.192.242.239:8188/rtp/239.16.20.3:10030$河南电信11
+#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
+http://124.112.241.143:4022/rtp/238.1.78.170:7232$安徽电信11
+#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
+http://171.119.206.118:6000/rtp/226.0.2.208:9576$山西联通21
+#EXTINF:-1 tvg-name="CCTV3" group-title="📺 央视频道",CCTV3
+http://111.196.130.121:20000/rtp/239.3.1.172:8001$北京联通31
 #EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
 http://38.75.136.137:98/gslb/dsdqpub/cctv4k.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
@@ -415,119 +443,119 @@ http://207.56.13.146:81/cdnlive/cctv4.m3u8
 #EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
 http://173.208.212.130:8181/1080p/cctv4.m3u8
 #EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
-http://183.236.43.98:4013/udp/239.77.1.163:5146$广东电信11
-#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
-http://39.77.23.205:4002/rtp/239.253.254.111:8000$山东联通11
-#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
-http://124.112.241.143:4022/rtp/238.1.78.236:7760$安徽电信11
-#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
-http://1.192.242.239:8188/rtp/239.16.20.4:10040$河南电信11
-#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
-http://171.119.206.69:6000/rtp/226.0.2.156:9160$山西联通11
-#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
-http://115.171.216.32:4000/rtp/225.1.8.4:8092$北京电信11
-#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
-http://118.248.155.220:8889/udp/239.76.253.95:9000$湖南电信12
-#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
-http://171.119.206.118:6000/rtp/226.0.2.156:9160$山西联通21
-#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
-http://171.8.138.13:8800/rtp/239.16.20.4:10040$河南电信21
-#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
-http://111.196.130.121:20000/rtp/239.3.1.105:8092$北京联通31
+http://183.11.239.36:808/hls/22/index.m3u8
 #EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
 http://173.208.212.130:8181/1080p/cctv4.m3u8$LR•9•IPV4『线路8』
 #EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
-http://183.11.239.36:808/hls/22/index.m3u8
-#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
 http://113.25.252.226:9901/tsfile/live/1008_1.m3u8?key=txiptv&playlive=1&authid=0
+#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
+http://my1nas.dpdns.org:1234/631780421
+#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
+http://www.20260809.xyz:1234/631780421
+#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
+https://tv.zhuhongxuan.cn/631780421
+#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
+http://njdm.i234.me:1234/631780421
 #EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
 http://bztv.tvbus.cc:8081/cdnlive/cctv4.m3u8
 #EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
 http://120.76.248.139/live/bfgd/4200000063.m3u8
+#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
+http://39.77.23.205:4002/rtp/239.253.254.111:8000$山东联通11
+#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
+http://183.236.43.98:4013/udp/239.77.1.163:5146$广东电信11
+#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
+http://115.171.216.32:4000/rtp/225.1.8.4:8092$北京电信11
+#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
+http://171.119.206.69:6000/rtp/226.0.2.156:9160$山西联通11
+#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
+http://1.192.242.239:8188/rtp/239.16.20.4:10040$河南电信11
+#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
+http://124.112.241.143:4022/rtp/238.1.78.236:7760$安徽电信11
+#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
+http://171.119.206.118:6000/rtp/226.0.2.156:9160$山西联通21
+#EXTINF:-1 tvg-name="CCTV4" group-title="📺 央视频道",CCTV4
+http://111.196.130.121:20000/rtp/239.3.1.105:8092$北京联通31
+#EXTINF:-1 tvg-name="CCTV4欧洲" group-title="📺 央视频道",CCTV4欧洲
+http://my1nas.dpdns.org:1234/608807419
+#EXTINF:-1 tvg-name="CCTV4欧洲" group-title="📺 央视频道",CCTV4欧洲
+http://www.20260809.xyz:1234/608807419
+#EXTINF:-1 tvg-name="CCTV4欧洲" group-title="📺 央视频道",CCTV4欧洲
+https://tv.zhuhongxuan.cn/608807419
+#EXTINF:-1 tvg-name="CCTV4欧洲" group-title="📺 央视频道",CCTV4欧洲
+http://njdm.i234.me:1234/608807419
 #EXTINF:-1 tvg-name="CCTV4欧洲" group-title="📺 央视频道",CCTV4欧洲
 http://39.77.23.205:4002/rtp/239.253.254.186:8000$山东联通11
 #EXTINF:-1 tvg-name="CCTV4欧洲" group-title="📺 央视频道",CCTV4欧洲
 http://106.59.2.196:55555/rtp/239.200.201.180:4220$云南电信11
-#EXTINF:-1 tvg-name="CCTV4欧洲" group-title="📺 央视频道",CCTV4欧洲
-http://111.196.130.121:20000/rtp/239.3.1.213:4220$北京联通31
+#EXTINF:-1 tvg-name="CCTV4美洲" group-title="📺 央视频道",CCTV4美洲
+http://my1nas.dpdns.org:1234/608807416
+#EXTINF:-1 tvg-name="CCTV4美洲" group-title="📺 央视频道",CCTV4美洲
+http://www.20260809.xyz:1234/608807416
+#EXTINF:-1 tvg-name="CCTV4美洲" group-title="📺 央视频道",CCTV4美洲
+https://tv.zhuhongxuan.cn/608807416
+#EXTINF:-1 tvg-name="CCTV4美洲" group-title="📺 央视频道",CCTV4美洲
+http://njdm.i234.me:1234/608807416
 #EXTINF:-1 tvg-name="CCTV4美洲" group-title="📺 央视频道",CCTV4美洲
 http://39.77.23.205:4002/rtp/239.253.254.187:8000$山东联通11
-#EXTINF:-1 tvg-name="CCTV4美洲" group-title="📺 央视频道",CCTV4美洲
-http://106.59.2.196:55555/rtp/239.200.201.181:4220$云南电信11
-#EXTINF:-1 tvg-name="CCTV4美洲" group-title="📺 央视频道",CCTV4美洲
-http://111.196.130.121:20000/rtp/239.3.1.214:4220$北京联通31
 #EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
 http://207.56.13.146:81/cdnlive/cctv5.m3u8
 #EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
 http://38.75.136.137:98/gslb/dsdqpub/cctv5p.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
-http://183.236.43.98:4013/udp/239.77.0.170:5146$广东电信11
-#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
-http://118.248.155.220:8889/udp/239.76.253.155:9000$湖南电信11
-#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
-http://39.77.23.205:4002/rtp/239.253.254.192:8000$山东联通11
-#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
-http://124.112.241.143:4022/rtp/238.1.78.171:7240$安徽电信11
-#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
-http://1.192.242.239:8188/rtp/239.16.20.53:10530$河南电信11
-#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
-http://171.119.206.69:6000/rtp/226.0.2.209:9584$山西联通11
-#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
-http://115.171.216.32:4000/rtp/225.1.8.89:8000$北京电信11
-#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
-http://118.248.155.220:8889/udp/239.76.246.155:1234$湖南电信13
-#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
-http://171.119.206.118:6000/rtp/226.0.2.209:9584$山西联通21
-#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
-http://171.8.138.13:8800/rtp/239.16.20.53:10530$河南电信21
-#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
-http://111.196.130.121:20000/rtp/239.3.1.173:8001$北京联通31
+http://183.11.239.36:808/hls/93/index.m3u8
 #EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
 http://38.75.136.137:98/gslb/dsdqpub/cctv5p.m3u8?auth=testpub$LR•15•IPV4『线路10』
 #EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
-http://183.11.239.36:808/hls/93/index.m3u8
+http://my1nas.dpdns.org:1234/641886683
+#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
+http://www.20260809.xyz:1234/641886683
+#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
+https://tv.zhuhongxuan.cn/641886683
+#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
+http://njdm.i234.me:1234/641886683
 #EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
 http://bztv.tvbus.cc:8081/cdnlive/cctv5.m3u8
 #EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
 http://173.208.212.130:8181/1080p/cctv5.m3u8
 #EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
 http://120.76.248.139/live/bfgd/4200000064.m3u8
+#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
+http://39.77.23.205:4002/rtp/239.253.254.192:8000$山东联通11
+#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
+http://183.236.43.98:4013/udp/239.77.0.170:5146$广东电信11
+#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
+http://115.171.216.32:4000/rtp/225.1.8.89:8000$北京电信11
+#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
+http://171.119.206.69:6000/rtp/226.0.2.209:9584$山西联通11
+#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
+http://1.192.242.239:8188/rtp/239.16.20.53:10530$河南电信11
+#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
+http://124.112.241.143:4022/rtp/238.1.78.171:7240$安徽电信11
+#EXTINF:-1 tvg-name="CCTV5" group-title="📺 央视频道",CCTV5
+http://171.119.206.118:6000/rtp/226.0.2.209:9584$山西联通21
 #EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
 http://38.75.136.137:98/gslb/dsdqbv/cctv5p.m3u8?auth=test20251009
 #EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
 http://120.76.248.139/live/bfgd/4200000246.m3u8
 #EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
-http://183.236.43.98:4013/udp/239.77.0.87:5146$广东电信11
-#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
-http://121.237.245.243:8888/rtp/239.49.8.18:9610$江苏电信11
-#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
-http://39.77.23.205:4002/rtp/239.253.254.80:8000$山东联通11
-#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
-http://124.112.241.143:4022/rtp/238.1.78.237:7768$安徽电信11
-#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
-http://1.192.242.239:8188/rtp/239.16.20.5:10050$河南电信11
-#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
-http://171.119.206.69:6000/rtp/226.0.2.168:9256$山西联通11
-#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
-http://115.171.216.32:4000/rtp/225.1.8.20:8004$北京电信11
-#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
-http://183.236.43.98:4013/udp/239.77.1.31:5146$广东电信12
-#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
-http://118.248.155.220:8889/udp/239.76.251.88:9000$湖南电信12
-#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
-http://171.119.206.118:6000/rtp/226.0.2.168:9256$山西联通21
-#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
-http://171.8.138.13:8800/rtp/239.16.20.5:10050$河南电信21
-#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
-http://111.196.130.121:20000/rtp/239.3.1.130:8004$北京联通31
+http://107.150.60.122/live/cctv5p.m3u8
 #EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
 http://120.76.248.139/live/bfgd/4200000246.m3u8$LR•12•IPV4『线路3』
 #EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
 http://38.75.136.137:98/gslb/dsdqbv/cctv5p.m3u8?auth=test20251009$LR•12•IPV4『线路5』
 #EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
-http://38.75.136.137:98/gslb/dsdqpub/cctv5p.m3u8?auth=testpub
+http://204.12.221.218:8181/3m1080p/cctv5p.m3u8
 #EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
-http://107.150.60.122/live/cctv5p.m3u8
+http://my1nas.dpdns.org:1234/641886773
+#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
+http://www.20260809.xyz:1234/641886773
+#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
+https://tv.zhuhongxuan.cn/641886773
+#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
+http://njdm.i234.me:1234/641886773
+#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
+http://38.75.136.137:98/gslb/dsdqpub/cctv5p.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
 http://192.151.150.154/live/cctv5p.m3u8
 #EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
@@ -537,71 +565,93 @@ http://bztv.tvbus.cc:8081/cdnlive/cctv5p.m3u8
 #EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
 http://173.208.212.130:8181/1080p/cctv5p.m3u8
 #EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
-http://204.12.221.218:8181/3m1080p/cctv5p.m3u8
+http://39.77.23.205:4002/rtp/239.253.254.80:8000$山东联通11
 #EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
-http://rihou.cc:555/tv/[mg]CCTV-5p
+http://183.236.43.98:4013/udp/239.77.0.87:5146$广东电信11
+#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
+http://115.171.216.32:4000/rtp/225.1.8.20:8004$北京电信11
+#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
+http://171.119.206.69:6000/rtp/226.0.2.168:9256$山西联通11
+#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
+http://1.192.242.239:8188/rtp/239.16.20.5:10050$河南电信11
+#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
+http://124.112.241.143:4022/rtp/238.1.78.237:7768$安徽电信11
+#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
+http://183.236.43.98:4013/udp/239.77.1.31:5146$广东电信12
+#EXTINF:-1 tvg-name="CCTV5+" group-title="📺 央视频道",CCTV5+
+http://171.119.206.118:6000/rtp/226.0.2.168:9256$山西联通21
 #EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
 http://69.30.245.50/live/cctv6.m3u8
 #EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
 http://198.204.240.250:82/live/cctv6.m3u8
 #EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
-http://183.236.43.98:4013/udp/239.77.0.171:5146$广东电信11
-#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
-http://39.77.23.205:4002/rtp/239.253.254.193:8000$山东联通11
-#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
-http://124.112.241.143:4022/rtp/238.1.78.172:7248$安徽电信11
-#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
-http://1.192.242.239:8188/rtp/239.16.20.6:10060$河南电信11
-#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
-http://171.119.206.69:6000/rtp/226.0.2.210:9592$山西联通11
-#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
-http://115.171.216.32:4000/rtp/225.1.8.84:8000$北京电信11
-#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
-http://118.248.155.220:8889/udp/239.76.246.156:1234$湖南电信12
-#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
-http://171.119.206.118:6000/rtp/226.0.2.210:9592$山西联通21
-#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
-http://171.8.138.13:8800/rtp/239.16.20.6:10060$河南电信21
-#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
-http://111.196.130.121:20000/rtp/239.3.1.174:8001$北京联通31
-#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
 http://183.11.239.36:808/hls/94/index.m3u8
 #EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
 http://173.208.212.130:8181/1080p/cctv6.m3u8
 #EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
+http://my1nas.dpdns.org:1234/624878396
+#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
+http://www.20260809.xyz:1234/624878396
+#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
+https://tv.zhuhongxuan.cn/624878396
+#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
+http://njdm.i234.me:1234/624878396
+#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
 http://bztv.tvbus.cc:8081/cdnlive/cctv6.m3u8
 #EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
 http://120.76.248.139/live/bfgd/4200000065.m3u8
+#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
+http://39.77.23.205:4002/rtp/239.253.254.193:8000$山东联通11
+#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
+http://183.236.43.98:4013/udp/239.77.0.171:5146$广东电信11
+#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
+http://115.171.216.32:4000/rtp/225.1.8.84:8000$北京电信11
+#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
+http://171.119.206.69:6000/rtp/226.0.2.210:9592$山西联通11
+#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
+http://1.192.242.239:8188/rtp/239.16.20.6:10060$河南电信11
+#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
+http://124.112.241.143:4022/rtp/238.1.78.172:7248$安徽电信11
+#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
+http://171.119.206.118:6000/rtp/226.0.2.210:9592$山西联通21
+#EXTINF:-1 tvg-name="CCTV6" group-title="📺 央视频道",CCTV6
+http://111.196.130.121:20000/rtp/239.3.1.174:8001$北京联通31
 #EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
 http://207.56.13.146:81/cdnlive/cctv7.m3u8
 #EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
 http://69.30.245.50/live/cctv7.m3u8
 #EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
-http://183.236.43.98:4013/udp/239.77.0.138:5146$广东电信11
-#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
-http://39.77.23.205:4002/rtp/239.253.254.233:8000$山东联通11
-#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
-http://124.112.241.143:4022/rtp/238.1.78.239:7784$安徽电信11
-#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
-http://1.192.242.239:8188/rtp/239.16.20.51:10510$河南电信11
-#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
-http://171.119.206.69:6000/rtp/226.0.2.159:9184$山西联通11
-#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
-http://115.171.216.32:4000/rtp/225.1.8.7:8104$北京电信11
-#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
-http://118.248.155.220:8889/udp/239.76.246.157:1234$湖南电信12
-#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
-http://171.119.206.118:6000/rtp/226.0.2.159:9184$山西联通21
-#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
-http://171.8.138.13:8800/rtp/239.16.20.51:10510$河南电信21
-#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
 http://183.11.239.36:808/hls/25/index.m3u8
+#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
+http://my1nas.dpdns.org:1234/673168121
+#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
+http://www.20260809.xyz:1234/673168121
+#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
+https://tv.zhuhongxuan.cn/673168121
+#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
+http://njdm.i234.me:1234/673168121
 #EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
 http://bztv.tvbus.cc:8081/cdnlive/cctv7.m3u8
 #EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
 http://173.208.212.130:8181/1080p/cctv7.m3u8
 #EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
 http://120.76.248.139/live/bfgd/4200000127.m3u8
+#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
+http://39.77.23.205:4002/rtp/239.253.254.233:8000$山东联通11
+#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
+http://183.236.43.98:4013/udp/239.77.0.138:5146$广东电信11
+#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
+http://115.171.216.32:4000/rtp/225.1.8.7:8104$北京电信11
+#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
+http://171.119.206.69:6000/rtp/226.0.2.159:9184$山西联通11
+#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
+http://1.192.242.239:8188/rtp/239.16.20.51:10510$河南电信11
+#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
+http://124.112.241.143:4022/rtp/238.1.78.239:7784$安徽电信11
+#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
+http://171.119.206.118:6000/rtp/226.0.2.159:9184$山西联通21
+#EXTINF:-1 tvg-name="CCTV7" group-title="📺 央视频道",CCTV7
+http://111.196.130.121:20000/rtp/239.3.1.61:8104$北京联通31
 #EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
 http://63.141.230.178:82/gslb/zbdq5.m3u8?id=cctv8k
 #EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
@@ -611,53 +661,37 @@ http://69.30.245.50/live/cctv8.m3u8
 #EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
 http://207.56.13.146:81/cdnlive/cctv8.m3u8
 #EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
-http://183.236.43.98:4013/udp/239.77.0.172:5146$广东电信11
-#EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
-http://39.77.23.205:4002/rtp/239.253.254.194:8000$山东联通11
-#EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
-http://124.112.241.143:4022/rtp/238.1.78.173:7256$安徽电信11
-#EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
-http://1.192.242.239:8188/rtp/239.16.20.8:10080$河南电信11
-#EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
-http://171.119.206.69:6000/rtp/226.0.2.211:9600$山西联通11
-#EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
-http://115.171.216.32:4000/rtp/225.1.8.85:8000$北京电信11
-#EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
-http://106.59.2.196:55555/udp/239.200.200.23:9028$云南电信11
-#EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
-http://171.119.206.118:6000/rtp/226.0.2.211:9600$山西联通21
-#EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
-http://171.8.138.13:8800/rtp/239.16.20.8:10080$河南电信21
+http://183.11.239.36:808/hls/96/index.m3u8
 #EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
 http://124.165.251.82:85/tsfile/live/0008_1.m3u8?key=txiptv&playlive=1&authid=0$LR•11•IPV4『线路2』
 #EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
 http://124.165.251.82:85/tsfile/live/0008_1.m3u8?key=txiptv&playlive=1&authid=0
 #EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
-http://183.11.239.36:808/hls/96/index.m3u8
+http://my1nas.dpdns.org:1234/624878356
+#EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
+http://www.20260809.xyz:1234/624878356
+#EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
+https://tv.zhuhongxuan.cn/624878356
+#EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
+http://njdm.i234.me:1234/624878356
 #EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
 http://173.208.212.130:8181/1080p/cctv8.m3u8
 #EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
 http://120.76.248.139/live/bfgd/4200000066.m3u8
-#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
-http://183.236.43.98:4013/udp/239.77.0.135:5146$广东电信11
-#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
-http://118.248.155.220:8889/udp/239.76.253.159:9000$湖南电信11
-#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
-http://39.77.23.205:4002/rtp/239.253.254.79:8000$山东联通11
-#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
-http://124.112.241.143:4022/rtp/238.1.78.240:7792$安徽电信11
-#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
-http://1.192.242.239:8188/rtp/239.16.20.9:10090$河南电信11
-#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
-http://171.119.206.69:6000/rtp/226.0.2.161:9200$山西联通11
-#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
-http://115.171.216.32:4000/rtp/225.1.8.9:8112$北京电信11
-#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
-http://106.59.2.196:55555/udp/239.200.200.106:8112$云南电信11
-#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
-http://171.119.206.118:6000/rtp/226.0.2.161:9200$山西联通21
-#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
-http://171.8.138.13:8800/rtp/239.16.20.9:10090$河南电信21
+#EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
+http://39.77.23.205:4002/rtp/239.253.254.194:8000$山东联通11
+#EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
+http://183.236.43.98:4013/udp/239.77.0.172:5146$广东电信11
+#EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
+http://115.171.216.32:4000/rtp/225.1.8.85:8000$北京电信11
+#EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
+http://171.119.206.69:6000/rtp/226.0.2.211:9600$山西联通11
+#EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
+http://1.192.242.239:8188/rtp/239.16.20.8:10080$河南电信11
+#EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
+http://124.112.241.143:4022/rtp/238.1.78.173:7256$安徽电信11
+#EXTINF:-1 tvg-name="CCTV8" group-title="📺 央视频道",CCTV8
+http://171.119.206.118:6000/rtp/226.0.2.211:9600$山西联通21
 #EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
 http://183.11.239.36:808/hls/27/index.m3u8
 #EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
@@ -667,55 +701,101 @@ https://xykt-fix.github.io/Y77.m3u8
 #EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
 http://113.25.252.226:9901/tsfile/live/1013_1.m3u8?key=txiptv&playlive=1&authid=0
 #EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
+http://my1nas.dpdns.org:1234/673168140
+#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
+http://www.20260809.xyz:1234/673168140
+#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
+https://tv.zhuhongxuan.cn/673168140
+#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
+http://njdm.i234.me:1234/673168140
+#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
 http://bztv.tvbus.cc:8081/cdnlive/cctv9.m3u8
 #EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
 http://173.208.212.130:8181/1080p/cctv9.m3u8
 #EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
 http://120.76.248.139/live/bfgd/4200000128.m3u8
+#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
+http://39.77.23.205:4002/rtp/239.253.254.79:8000$山东联通11
+#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
+http://121.237.245.243:8888/rtp/239.49.8.53:9814$江苏电信11
+#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
+http://183.236.43.98:4013/udp/239.77.0.135:5146$广东电信11
+#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
+http://115.171.216.32:4000/rtp/225.1.8.9:8112$北京电信11
+#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
+http://171.119.206.69:6000/rtp/226.0.2.161:9200$山西联通11
+#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
+http://1.192.242.239:8188/rtp/239.16.20.9:10090$河南电信11
+#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
+http://124.112.241.143:4022/rtp/238.1.78.240:7792$安徽电信11
+#EXTINF:-1 tvg-name="CCTV9" group-title="📺 央视频道",CCTV9
+http://171.119.206.118:6000/rtp/226.0.2.161:9200$山西联通21
+#EXTINF:-1 tvg-name="CCTV发现之旅" group-title="📺 央视频道",CCTV发现之旅
+http://my1nas.dpdns.org:1234/624878970
+#EXTINF:-1 tvg-name="CCTV发现之旅" group-title="📺 央视频道",CCTV发现之旅
+http://www.20260809.xyz:1234/624878970
+#EXTINF:-1 tvg-name="CCTV发现之旅" group-title="📺 央视频道",CCTV发现之旅
+https://tv.zhuhongxuan.cn/624878970
+#EXTINF:-1 tvg-name="CCTV发现之旅" group-title="📺 央视频道",CCTV发现之旅
+http://njdm.i234.me:1234/624878970
 #EXTINF:-1 tvg-name="CCTV老故事" group-title="📺 央视频道",CCTV老故事
 http://183.11.239.36:808/hls/26/index.m3u8
+#EXTINF:-1 tvg-name="CCTV老故事" group-title="📺 央视频道",CCTV老故事
+http://my1nas.dpdns.org:1234/884121956
+#EXTINF:-1 tvg-name="CCTV老故事" group-title="📺 央视频道",CCTV老故事
+http://www.20260809.xyz:1234/884121956
+#EXTINF:-1 tvg-name="CCTV老故事" group-title="📺 央视频道",CCTV老故事
+https://tv.zhuhongxuan.cn/884121956
+#EXTINF:-1 tvg-name="CCTV老故事" group-title="📺 央视频道",CCTV老故事
+http://njdm.i234.me:1234/884121956
 #EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
 http://120.76.248.139/live/bfgd/4200000135.m3u8
 #EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
-http://183.236.43.98:4013/udp/239.77.1.222:5146$广东电信11
-#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
-http://39.77.23.205:4002/rtp/239.253.254.110:8000$山东联通11
-#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
-http://124.112.241.143:4022/rtp/238.1.78.158:7136$安徽电信11
-#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
-http://1.192.242.239:8188/rtp/239.16.20.78:10780$河南电信11
-#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
-http://171.119.206.69:6000/rtp/226.0.2.181:9360$山西联通11
-#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
-http://115.171.216.32:4000/udp/225.1.8.32:8152$北京电信11
-#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
-http://106.59.2.196:55555/udp/239.200.201.49:8756$云南电信11
-#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
-http://118.248.155.220:8889/udp/239.76.245.192:1234$湖南电信12
-#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
-http://171.119.206.118:6000/rtp/226.0.2.181:9360$山西联通21
-#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
-http://171.8.138.13:8800/rtp/239.16.20.78:10780$河南电信21
-#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
-http://111.196.130.121:20000/rtp/239.3.1.57:8152$北京联通31
+http://183.11.239.36:808/hls/122/index.m3u8
 #EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
 http://120.76.248.139/live/bfgd/4200000135.m3u8$LR•5•IPV4『线路4』
 #EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
-http://183.11.239.36:808/hls/122/index.m3u8
+http://my1nas.dpdns.org:1234/923287154
+#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
+http://www.20260809.xyz:1234/923287154
+#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
+https://tv.zhuhongxuan.cn/923287154
+#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
+http://njdm.i234.me:1234/923287154
 #EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
 http://by4.nty.tv189.cn/live/tm-yszgjy1-4000k.m3u8
-#EXTINF:-1 tvg-name="CETV2" group-title="📺 央视频道",CETV2
-http://115.171.216.32:4000/rtp/225.1.8.193:4120$北京电信11
-#EXTINF:-1 tvg-name="CETV2" group-title="📺 央视频道",CETV2
-http://111.196.130.121:20000/rtp/239.3.1.54:4120$北京联通31
+#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
+http://39.77.23.205:4002/rtp/239.253.254.110:8000$山东联通11
+#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
+http://115.171.216.32:4000/udp/225.1.8.32:8152$北京电信11
+#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
+http://171.119.206.69:6000/rtp/226.0.2.181:9360$山西联通11
+#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
+http://1.192.242.239:8188/rtp/239.16.20.78:10780$河南电信11
+#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
+http://124.112.241.143:4022/rtp/238.1.78.158:7136$安徽电信11
+#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
+http://171.119.206.118:6000/rtp/226.0.2.181:9360$山西联通21
+#EXTINF:-1 tvg-name="CETV1" group-title="📺 央视频道",CETV1
+http://111.196.130.121:20000/rtp/239.3.1.57:8152$北京联通31
 #EXTINF:-1 tvg-name="CETV2" group-title="📺 央视频道",CETV2
 http://183.11.239.36:808/hls/78/index.m3u8
+#EXTINF:-1 tvg-name="CETV2" group-title="📺 央视频道",CETV2
+http://my1nas.dpdns.org:1234/923287211
+#EXTINF:-1 tvg-name="CETV2" group-title="📺 央视频道",CETV2
+http://www.20260809.xyz:1234/923287211
+#EXTINF:-1 tvg-name="CETV2" group-title="📺 央视频道",CETV2
+https://tv.zhuhongxuan.cn/923287211
+#EXTINF:-1 tvg-name="CETV2" group-title="📺 央视频道",CETV2
+http://njdm.i234.me:1234/923287211
 #EXTINF:-1 tvg-name="CETV2" group-title="📺 央视频道",CETV2
 http://38.75.136.137:98/gslb/dsdqpub/cetv2.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="CETV2" group-title="📺 央视频道",CETV2
 http://by4.nty.tv189.cn/live/tm-yszgjy2-4000k.m3u8
 #EXTINF:-1 tvg-name="CETV2" group-title="📺 央视频道",CETV2
 http://120.76.248.139/live/bfgd/4200000492.m3u8
+#EXTINF:-1 tvg-name="CETV2" group-title="📺 央视频道",CETV2
+http://115.171.216.32:4000/rtp/225.1.8.193:4120$北京电信11
 #EXTINF:-1 tvg-name="CETV3" group-title="📺 央视频道",CETV3
 http://107.150.60.122/live/cetv3.m3u8
 #EXTINF:-1 tvg-name="CETV3" group-title="📺 央视频道",CETV3
@@ -725,33 +805,29 @@ http://38.75.136.137:98/gslb/dsdqpub/cetv3.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="CETV3" group-title="📺 央视频道",CETV3
 http://192.151.150.154/live/cetv3.m3u8
 #EXTINF:-1 tvg-name="CETV4" group-title="📺 央视频道",CETV4
-http://183.236.43.98:4013/udp/239.253.43.40:5146$广东电信11
-#EXTINF:-1 tvg-name="CETV4" group-title="📺 央视频道",CETV4
-http://118.248.155.220:8889/udp/239.76.252.254:9000$湖南电信11
-#EXTINF:-1 tvg-name="CETV4" group-title="📺 央视频道",CETV4
-http://39.77.23.205:4002/rtp/239.253.254.116:8000$山东联通11
-#EXTINF:-1 tvg-name="CETV4" group-title="📺 央视频道",CETV4
-http://115.171.216.32:4000/rtp/225.1.8.195:4120$北京电信11
-#EXTINF:-1 tvg-name="CETV4" group-title="📺 央视频道",CETV4
-http://111.196.130.121:20000/rtp/239.3.1.56:4120$北京联通31
-#EXTINF:-1 tvg-name="CETV4" group-title="📺 央视频道",CETV4
 http://183.11.239.36:808/hls/79/index.m3u8
+#EXTINF:-1 tvg-name="CETV4" group-title="📺 央视频道",CETV4
+http://my1nas.dpdns.org:1234/923287339
+#EXTINF:-1 tvg-name="CETV4" group-title="📺 央视频道",CETV4
+http://www.20260809.xyz:1234/923287339
+#EXTINF:-1 tvg-name="CETV4" group-title="📺 央视频道",CETV4
+https://tv.zhuhongxuan.cn/923287339
+#EXTINF:-1 tvg-name="CETV4" group-title="📺 央视频道",CETV4
+http://njdm.i234.me:1234/923287339
 #EXTINF:-1 tvg-name="CETV4" group-title="📺 央视频道",CETV4
 http://38.75.136.137:98/gslb/dsdqpub/cetv4.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="CETV4" group-title="📺 央视频道",CETV4
 http://by4.nty.tv189.cn/live/tm-yszgjy4-4000k.m3u8
+#EXTINF:-1 tvg-name="CETV4" group-title="📺 央视频道",CETV4
+http://39.77.23.205:4002/rtp/239.253.254.116:8000$山东联通11
+#EXTINF:-1 tvg-name="CETV4" group-title="📺 央视频道",CETV4
+http://183.236.43.98:4013/udp/239.253.43.40:5146$广东电信11
+#EXTINF:-1 tvg-name="CETV4" group-title="📺 央视频道",CETV4
+http://115.171.216.32:4000/rtp/225.1.8.195:4120$北京电信11
 #EXTINF:-1 tvg-name="世界地理" group-title="📺 央视频道",世界地理
 http://63.141.230.178:82/gslb/zbdq5.m3u8?id=sjdl
 #EXTINF:-1 tvg-name="世界地理" group-title="📺 央视频道",世界地理
 http://38.75.136.137:98/gslb/dsdqpub/sjdl.m3u8?auth=testpub
-#EXTINF:-1 tvg-name="世界地理" group-title="📺 央视频道",世界地理
-http://183.236.43.98:4013/udp/239.253.43.7:5146$广东电信11
-#EXTINF:-1 tvg-name="世界地理" group-title="📺 央视频道",世界地理
-http://124.112.241.143:4022/rtp/238.1.79.60:4616$安徽电信11
-#EXTINF:-1 tvg-name="世界地理" group-title="📺 央视频道",世界地理
-http://171.119.206.69:6000/rtp/226.0.2.222:9688$山西联通11
-#EXTINF:-1 tvg-name="世界地理" group-title="📺 央视频道",世界地理
-http://171.119.206.118:6000/rtp/226.0.2.222:9688$山西联通21
 #EXTINF:-1 tvg-name="世界地理" group-title="📺 央视频道",世界地理
 http://183.11.239.36:808/hls/11/index.m3u8
 #EXTINF:-1 tvg-name="世界地理" group-title="📺 央视频道",世界地理
@@ -764,6 +840,12 @@ http://192.151.150.154/live/sjdl.m3u8
 http://198.204.228.26/live/sjdl.m3u8
 #EXTINF:-1 tvg-name="世界地理" group-title="📺 央视频道",世界地理
 http://bztv.tvbus.cc:8081/cdnlive/sjdl.m3u8
+#EXTINF:-1 tvg-name="世界地理" group-title="📺 央视频道",世界地理
+http://171.119.206.69:6000/rtp/226.0.2.222:9688$山西联通11
+#EXTINF:-1 tvg-name="世界地理" group-title="📺 央视频道",世界地理
+http://124.112.241.143:4022/rtp/238.1.79.60:4616$安徽电信11
+#EXTINF:-1 tvg-name="世界地理" group-title="📺 央视频道",世界地理
+http://171.119.206.118:6000/rtp/226.0.2.222:9688$山西联通21
 #EXTINF:-1 tvg-name="兵器科技" group-title="📺 央视频道",兵器科技
 https://live.264788.xyz/channel/bingqikeji?streamid=530cb4e58bbc48b7fc26f5e0a2e47966&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk
 #EXTINF:-1 tvg-name="兵器科技" group-title="📺 央视频道",兵器科技
@@ -775,16 +857,6 @@ http://207.56.13.146:81/cdnlive/gfjs.m3u8
 #EXTINF:-1 tvg-name="兵器科技" group-title="📺 央视频道",兵器科技
 http://63.141.230.178:82/gslb/zbdq5.m3u8?id=gfjs
 #EXTINF:-1 tvg-name="兵器科技" group-title="📺 央视频道",兵器科技
-http://183.236.43.98:4013/udp/239.253.43.9:5146$广东电信11
-#EXTINF:-1 tvg-name="兵器科技" group-title="📺 央视频道",兵器科技
-http://118.248.155.220:8889/udp/239.76.254.59:9000$湖南电信11
-#EXTINF:-1 tvg-name="兵器科技" group-title="📺 央视频道",兵器科技
-http://124.112.241.143:4022/rtp/238.1.79.56:4584$安徽电信11
-#EXTINF:-1 tvg-name="兵器科技" group-title="📺 央视频道",兵器科技
-http://171.119.206.69:6000/rtp/226.0.2.223:9696$山西联通11
-#EXTINF:-1 tvg-name="兵器科技" group-title="📺 央视频道",兵器科技
-http://171.119.206.118:6000/rtp/226.0.2.223:9696$山西联通21
-#EXTINF:-1 tvg-name="兵器科技" group-title="📺 央视频道",兵器科技
 http://183.11.239.36:808/hls/21/index.m3u8
 #EXTINF:-1 tvg-name="兵器科技" group-title="📺 央视频道",兵器科技
 http://107.150.60.122/live/gfjs.m3u8
@@ -794,6 +866,14 @@ http://192.151.150.154/live/gfjs.m3u8
 http://198.204.228.26/live/gfjs.m3u8
 #EXTINF:-1 tvg-name="兵器科技" group-title="📺 央视频道",兵器科技
 http://bztv.tvbus.cc:8081/cdnlive/gfjs.m3u8
+#EXTINF:-1 tvg-name="兵器科技" group-title="📺 央视频道",兵器科技
+http://183.236.43.98:4013/udp/239.253.43.9:5146$广东电信11
+#EXTINF:-1 tvg-name="兵器科技" group-title="📺 央视频道",兵器科技
+http://171.119.206.69:6000/rtp/226.0.2.223:9696$山西联通11
+#EXTINF:-1 tvg-name="兵器科技" group-title="📺 央视频道",兵器科技
+http://124.112.241.143:4022/rtp/238.1.79.56:4584$安徽电信11
+#EXTINF:-1 tvg-name="兵器科技" group-title="📺 央视频道",兵器科技
+http://171.119.206.118:6000/rtp/226.0.2.223:9696$山西联通21
 #EXTINF:-1 tvg-name="卫生健康" group-title="📺 央视频道",卫生健康
 http://107.150.60.122/live/wsjk.m3u8
 #EXTINF:-1 tvg-name="卫生健康" group-title="📺 央视频道",卫生健康
@@ -811,14 +891,6 @@ http://38.75.136.137:98/gslb/dsdqpub/ystq.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="央视台球" group-title="📺 央视频道",央视台球
 http://207.56.13.146:81/cdnlive/ystq.m3u8
 #EXTINF:-1 tvg-name="央视台球" group-title="📺 央视频道",央视台球
-http://183.236.43.98:4013/udp/239.253.43.11:5146$广东电信11
-#EXTINF:-1 tvg-name="央视台球" group-title="📺 央视频道",央视台球
-http://124.112.241.143:4022/rtp/238.1.79.59:4608$安徽电信11
-#EXTINF:-1 tvg-name="央视台球" group-title="📺 央视频道",央视台球
-http://171.119.206.69:6000/rtp/226.0.2.216:9640$山西联通11
-#EXTINF:-1 tvg-name="央视台球" group-title="📺 央视频道",央视台球
-http://171.119.206.118:6000/rtp/226.0.2.216:9640$山西联通21
-#EXTINF:-1 tvg-name="央视台球" group-title="📺 央视频道",央视台球
 http://183.11.239.36:808/hls/73/index.m3u8
 #EXTINF:-1 tvg-name="央视台球" group-title="📺 央视频道",央视台球
 http://192.151.150.154/live/ystq.m3u8
@@ -826,14 +898,14 @@ http://192.151.150.154/live/ystq.m3u8
 http://198.204.228.26/live/ystq.m3u8
 #EXTINF:-1 tvg-name="央视台球" group-title="📺 央视频道",央视台球
 http://bztv.tvbus.cc:8081/cdnlive/ystq.m3u8
-#EXTINF:-1 tvg-name="央视文化精品" group-title="📺 央视频道",央视文化精品
-http://183.236.43.98:4013/udp/239.253.43.13:5146$广东电信11
-#EXTINF:-1 tvg-name="央视文化精品" group-title="📺 央视频道",央视文化精品
-http://124.112.241.143:4022/rtp/238.1.79.54:4568$安徽电信11
-#EXTINF:-1 tvg-name="央视文化精品" group-title="📺 央视频道",央视文化精品
-http://171.119.206.69:6000/rtp/226.0.2.219:9664$山西联通11
-#EXTINF:-1 tvg-name="央视文化精品" group-title="📺 央视频道",央视文化精品
-http://171.119.206.118:6000/rtp/226.0.2.219:9664$山西联通21
+#EXTINF:-1 tvg-name="央视台球" group-title="📺 央视频道",央视台球
+http://183.236.43.98:4013/udp/239.253.43.11:5146$广东电信11
+#EXTINF:-1 tvg-name="央视台球" group-title="📺 央视频道",央视台球
+http://171.119.206.69:6000/rtp/226.0.2.216:9640$山西联通11
+#EXTINF:-1 tvg-name="央视台球" group-title="📺 央视频道",央视台球
+http://124.112.241.143:4022/rtp/238.1.79.59:4608$安徽电信11
+#EXTINF:-1 tvg-name="央视台球" group-title="📺 央视频道",央视台球
+http://171.119.206.118:6000/rtp/226.0.2.216:9640$山西联通21
 #EXTINF:-1 tvg-name="央视文化精品" group-title="📺 央视频道",央视文化精品
 http://183.11.239.36:808/hls/97/index.m3u8
 #EXTINF:-1 tvg-name="央视文化精品" group-title="📺 央视频道",央视文化精品
@@ -844,16 +916,20 @@ http://192.151.150.154/live/ysjp.m3u8
 http://198.204.228.26/live/ysjp.m3u8
 #EXTINF:-1 tvg-name="央视文化精品" group-title="📺 央视频道",央视文化精品
 http://bztv.tvbus.cc:8081/cdnlive/ysjp.m3u8
+#EXTINF:-1 tvg-name="央视文化精品" group-title="📺 央视频道",央视文化精品
+http://183.236.43.98:4013/udp/239.253.43.13:5146$广东电信11
+#EXTINF:-1 tvg-name="央视文化精品" group-title="📺 央视频道",央视文化精品
+http://171.119.206.69:6000/rtp/226.0.2.219:9664$山西联通11
+#EXTINF:-1 tvg-name="央视文化精品" group-title="📺 央视频道",央视文化精品
+http://124.112.241.143:4022/rtp/238.1.79.54:4568$安徽电信11
+#EXTINF:-1 tvg-name="央视文化精品" group-title="📺 央视频道",央视文化精品
+http://171.119.206.118:6000/rtp/226.0.2.219:9664$山西联通21
 #EXTINF:-1 tvg-name="女性时尚" group-title="📺 央视频道",女性时尚
 http://38.75.136.137:98/gslb/dsdqpub/nxss.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="女性时尚" group-title="📺 央视频道",女性时尚
 http://63.141.230.178:82/gslb/zbdq5.m3u8?id=nxss
 #EXTINF:-1 tvg-name="女性时尚" group-title="📺 央视频道",女性时尚
 http://207.56.13.146:81/cdnlive/nxss.m3u8
-#EXTINF:-1 tvg-name="女性时尚" group-title="📺 央视频道",女性时尚
-http://183.236.43.98:4013/udp/239.253.43.8:5146$广东电信11
-#EXTINF:-1 tvg-name="女性时尚" group-title="📺 央视频道",女性时尚
-http://124.112.241.143:4022/rtp/238.1.79.55:4576$安徽电信11
 #EXTINF:-1 tvg-name="女性时尚" group-title="📺 央视频道",女性时尚
 http://183.11.239.36:808/hls/12/index.m3u8
 #EXTINF:-1 tvg-name="女性时尚" group-title="📺 央视频道",女性时尚
@@ -864,22 +940,14 @@ http://192.151.150.154/live/nxss.m3u8
 http://198.204.228.26/live/nxss.m3u8
 #EXTINF:-1 tvg-name="女性时尚" group-title="📺 央视频道",女性时尚
 http://bztv.tvbus.cc:8081/cdnlive/nxss.m3u8
+#EXTINF:-1 tvg-name="女性时尚" group-title="📺 央视频道",女性时尚
+http://124.112.241.143:4022/rtp/238.1.79.55:4576$安徽电信11
 #EXTINF:-1 tvg-name="怀旧剧场" group-title="📺 央视频道",怀旧剧场
 http://63.141.230.178:82/gslb/zbdq5.m3u8?id=hjjc
 #EXTINF:-1 tvg-name="怀旧剧场" group-title="📺 央视频道",怀旧剧场
 https://live.264788.xyz/channel/huaijiujuchang?streamid=7e5d1abdddde08f588234f3f640f75ff&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk
 #EXTINF:-1 tvg-name="怀旧剧场" group-title="📺 央视频道",怀旧剧场
 http://38.75.136.137:98/gslb/dsdqpub/hjjc.m3u8?auth=testpub
-#EXTINF:-1 tvg-name="怀旧剧场" group-title="📺 央视频道",怀旧剧场
-http://183.236.43.98:4013/udp/239.253.43.5:5146$广东电信11
-#EXTINF:-1 tvg-name="怀旧剧场" group-title="📺 央视频道",怀旧剧场
-http://118.248.155.220:8889/udp/239.76.254.53:9000$湖南电信11
-#EXTINF:-1 tvg-name="怀旧剧场" group-title="📺 央视频道",怀旧剧场
-http://124.112.241.143:4022/rtp/238.1.79.61:4624$安徽电信11
-#EXTINF:-1 tvg-name="怀旧剧场" group-title="📺 央视频道",怀旧剧场
-http://171.119.206.69:6000/rtp/226.0.2.224:9704$山西联通11
-#EXTINF:-1 tvg-name="怀旧剧场" group-title="📺 央视频道",怀旧剧场
-http://171.119.206.118:6000/rtp/226.0.2.224:9704$山西联通21
 #EXTINF:-1 tvg-name="怀旧剧场" group-title="📺 央视频道",怀旧剧场
 http://183.11.239.36:808/hls/92/index.m3u8
 #EXTINF:-1 tvg-name="怀旧剧场" group-title="📺 央视频道",怀旧剧场
@@ -890,24 +958,24 @@ http://192.151.150.154/live/hjjc.m3u8
 http://198.204.228.26/live/hjjc.m3u8
 #EXTINF:-1 tvg-name="怀旧剧场" group-title="📺 央视频道",怀旧剧场
 http://bztv.tvbus.cc:8081/cdnlive/hjjc.m3u8
+#EXTINF:-1 tvg-name="怀旧剧场" group-title="📺 央视频道",怀旧剧场
+http://183.236.43.98:4013/udp/239.253.43.5:5146$广东电信11
+#EXTINF:-1 tvg-name="怀旧剧场" group-title="📺 央视频道",怀旧剧场
+http://171.119.206.69:6000/rtp/226.0.2.224:9704$山西联通11
+#EXTINF:-1 tvg-name="怀旧剧场" group-title="📺 央视频道",怀旧剧场
+http://124.112.241.143:4022/rtp/238.1.79.61:4624$安徽电信11
+#EXTINF:-1 tvg-name="怀旧剧场" group-title="📺 央视频道",怀旧剧场
+http://171.119.206.118:6000/rtp/226.0.2.224:9704$山西联通21
+#EXTINF:-1 tvg-name="早期教育" group-title="📺 央视频道",早期教育
+http://38.75.136.137:98/gslb/dsdqpub/zqjy.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="早期教育" group-title="📺 央视频道",早期教育
 http://183.236.43.98:4013/udp/239.77.0.180:5146$广东电信11
 #EXTINF:-1 tvg-name="早期教育" group-title="📺 央视频道",早期教育
 http://171.119.206.69:6000/rtp/226.0.2.99:8704$山西联通11
 #EXTINF:-1 tvg-name="早期教育" group-title="📺 央视频道",早期教育
 http://171.119.206.118:6000/rtp/226.0.2.99:8704$山西联通21
-#EXTINF:-1 tvg-name="早期教育" group-title="📺 央视频道",早期教育
-http://38.75.136.137:98/gslb/dsdqpub/zqjy.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="电视指南" group-title="📺 央视频道",电视指南
 http://63.141.230.178:82/gslb/zbdq5.m3u8?id=dszn
-#EXTINF:-1 tvg-name="电视指南" group-title="📺 央视频道",电视指南
-http://183.236.43.98:4013/udp/239.253.43.10:5146$广东电信11
-#EXTINF:-1 tvg-name="电视指南" group-title="📺 央视频道",电视指南
-http://124.112.241.143:4022/rtp/238.1.79.53:4560$安徽电信11
-#EXTINF:-1 tvg-name="电视指南" group-title="📺 央视频道",电视指南
-http://171.119.206.69:6000/rtp/226.0.2.218:9656$山西联通11
-#EXTINF:-1 tvg-name="电视指南" group-title="📺 央视频道",电视指南
-http://171.119.206.118:6000/rtp/226.0.2.218:9656$山西联通21
 #EXTINF:-1 tvg-name="电视指南" group-title="📺 央视频道",电视指南
 http://183.11.239.36:808/hls/13/index.m3u8
 #EXTINF:-1 tvg-name="电视指南" group-title="📺 央视频道",电视指南
@@ -920,20 +988,22 @@ http://192.151.150.154/live/dszn.m3u8
 http://198.204.228.26/live/dszn.m3u8
 #EXTINF:-1 tvg-name="电视指南" group-title="📺 央视频道",电视指南
 http://bztv.tvbus.cc:8081/cdnlive/dszn.m3u8
+#EXTINF:-1 tvg-name="电视指南" group-title="📺 央视频道",电视指南
+http://171.119.206.69:6000/rtp/226.0.2.218:9656$山西联通11
+#EXTINF:-1 tvg-name="电视指南" group-title="📺 央视频道",电视指南
+http://124.112.241.143:4022/rtp/238.1.79.53:4560$安徽电信11
+#EXTINF:-1 tvg-name="电视指南" group-title="📺 央视频道",电视指南
+http://171.119.206.118:6000/rtp/226.0.2.218:9656$山西联通21
 #EXTINF:-1 tvg-name="第一剧场" group-title="📺 央视频道",第一剧场
 https://live.264788.xyz/channel/diyijuchang?streamid=e9b0fb1ca135a4aeae12944494883794&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk
 #EXTINF:-1 tvg-name="第一剧场" group-title="📺 央视频道",第一剧场
 https://live.264788.xyz/channel/diyijuchang?streamid=d81e188b59ece96b7e8f1ce34aea3ef8&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk
 #EXTINF:-1 tvg-name="第一剧场" group-title="📺 央视频道",第一剧场
+http://107.150.60.122/live/dyjc.m3u8
+#EXTINF:-1 tvg-name="第一剧场" group-title="📺 央视频道",第一剧场
 http://63.141.230.178:82/gslb/zbdq5.m3u8?id=dyjc
 #EXTINF:-1 tvg-name="第一剧场" group-title="📺 央视频道",第一剧场
 http://38.75.136.137:98/gslb/dsdqpub/dyjc.m3u8?auth=testpub
-#EXTINF:-1 tvg-name="第一剧场" group-title="📺 央视频道",第一剧场
-http://183.236.43.98:4013/udp/239.253.43.15:5146$广东电信11
-#EXTINF:-1 tvg-name="第一剧场" group-title="📺 央视频道",第一剧场
-http://171.119.206.69:6000/rtp/226.0.2.221:9680$山西联通11
-#EXTINF:-1 tvg-name="第一剧场" group-title="📺 央视频道",第一剧场
-http://171.119.206.118:6000/rtp/226.0.2.221:9680$山西联通21
 #EXTINF:-1 tvg-name="第一剧场" group-title="📺 央视频道",第一剧场
 http://183.11.239.36:808/hls/98/index.m3u8
 #EXTINF:-1 tvg-name="第一剧场" group-title="📺 央视频道",第一剧场
@@ -942,20 +1012,20 @@ http://192.151.150.154/live/dyjc.m3u8
 http://198.204.228.26/live/dyjc.m3u8
 #EXTINF:-1 tvg-name="第一剧场" group-title="📺 央视频道",第一剧场
 http://bztv.tvbus.cc:8081/cdnlive/dyjc.m3u8
+#EXTINF:-1 tvg-name="第一剧场" group-title="📺 央视频道",第一剧场
+http://183.236.43.98:4013/udp/239.253.43.15:5146$广东电信11
+#EXTINF:-1 tvg-name="第一剧场" group-title="📺 央视频道",第一剧场
+http://171.119.206.69:6000/rtp/226.0.2.221:9680$山西联通11
+#EXTINF:-1 tvg-name="第一剧场" group-title="📺 央视频道",第一剧场
+http://124.112.241.143:4022/rtp/238.1.79.63:4640$安徽电信11
+#EXTINF:-1 tvg-name="第一剧场" group-title="📺 央视频道",第一剧场
+http://171.119.206.118:6000/rtp/226.0.2.221:9680$山西联通21
 #EXTINF:-1 tvg-name="风云剧场" group-title="📺 央视频道",风云剧场
 https://live.264788.xyz/channel/fengyunjuchang?streamid=31e7b5b7032d25dd215a4069cdee1a48&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk
 #EXTINF:-1 tvg-name="风云剧场" group-title="📺 央视频道",风云剧场
 http://38.75.136.137:98/gslb/dsdqpub/fyjc.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="风云剧场" group-title="📺 央视频道",风云剧场
 http://63.141.230.178:82/gslb/zbdq5.m3u8?id=fyjc
-#EXTINF:-1 tvg-name="风云剧场" group-title="📺 央视频道",风云剧场
-http://183.236.43.98:4013/udp/239.253.43.16:5146$广东电信11
-#EXTINF:-1 tvg-name="风云剧场" group-title="📺 央视频道",风云剧场
-http://124.112.241.143:4022/rtp/238.1.79.62:4632$安徽电信11
-#EXTINF:-1 tvg-name="风云剧场" group-title="📺 央视频道",风云剧场
-http://171.119.206.69:6000/rtp/226.0.2.227:9728$山西联通11
-#EXTINF:-1 tvg-name="风云剧场" group-title="📺 央视频道",风云剧场
-http://171.119.206.118:6000/rtp/226.0.2.227:9728$山西联通21
 #EXTINF:-1 tvg-name="风云剧场" group-title="📺 央视频道",风云剧场
 http://183.11.239.36:808/hls/95/index.m3u8
 #EXTINF:-1 tvg-name="风云剧场" group-title="📺 央视频道",风云剧场
@@ -966,20 +1036,20 @@ http://192.151.150.154/live/fyjc.m3u8
 http://198.204.228.26/live/fyjc.m3u8
 #EXTINF:-1 tvg-name="风云剧场" group-title="📺 央视频道",风云剧场
 http://bztv.tvbus.cc:8081/cdnlive/fyjc.m3u8
+#EXTINF:-1 tvg-name="风云剧场" group-title="📺 央视频道",风云剧场
+http://171.119.206.69:6000/rtp/226.0.2.227:9728$山西联通11
+#EXTINF:-1 tvg-name="风云剧场" group-title="📺 央视频道",风云剧场
+http://106.59.2.196:55555/rtp/239.200.200.84:8016$云南电信11
+#EXTINF:-1 tvg-name="风云剧场" group-title="📺 央视频道",风云剧场
+http://124.112.241.143:4022/rtp/238.1.79.62:4632$安徽电信11
+#EXTINF:-1 tvg-name="风云剧场" group-title="📺 央视频道",风云剧场
+http://171.119.206.118:6000/rtp/226.0.2.227:9728$山西联通21
 #EXTINF:-1 tvg-name="风云足球" group-title="📺 央视频道",风云足球
 http://63.141.230.178:82/gslb/zbdq5.m3u8?id=fyzq
 #EXTINF:-1 tvg-name="风云足球" group-title="📺 央视频道",风云足球
 http://207.56.13.146:81/cdnlive/fyzq.m3u8
 #EXTINF:-1 tvg-name="风云足球" group-title="📺 央视频道",风云足球
 http://38.75.136.137:98/gslb/dsdqpub/fyzq.m3u8?auth=testpub
-#EXTINF:-1 tvg-name="风云足球" group-title="📺 央视频道",风云足球
-http://183.236.43.98:4013/udp/239.253.43.14:5146$广东电信11
-#EXTINF:-1 tvg-name="风云足球" group-title="📺 央视频道",风云足球
-http://124.112.241.143:4022/rtp/238.1.79.57:4592$安徽电信11
-#EXTINF:-1 tvg-name="风云足球" group-title="📺 央视频道",风云足球
-http://171.119.206.69:6000/rtp/226.0.2.225:9712$山西联通11
-#EXTINF:-1 tvg-name="风云足球" group-title="📺 央视频道",风云足球
-http://171.119.206.118:6000/rtp/226.0.2.225:9712$山西联通21
 #EXTINF:-1 tvg-name="风云足球" group-title="📺 央视频道",风云足球
 http://183.11.239.36:808/hls/133/index.m3u8
 #EXTINF:-1 tvg-name="风云足球" group-title="📺 央视频道",风云足球
@@ -992,6 +1062,14 @@ http://192.151.150.154/live/fyzq.m3u8
 http://198.204.228.26/live/fyzq.m3u8
 #EXTINF:-1 tvg-name="风云足球" group-title="📺 央视频道",风云足球
 http://bztv.tvbus.cc:8081/cdnlive/fyzq.m3u8
+#EXTINF:-1 tvg-name="风云足球" group-title="📺 央视频道",风云足球
+http://183.236.43.98:4013/udp/239.253.43.14:5146$广东电信11
+#EXTINF:-1 tvg-name="风云足球" group-title="📺 央视频道",风云足球
+http://171.119.206.69:6000/rtp/226.0.2.225:9712$山西联通11
+#EXTINF:-1 tvg-name="风云足球" group-title="📺 央视频道",风云足球
+http://124.112.241.143:4022/rtp/238.1.79.57:4592$安徽电信11
+#EXTINF:-1 tvg-name="风云足球" group-title="📺 央视频道",风云足球
+http://171.119.206.118:6000/rtp/226.0.2.225:9712$山西联通21
 #EXTINF:-1 tvg-name="风云音乐" group-title="📺 央视频道",风云音乐
 https://live.264788.xyz/channel/fengyunyinyue?streamid=be37d16b874e7ba11dd383d7ecd75752&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk
 #EXTINF:-1 tvg-name="风云音乐" group-title="📺 央视频道",风云音乐
@@ -1003,16 +1081,6 @@ http://38.75.136.137:98/gslb/dsdqpub/fyyy.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="风云音乐" group-title="📺 央视频道",风云音乐
 http://207.56.13.146:81/cdnlive/fyyy.m3u8
 #EXTINF:-1 tvg-name="风云音乐" group-title="📺 央视频道",风云音乐
-http://183.236.43.98:4013/udp/239.253.43.6:5146$广东电信11
-#EXTINF:-1 tvg-name="风云音乐" group-title="📺 央视频道",风云音乐
-http://118.248.155.220:8889/udp/239.76.254.51:9000$湖南电信11
-#EXTINF:-1 tvg-name="风云音乐" group-title="📺 央视频道",风云音乐
-http://124.112.241.143:4022/rtp/238.1.79.64:4648$安徽电信11
-#EXTINF:-1 tvg-name="风云音乐" group-title="📺 央视频道",风云音乐
-http://171.119.206.69:6000/rtp/226.0.2.220:9672$山西联通11
-#EXTINF:-1 tvg-name="风云音乐" group-title="📺 央视频道",风云音乐
-http://171.119.206.118:6000/rtp/226.0.2.220:9672$山西联通21
-#EXTINF:-1 tvg-name="风云音乐" group-title="📺 央视频道",风云音乐
 http://183.11.239.36:808/hls/99/index.m3u8
 #EXTINF:-1 tvg-name="风云音乐" group-title="📺 央视频道",风云音乐
 http://107.150.60.122/live/fyyy.m3u8
@@ -1022,18 +1090,18 @@ http://192.151.150.154/live/fyyy.m3u8
 http://198.204.228.26/live/fyyy.m3u8
 #EXTINF:-1 tvg-name="风云音乐" group-title="📺 央视频道",风云音乐
 http://bztv.tvbus.cc:8081/cdnlive/fyyy.m3u8
+#EXTINF:-1 tvg-name="风云音乐" group-title="📺 央视频道",风云音乐
+http://183.236.43.98:4013/udp/239.253.43.6:5146$广东电信11
+#EXTINF:-1 tvg-name="风云音乐" group-title="📺 央视频道",风云音乐
+http://171.119.206.69:6000/rtp/226.0.2.220:9672$山西联通11
+#EXTINF:-1 tvg-name="风云音乐" group-title="📺 央视频道",风云音乐
+http://124.112.241.143:4022/rtp/238.1.79.64:4648$安徽电信11
+#EXTINF:-1 tvg-name="风云音乐" group-title="📺 央视频道",风云音乐
+http://171.119.206.118:6000/rtp/226.0.2.220:9672$山西联通21
 #EXTINF:-1 tvg-name="高尔夫网球" group-title="📺 央视频道",高尔夫网球
 http://207.56.13.146:81/cdnlive/gefwq.m3u8
 #EXTINF:-1 tvg-name="高尔夫网球" group-title="📺 央视频道",高尔夫网球
 http://38.75.136.137:98/gslb/dsdqpub/gefwq.m3u8?auth=testpub
-#EXTINF:-1 tvg-name="高尔夫网球" group-title="📺 央视频道",高尔夫网球
-http://183.236.43.98:4013/udp/239.253.43.12:5146$广东电信11
-#EXTINF:-1 tvg-name="高尔夫网球" group-title="📺 央视频道",高尔夫网球
-http://124.112.241.143:4022/rtp/238.1.79.58:4600$安徽电信11
-#EXTINF:-1 tvg-name="高尔夫网球" group-title="📺 央视频道",高尔夫网球
-http://171.119.206.69:6000/rtp/226.0.2.217:9648$山西联通11
-#EXTINF:-1 tvg-name="高尔夫网球" group-title="📺 央视频道",高尔夫网球
-http://171.119.206.118:6000/rtp/226.0.2.217:9648$山西联通21
 #EXTINF:-1 tvg-name="高尔夫网球" group-title="📺 央视频道",高尔夫网球
 http://107.150.60.122/live/gefwq.m3u8
 #EXTINF:-1 tvg-name="高尔夫网球" group-title="📺 央视频道",高尔夫网球
@@ -1042,6 +1110,14 @@ http://192.151.150.154/live/gefwq.m3u8
 http://198.204.228.26/live/gefwq.m3u8
 #EXTINF:-1 tvg-name="高尔夫网球" group-title="📺 央视频道",高尔夫网球
 http://bztv.tvbus.cc:8081/cdnlive/gefwq.m3u8
+#EXTINF:-1 tvg-name="高尔夫网球" group-title="📺 央视频道",高尔夫网球
+http://183.236.43.98:4013/udp/239.253.43.12:5146$广东电信11
+#EXTINF:-1 tvg-name="高尔夫网球" group-title="📺 央视频道",高尔夫网球
+http://171.119.206.69:6000/rtp/226.0.2.217:9648$山西联通11
+#EXTINF:-1 tvg-name="高尔夫网球" group-title="📺 央视频道",高尔夫网球
+http://124.112.241.143:4022/rtp/238.1.79.58:4600$安徽电信11
+#EXTINF:-1 tvg-name="高尔夫网球" group-title="📺 央视频道",高尔夫网球
+http://171.119.206.118:6000/rtp/226.0.2.217:9648$山西联通21
 #EXTINF:-1 tvg-name="三沙卫视" group-title="📡 卫视频道",三沙卫视
 http://107.150.60.122/live/ssws.m3u8
 #EXTINF:-1 tvg-name="三沙卫视" group-title="📡 卫视频道",三沙卫视
@@ -1051,17 +1127,25 @@ http://198.204.228.26/live/ssws.m3u8
 #EXTINF:-1 tvg-name="三沙卫视" group-title="📡 卫视频道",三沙卫视
 http://38.75.136.137:98/gslb/dsdqpub/ssws.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="三沙卫视" group-title="📡 卫视频道",三沙卫视
-http://124.112.241.143:4022/rtp/238.1.78.27:6144$安徽电信11
-#EXTINF:-1 tvg-name="三沙卫视" group-title="📡 卫视频道",三沙卫视
-http://115.171.216.32:4000/rtp/225.1.8.78:4120$北京电信11
-#EXTINF:-1 tvg-name="三沙卫视" group-title="📡 卫视频道",三沙卫视
-http://111.196.130.121:20000/rtp/239.3.1.155:4120$北京联通31
-#EXTINF:-1 tvg-name="三沙卫视" group-title="📡 卫视频道",三沙卫视
 http://38.75.136.137:98/gslb/dsdqpub/ssws.m3u8?auth=testpub$LR•4•IPV4『线路4』
+#EXTINF:-1 tvg-name="三沙卫视" group-title="📡 卫视频道",三沙卫视
+http://my1nas.dpdns.org:1234/961023778
+#EXTINF:-1 tvg-name="三沙卫视" group-title="📡 卫视频道",三沙卫视
+http://www.20260809.xyz:1234/961023778
+#EXTINF:-1 tvg-name="三沙卫视" group-title="📡 卫视频道",三沙卫视
+https://tv.zhuhongxuan.cn/961023778
+#EXTINF:-1 tvg-name="三沙卫视" group-title="📡 卫视频道",三沙卫视
+http://njdm.i234.me:1234/961023778
 #EXTINF:-1 tvg-name="三沙卫视" group-title="📡 卫视频道",三沙卫视
 http://192.151.150.154/live/ssws.m3u8
 #EXTINF:-1 tvg-name="三沙卫视" group-title="📡 卫视频道",三沙卫视
-http://bztv.tvbus.cc:8081/cdnlive/ssws.m3u8
+http://183.236.43.98:4013/udp/239.253.43.113:5146$广东电信11
+#EXTINF:-1 tvg-name="三沙卫视" group-title="📡 卫视频道",三沙卫视
+http://115.171.216.32:4000/rtp/225.1.8.78:4120$北京电信11
+#EXTINF:-1 tvg-name="三沙卫视" group-title="📡 卫视频道",三沙卫视
+http://106.59.2.196:55555/rtp/239.200.201.136:8140$云南电信11
+#EXTINF:-1 tvg-name="三沙卫视" group-title="📡 卫视频道",三沙卫视
+http://124.112.241.143:4022/rtp/238.1.78.27:6144$安徽电信11
 #EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
 http://120.76.248.139/live/bfgd/4200000483.m3u8
 #EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
@@ -1073,83 +1157,97 @@ http://38.64.72.148/hls/modn/list/4009/playlist.m3u8
 #EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
 http://r.jdshipin.com/WtYt3
 #EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
-http://183.236.43.98:4013/udp/239.77.1.104:5146$广东电信11
-#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
-http://39.77.23.205:4002/rtp/239.253.254.105:8000$山东联通11
-#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
-http://124.112.241.143:4022/rtp/238.1.78.22:6104$安徽电信11
-#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
-http://1.192.242.239:8188/rtp/239.16.20.82:10820$河南电信11
-#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
-http://171.119.206.69:6000/rtp/226.0.2.188:9416$山西联通11
-#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
-http://115.171.216.32:4000/udp/225.1.8.79:8148$北京电信11
-#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
-http://171.119.206.118:6000/rtp/226.0.2.188:9416$山西联通21
-#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
-http://171.8.138.13:8800/rtp/239.16.20.82:10820$河南电信21
-#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
-http://111.196.130.121:20000/rtp/239.3.1.156:8148$北京联通31
-#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
 http://120.76.248.139/live/bfgd/4200000483.m3u8$LR•7•IPV4『线路2』
 #EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
 http://live.zohi.tv/video/s10001-fztv-3/index.m3u8
 #EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
 http://smartzhu.cn:1234/849116810
 #EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
+http://my1nas.dpdns.org:1234/849116810
+#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
+http://www.20260809.xyz:1234/849116810
+#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
+https://tv.zhuhongxuan.cn/849116810
+#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
+http://njdm.i234.me:1234/849116810
+#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
 http://bztv.tvbus.cc:8081/cdnlive/dnws.m3u8
 #EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
 http://by4.nty.tv189.cn/live/tm-dxdnws-4000k.m3u8
-#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
-http://39.77.23.205:4002/rtp/239.253.254.86:8000$山东联通11
-#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
-http://124.112.241.143:4022/rtp/238.1.78.163:7176$安徽电信11
-#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
-http://1.192.242.239:8188/rtp/239.16.20.73:10730$河南电信11
-#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
-http://171.119.206.69:6000/rtp/226.0.2.175:9312$山西联通11
-#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
-http://115.171.216.32:4000/udp/225.1.8.45:8032$北京电信11
-#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
-http://106.59.2.196:55555/udp/239.200.200.8:8032$云南电信11
-#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
-http://171.119.206.118:6000/rtp/226.0.2.175:9312$山西联通21
-#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
-http://171.8.138.13:8800/rtp/239.16.20.73:10730$河南电信21
-#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
-http://111.196.130.121:20000/rtp/239.3.1.136:8032$北京联通31
+#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
+http://39.77.23.205:4002/rtp/239.253.254.105:8000$山东联通11
+#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
+http://183.236.43.98:4013/udp/239.77.1.104:5146$广东电信11
+#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
+http://115.171.216.32:4000/udp/225.1.8.79:8148$北京电信11
+#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
+http://171.119.206.69:6000/rtp/226.0.2.188:9416$山西联通11
+#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
+http://1.192.242.239:8188/rtp/239.16.20.82:10820$河南电信11
+#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
+http://124.112.241.143:4022/rtp/238.1.78.22:6104$安徽电信11
+#EXTINF:-1 tvg-name="东南卫视" group-title="📡 卫视频道",东南卫视
+http://171.119.206.118:6000/rtp/226.0.2.188:9416$山西联通21
 #EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
 http://183.11.239.36:808/hls/114/index.m3u8
 #EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
 http://bp-resource-dfl.bestv.cn/155/3/video.m3u8
 #EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
+http://my1nas.dpdns.org:1234/651632648
+#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
+http://www.20260809.xyz:1234/651632648
+#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
+https://tv.zhuhongxuan.cn/651632648
+#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
+http://njdm.i234.me:1234/651632648
+#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
 http://bztv.tvbus.cc:8081/cdnlive/dfws.m3u8
 #EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
 http://by4.nty.tv189.cn/live/tm-xpdfws-4000k.m3u8
+#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
+http://39.77.23.205:4002/rtp/239.253.254.86:8000$山东联通11
+#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
+http://183.236.43.98:4013/udp/239.77.1.218:5146$广东电信11
+#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
+http://115.171.216.32:4000/udp/225.1.8.45:8032$北京电信11
+#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
+http://171.119.206.69:6000/rtp/226.0.2.175:9312$山西联通11
+#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
+http://1.192.242.239:8188/rtp/239.16.20.73:10730$河南电信11
+#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
+http://124.112.241.143:4022/rtp/238.1.78.163:7176$安徽电信11
+#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
+http://171.119.206.118:6000/rtp/226.0.2.175:9312$山西联通21
+#EXTINF:-1 tvg-name="东方卫视" group-title="📡 卫视频道",东方卫视
+http://111.196.130.121:20000/rtp/239.3.1.136:8032$北京联通31
 #EXTINF:-1 tvg-name="云南卫视" group-title="📡 卫视频道",云南卫视
 http://120.76.248.139/live/bfgd/4200000482.m3u8
 #EXTINF:-1 tvg-name="云南卫视" group-title="📡 卫视频道",云南卫视
-http://39.77.23.205:4002/rtp/239.253.254.196:8000$山东联通11
-#EXTINF:-1 tvg-name="云南卫视" group-title="📡 卫视频道",云南卫视
-http://124.112.241.143:4022/rtp/238.1.78.89:6584$安徽电信11
-#EXTINF:-1 tvg-name="云南卫视" group-title="📡 卫视频道",云南卫视
-http://1.192.242.239:8188/rtp/239.16.20.85:10850$河南电信11
-#EXTINF:-1 tvg-name="云南卫视" group-title="📡 卫视频道",云南卫视
-http://115.171.216.32:4000/rtp/225.1.8.139:8108$北京电信11
-#EXTINF:-1 tvg-name="云南卫视" group-title="📡 卫视频道",云南卫视
-http://171.8.138.13:8800/rtp/239.16.20.85:10850$河南电信21
-#EXTINF:-1 tvg-name="云南卫视" group-title="📡 卫视频道",云南卫视
-http://111.196.130.121:20000/rtp/239.3.1.26:8108$北京联通31
+http://183.11.239.36:808/hls/52/index.m3u8
 #EXTINF:-1 tvg-name="云南卫视" group-title="📡 卫视频道",云南卫视
 http://120.76.248.139/live/bfgd/4200000482.m3u8$LR•8•IPV4『线路7』
 #EXTINF:-1 tvg-name="云南卫视" group-title="📡 卫视频道",云南卫视
-http://183.11.239.36:808/hls/52/index.m3u8
-#EXTINF:-1 tvg-name="云南卫视" group-title="📡 卫视频道",云南卫视
 http://bztv.tvbus.cc:8081/cdnlive/ynws.m3u8
-#EXTINF:-1 tvg-name="兵团卫视" group-title="📡 卫视频道",兵团卫视
-http://124.112.241.143:4022/rtp/238.1.78.104:6704$安徽电信11
+#EXTINF:-1 tvg-name="云南卫视" group-title="📡 卫视频道",云南卫视
+http://39.77.23.205:4002/rtp/239.253.254.196:8000$山东联通11
+#EXTINF:-1 tvg-name="云南卫视" group-title="📡 卫视频道",云南卫视
+http://183.236.43.98:4013/udp/239.253.43.37:5146$广东电信11
+#EXTINF:-1 tvg-name="云南卫视" group-title="📡 卫视频道",云南卫视
+http://115.171.216.32:4000/rtp/225.1.8.139:8108$北京电信11
+#EXTINF:-1 tvg-name="云南卫视" group-title="📡 卫视频道",云南卫视
+http://1.192.242.239:8188/rtp/239.16.20.85:10850$河南电信11
+#EXTINF:-1 tvg-name="云南卫视" group-title="📡 卫视频道",云南卫视
+http://124.112.241.143:4022/rtp/238.1.78.89:6584$安徽电信11
 #EXTINF:-1 tvg-name="兵团卫视" group-title="📡 卫视频道",兵团卫视
 http://183.11.239.36:808/hls/7/index.m3u8
+#EXTINF:-1 tvg-name="兵团卫视" group-title="📡 卫视频道",兵团卫视
+http://my1nas.dpdns.org:1234/956923145
+#EXTINF:-1 tvg-name="兵团卫视" group-title="📡 卫视频道",兵团卫视
+http://www.20260809.xyz:1234/956923145
+#EXTINF:-1 tvg-name="兵团卫视" group-title="📡 卫视频道",兵团卫视
+https://tv.zhuhongxuan.cn/956923145
+#EXTINF:-1 tvg-name="兵团卫视" group-title="📡 卫视频道",兵团卫视
+http://njdm.i234.me:1234/956923145
 #EXTINF:-1 tvg-name="兵团卫视" group-title="📡 卫视频道",兵团卫视
 http://38.75.136.137:98/gslb/dsdqpub/btws.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="兵团卫视" group-title="📡 卫视频道",兵团卫视
@@ -1162,6 +1260,8 @@ http://198.204.228.26/live/btws.m3u8
 http://bztv.tvbus.cc:8081/cdnlive/btws.m3u8
 #EXTINF:-1 tvg-name="兵团卫视" group-title="📡 卫视频道",兵团卫视
 http://by4.nty.tv189.cn/live/tm-ysbtws-4000k.m3u8
+#EXTINF:-1 tvg-name="兵团卫视" group-title="📡 卫视频道",兵团卫视
+http://124.112.241.143:4022/rtp/238.1.78.104:6704$安徽电信11
 #EXTINF:-1 tvg-name="内蒙古卫视" group-title="📡 卫视频道",内蒙古卫视
 https://live.264788.xyz/channel/neimengguweishi?streamid=81a015dbecf3031d7d847b7a9b059f67&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk
 #EXTINF:-1 tvg-name="内蒙古卫视" group-title="📡 卫视频道",内蒙古卫视
@@ -1173,17 +1273,13 @@ http://107.150.60.122/live/nmgws.m3u8
 #EXTINF:-1 tvg-name="内蒙古卫视" group-title="📡 卫视频道",内蒙古卫视
 http://play1-qk.nmtv.cn/live/1769652018126032.m3u8
 #EXTINF:-1 tvg-name="内蒙古卫视" group-title="📡 卫视频道",内蒙古卫视
-http://124.112.241.143:4022/rtp/238.1.78.103:6696$安徽电信11
-#EXTINF:-1 tvg-name="内蒙古卫视" group-title="📡 卫视频道",内蒙古卫视
-http://115.171.216.32:4000/rtp/225.1.8.156:8176$北京电信11
+http://183.11.239.36:808/hls/60/index.m3u8
 #EXTINF:-1 tvg-name="内蒙古卫视" group-title="📡 卫视频道",内蒙古卫视
 https://ali-m-l.cztv.com/channels/lantian/channel007/1080p.m3u8$LR•7•IPV4『线路2』
 #EXTINF:-1 tvg-name="内蒙古卫视" group-title="📡 卫视频道",内蒙古卫视
 https://live.264788.xyz/channel/neimengguweishi?streamid=81a015dbecf3031d7d847b7a9b059f67&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk$LR•7•IPV4『线路4』
 #EXTINF:-1 tvg-name="内蒙古卫视" group-title="📡 卫视频道",内蒙古卫视
 https://live.264788.xyz/channel/neimengguweishi?streamid=3e7340acf8869ac1c7dad1bb836dcd35&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk$LR•7•IPV4『线路5』
-#EXTINF:-1 tvg-name="内蒙古卫视" group-title="📡 卫视频道",内蒙古卫视
-http://183.11.239.36:808/hls/60/index.m3u8
 #EXTINF:-1 tvg-name="内蒙古卫视" group-title="📡 卫视频道",内蒙古卫视
 http://38.75.136.137:98/gslb/dsdqpub/nmgws.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="内蒙古卫视" group-title="📡 卫视频道",内蒙古卫视
@@ -1192,34 +1288,46 @@ http://192.151.150.154/live/nmgws.m3u8
 http://198.204.228.26/live/nmgws.m3u8
 #EXTINF:-1 tvg-name="内蒙古卫视" group-title="📡 卫视频道",内蒙古卫视
 http://bztv.tvbus.cc:8081/cdnlive/nmgws.m3u8
+#EXTINF:-1 tvg-name="内蒙古卫视" group-title="📡 卫视频道",内蒙古卫视
+http://115.171.216.32:4000/rtp/225.1.8.156:8176$北京电信11
+#EXTINF:-1 tvg-name="内蒙古卫视" group-title="📡 卫视频道",内蒙古卫视
+http://124.112.241.143:4022/rtp/238.1.78.103:6696$安徽电信11
+#EXTINF:-1 tvg-name="农林卫视" group-title="📡 卫视频道",农林卫视
+http://my1nas.dpdns.org:1234/956904896
+#EXTINF:-1 tvg-name="农林卫视" group-title="📡 卫视频道",农林卫视
+http://www.20260809.xyz:1234/956904896
+#EXTINF:-1 tvg-name="农林卫视" group-title="📡 卫视频道",农林卫视
+https://tv.zhuhongxuan.cn/956904896
+#EXTINF:-1 tvg-name="农林卫视" group-title="📡 卫视频道",农林卫视
+http://njdm.i234.me:1234/956904896
 #EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
 http://120.76.248.139/live/bfgd/4200000083.m3u8
 #EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
-http://183.236.43.98:4013/udp/239.77.1.4:5146$广东电信11
-#EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
-http://39.77.23.205:4002/rtp/239.253.254.85:8000$山东联通11
-#EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
-http://124.112.241.143:4022/rtp/238.1.78.162:7168$安徽电信11
-#EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
-http://1.192.242.239:8188/rtp/239.16.20.76:10760$河南电信11
-#EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
-http://171.119.206.69:6000/rtp/226.0.2.177:9328$山西联通11
-#EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
-http://115.171.216.32:4000/rtp/225.1.8.21:8002$北京电信11
-#EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
-http://106.59.2.196:55555/rtp/239.200.200.5:8024$云南电信11
-#EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
-http://171.119.206.118:6000/rtp/226.0.2.177:9328$山西联通21
-#EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
-http://171.8.138.13:8800/rtp/239.16.20.76:10760$河南电信21
-#EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
-http://111.196.130.121:20000/rtp/239.3.1.241:8000$北京联通31
+http://183.11.239.36:808/hls/41/index.m3u8
 #EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
 http://120.76.248.139/live/bfgd/4200000083.m3u8$LR•8•IPV4『线路8』
 #EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
-http://183.11.239.36:808/hls/41/index.m3u8
+http://my1nas.dpdns.org:1234/630287636
+#EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
+http://www.20260809.xyz:1234/630287636
+#EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
+https://tv.zhuhongxuan.cn/630287636
+#EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
+http://njdm.i234.me:1234/630287636
 #EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
 http://bztv.tvbus.cc:8081/cdnlive/bjws.m3u8
+#EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
+http://115.171.216.32:4000/rtp/225.1.8.21:8002$北京电信11
+#EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
+http://171.119.206.69:6000/rtp/226.0.2.177:9328$山西联通11
+#EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
+http://1.192.242.239:8188/rtp/239.16.20.76:10760$河南电信11
+#EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
+http://124.112.241.143:4022/rtp/238.1.78.162:7168$安徽电信11
+#EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
+http://183.236.43.98:4013/udp/239.77.1.151:5146$广东电信12
+#EXTINF:-1 tvg-name="北京卫视" group-title="📡 卫视频道",北京卫视
+http://171.119.206.118:6000/rtp/226.0.2.177:9328$山西联通21
 #EXTINF:-1 tvg-name="厦门卫视" group-title="📡 卫视频道",厦门卫视
 http://192.151.150.154/live/xmws.m3u8
 #EXTINF:-1 tvg-name="厦门卫视" group-title="📡 卫视频道",厦门卫视
@@ -1235,27 +1343,35 @@ http://38.75.136.137:98/gslb/dsdqpub/xmws.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="厦门卫视" group-title="📡 卫视频道",厦门卫视
 http://bztv.tvbus.cc:8081/cdnlive/xmws.m3u8
 #EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
-http://39.77.23.205:4002/rtp/239.253.254.173:8000$山东联通11
-#EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
-http://124.112.241.143:4022/rtp/238.1.79.48:4496$安徽电信11
-#EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
-http://1.192.242.239:8188/rtp/239.16.20.94:10940$河南电信11
-#EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
-http://171.119.206.69:6000/rtp/226.0.2.58:8376$山西联通11
-#EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
-http://171.119.206.118:6000/rtp/226.0.2.58:8376$山西联通21
-#EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
-http://171.8.138.13:8800/rtp/239.16.20.94:10940$河南电信21
-#EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
-http://111.196.130.121:20000/rtp/239.3.1.240:8172$北京联通31
-#EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
 http://183.11.239.36:808/hls/10/index.m3u8
 #EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
 http://113.25.252.226:9901/tsfile/live/1037_1.m3u8?key=txiptv&playlive=1&authid=0
 #EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
+http://my1nas.dpdns.org:1234/947472500
+#EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
+http://www.20260809.xyz:1234/947472500
+#EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
+https://tv.zhuhongxuan.cn/947472500
+#EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
+http://njdm.i234.me:1234/947472500
+#EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
 http://bztv.tvbus.cc:8081/cdnlive/jlws.m3u8
 #EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
 http://by4.nty.tv189.cn/live/tm-ysjlws-4000k.m3u8
+#EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
+http://39.77.23.205:4002/rtp/239.253.254.173:8000$山东联通11
+#EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
+http://183.236.43.98:4013/udp/239.77.1.111:5146$广东电信11
+#EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
+http://171.119.206.69:6000/rtp/226.0.2.58:8376$山西联通11
+#EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
+http://1.192.242.239:8188/rtp/239.16.20.94:10940$河南电信11
+#EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
+http://124.112.241.143:4022/rtp/238.1.79.48:4496$安徽电信11
+#EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
+http://171.119.206.118:6000/rtp/226.0.2.58:8376$山西联通21
+#EXTINF:-1 tvg-name="吉林卫视" group-title="📡 卫视频道",吉林卫视
+http://111.196.130.121:20000/rtp/239.3.1.240:8172$北京联通31
 #EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
 https://live.264788.xyz/channel/sichuanweishi4k?streamid=21be5901ee81559c827dc84e46f26452&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk
 #EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
@@ -1265,27 +1381,25 @@ https://live.264788.xyz/channel/sichuanweishi4k?streamid=21be5901ee81559c827dc84
 #EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
 https://live.264788.xyz/channel/sichuanweishi4k?streamid=401bf692a1a8b91298f26077d53316d6&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk$LR•7•IPV4『线路4』
 #EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
-http://39.77.23.205:4002/rtp/239.253.254.180:8000$山东联通11
-#EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
-http://124.112.241.143:4022/rtp/238.1.78.30:6168$安徽电信11
-#EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
-http://1.192.242.239:8188/rtp/239.16.20.86:10860$河南电信11
-#EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
-http://171.119.206.69:6000/rtp/226.0.2.179:9344$山西联通11
-#EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
-http://115.171.216.32:4000/rtp/225.1.8.142:8288$北京电信11
-#EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
-http://106.59.2.196:55555/udp/239.200.201.137:8796$云南电信11
-#EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
-http://171.119.206.118:6000/rtp/226.0.2.179:9344$山西联通21
-#EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
-http://171.8.138.13:8800/rtp/239.16.20.86:10860$河南电信21
-#EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
 http://183.11.239.36:808/hls/50/index.m3u8
 #EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
 http://113.25.252.226:9901/tsfile/live/1031_1.m3u8?key=txiptv&playlive=1&authid=0
 #EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
 http://bztv.tvbus.cc:8081/cdnlive/scws.m3u8
+#EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
+http://183.236.43.98:4013/udp/239.77.1.215:5146$广东电信11
+#EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
+http://115.171.216.32:4000/rtp/225.1.8.142:8288$北京电信11
+#EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
+http://171.119.206.69:6000/rtp/226.0.2.179:9344$山西联通11
+#EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
+http://1.192.242.239:8188/rtp/239.16.20.86:10860$河南电信11
+#EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
+http://124.112.241.143:4022/rtp/238.1.78.30:6168$安徽电信11
+#EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
+http://171.119.206.118:6000/rtp/226.0.2.179:9344$山西联通21
+#EXTINF:-1 tvg-name="四川卫视" group-title="📡 卫视频道",四川卫视
+http://111.196.130.121:20000/rtp/239.3.1.29:8288$北京联通31
 #EXTINF:-1 tvg-name="大湾区卫视" group-title="📡 卫视频道",大湾区卫视
 http://198.204.228.26/live/nfws.m3u8
 #EXTINF:-1 tvg-name="大湾区卫视" group-title="📡 卫视频道",大湾区卫视
@@ -1301,31 +1415,45 @@ http://222.128.55.152:9080/live/dwq.m3u8
 #EXTINF:-1 tvg-name="大湾区卫视" group-title="📡 卫视频道",大湾区卫视
 http://8.138.7.223/tv/dwq.m3u8
 #EXTINF:-1 tvg-name="大湾区卫视" group-title="📡 卫视频道",大湾区卫视
+http://my1nas.dpdns.org:1234/608917627
+#EXTINF:-1 tvg-name="大湾区卫视" group-title="📡 卫视频道",大湾区卫视
+http://www.20260809.xyz:1234/608917627
+#EXTINF:-1 tvg-name="大湾区卫视" group-title="📡 卫视频道",大湾区卫视
+https://tv.zhuhongxuan.cn/608917627
+#EXTINF:-1 tvg-name="大湾区卫视" group-title="📡 卫视频道",大湾区卫视
+http://njdm.i234.me:1234/608917627
+#EXTINF:-1 tvg-name="大湾区卫视" group-title="📡 卫视频道",大湾区卫视
 http://192.151.150.154/live/nfws.m3u8
 #EXTINF:-1 tvg-name="大湾区卫视" group-title="📡 卫视频道",大湾区卫视
 http://bztv.tvbus.cc:8081/cdnlive/nfws.m3u8
 #EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
-http://124.112.241.143:4022/rtp/238.1.78.20:6088$安徽电信11
-#EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
-http://1.192.242.239:8188/rtp/239.16.20.96:10960$河南电信11
-#EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
-http://171.119.206.69:6000/rtp/226.0.2.148:9096$山西联通11
-#EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
-http://115.171.216.32:4000/udp/225.1.8.48:8044$北京电信11
-#EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
-http://171.119.206.118:6000/rtp/226.0.2.148:9096$山西联通21
-#EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
-http://171.8.138.13:8800/rtp/239.16.20.96:10960$河南电信21
-#EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
-http://111.196.130.121:20000/rtp/239.3.1.141:1234$北京联通31
+http://183.11.239.36:808/hls/42/index.m3u8
 #EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
 http://222.169.85.8:9901/tsfile/live/0135_1.m3u8?key=txiptv&playlive=1&authid=0$LR•10•IPV4『线路2』
-#EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
-http://183.11.239.36:808/hls/42/index.m3u8
 #EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
 http://153.0.171.163:9901/tsfile/live/0135_1.m3u8?key=txiptv&playlive=1&authid=0
 #EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
 http://bztv.tvbus.cc:8081/cdnlive/tjws.m3u8
+#EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
+http://183.236.43.98:4013/udp/239.77.1.141:5146$广东电信11
+#EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
+http://115.171.216.32:4000/udp/225.1.8.48:8044$北京电信11
+#EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
+http://171.119.206.69:6000/rtp/226.0.2.148:9096$山西联通11
+#EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
+http://106.59.2.196:55555/udp/239.200.200.69:1234$云南电信11
+#EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
+http://1.192.242.239:8188/rtp/239.16.20.96:10960$河南电信11
+#EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
+http://124.112.241.143:4022/rtp/238.1.78.20:6088$安徽电信11
+#EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
+http://183.236.43.98:4013/udp/239.77.1.182:5146$广东电信12
+#EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
+http://183.236.43.98:4013/udp/239.77.0.131:5146$广东电信13
+#EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
+http://171.119.206.118:6000/rtp/226.0.2.148:9096$山西联通21
+#EXTINF:-1 tvg-name="天津卫视" group-title="📡 卫视频道",天津卫视
+http://111.196.130.121:20000/rtp/239.3.1.141:1234$北京联通31
 #EXTINF:-1 tvg-name="宁夏卫视" group-title="📡 卫视频道",宁夏卫视
 https://live.264788.xyz/channel/ningxiaweishi?streamid=e1236348f815c36a0429357e5b5c5f10&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk
 #EXTINF:-1 tvg-name="宁夏卫视" group-title="📡 卫视频道",宁夏卫视
@@ -1337,19 +1465,23 @@ http://107.150.60.122/live/nxws.m3u8
 #EXTINF:-1 tvg-name="宁夏卫视" group-title="📡 卫视频道",宁夏卫视
 http://198.204.228.26/live/nxws.m3u8
 #EXTINF:-1 tvg-name="宁夏卫视" group-title="📡 卫视频道",宁夏卫视
-http://124.112.241.143:4022/rtp/238.1.78.109:6744$安徽电信11
-#EXTINF:-1 tvg-name="宁夏卫视" group-title="📡 卫视频道",宁夏卫视
 https://live.264788.xyz/channel/ningxiaweishi?streamid=e1236348f815c36a0429357e5b5c5f10&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk$LR•7•IPV4『线路3』
 #EXTINF:-1 tvg-name="宁夏卫视" group-title="📡 卫视频道",宁夏卫视
 https://live.264788.xyz/channel/ningxiaweishi?streamid=551474d02bee1c160e1692e22c45ddba&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk$LR•7•IPV4『线路4』
 #EXTINF:-1 tvg-name="宁夏卫视" group-title="📡 卫视频道",宁夏卫视
 https://live.264788.xyz/channel/ningxiaweishi?streamid=1b2952717a920173e66d4a348f9dcb5c&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk$LR•7•IPV4『线路5』
 #EXTINF:-1 tvg-name="宁夏卫视" group-title="📡 卫视频道",宁夏卫视
+http://my1nas.dpdns.org:1234/738910535
+#EXTINF:-1 tvg-name="宁夏卫视" group-title="📡 卫视频道",宁夏卫视
+http://www.20260809.xyz:1234/738910535
+#EXTINF:-1 tvg-name="宁夏卫视" group-title="📡 卫视频道",宁夏卫视
+https://tv.zhuhongxuan.cn/738910535
+#EXTINF:-1 tvg-name="宁夏卫视" group-title="📡 卫视频道",宁夏卫视
+http://njdm.i234.me:1234/738910535
+#EXTINF:-1 tvg-name="宁夏卫视" group-title="📡 卫视频道",宁夏卫视
 http://38.75.136.137:98/gslb/dsdqpub/nxws.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="宁夏卫视" group-title="📡 卫视频道",宁夏卫视
 http://192.151.150.154/live/nxws.m3u8
-#EXTINF:-1 tvg-name="宁夏卫视" group-title="📡 卫视频道",宁夏卫视
-http://bztv.tvbus.cc:8081/cdnlive/nxws.m3u8
 #EXTINF:-1 tvg-name="宁夏卫视" group-title="📡 卫视频道",宁夏卫视
 http://by4.nty.tv189.cn/tm-ysnxws-4000k.m3u8
 #EXTINF:-1 tvg-name="安多卫视" group-title="📡 卫视频道",安多卫视
@@ -1357,61 +1489,61 @@ https://liveout.xntv.tv/a65jur/96iln2.m3u8
 #EXTINF:-1 tvg-name="安徽卫视" group-title="📡 卫视频道",安徽卫视
 http://204.12.221.218:8181/3m1080p/ahws.m3u8
 #EXTINF:-1 tvg-name="安徽卫视" group-title="📡 卫视频道",安徽卫视
+http://183.11.239.36:808/hls/40/index.m3u8
+#EXTINF:-1 tvg-name="安徽卫视" group-title="📡 卫视频道",安徽卫视
+http://bztv.tvbus.cc:8081/cdnlive/ahws.m3u8
+#EXTINF:-1 tvg-name="安徽卫视" group-title="📡 卫视频道",安徽卫视
 http://39.77.23.205:4002/rtp/239.253.254.87:8000$山东联通11
 #EXTINF:-1 tvg-name="安徽卫视" group-title="📡 卫视频道",安徽卫视
-http://124.112.241.143:4022/rtp/238.1.79.27:4328$安徽电信11
+http://183.236.43.98:4013/udp/239.77.1.92:5146$广东电信11
 #EXTINF:-1 tvg-name="安徽卫视" group-title="📡 卫视频道",安徽卫视
-http://1.192.242.239:8188/rtp/239.16.20.75:10750$河南电信11
+http://115.171.216.32:4000/udp/225.1.8.52:8064$北京电信11
 #EXTINF:-1 tvg-name="安徽卫视" group-title="📡 卫视频道",安徽卫视
 http://171.119.206.69:6000/rtp/226.0.2.145:9072$山西联通11
 #EXTINF:-1 tvg-name="安徽卫视" group-title="📡 卫视频道",安徽卫视
-http://115.171.216.32:4000/udp/225.1.8.52:8064$北京电信11
+http://1.192.242.239:8188/rtp/239.16.20.75:10750$河南电信11
+#EXTINF:-1 tvg-name="安徽卫视" group-title="📡 卫视频道",安徽卫视
+http://124.112.241.143:4022/rtp/238.1.79.27:4328$安徽电信11
 #EXTINF:-1 tvg-name="安徽卫视" group-title="📡 卫视频道",安徽卫视
 http://124.112.241.143:4022/rtp/238.1.78.150:7072$安徽电信12
 #EXTINF:-1 tvg-name="安徽卫视" group-title="📡 卫视频道",安徽卫视
 http://171.119.206.118:6000/rtp/226.0.2.145:9072$山西联通21
-#EXTINF:-1 tvg-name="安徽卫视" group-title="📡 卫视频道",安徽卫视
-http://171.8.138.13:8800/rtp/239.16.20.75:10750$河南电信21
-#EXTINF:-1 tvg-name="安徽卫视" group-title="📡 卫视频道",安徽卫视
-http://111.196.130.121:20000/rtp/239.3.1.211:8064$北京联通31
-#EXTINF:-1 tvg-name="安徽卫视" group-title="📡 卫视频道",安徽卫视
-http://183.11.239.36:808/hls/40/index.m3u8
-#EXTINF:-1 tvg-name="安徽卫视" group-title="📡 卫视频道",安徽卫视
-http://bztv.tvbus.cc:8081/cdnlive/ahws.m3u8
 #EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
 http://120.76.248.139/live/bfgd/4200000099.m3u8
-#EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
-http://39.77.23.205:4002/rtp/239.253.254.78:8000$山东联通11
-#EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
-http://124.112.241.143:4022/rtp/238.1.78.169:7224$安徽电信11
-#EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
-http://1.192.242.239:8188/rtp/239.16.20.80:10800$河南电信11
-#EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
-http://171.119.206.69:6000/rtp/226.0.2.149:9104$山西联通11
-#EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
-http://115.171.216.32:4000/udp/225.1.8.50:8052$北京电信11
-#EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
-http://106.59.2.196:55555/rtp/239.200.200.168:8748$云南电信11
-#EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
-http://121.237.245.243:8888/rtp/239.49.8.7:9306$江苏电信12
-#EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
-http://171.119.206.118:6000/rtp/226.0.2.149:9104$山西联通21
-#EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
-http://171.8.138.13:8800/rtp/239.16.20.80:10800$河南电信21
-#EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
-http://111.196.130.121:20000/rtp/239.3.1.209:8052$北京联通31
 #EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
 http://120.76.248.139/live/bfgd/4200000099.m3u8$LR•8•IPV4『线路1』
 #EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
 http://bztv.tvbus.cc:8081/cdnlive/sdws.m3u8
+#EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
+http://39.77.23.205:4002/rtp/239.253.254.78:8000$山东联通11
+#EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
+http://183.236.43.98:4013/udp/239.77.1.142:5146$广东电信11
+#EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
+http://115.171.216.32:4000/udp/225.1.8.50:8052$北京电信11
+#EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
+http://171.119.206.69:6000/rtp/226.0.2.149:9104$山西联通11
+#EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
+http://1.192.242.239:8188/rtp/239.16.20.80:10800$河南电信11
+#EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
+http://124.112.241.143:4022/rtp/238.1.78.169:7224$安徽电信11
+#EXTINF:-1 tvg-name="山东卫视" group-title="📡 卫视频道",山东卫视
+http://171.119.206.118:6000/rtp/226.0.2.149:9104$山西联通21
 #EXTINF:-1 tvg-name="山东教育" group-title="📡 卫视频道",山东教育
 https://test1.live.sdetv.com.cn/live/dianshizhibo/playlist.m3u8
+#EXTINF:-1 tvg-name="山东教育" group-title="📡 卫视频道",山东教育
+http://183.11.239.36:808/hls/72/index.m3u8
+#EXTINF:-1 tvg-name="山东教育" group-title="📡 卫视频道",山东教育
+http://my1nas.dpdns.org:1234/609154353
+#EXTINF:-1 tvg-name="山东教育" group-title="📡 卫视频道",山东教育
+http://www.20260809.xyz:1234/609154353
+#EXTINF:-1 tvg-name="山东教育" group-title="📡 卫视频道",山东教育
+https://tv.zhuhongxuan.cn/609154353
+#EXTINF:-1 tvg-name="山东教育" group-title="📡 卫视频道",山东教育
+http://njdm.i234.me:1234/609154353
 #EXTINF:-1 tvg-name="山东教育" group-title="📡 卫视频道",山东教育
 http://39.77.23.205:4002/rtp/239.253.254.59:8000$山东联通11
 #EXTINF:-1 tvg-name="山东教育" group-title="📡 卫视频道",山东教育
 http://115.171.216.32:4000/rtp/225.1.8.190:4120$北京电信11
-#EXTINF:-1 tvg-name="山东教育" group-title="📡 卫视频道",山东教育
-http://183.11.239.36:808/hls/72/index.m3u8
 #EXTINF:-1 tvg-name="山西卫视" group-title="📡 卫视频道",山西卫视
 https://live.264788.xyz/channel/shanxiweishi?streamid=69e002ac7467d661ff7ad0671ed43f16&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk
 #EXTINF:-1 tvg-name="山西卫视" group-title="📡 卫视频道",山西卫视
@@ -1419,45 +1551,27 @@ https://live.264788.xyz/channel/shanxiweishi?streamid=eeb7d60ca6e0db131ea7a092a3
 #EXTINF:-1 tvg-name="山西卫视" group-title="📡 卫视频道",山西卫视
 http://204.12.221.218:8181/3m1080p/sxws.m3u8
 #EXTINF:-1 tvg-name="山西卫视" group-title="📡 卫视频道",山西卫视
-http://124.112.241.143:4022/rtp/238.1.78.95:6632$安徽电信11
-#EXTINF:-1 tvg-name="山西卫视" group-title="📡 卫视频道",山西卫视
-http://171.119.206.69:6000/rtp/226.0.2.152:9128$山西联通11
-#EXTINF:-1 tvg-name="山西卫视" group-title="📡 卫视频道",山西卫视
-http://115.171.216.32:4000/rtp/225.1.8.155:8172$北京电信11
-#EXTINF:-1 tvg-name="山西卫视" group-title="📡 卫视频道",山西卫视
-http://171.119.206.118:6000/rtp/226.0.2.152:9128$山西联通21
+http://183.11.239.36:808/hls/59/index.m3u8
 #EXTINF:-1 tvg-name="山西卫视" group-title="📡 卫视频道",山西卫视
 http://119.39.9.8:9901/tsfile/live/0118_1.m3u8
-#EXTINF:-1 tvg-name="山西卫视" group-title="📡 卫视频道",山西卫视
-http://183.11.239.36:808/hls/59/index.m3u8
 #EXTINF:-1 tvg-name="山西卫视" group-title="📡 卫视频道",山西卫视
 http://153.0.171.163:9901/tsfile/live/0118_1.m3u8?key=txiptv&playlive=1&authid=0
 #EXTINF:-1 tvg-name="山西卫视" group-title="📡 卫视频道",山西卫视
 http://bztv.tvbus.cc:8081/cdnlive/sxws.m3u8
+#EXTINF:-1 tvg-name="山西卫视" group-title="📡 卫视频道",山西卫视
+http://115.171.216.32:4000/rtp/225.1.8.155:8172$北京电信11
+#EXTINF:-1 tvg-name="山西卫视" group-title="📡 卫视频道",山西卫视
+http://171.119.206.69:6000/rtp/226.0.2.152:9128$山西联通11
+#EXTINF:-1 tvg-name="山西卫视" group-title="📡 卫视频道",山西卫视
+http://124.112.241.143:4022/rtp/238.1.78.95:6632$安徽电信11
+#EXTINF:-1 tvg-name="山西卫视" group-title="📡 卫视频道",山西卫视
+http://171.119.206.118:6000/rtp/226.0.2.152:9128$山西联通21
+#EXTINF:-1 tvg-name="山西卫视" group-title="📡 卫视频道",山西卫视
+http://111.196.130.121:20000/rtp/239.3.1.42:8172$北京联通31
 #EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
 https://txmov2.a.kwimgs.com/upic/2023/01/26/09/BMjAyMzAxMjYwOTE3NDVfNzM5MzQzNzIyXzk0NjI1OTUwNTA3XzBfMw==_b_B81ddda927d33445d544befd008e60109.mp4
 #EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
 http://120.76.248.139/live/bfgd/4200000092.m3u8
-#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
-http://183.236.43.98:4013/udp/239.77.1.19:5146$广东电信11
-#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
-http://39.77.23.205:4002/rtp/239.253.254.90:8000$山东联通11
-#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
-http://124.112.241.143:4022/rtp/238.1.78.161:7160$安徽电信11
-#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
-http://1.192.242.239:8188/rtp/239.16.20.98:10980$河南电信11
-#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
-http://171.119.206.69:6000/rtp/226.0.2.146:9080$山西联通11
-#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
-http://115.171.216.32:4000/udp/225.1.8.49:8048$北京电信11
-#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
-http://106.59.2.196:55555/udp/239.200.201.35:8768$云南电信11
-#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
-http://171.119.206.118:6000/rtp/226.0.2.146:9080$山西联通21
-#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
-http://171.8.138.13:8800/rtp/239.16.20.98:10980$河南电信21
-#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
-http://111.196.130.121:20000/rtp/239.3.1.142:8048$北京联通31
 #EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
 http://222.169.85.8:9901/tsfile/live/0125_1.m3u8?key=txiptv&playlive=1&authid=0$LR•12•IPV4『线路4』
 #EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
@@ -1485,35 +1599,59 @@ http://yanshifen.top:8889/udp/239.77.0.84:5146
 #EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
 http://61.145.188.90:50055/udp/239.77.0.84:5146
 #EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
+http://my1nas.dpdns.org:1234/608831231
+#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
+http://www.20260809.xyz:1234/608831231
+#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
+https://tv.zhuhongxuan.cn/608831231
+#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
+http://njdm.i234.me:1234/608831231
+#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
 http://bztv.tvbus.cc:8081/cdnlive/gdws.m3u8
 #EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
 http://by4.nty.tv189.cn/live/tm-ysgdws-4000k.m3u8
+#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
+http://39.77.23.205:4002/rtp/239.253.254.90:8000$山东联通11
+#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
+http://183.236.43.98:4013/udp/239.77.1.19:5146$广东电信11
+#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
+http://115.171.216.32:4000/udp/225.1.8.49:8048$北京电信11
+#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
+http://171.119.206.69:6000/rtp/226.0.2.146:9080$山西联通11
+#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
+http://1.192.242.239:8188/rtp/239.16.20.98:10980$河南电信11
+#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
+http://124.112.241.143:4022/rtp/238.1.78.161:7160$安徽电信11
+#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
+http://121.237.245.243:8888/rtp/239.49.8.13:9422$江苏电信12
+#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
+http://183.236.43.98:4013/udp/239.77.1.152:5146$广东电信12
+#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
+http://183.236.43.98:4013/udp/239.77.0.166:5146$广东电信13
+#EXTINF:-1 tvg-name="广东卫视" group-title="📡 卫视频道",广东卫视
+http://171.119.206.118:6000/rtp/226.0.2.146:9080$山西联通21
 #EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
 http://120.76.248.139/live/bfgd/4200000116.m3u8
 #EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
-http://39.77.23.205:4002/rtp/239.253.254.197:8000$山东联通11
-#EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
-http://124.112.241.143:4022/rtp/238.1.78.70:6432$安徽电信11
-#EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
-http://1.192.242.239:8188/rtp/239.16.20.84:10840$河南电信11
-#EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
-http://171.119.206.69:6000/rtp/226.0.2.231:9760$山西联通11
-#EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
-http://115.171.216.32:4000/rtp/225.1.8.152:8300$北京电信11
-#EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
-http://106.59.2.196:55555/rtp/239.200.200.53:8280$云南电信11
-#EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
-http://171.119.206.118:6000/rtp/226.0.2.231:9760$山西联通21
-#EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
-http://171.8.138.13:8800/rtp/239.16.20.84:10840$河南电信21
-#EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
-http://111.196.130.121:20000/rtp/239.3.1.39:8300$北京联通31
+http://183.11.239.36:808/hls/56/index.m3u8
 #EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
 http://120.76.248.139/live/bfgd/4200000116.m3u8$LR•7•IPV4『线路5』
 #EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
-http://183.11.239.36:808/hls/56/index.m3u8
-#EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
 http://bztv.tvbus.cc:8081/cdnlive/gxws.m3u8
+#EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
+http://39.77.23.205:4002/rtp/239.253.254.197:8000$山东联通11
+#EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
+http://115.171.216.32:4000/rtp/225.1.8.152:8300$北京电信11
+#EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
+http://171.119.206.69:6000/rtp/226.0.2.231:9760$山西联通11
+#EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
+http://106.59.2.196:55555/rtp/239.200.200.53:8280$云南电信11
+#EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
+http://1.192.242.239:8188/rtp/239.16.20.84:10840$河南电信11
+#EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
+http://124.112.241.143:4022/rtp/238.1.78.70:6432$安徽电信11
+#EXTINF:-1 tvg-name="广西卫视" group-title="📡 卫视频道",广西卫视
+http://171.119.206.118:6000/rtp/226.0.2.231:9760$山西联通21
 #EXTINF:-1 tvg-name="延边卫视" group-title="📡 卫视频道",延边卫视
 https://srs.iyb983.cn/video/CYS/index.m3u8
 #EXTINF:-1 tvg-name="延边卫视" group-title="📡 卫视频道",延边卫视
@@ -1531,65 +1669,53 @@ http://198.204.228.26/live/xjws.m3u8
 #EXTINF:-1 tvg-name="新疆卫视" group-title="📡 卫视频道",新疆卫视
 http://38.75.136.137:98/gslb/dsdqpub/xjws.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="新疆卫视" group-title="📡 卫视频道",新疆卫视
-http://124.112.241.143:4022/rtp/238.1.78.110:6752$安徽电信11
-#EXTINF:-1 tvg-name="新疆卫视" group-title="📡 卫视频道",新疆卫视
 http://218.84.12.186:8001/hls/main/playlist.m3u8?zxinjd;http://218.84.12.186:8001/hls/main/playlist.m3u8zxinjd$LR•12•IPV4『线路2』
 #EXTINF:-1 tvg-name="新疆卫视" group-title="📡 卫视频道",新疆卫视
 http://38.75.136.137:98/gslb/dsdqpub/xjws.m3u8?auth=testpub$LR•12•IPV4『线路7』
 #EXTINF:-1 tvg-name="新疆卫视" group-title="📡 卫视频道",新疆卫视
-http://218.84.12.186:8001/hls/main/playlist.m3u8?zxinjd;http://218.84.12.186:8001/hls/main/playlist.m3u8zxinjd
-#EXTINF:-1 tvg-name="新疆卫视" group-title="📡 卫视频道",新疆卫视
 http://222.169.85.8:9901/tsfile/live/0110_1.m3u8
+#EXTINF:-1 tvg-name="新疆卫视" group-title="📡 卫视频道",新疆卫视
+http://218.84.12.186:8001/hls/main/playlist.m3u8?zxinjd;http://218.84.12.186:8001/hls/main/playlist.m3u8zxinjd
 #EXTINF:-1 tvg-name="新疆卫视" group-title="📡 卫视频道",新疆卫视
 http://192.151.150.154/live/xjws.m3u8
 #EXTINF:-1 tvg-name="新疆卫视" group-title="📡 卫视频道",新疆卫视
 http://bztv.tvbus.cc:8081/cdnlive/xjws.m3u8
 #EXTINF:-1 tvg-name="新疆卫视" group-title="📡 卫视频道",新疆卫视
 http://by4.nty.tv189.cn/live/tm-dxxjws-4000k.m3u8
-#EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
-http://39.77.23.205:4002/rtp/239.253.254.83:8000$山东联通11
-#EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
-http://124.112.241.143:4022/rtp/238.1.78.165:7192$安徽电信11
-#EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
-http://1.192.242.239:8188/rtp/239.16.20.74:10740$河南电信11
-#EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
-http://171.119.206.69:6000/rtp/226.0.2.176:9320$山西联通11
-#EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
-http://115.171.216.32:4000/udp/225.1.8.44:8028$北京电信11
-#EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
-http://171.119.206.118:6000/rtp/226.0.2.176:9320$山西联通21
-#EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
-http://171.8.138.13:8800/rtp/239.16.20.74:10740$河南电信21
-#EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
-http://111.196.130.121:20000/rtp/239.3.1.135:8028$北京联通31
+#EXTINF:-1 tvg-name="新疆卫视" group-title="📡 卫视频道",新疆卫视
+http://124.112.241.143:4022/rtp/238.1.78.110:6752$安徽电信11
 #EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
 http://183.11.239.36:808/hls/38/index.m3u8
+#EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
+http://my1nas.dpdns.org:1234/623899368
+#EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
+http://www.20260809.xyz:1234/623899368
+#EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
+https://tv.zhuhongxuan.cn/623899368
+#EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
+http://njdm.i234.me:1234/623899368
 #EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
 http://bztv.tvbus.cc:8081/cdnlive/jsws.m3u8
 #EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
 http://173.208.212.130:8181/1080p/jsws.m3u8
+#EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
+http://183.236.43.98:4013/udp/239.77.1.18:5146$广东电信11
+#EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
+http://115.171.216.32:4000/udp/225.1.8.44:8028$北京电信11
+#EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
+http://171.119.206.69:6000/rtp/226.0.2.176:9320$山西联通11
+#EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
+http://1.192.242.239:8188/rtp/239.16.20.74:10740$河南电信11
+#EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
+http://124.112.241.143:4022/rtp/238.1.78.165:7192$安徽电信11
+#EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
+http://171.119.206.118:6000/rtp/226.0.2.176:9320$山西联通21
+#EXTINF:-1 tvg-name="江苏卫视" group-title="📡 卫视频道",江苏卫视
+http://111.196.130.121:20000/rtp/239.3.1.135:8028$北京联通31
 #EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
 https://live.264788.xyz/channel/jiangxiweishi?streamid=555198f31caa33506ac6abb70d788959&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk
 #EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
 http://112.27.5.218:9901/tsfile/live/faacts/0138_1.m3u8?key=txiptv&playlive=1&authid=0
-#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
-http://39.77.23.205:4002/rtp/239.253.254.47:8000$山东联通11
-#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
-http://124.112.241.143:4022/rtp/238.1.78.26:6136$安徽电信11
-#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
-http://1.192.242.239:8188/rtp/239.16.20.89:10890$河南电信11
-#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
-http://171.119.206.69:6000/rtp/226.0.2.54:8344$山西联通11
-#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
-http://115.171.216.32:4000/udp/225.1.8.171:8166$北京电信11
-#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
-http://106.59.2.196:55555/udp/239.200.201.79:8876$云南电信11
-#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
-http://115.171.216.32:4000/rtp/225.1.1.9:8164$北京电信12
-#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
-http://171.119.206.118:6000/rtp/226.0.2.54:8344$山西联通21
-#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
-http://171.8.138.13:8800/rtp/239.16.20.89:10890$河南电信21
 #EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
 http://112.27.5.218:9901/tsfile/live/faacts/0138_1.m3u8?key=txiptv&playlive=1&authid=0$LR•10•IPV4『线路5』
 #EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
@@ -1597,9 +1723,33 @@ https://live.264788.xyz/channel/jiangxiweishi?streamid=555198f31caa33506ac6abb70
 #EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
 http://113.25.252.226:9901/tsfile/live/1035_1.m3u8?key=txiptv&playlive=1&authid=0
 #EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
+http://my1nas.dpdns.org:1234/783847495
+#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
+http://www.20260809.xyz:1234/783847495
+#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
+https://tv.zhuhongxuan.cn/783847495
+#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
+http://njdm.i234.me:1234/783847495
+#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
 http://bztv.tvbus.cc:8081/cdnlive/jxws.m3u8
 #EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
 http://by4.nty.tv189.cn/live/tm-ysjxws-4000k.m3u8
+#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
+http://183.236.43.98:4013/udp/239.77.1.219:5146$广东电信11
+#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
+http://115.171.216.32:4000/udp/225.1.8.171:8166$北京电信11
+#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
+http://171.119.206.69:6000/rtp/226.0.2.54:8344$山西联通11
+#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
+http://1.192.242.239:8188/rtp/239.16.20.89:10890$河南电信11
+#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
+http://124.112.241.143:4022/rtp/238.1.78.26:6136$安徽电信11
+#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
+http://115.171.216.32:4000/rtp/225.1.1.9:8164$北京电信12
+#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
+http://171.119.206.118:6000/rtp/226.0.2.54:8344$山西联通21
+#EXTINF:-1 tvg-name="江西卫视" group-title="📡 卫视频道",江西卫视
+http://111.196.130.121:20000/rtp/239.3.1.123:8164$北京联通31
 #EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
 http://120.76.248.139/live/bfgd/4200000108.m3u8
 #EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
@@ -1607,75 +1757,73 @@ http://204.12.221.218:8181/3m1080p/hews.m3u8
 #EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
 https://event.pull.hebtv.com/live/live101.m3u8
 #EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
-http://183.236.43.98:4013/udp/239.77.1.214:5146$广东电信11
-#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
-http://39.77.23.205:4002/rtp/239.253.254.112:8000$山东联通11
-#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
-http://124.112.241.143:4022/rtp/238.1.78.245:7832$安徽电信11
-#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
-http://1.192.242.239:8188/rtp/239.16.20.88:10880$河南电信11
-#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
-http://171.119.206.69:6000/rtp/226.0.2.178:9336$山西联通11
-#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
-http://115.171.216.32:4000/udp/225.1.8.76:8002$北京电信11
-#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
-http://171.119.206.118:6000/rtp/226.0.2.178:9336$山西联通21
-#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
-http://171.8.138.13:8800/rtp/239.16.20.88:10880$河南电信21
-#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
-http://111.196.130.121:20000/rtp/239.3.1.148:8072$北京联通31
-#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
 http://120.76.248.139/live/bfgd/4200000108.m3u8$LR•7•IPV4『线路1』
 #EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
 http://event.pull.hebtv.com/jishi/weishi_tingyun.m3u8
 #EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
+http://my1nas.dpdns.org:1234/962042070
+#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
+http://www.20260809.xyz:1234/962042070
+#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
+https://tv.zhuhongxuan.cn/962042070
+#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
+http://njdm.i234.me:1234/962042070
+#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
 http://bztv.tvbus.cc:8081/cdnlive/hews.m3u8
+#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
+http://39.77.23.205:4002/rtp/239.253.254.112:8000$山东联通11
+#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
+http://183.236.43.98:4013/udp/239.77.1.214:5146$广东电信11
+#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
+http://115.171.216.32:4000/udp/225.1.8.76:8002$北京电信11
+#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
+http://171.119.206.69:6000/rtp/226.0.2.178:9336$山西联通11
+#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
+http://1.192.242.239:8188/rtp/239.16.20.88:10880$河南电信11
+#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
+http://124.112.241.143:4022/rtp/238.1.78.245:7832$安徽电信11
+#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
+http://171.119.206.118:6000/rtp/226.0.2.178:9336$山西联通21
+#EXTINF:-1 tvg-name="河北卫视" group-title="📡 卫视频道",河北卫视
+http://111.196.130.121:20000/rtp/239.3.1.148:8072$北京联通31
 #EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
 http://111.59.139.82:11888/tsfile/live/0139_1.m3u8?key=txiptv&playlive=1&authid=0
-#EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
-http://39.77.23.205:4002/rtp/239.253.254.190:8000$山东联通11
-#EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
-http://124.112.241.143:4022/rtp/238.1.79.65:4632$安徽电信11
-#EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
-http://1.192.242.239:8188/rtp/239.16.20.21:10210$河南电信11
-#EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
-http://171.119.206.69:6000/rtp/226.0.2.52:8328$山西联通11
-#EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
-http://171.119.206.118:6000/rtp/226.0.2.52:8328$山西联通21
-#EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
-http://171.8.138.13:8800/rtp/239.16.20.21:10210$河南电信21
 #EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
 http://1.94.31.214/php/hntv.php?id=hnws$LR•12•IPV4『线路3』
 #EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
 http://111.59.139.82:11888/tsfile/live/0139_1.m3u8?key=txiptv&playlive=1&authid=0$LR•12•IPV4『线路6』
 #EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
+http://my1nas.dpdns.org:1234/790187291
+#EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
+http://www.20260809.xyz:1234/790187291
+#EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
+https://tv.zhuhongxuan.cn/790187291
+#EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
+http://njdm.i234.me:1234/790187291
+#EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
 http://bztv.tvbus.cc:8081/cdnlive/haws.m3u8
 #EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
 http://by4.nty.tv189.cn/live/tm-dxhenanws-4000k.m3u8
+#EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
+http://39.77.23.205:4002/rtp/239.253.254.190:8000$山东联通11
+#EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
+http://183.236.43.98:4013/udp/239.77.1.229:5146$广东电信11
+#EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
+http://171.119.206.69:6000/rtp/226.0.2.52:8328$山西联通11
+#EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
+http://106.59.2.196:55555/udp/239.200.201.158:8412$云南电信11
+#EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
+http://1.192.242.239:8188/rtp/239.16.20.21:10210$河南电信11
+#EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
+http://124.112.241.143:4022/rtp/238.1.79.65:4632$安徽电信11
+#EXTINF:-1 tvg-name="河南卫视" group-title="📡 卫视频道",河南卫视
+http://171.119.206.118:6000/rtp/226.0.2.52:8328$山西联通21
 #EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
 https://ali-m-l.cztv.com/channels/lantian/channel001/1080p.m3u8
 #EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
 http://ali-m-l.cztv.com/channels/lantian/channel01/1080p.m3u8
 #EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
-http://183.236.43.98:4013/udp/239.77.1.33:5146$广东电信11
-#EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
-http://39.77.23.205:4002/rtp/239.253.254.84:8000$山东联通11
-#EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
-http://124.112.241.143:4022/rtp/238.1.78.164:7184$安徽电信11
-#EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
-http://1.192.242.239:8188/rtp/239.16.20.71:10710$河南电信11
-#EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
-http://171.119.206.69:6000/rtp/226.0.2.144:9064$山西联通11
-#EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
-http://115.171.216.32:4000/udp/225.1.8.46:8036$北京电信11
-#EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
-http://106.59.2.196:55555/udp/239.200.200.141:8724$云南电信11
-#EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
-http://171.119.206.118:6000/rtp/226.0.2.144:9064$山西联通21
-#EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
-http://171.8.138.13:8800/rtp/239.16.20.71:10710$河南电信21
-#EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
-http://111.196.130.121:20000/rtp/239.3.1.137:8036$北京联通31
+http://183.11.239.36:808/hls/37/index.m3u8
 #EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
 https://ali-m-l.cztv.com/channels/lantian/channel001/1080p.m3u8$LR•16•IPV4『线路3』
 #EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
@@ -1693,43 +1841,75 @@ http://ali-m-l.cztv.com/channels/lantian/channel01/1080p.m3u8$LR•16•IPV4『�
 #EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
 https://ali-m-l.cztv.com/channels/lantian/channel001/1080p.m3u8?$LR•16•IPV4『线路12』
 #EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
-http://183.11.239.36:808/hls/37/index.m3u8
+http://ali-vl.cztv.com/channels/lantian/channel001/360p.m3u8$LR•16•IPV4『线路13』
 #EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
 http://ali-xwl.cztv.com/live/channel011080Plxw.m3u8
 #EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
 http://bztv.tvbus.cc:8081/cdnlive/zjws.m3u8
+#EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
+http://183.236.43.98:4013/udp/239.77.1.33:5146$广东电信11
+#EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
+http://115.171.216.32:4000/udp/225.1.8.46:8036$北京电信11
+#EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
+http://171.119.206.69:6000/rtp/226.0.2.144:9064$山西联通11
+#EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
+http://106.59.2.196:55555/udp/239.200.200.141:8724$云南电信11
+#EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
+http://1.192.242.239:8188/rtp/239.16.20.71:10710$河南电信11
+#EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
+http://124.112.241.143:4022/rtp/238.1.78.164:7184$安徽电信11
+#EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
+http://171.119.206.118:6000/rtp/226.0.2.144:9064$山西联通21
+#EXTINF:-1 tvg-name="浙江卫视" group-title="📡 卫视频道",浙江卫视
+http://111.196.130.121:20000/rtp/239.3.1.137:8036$北京联通31
 #EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
 http://120.76.248.139/live/bfgd/4200000473.m3u8
 #EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
-http://39.77.23.205:4002/rtp/239.253.254.179:8000$山东联通11
-#EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
-http://124.112.241.143:4022/rtp/238.1.79.49:4504$安徽电信11
-#EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
-http://1.192.242.239:8188/rtp/239.16.20.97:10970$河南电信11
-#EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
-http://171.119.206.69:6000/rtp/226.0.2.212:9608$山西联通11
-#EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
-http://115.171.216.32:4000/rtp/225.1.8.158:8304$北京电信11
-#EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
-http://171.119.206.118:6000/rtp/226.0.2.212:9608$山西联通21
-#EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
-http://171.8.138.13:8800/rtp/239.16.20.97:10970$河南电信21
-#EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
-http://111.196.130.121:20000/rtp/239.3.1.45:8304$北京联通31
+http://183.11.239.36:808/hls/124/index.m3u8
 #EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
 http://nn.7x9d.cn/地方台8563/海南.php?id=hnws&?key=txiptv$LR•8•IPV4『线路2』
 #EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
 http://120.76.248.139/live/bfgd/4200000473.m3u8$LR•8•IPV4『线路3』
 #EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
-http://183.11.239.36:808/hls/124/index.m3u8
+http://my1nas.dpdns.org:1234/947472502
+#EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
+http://www.20260809.xyz:1234/947472502
+#EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
+https://tv.zhuhongxuan.cn/947472502
+#EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
+http://njdm.i234.me:1234/947472502
 #EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
 http://by4.nty.tv189.cn/live/tm-yshnws-4000k.m3u8
+#EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
+http://39.77.23.205:4002/rtp/239.253.254.179:8000$山东联通11
+#EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
+http://115.171.216.32:4000/rtp/225.1.8.158:8304$北京电信11
+#EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
+http://171.119.206.69:6000/rtp/226.0.2.212:9608$山西联通11
+#EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
+http://1.192.242.239:8188/rtp/239.16.20.97:10970$河南电信11
+#EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
+http://124.112.241.143:4022/rtp/238.1.79.49:4504$安徽电信11
+#EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
+http://171.119.206.118:6000/rtp/226.0.2.212:9608$山西联通21
+#EXTINF:-1 tvg-name="海南卫视" group-title="📡 卫视频道",海南卫视
+http://111.196.130.121:20000/rtp/239.3.1.45:8304$北京联通31
 #EXTINF:-1 tvg-name="海峡卫视" group-title="📡 卫视频道",海峡卫视
 http://38.64.72.148:80/hls/modn/list/4009/playlist.m3u8
+#EXTINF:-1 tvg-name="海峡卫视" group-title="📡 卫视频道",海峡卫视
+http://8.138.7.223/tv/hxws.m3u8$LR•2•IPV4『线路2』
 #EXTINF:-1 tvg-name="海峡卫视" group-title="📡 卫视频道",海峡卫视
 https://168.sryze.cc/163189/hxws
 #EXTINF:-1 tvg-name="海峡卫视" group-title="📡 卫视频道",海峡卫视
 http://smartzhu.cn:1234/849119120
+#EXTINF:-1 tvg-name="海峡卫视" group-title="📡 卫视频道",海峡卫视
+http://my1nas.dpdns.org:1234/849119120
+#EXTINF:-1 tvg-name="海峡卫视" group-title="📡 卫视频道",海峡卫视
+http://www.20260809.xyz:1234/849119120
+#EXTINF:-1 tvg-name="海峡卫视" group-title="📡 卫视频道",海峡卫视
+https://tv.zhuhongxuan.cn/849119120
+#EXTINF:-1 tvg-name="海峡卫视" group-title="📡 卫视频道",海峡卫视
+http://njdm.i234.me:1234/849119120
 #EXTINF:-1 tvg-name="海峡卫视" group-title="📡 卫视频道",海峡卫视
 http://by4.nty.tv189.cn/live/tm-xphxws-4000k.m3u8
 #EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
@@ -1737,107 +1917,103 @@ http://38.64.72.148:80/hls/modn/list/4007/playlist.m3u8
 #EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
 http://120.76.248.139/live/bfgd/4200000100.m3u8
 #EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
-http://183.236.43.98:4013/udp/239.77.1.3:5146$广东电信11
-#EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
-http://39.77.23.205:4002/rtp/239.253.254.91:8000$山东联通11
-#EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
-http://124.112.241.143:4022/rtp/238.1.78.156:7120$安徽电信11
-#EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
-http://1.192.242.239:8188/rtp/239.16.20.77:10770$河南电信11
-#EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
-http://171.119.206.69:6000/rtp/226.0.2.147:9088$山西联通11
-#EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
-http://115.171.216.32:4000/udp/225.1.8.43:8020$北京电信11
-#EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
-http://183.236.43.98:4013/udp/239.77.0.130:5146$广东电信12
-#EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
-http://121.237.245.243:8888/rtp/239.49.8.15:9430$江苏电信12
-#EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
-http://171.119.206.118:6000/rtp/226.0.2.147:9088$山西联通21
-#EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
-http://171.8.138.13:8800/rtp/239.16.20.77:10770$河南电信21
-#EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
-http://111.196.130.121:20000/rtp/239.3.1.134:8020$北京联通31
+http://183.11.239.36:808/hls/45/index.m3u8
 #EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
 http://120.76.248.139/live/bfgd/4200000100.m3u8$LR•13•IPV4『线路7』
 #EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
-http://183.11.239.36:808/hls/45/index.m3u8
-#EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
 http://bztv.tvbus.cc:8081/cdnlive/szws.m3u8
+#EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
+http://39.77.23.205:4002/rtp/239.253.254.91:8000$山东联通11
+#EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
+http://183.236.43.98:4013/udp/239.77.1.3:5146$广东电信11
+#EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
+http://115.171.216.32:4000/udp/225.1.8.43:8020$北京电信11
+#EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
+http://171.119.206.69:6000/rtp/226.0.2.147:9088$山西联通11
+#EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
+http://1.192.242.239:8188/rtp/239.16.20.77:10770$河南电信11
+#EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
+http://124.112.241.143:4022/rtp/238.1.78.156:7120$安徽电信11
+#EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
+http://183.236.43.98:4013/udp/239.77.0.130:5146$广东电信12
+#EXTINF:-1 tvg-name="深圳卫视" group-title="📡 卫视频道",深圳卫视
+http://171.119.206.118:6000/rtp/226.0.2.147:9088$山西联通21
 #EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
 http://120.76.248.139/live/bfgd/4200000102.m3u8
 #EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
-http://183.236.43.98:4013/udp/239.77.0.128:5146$广东电信11
-#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
-http://39.77.23.205:4002/rtp/239.253.254.88:8000$山东联通11
-#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
-http://124.112.241.143:4022/rtp/238.1.78.168:7216$安徽电信11
-#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
-http://1.192.242.239:8188/rtp/239.16.20.87:10870$河南电信11
-#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
-http://171.119.206.69:6000/rtp/226.0.2.150:9112$山西联通11
-#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
-http://115.171.216.32:4000/udp/225.1.8.47:8044$北京电信11
-#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
-http://106.59.2.196:55555/rtp/239.200.200.68:8772$云南电信11
-#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
-http://171.119.206.118:6000/rtp/226.0.2.150:9112$山西联通21
-#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
-http://171.8.138.13:8800/rtp/239.16.20.87:10870$河南电信21
-#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
-http://111.196.130.121:20000/rtp/239.3.1.138:8044$北京联通31
-#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
 http://120.76.248.139/live/bfgd/4200000102.m3u8$LR•7•IPV4『线路5』
+#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
+http://my1nas.dpdns.org:1234/947472496
+#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
+http://www.20260809.xyz:1234/947472496
+#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
+https://tv.zhuhongxuan.cn/947472496
+#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
+http://njdm.i234.me:1234/947472496
 #EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
 http://bztv.tvbus.cc:8081/cdnlive/hbws.m3u8
 #EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
 http://by4.nty.tv189.cn/live/tm-dxhbws-4000k.m3u8
+#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
+http://39.77.23.205:4002/rtp/239.253.254.88:8000$山东联通11
+#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
+http://183.236.43.98:4013/udp/239.77.0.128:5146$广东电信11
+#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
+http://115.171.216.32:4000/udp/225.1.8.47:8044$北京电信11
+#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
+http://171.119.206.69:6000/rtp/226.0.2.150:9112$山西联通11
+#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
+http://1.192.242.239:8188/rtp/239.16.20.87:10870$河南电信11
+#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
+http://124.112.241.143:4022/rtp/238.1.78.168:7216$安徽电信11
+#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
+http://171.119.206.118:6000/rtp/226.0.2.150:9112$山西联通21
+#EXTINF:-1 tvg-name="湖北卫视" group-title="📡 卫视频道",湖北卫视
+http://111.196.130.121:20000/rtp/239.3.1.138:8044$北京联通31
 #EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
 https://txmov2.a.kwimgs.com/bs3/video-hls/5199687338554291078_hlsb.m3u8
-#EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
-http://183.236.43.98:4013/udp/239.77.1.5:5146$广东电信11
-#EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
-http://39.77.23.205:4002/rtp/239.253.254.82:8000$山东联通11
-#EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
-http://124.112.241.143:4022/rtp/238.1.78.160:7152$安徽电信11
-#EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
-http://171.119.206.69:6000/rtp/226.0.2.143:9056$山西联通11
-#EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
-http://115.171.216.32:4000/udp/225.1.8.41:8012$北京电信11
-#EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
-http://106.59.2.196:55555/rtp/239.200.200.6:8012$云南电信11
-#EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
-http://121.237.245.243:8888/rtp/239.49.8.12:9418$江苏电信12
-#EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
-http://171.119.206.118:6000/rtp/226.0.2.143:9056$山西联通21
-#EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
-http://111.196.130.121:20000/rtp/239.3.1.132:8012$北京联通31
 #EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
 http://bztv.tvbus.cc:8081/cdnlive/hnws.m3u8
 #EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
 http://173.208.212.130:8181/1080p/hnws.m3u8
 #EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
 http://by4.nty.tv189.cn/live/tm-yshnws-4000k.m3u8
+#EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
+http://39.77.23.205:4002/rtp/239.253.254.82:8000$山东联通11
+#EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
+http://183.236.43.98:4013/udp/239.77.1.5:5146$广东电信11
+#EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
+http://115.171.216.32:4000/udp/225.1.8.41:8012$北京电信11
+#EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
+http://171.119.206.69:6000/rtp/226.0.2.143:9056$山西联通11
+#EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
+http://106.59.2.196:55555/rtp/239.200.200.6:8012$云南电信11
+#EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
+http://124.112.241.143:4022/rtp/238.1.78.160:7152$安徽电信11
+#EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
+http://171.119.206.118:6000/rtp/226.0.2.143:9056$山西联通21
+#EXTINF:-1 tvg-name="湖南卫视" group-title="📡 卫视频道",湖南卫视
+http://111.196.130.121:20000/rtp/239.3.1.132:8012$北京联通31
 #EXTINF:-1 tvg-name="甘肃卫视" group-title="📡 卫视频道",甘肃卫视
 http://120.76.248.139/live/bfgd/4200000119.m3u8
 #EXTINF:-1 tvg-name="甘肃卫视" group-title="📡 卫视频道",甘肃卫视
-http://39.77.23.205:4002/rtp/239.253.254.74:8000$山东联通11
-#EXTINF:-1 tvg-name="甘肃卫视" group-title="📡 卫视频道",甘肃卫视
-http://124.112.241.143:4022/rtp/238.1.79.36:4400$安徽电信11
-#EXTINF:-1 tvg-name="甘肃卫视" group-title="📡 卫视频道",甘肃卫视
-http://1.192.242.239:8188/rtp/239.16.20.102:11020$河南电信11
-#EXTINF:-1 tvg-name="甘肃卫视" group-title="📡 卫视频道",甘肃卫视
-http://106.59.2.196:55555/udp/239.200.200.186:8356$云南电信11
-#EXTINF:-1 tvg-name="甘肃卫视" group-title="📡 卫视频道",甘肃卫视
-http://171.8.138.13:8800/rtp/239.16.20.102:11020$河南电信21
+http://183.11.239.36:808/hls/119/index.m3u8
 #EXTINF:-1 tvg-name="甘肃卫视" group-title="📡 卫视频道",甘肃卫视
 http://120.76.248.139/live/bfgd/4200000119.m3u8$LR•7•IPV4『线路5』
 #EXTINF:-1 tvg-name="甘肃卫视" group-title="📡 卫视频道",甘肃卫视
 http://218.13.170.98:9901/tsfile/live/0141_1.m3u8
 #EXTINF:-1 tvg-name="甘肃卫视" group-title="📡 卫视频道",甘肃卫视
-http://183.11.239.36:808/hls/119/index.m3u8
-#EXTINF:-1 tvg-name="甘肃卫视" group-title="📡 卫视频道",甘肃卫视
 http://bztv.tvbus.cc:8081/cdnlive/gsws.m3u8
+#EXTINF:-1 tvg-name="甘肃卫视" group-title="📡 卫视频道",甘肃卫视
+http://39.77.23.205:4002/rtp/239.253.254.74:8000$山东联通11
+#EXTINF:-1 tvg-name="甘肃卫视" group-title="📡 卫视频道",甘肃卫视
+http://183.236.43.98:4013/udp/239.77.0.189:5146$广东电信11
+#EXTINF:-1 tvg-name="甘肃卫视" group-title="📡 卫视频道",甘肃卫视
+http://106.59.2.196:55555/udp/239.200.200.186:8356$云南电信11
+#EXTINF:-1 tvg-name="甘肃卫视" group-title="📡 卫视频道",甘肃卫视
+http://1.192.242.239:8188/rtp/239.16.20.102:11020$河南电信11
+#EXTINF:-1 tvg-name="甘肃卫视" group-title="📡 卫视频道",甘肃卫视
+http://124.112.241.143:4022/rtp/238.1.79.36:4400$安徽电信11
 #EXTINF:-1 tvg-name="西藏卫视" group-title="📡 卫视频道",西藏卫视
 https://live.264788.xyz/channel/xizangweishi?streamid=4b4e8ea919f1cfd5e43deed1d1675251&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk
 #EXTINF:-1 tvg-name="西藏卫视" group-title="📡 卫视频道",西藏卫视
@@ -1849,7 +2025,7 @@ http://112.27.5.218:9901/tsfile/live/0111_1.m3u8?key=txiptv&playlive=1&authid=0
 #EXTINF:-1 tvg-name="西藏卫视" group-title="📡 卫视频道",西藏卫视
 http://120.76.248.139/live/bfgd/4200000121.m3u8
 #EXTINF:-1 tvg-name="西藏卫视" group-title="📡 卫视频道",西藏卫视
-http://124.112.241.143:4022/rtp/238.1.78.101:6680$安徽电信11
+http://183.11.239.36:808/hls/64/index.m3u8
 #EXTINF:-1 tvg-name="西藏卫视" group-title="📡 卫视频道",西藏卫视
 http://112.27.5.218:9901/tsfile/live/0111_1.m3u8?key=txiptv&playlive=1&authid=0$LR•6•IPV4『线路2』
 #EXTINF:-1 tvg-name="西藏卫视" group-title="📡 卫视频道",西藏卫视
@@ -1857,97 +2033,117 @@ https://live.264788.xyz/channel/xizangweishi?streamid=4b4e8ea919f1cfd5e43deed1d1
 #EXTINF:-1 tvg-name="西藏卫视" group-title="📡 卫视频道",西藏卫视
 http://120.76.248.139/live/bfgd/4200000121.m3u8$LR•6•IPV4『线路6』
 #EXTINF:-1 tvg-name="西藏卫视" group-title="📡 卫视频道",西藏卫视
-http://183.11.239.36:808/hls/64/index.m3u8
-#EXTINF:-1 tvg-name="西藏卫视" group-title="📡 卫视频道",西藏卫视
 http://by4.nty.tv189.cn/live/tm-dxxzws-4000k.m3u8
+#EXTINF:-1 tvg-name="西藏卫视" group-title="📡 卫视频道",西藏卫视
+http://124.112.241.143:4022/rtp/238.1.78.101:6680$安徽电信11
 #EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
 https://live.264788.xyz/channel/guizhouweishi?streamid=091bd59ea031989839c23459bb8cc9d4&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk
 #EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
 http://204.12.221.218:8181/3m1080p/gzws.m3u8
 #EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
-http://39.77.23.205:4002/rtp/239.253.254.113:8000$山东联通11
-#EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
-http://124.112.241.143:4022/rtp/238.1.78.244:7824$安徽电信11
-#EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
-http://1.192.242.239:8188/rtp/239.16.20.81:10810$河南电信11
-#EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
-http://171.119.206.69:6000/rtp/226.0.2.180:9352$山西联通11
-#EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
-http://115.171.216.32:4000/udp/225.1.8.77:8076$北京电信11
-#EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
-http://106.59.2.196:55555/udp/239.200.201.119:8788$云南电信11
-#EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
-http://171.119.206.118:6000/rtp/226.0.2.180:9352$山西联通21
-#EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
-http://171.8.138.13:8800/rtp/239.16.20.81:10810$河南电信21
-#EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
-http://111.196.130.121:20000/rtp/239.3.1.149:8076$北京联通31
-#EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
 https://live.264788.xyz/channel/guizhouweishi?streamid=091bd59ea031989839c23459bb8cc9d4&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk$LR•7•IPV4『线路3』
 #EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
 http://bztv.tvbus.cc:8081/cdnlive/gzws.m3u8
+#EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
+http://39.77.23.205:4002/rtp/239.253.254.113:8000$山东联通11
+#EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
+http://183.236.43.98:4013/udp/239.77.1.221:5146$广东电信11
+#EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
+http://115.171.216.32:4000/udp/225.1.8.77:8076$北京电信11
+#EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
+http://171.119.206.69:6000/rtp/226.0.2.180:9352$山西联通11
+#EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
+http://1.192.242.239:8188/rtp/239.16.20.81:10810$河南电信11
+#EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
+http://124.112.241.143:4022/rtp/238.1.78.244:7824$安徽电信11
+#EXTINF:-1 tvg-name="贵州卫视" group-title="📡 卫视频道",贵州卫视
+http://171.119.206.118:6000/rtp/226.0.2.180:9352$山西联通21
 #EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
 http://204.12.221.218:8181/3m1080p/lnws.m3u8
 #EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
-http://39.77.23.205:4002/rtp/239.253.254.92:8000$山东联通11
+http://my1nas.dpdns.org:1234/630291707
 #EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
-http://124.112.241.143:4022/rtp/238.1.78.21:6096$安徽电信11
+http://www.20260809.xyz:1234/630291707
 #EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
-http://1.192.242.239:8188/rtp/239.16.20.95:10950$河南电信11
+https://tv.zhuhongxuan.cn/630291707
 #EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
-http://171.119.206.69:6000/rtp/226.0.2.173:9296$山西联通11
-#EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
-http://115.171.216.32:4000/udp/225.1.8.51:8056$北京电信11
-#EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
-http://106.59.2.196:55555/udp/239.200.200.167:8736$云南电信11
-#EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
-http://171.119.206.118:6000/rtp/226.0.2.173:9296$山西联通21
-#EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
-http://171.8.138.13:8800/rtp/239.16.20.95:10950$河南电信21
-#EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
-http://111.196.130.121:20000/rtp/239.3.1.210:8056$北京联通31
+http://njdm.i234.me:1234/630291707
 #EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
 http://bztv.tvbus.cc:8081/cdnlive/lnws.m3u8
 #EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
 http://by4.nty.tv189.cn/live/tm-dxlnws-4000k.m3u8
+#EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
+http://39.77.23.205:4002/rtp/239.253.254.92:8000$山东联通11
+#EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
+http://183.236.43.98:4013/udp/239.77.1.103:5146$广东电信11
+#EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
+http://115.171.216.32:4000/udp/225.1.8.51:8056$北京电信11
+#EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
+http://171.119.206.69:6000/rtp/226.0.2.173:9296$山西联通11
+#EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
+http://106.59.2.196:55555/udp/239.200.200.167:8736$云南电信11
+#EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
+http://1.192.242.239:8188/rtp/239.16.20.95:10950$河南电信11
+#EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
+http://124.112.241.143:4022/rtp/238.1.78.21:6096$安徽电信11
+#EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
+http://171.119.206.118:6000/rtp/226.0.2.173:9296$山西联通21
+#EXTINF:-1 tvg-name="辽宁卫视" group-title="📡 卫视频道",辽宁卫视
+http://111.196.130.121:20000/rtp/239.3.1.210:8056$北京联通31
 #EXTINF:-1 tvg-name="重庆卫视" group-title="📡 卫视频道",重庆卫视
-http://39.77.23.205:4002/rtp/239.253.254.38:8000$山东联通11
+http://my1nas.dpdns.org:1234/738910914
 #EXTINF:-1 tvg-name="重庆卫视" group-title="📡 卫视频道",重庆卫视
-http://124.112.241.143:4022/rtp/238.1.78.31:6176$安徽电信11
+http://www.20260809.xyz:1234/738910914
 #EXTINF:-1 tvg-name="重庆卫视" group-title="📡 卫视频道",重庆卫视
-http://1.192.242.239:8188/rtp/239.16.20.79:10790$河南电信11
+https://tv.zhuhongxuan.cn/738910914
 #EXTINF:-1 tvg-name="重庆卫视" group-title="📡 卫视频道",重庆卫视
-http://171.119.206.69:6000/rtp/226.0.2.174:9304$山西联通11
-#EXTINF:-1 tvg-name="重庆卫视" group-title="📡 卫视频道",重庆卫视
-http://115.171.216.32:4000/udp/225.1.8.172:8162$北京电信11
-#EXTINF:-1 tvg-name="重庆卫视" group-title="📡 卫视频道",重庆卫视
-http://171.119.206.118:6000/rtp/226.0.2.174:9304$山西联通21
-#EXTINF:-1 tvg-name="重庆卫视" group-title="📡 卫视频道",重庆卫视
-http://171.8.138.13:8800/rtp/239.16.20.79:10790$河南电信21
-#EXTINF:-1 tvg-name="重庆卫视" group-title="📡 卫视频道",重庆卫视
-http://111.196.130.121:20000/rtp/239.3.1.122:8160$北京联通31
+http://njdm.i234.me:1234/738910914
 #EXTINF:-1 tvg-name="重庆卫视" group-title="📡 卫视频道",重庆卫视
 http://bztv.tvbus.cc:8081/cdnlive/cqws.m3u8
 #EXTINF:-1 tvg-name="重庆卫视" group-title="📡 卫视频道",重庆卫视
 http://by4.nty.tv189.cn/live/tm-xpcqws-4000k.m3u8
+#EXTINF:-1 tvg-name="重庆卫视" group-title="📡 卫视频道",重庆卫视
+http://39.77.23.205:4002/rtp/239.253.254.38:8000$山东联通11
+#EXTINF:-1 tvg-name="重庆卫视" group-title="📡 卫视频道",重庆卫视
+http://183.236.43.98:4013/udp/239.77.1.162:5146$广东电信11
+#EXTINF:-1 tvg-name="重庆卫视" group-title="📡 卫视频道",重庆卫视
+http://115.171.216.32:4000/udp/225.1.8.172:8162$北京电信11
+#EXTINF:-1 tvg-name="重庆卫视" group-title="📡 卫视频道",重庆卫视
+http://171.119.206.69:6000/rtp/226.0.2.174:9304$山西联通11
+#EXTINF:-1 tvg-name="重庆卫视" group-title="📡 卫视频道",重庆卫视
+http://106.59.2.196:55555/rtp/239.200.200.49:8264$云南电信11
+#EXTINF:-1 tvg-name="重庆卫视" group-title="📡 卫视频道",重庆卫视
+http://1.192.242.239:8188/rtp/239.16.20.79:10790$河南电信11
+#EXTINF:-1 tvg-name="重庆卫视" group-title="📡 卫视频道",重庆卫视
+http://124.112.241.143:4022/rtp/238.1.78.31:6176$安徽电信11
+#EXTINF:-1 tvg-name="重庆卫视" group-title="📡 卫视频道",重庆卫视
+http://171.119.206.118:6000/rtp/226.0.2.174:9304$山西联通21
 #EXTINF:-1 tvg-name="陕西卫视" group-title="📡 卫视频道",陕西卫视
 https://live.264788.xyz/channel/shaanxiweishi?streamid=9dc887dba8ecb4e4143baf4f2373800c&livekey=01WgOR41rriMmMkzNsd0UoaxJRwetZdxIvtVk
 #EXTINF:-1 tvg-name="陕西卫视" group-title="📡 卫视频道",陕西卫视
-http://124.112.241.143:4022/rtp/238.1.78.88:6576$安徽电信11
+http://183.11.239.36:808/hls/58/index.m3u8
 #EXTINF:-1 tvg-name="陕西卫视" group-title="📡 卫视频道",陕西卫视
-http://1.192.242.239:8188/rtp/239.16.20.83:10830$河南电信11
+http://my1nas.dpdns.org:1234/738910838
+#EXTINF:-1 tvg-name="陕西卫视" group-title="📡 卫视频道",陕西卫视
+http://www.20260809.xyz:1234/738910838
+#EXTINF:-1 tvg-name="陕西卫视" group-title="📡 卫视频道",陕西卫视
+https://tv.zhuhongxuan.cn/738910838
+#EXTINF:-1 tvg-name="陕西卫视" group-title="📡 卫视频道",陕西卫视
+http://njdm.i234.me:1234/738910838
+#EXTINF:-1 tvg-name="陕西卫视" group-title="📡 卫视频道",陕西卫视
+http://bztv.tvbus.cc:8081/cdnlive/snws.m3u8
+#EXTINF:-1 tvg-name="陕西卫视" group-title="📡 卫视频道",陕西卫视
+http://by4.nty.tv189.cn/live/tm-yssxws-4000k.m3u8
 #EXTINF:-1 tvg-name="陕西卫视" group-title="📡 卫视频道",陕西卫视
 http://115.171.216.32:4000/rtp/225.1.8.154:8140$北京电信11
 #EXTINF:-1 tvg-name="陕西卫视" group-title="📡 卫视频道",陕西卫视
 http://106.59.2.196:55555/rtp/239.200.200.55:8288$云南电信11
 #EXTINF:-1 tvg-name="陕西卫视" group-title="📡 卫视频道",陕西卫视
-http://171.8.138.13:8800/rtp/239.16.20.83:10830$河南电信21
+http://1.192.242.239:8188/rtp/239.16.20.83:10830$河南电信11
 #EXTINF:-1 tvg-name="陕西卫视" group-title="📡 卫视频道",陕西卫视
-http://183.11.239.36:808/hls/58/index.m3u8
+http://124.112.241.143:4022/rtp/238.1.78.88:6576$安徽电信11
 #EXTINF:-1 tvg-name="陕西卫视" group-title="📡 卫视频道",陕西卫视
-http://bztv.tvbus.cc:8081/cdnlive/snws.m3u8
-#EXTINF:-1 tvg-name="陕西卫视" group-title="📡 卫视频道",陕西卫视
-http://by4.nty.tv189.cn/live/tm-yssxws-4000k.m3u8
+http://111.196.130.121:20000/rtp/239.3.1.41:8140$北京联通31
 #EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
 http://107.150.60.122/live/qhws.m3u8
 #EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
@@ -1955,19 +2151,15 @@ http://63.141.230.178:82/gslb/zbdq5.m3u8?id=qhws
 #EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
 http://120.76.248.139/live/bfgd/4200000111.m3u8
 #EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
-http://39.77.23.205:4002/rtp/239.253.254.195:8000$山东联通11
-#EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
-http://124.112.241.143:4022/rtp/238.1.78.102:6688$安徽电信11
-#EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
-http://1.192.242.239:8188/rtp/239.16.20.101:11010$河南电信11
-#EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
-http://115.171.216.32:4000/rtp/225.1.8.157:8184$北京电信11
-#EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
-http://106.59.2.196:55555/rtp/239.200.200.58:8300$云南电信11
-#EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
-http://171.8.138.13:8800/rtp/239.16.20.101:11010$河南电信21
-#EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
 http://120.76.248.139/live/bfgd/4200000111.m3u8$LR•7•IPV4『线路2』
+#EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
+http://my1nas.dpdns.org:1234/947472506
+#EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
+http://www.20260809.xyz:1234/947472506
+#EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
+https://tv.zhuhongxuan.cn/947472506
+#EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
+http://njdm.i234.me:1234/947472506
 #EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
 http://38.75.136.137:98/gslb/dsdqpub/qhws.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
@@ -1978,32 +2170,46 @@ http://198.204.228.26/live/qhws.m3u8
 http://bztv.tvbus.cc:8081/cdnlive/qhws.m3u8
 #EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
 http://by4.nty.tv189.cn/live/tm-dxqhaiws-4000k.m3u8
+#EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
+http://39.77.23.205:4002/rtp/239.253.254.195:8000$山东联通11
+#EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
+http://183.236.43.98:4013/udp/239.253.43.125:5146$广东电信11
+#EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
+http://115.171.216.32:4000/rtp/225.1.8.157:8184$北京电信11
+#EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
+http://1.192.242.239:8188/rtp/239.16.20.101:11010$河南电信11
+#EXTINF:-1 tvg-name="青海卫视" group-title="📡 卫视频道",青海卫视
+http://124.112.241.143:4022/rtp/238.1.78.102:6688$安徽电信11
 #EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
 http://120.76.248.139/live/bfgd/4200000095.m3u8
 #EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
+http://120.76.248.139/live/bfgd/4200000095.m3u8$LR•9•IPV4『线路1』
+#EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
+http://my1nas.dpdns.org:1234/738906901
+#EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
+http://www.20260809.xyz:1234/738906901
+#EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
+https://tv.zhuhongxuan.cn/738906901
+#EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
+http://njdm.i234.me:1234/738906901
+#EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
+http://bztv.tvbus.cc:8081/cdnlive/hljws.m3u8
+#EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
 http://39.77.23.205:4002/rtp/239.253.254.93:8000$山东联通11
 #EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
-http://124.112.241.143:4022/rtp/238.1.78.159:7144$安徽电信11
-#EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
-http://1.192.242.239:8188/rtp/239.16.20.99:10990$河南电信11
-#EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
-http://171.119.206.69:6000/rtp/226.0.2.151:9120$山西联通11
+http://183.236.43.98:4013/udp/239.77.0.124:5146$广东电信11
 #EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
 http://115.171.216.32:4000/udp/225.1.8.42:8016$北京电信11
 #EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
-http://106.59.2.196:55555/rtp/239.200.200.66:8016$云南电信11
+http://171.119.206.69:6000/rtp/226.0.2.151:9120$山西联通11
 #EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
-http://121.237.245.243:8888/rtp/239.49.8.14:9426$江苏电信12
+http://1.192.242.239:8188/rtp/239.16.20.99:10990$河南电信11
+#EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
+http://124.112.241.143:4022/rtp/238.1.78.159:7144$安徽电信11
 #EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
 http://171.119.206.118:6000/rtp/226.0.2.151:9120$山西联通21
 #EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
-http://171.8.138.13:8800/rtp/239.16.20.99:10990$河南电信21
-#EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
 http://111.196.130.121:20000/rtp/239.3.1.133:8016$北京联通31
-#EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
-http://120.76.248.139/live/bfgd/4200000095.m3u8$LR•9•IPV4『线路1』
-#EXTINF:-1 tvg-name="黑龙江卫视" group-title="📡 卫视频道",黑龙江卫视
-http://bztv.tvbus.cc:8081/cdnlive/hljws.m3u8
 #EXTINF:-1 tvg-name="北京卡酷少儿" group-title="🏙️ 北京专属频道",北京卡酷少儿
 http://38.75.136.137:98/gslb/dsdqpub/btvkk.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="北京卡酷少儿" group-title="🏙️ 北京专属频道",北京卡酷少儿
@@ -2023,8 +2229,6 @@ http://iactive-clink.com:8081/live/111ztxw.m3u8
 #EXTINF:-1 tvg-name="中天新闻" group-title="🌏 港澳频道",中天新闻
 http://111.0.115.129:8081/live/000ztxw.m3u8
 #EXTINF:-1 tvg-name="凤凰中文" group-title="🌏 港澳频道",凤凰中文
-http://118.248.155.220:8889/udp/239.76.253.134:9000$湖南电信11
-#EXTINF:-1 tvg-name="凤凰中文" group-title="🌏 港澳频道",凤凰中文
 http://php.jdshipin.com:8880/TVOD/iptv.php?id=fhzw
 #EXTINF:-1 tvg-name="凤凰中文" group-title="🌏 港澳频道",凤凰中文
 https://cdn6.cc.cd/163189/fhzw
@@ -2036,8 +2240,6 @@ http://43.152.224.209/qctv.fengshows.cn/live/0701pin72.flv
 http://r.jdshipin.com/0Rp07
 #EXTINF:-1 tvg-name="凤凰资讯" group-title="🌏 港澳频道",凤凰资讯
 http://php.jdshipin.com/TVOD/iptv.php?id=fhzx
-#EXTINF:-1 tvg-name="凤凰资讯" group-title="🌏 港澳频道",凤凰资讯
-http://118.248.155.220:8889/udp/239.76.253.135:9000$湖南电信11
 #EXTINF:-1 tvg-name="凤凰资讯" group-title="🌏 港澳频道",凤凰资讯
 https://cdn6.cc.cd/163189/fhzx
 #EXTINF:-1 tvg-name="凤凰资讯" group-title="🌏 港澳频道",凤凰资讯
@@ -2099,22 +2301,6 @@ http://107.150.60.122/live/chcdz.m3u8
 #EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
 http://38.75.136.137:98/gslb/dsdqpub/chcdz.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
-http://39.77.23.205:4002/rtp/239.253.254.153:8000$山东联通11
-#EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
-http://171.119.206.69:6000/rtp/226.0.2.94:8012$山西联通11
-#EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
-http://106.59.2.196:55555/rtp/239.200.201.31:8144$云南电信11
-#EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
-http://171.119.206.118:6000/rtp/226.0.2.94:8012$山西联通21
-#EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
-http://114.240.111.49:7788/644368714
-#EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
-http://182.85.163.86:1234/644368714
-#EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
-http://118.113.40.13:1234/644368714
-#EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
-http://36.36.238.246:7788/644368714
-#EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
 http://38.75.136.137:98/gslb/dsdqpub/chcdz.m3u8?auth=testpub$LR•4•IPV4『线路3』
 #EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
 http://smartzhu.cn:1234/644368714
@@ -2123,13 +2309,19 @@ http://my1nas.dpdns.org:1234/644368714
 #EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
 http://www.20260809.xyz:1234/644368714
 #EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
-http://xch819.cn:7788/644368714
-#EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
 https://tv.zhuhongxuan.cn/644368714
 #EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
 http://njdm.i234.me:1234/644368714
 #EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
 http://192.151.150.154/live/chcdz.m3u8
+#EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
+http://39.77.23.205:4002/rtp/239.253.254.153:8000$山东联通11
+#EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
+http://171.119.206.69:6000/rtp/226.0.2.94:8012$山西联通11
+#EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
+http://106.59.2.196:55555/rtp/239.200.201.31:8144$云南电信11
+#EXTINF:-1 tvg-name="CHC动作电影" group-title="🎬 电影频道",CHC动作电影
+http://171.119.206.118:6000/rtp/226.0.2.94:8012$山西联通21
 #EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
 http://63.141.230.178:82/gslb/zbdq5.m3u8?id=chcjt
 #EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
@@ -2141,26 +2333,6 @@ http://198.204.228.26/live/chcjt.m3u8
 #EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
 http://38.75.136.137:98/gslb/dsdqpub/chcjt.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
-http://39.77.23.205:4002/rtp/239.253.254.152:8000$山东联通11
-#EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
-http://171.119.206.69:6000/rtp/226.0.2.240:9820$山西联通11
-#EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
-http://106.59.2.196:55555/rtp/239.200.201.30:8140$云南电信11
-#EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
-http://118.248.155.220:8889/udp/239.76.245.241:1234$湖南电信12
-#EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
-http://171.119.206.118:6000/rtp/226.0.2.240:9820$山西联通21
-#EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
-http://36.36.238.246:7788/644368373
-#EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
-http://182.85.163.86:1234/644368373
-#EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
-http://118.113.40.13:1234/644368373
-#EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
-http://114.240.111.49:7788/644368373
-#EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
-http://63.141.230.178:82/gslb/zbdq5.m3u8?id=chcjt$LR•5•IPV4『线路1』
-#EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
 http://38.75.136.137:98/gslb/dsdqpub/chcjt.m3u8?auth=testpub$LR•5•IPV4『线路5』
 #EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
 http://smartzhu.cn:1234/644368373
@@ -2169,19 +2341,27 @@ http://my1nas.dpdns.org:1234/644368373
 #EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
 http://www.20260809.xyz:1234/644368373
 #EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
-http://xch819.cn:7788/644368373
-#EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
 https://tv.zhuhongxuan.cn/644368373
 #EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
 http://njdm.i234.me:1234/644368373
+#EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
+http://39.77.23.205:4002/rtp/239.253.254.152:8000$山东联通11
+#EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
+http://171.119.206.69:6000/rtp/226.0.2.240:9820$山西联通11
+#EXTINF:-1 tvg-name="CHC家庭影院" group-title="🎬 电影频道",CHC家庭影院
+http://171.119.206.118:6000/rtp/226.0.2.240:9820$山西联通21
 #EXTINF:-1 tvg-name="CHC影迷电影" group-title="🎬 电影频道",CHC影迷电影
-http://118.248.155.220:8889/udp/239.76.252.242:9000$湖南电信11
+http://my1nas.dpdns.org:1234/952383261
+#EXTINF:-1 tvg-name="CHC影迷电影" group-title="🎬 电影频道",CHC影迷电影
+http://www.20260809.xyz:1234/952383261
+#EXTINF:-1 tvg-name="CHC影迷电影" group-title="🎬 电影频道",CHC影迷电影
+https://tv.zhuhongxuan.cn/952383261
+#EXTINF:-1 tvg-name="CHC影迷电影" group-title="🎬 电影频道",CHC影迷电影
+http://njdm.i234.me:1234/952383261
 #EXTINF:-1 tvg-name="CHC影迷电影" group-title="🎬 电影频道",CHC影迷电影
 http://39.77.23.205:4002/rtp/239.253.254.154:8000$山东联通11
 #EXTINF:-1 tvg-name="CHC影迷电影" group-title="🎬 电影频道",CHC影迷电影
 http://171.119.206.69:6000/rtp/226.0.2.93:8004$山西联通11
-#EXTINF:-1 tvg-name="CHC影迷电影" group-title="🎬 电影频道",CHC影迷电影
-http://106.59.2.196:55555/rtp/239.200.201.34:8148$云南电信11
 #EXTINF:-1 tvg-name="CHC影迷电影" group-title="🎬 电影频道",CHC影迷电影
 http://171.119.206.118:6000/rtp/226.0.2.93:8004$山西联通21
 #EXTINF:-1 tvg-name="CHC高清电影" group-title="🎬 电影频道",CHC高清电影
@@ -2191,13 +2371,17 @@ http://115.171.216.32:4000/rtp/225.1.8.37:8002$北京电信11
 #EXTINF:-1 tvg-name="淘剧场" group-title="🎬 电影频道",淘剧场
 http://111.196.130.121:20000/rtp/239.3.1.95:8001$北京联通31
 #EXTINF:-1 tvg-name="淘电影" group-title="🎬 电影频道",淘电影
-http://115.171.216.32:4000/rtp/225.1.8.38:8002$北京电信11
-#EXTINF:-1 tvg-name="淘电影" group-title="🎬 电影频道",淘电影
-http://111.196.130.121:20000/rtp/239.3.1.250:8001$北京联通31
-#EXTINF:-1 tvg-name="淘电影" group-title="🎬 电影频道",淘电影
 http://footyun.top:35455/yy/37454459
+#EXTINF:-1 tvg-name="淘电影" group-title="🎬 电影频道",淘电影
+http://115.171.216.32:4000/rtp/225.1.8.38:8002$北京电信11
 #EXTINF:-1 tvg-name="优漫卡通" group-title="👶 儿童频道",优漫卡通
-http://121.237.245.243:8888/rtp/239.49.8.119:8000$江苏电信11
+http://my1nas.dpdns.org:1234/626064703
+#EXTINF:-1 tvg-name="优漫卡通" group-title="👶 儿童频道",优漫卡通
+http://www.20260809.xyz:1234/626064703
+#EXTINF:-1 tvg-name="优漫卡通" group-title="👶 儿童频道",优漫卡通
+https://tv.zhuhongxuan.cn/626064703
+#EXTINF:-1 tvg-name="优漫卡通" group-title="👶 儿童频道",优漫卡通
+http://njdm.i234.me:1234/626064703
 #EXTINF:-1 tvg-name="优漫卡通" group-title="👶 儿童频道",优漫卡通
 http://38.75.136.137:98/gslb/dsdqpub/ymkt.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="优漫卡通" group-title="👶 儿童频道",优漫卡通
@@ -2207,45 +2391,47 @@ http://192.151.150.154/live/ymkt.m3u8
 #EXTINF:-1 tvg-name="优漫卡通" group-title="👶 儿童频道",优漫卡通
 http://198.204.228.26/live/ymkt.m3u8
 #EXTINF:-1 tvg-name="动漫秀场" group-title="👶 儿童频道",动漫秀场
-http://118.248.155.220:8889/udp/239.76.254.70:9000$湖南电信11
-#EXTINF:-1 tvg-name="动漫秀场" group-title="👶 儿童频道",动漫秀场
-http://39.77.23.205:4002/rtp/239.253.254.115:8000$山东联通11
-#EXTINF:-1 tvg-name="动漫秀场" group-title="👶 儿童频道",动漫秀场
-http://124.112.241.143:4022/rtp/238.1.78.154:7104$安徽电信11
-#EXTINF:-1 tvg-name="动漫秀场" group-title="👶 儿童频道",动漫秀场
-http://1.192.242.239:8188/rtp/239.16.20.40:10400$河南电信11
-#EXTINF:-1 tvg-name="动漫秀场" group-title="👶 儿童频道",动漫秀场
-http://171.119.206.69:6000/rtp/226.0.2.183:9376$山西联通11
-#EXTINF:-1 tvg-name="动漫秀场" group-title="👶 儿童频道",动漫秀场
-http://171.119.206.118:6000/rtp/226.0.2.183:9376$山西联通21
-#EXTINF:-1 tvg-name="动漫秀场" group-title="👶 儿童频道",动漫秀场
-http://171.8.138.13:8800/rtp/239.16.20.40:10400$河南电信21
-#EXTINF:-1 tvg-name="动漫秀场" group-title="👶 儿童频道",动漫秀场
 http://footyun.top:35455/yy/23993334
 #EXTINF:-1 tvg-name="动漫秀场" group-title="👶 儿童频道",动漫秀场
 http://footyun.top:35455/yy/25055036
 #EXTINF:-1 tvg-name="动漫秀场" group-title="👶 儿童频道",动漫秀场
 http://footyun.top:35455/yy/26664495
 #EXTINF:-1 tvg-name="动漫秀场" group-title="👶 儿童频道",动漫秀场
+http://footyun.top:35455/yy/1354143938
+#EXTINF:-1 tvg-name="动漫秀场" group-title="👶 儿童频道",动漫秀场
 http://footyun.top:35455/yy/1382747970
 #EXTINF:-1 tvg-name="动漫秀场" group-title="👶 儿童频道",动漫秀场
 http://footyun.top:35455/yy/1354768831
 #EXTINF:-1 tvg-name="动漫秀场" group-title="👶 儿童频道",动漫秀场
 http://footyun.top:35455/yy/22777075
+#EXTINF:-1 tvg-name="动漫秀场" group-title="👶 儿童频道",动漫秀场
+http://39.77.23.205:4002/rtp/239.253.254.115:8000$山东联通11
+#EXTINF:-1 tvg-name="动漫秀场" group-title="👶 儿童频道",动漫秀场
+http://171.119.206.69:6000/rtp/226.0.2.183:9376$山西联通11
+#EXTINF:-1 tvg-name="动漫秀场" group-title="👶 儿童频道",动漫秀场
+http://1.192.242.239:8188/rtp/239.16.20.40:10400$河南电信11
+#EXTINF:-1 tvg-name="动漫秀场" group-title="👶 儿童频道",动漫秀场
+http://124.112.241.143:4022/rtp/238.1.78.154:7104$安徽电信11
+#EXTINF:-1 tvg-name="动漫秀场" group-title="👶 儿童频道",动漫秀场
+http://171.119.206.118:6000/rtp/226.0.2.183:9376$山西联通21
 #EXTINF:-1 tvg-name="卡酷少儿" group-title="👶 儿童频道",卡酷少儿
 http://39.77.23.205:4002/rtp/239.253.254.66:8000$山东联通11
-#EXTINF:-1 tvg-name="卡酷少儿" group-title="👶 儿童频道",卡酷少儿
-http://124.112.241.143:4022/rtp/238.1.78.97:6648$安徽电信11
 #EXTINF:-1 tvg-name="卡酷少儿" group-title="👶 儿童频道",卡酷少儿
 http://115.171.216.32:4000/udp/225.1.8.35:8000$北京电信11
 #EXTINF:-1 tvg-name="卡酷少儿" group-title="👶 儿童频道",卡酷少儿
 http://106.59.2.196:55555/rtp/239.200.200.64:8324$云南电信11
 #EXTINF:-1 tvg-name="卡酷少儿" group-title="👶 儿童频道",卡酷少儿
+http://124.112.241.143:4022/rtp/238.1.78.97:6648$安徽电信11
+#EXTINF:-1 tvg-name="卡酷少儿" group-title="👶 儿童频道",卡酷少儿
 http://111.196.130.121:20000/rtp/239.3.1.189:8000$北京联通31
 #EXTINF:-1 tvg-name="嘉佳卡通" group-title="👶 儿童频道",嘉佳卡通
-http://115.171.216.32:4000/rtp/225.1.8.170:9268$北京电信11
+http://my1nas.dpdns.org:1234/614952364
 #EXTINF:-1 tvg-name="嘉佳卡通" group-title="👶 儿童频道",嘉佳卡通
-http://111.196.130.121:20000/rtp/239.3.1.147:9268$北京联通31
+http://www.20260809.xyz:1234/614952364
+#EXTINF:-1 tvg-name="嘉佳卡通" group-title="👶 儿童频道",嘉佳卡通
+https://tv.zhuhongxuan.cn/614952364
+#EXTINF:-1 tvg-name="嘉佳卡通" group-title="👶 儿童频道",嘉佳卡通
+http://njdm.i234.me:1234/614952364
 #EXTINF:-1 tvg-name="嘉佳卡通" group-title="👶 儿童频道",嘉佳卡通
 http://38.75.136.137:98/gslb/dsdqpub/gdjjkt.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="嘉佳卡通" group-title="👶 儿童频道",嘉佳卡通
@@ -2254,126 +2440,112 @@ http://107.150.60.122/live/gdjjkt.m3u8
 http://192.151.150.154/live/gdjjkt.m3u8
 #EXTINF:-1 tvg-name="嘉佳卡通" group-title="👶 儿童频道",嘉佳卡通
 http://198.204.228.26/live/gdjjkt.m3u8
+#EXTINF:-1 tvg-name="嘉佳卡通" group-title="👶 儿童频道",嘉佳卡通
+http://115.171.216.32:4000/rtp/225.1.8.170:9268$北京电信11
+#EXTINF:-1 tvg-name="嘉佳卡通" group-title="👶 儿童频道",嘉佳卡通
+http://111.196.130.121:20000/rtp/239.3.1.147:9268$北京联通31
+#EXTINF:-1 tvg-name="金鹰卡通" group-title="👶 儿童频道",金鹰卡通
+http://183.11.239.36:808/hls/69/index.m3u8
 #EXTINF:-1 tvg-name="金鹰卡通" group-title="👶 儿童频道",金鹰卡通
 http://39.77.23.205:4002/rtp/239.253.254.117:8000$山东联通11
 #EXTINF:-1 tvg-name="金鹰卡通" group-title="👶 儿童频道",金鹰卡通
-http://124.112.241.143:4022/rtp/238.1.78.100:6672$安徽电信11
-#EXTINF:-1 tvg-name="金鹰卡通" group-title="👶 儿童频道",金鹰卡通
-http://1.192.242.239:8188/rtp/239.16.20.104:11040$河南电信11
+http://115.171.216.32:4000/rtp/225.1.8.163:9252$北京电信11
 #EXTINF:-1 tvg-name="金鹰卡通" group-title="👶 儿童频道",金鹰卡通
 http://171.119.206.69:6000/rtp/226.0.2.172:9288$山西联通11
 #EXTINF:-1 tvg-name="金鹰卡通" group-title="👶 儿童频道",金鹰卡通
-http://115.171.216.32:4000/rtp/225.1.8.163:9252$北京电信11
-#EXTINF:-1 tvg-name="金鹰卡通" group-title="👶 儿童频道",金鹰卡通
 http://106.59.2.196:55555/rtp/239.200.200.65:8328$云南电信11
 #EXTINF:-1 tvg-name="金鹰卡通" group-title="👶 儿童频道",金鹰卡通
-http://118.248.155.220:8889/udp/239.76.246.107:1234$湖南电信12
+http://1.192.242.239:8188/rtp/239.16.20.104:11040$河南电信11
+#EXTINF:-1 tvg-name="金鹰卡通" group-title="👶 儿童频道",金鹰卡通
+http://124.112.241.143:4022/rtp/238.1.78.100:6672$安徽电信11
 #EXTINF:-1 tvg-name="金鹰卡通" group-title="👶 儿童频道",金鹰卡通
 http://171.119.206.118:6000/rtp/226.0.2.172:9288$山西联通21
 #EXTINF:-1 tvg-name="金鹰卡通" group-title="👶 儿童频道",金鹰卡通
-http://171.8.138.13:8800/rtp/239.16.20.104:11040$河南电信21
-#EXTINF:-1 tvg-name="金鹰卡通" group-title="👶 儿童频道",金鹰卡通
 http://111.196.130.121:20000/rtp/239.3.1.51:9252$北京联通31
-#EXTINF:-1 tvg-name="金鹰卡通" group-title="👶 儿童频道",金鹰卡通
-http://183.11.239.36:808/hls/69/index.m3u8
-#EXTINF:-1 tvg-name="乐游" group-title="📊 综合频道",乐游
-http://124.112.241.143:4022/rtp/238.1.78.151:7080$安徽电信11
-#EXTINF:-1 tvg-name="乐游" group-title="📊 综合频道",乐游
-http://1.192.242.239:8188/rtp/239.16.20.111:11110$河南电信11
 #EXTINF:-1 tvg-name="乐游" group-title="📊 综合频道",乐游
 http://171.119.206.69:6000/rtp/226.0.2.77:8528$山西联通11
 #EXTINF:-1 tvg-name="乐游" group-title="📊 综合频道",乐游
-http://171.119.206.118:6000/rtp/226.0.2.77:8528$山西联通21
+http://1.192.242.239:8188/rtp/239.16.20.111:11110$河南电信11
 #EXTINF:-1 tvg-name="乐游" group-title="📊 综合频道",乐游
-http://171.8.138.13:8800/rtp/239.16.20.111:11110$河南电信21
+http://124.112.241.143:4022/rtp/238.1.78.151:7080$安徽电信11
+#EXTINF:-1 tvg-name="乐游" group-title="📊 综合频道",乐游
+http://171.119.206.118:6000/rtp/226.0.2.77:8528$山西联通21
 #EXTINF:-1 tvg-name="快乐垂钓" group-title="📊 综合频道",快乐垂钓
-http://118.248.155.220:8889/udp/239.76.253.5:9000$湖南电信11
+http://my1nas.dpdns.org:1234/961930263
+#EXTINF:-1 tvg-name="快乐垂钓" group-title="📊 综合频道",快乐垂钓
+http://www.20260809.xyz:1234/961930263
+#EXTINF:-1 tvg-name="快乐垂钓" group-title="📊 综合频道",快乐垂钓
+https://tv.zhuhongxuan.cn/961930263
+#EXTINF:-1 tvg-name="快乐垂钓" group-title="📊 综合频道",快乐垂钓
+http://njdm.i234.me:1234/961930263
 #EXTINF:-1 tvg-name="快乐垂钓" group-title="📊 综合频道",快乐垂钓
 http://39.77.23.205:4002/rtp/239.253.254.144:8000$山东联通11
 #EXTINF:-1 tvg-name="快乐垂钓" group-title="📊 综合频道",快乐垂钓
-http://124.112.241.143:4022/rtp/238.1.79.31:4360$安徽电信11
+http://115.171.216.32:4000/rtp/225.1.8.71:8002$北京电信11
+#EXTINF:-1 tvg-name="快乐垂钓" group-title="📊 综合频道",快乐垂钓
+http://106.59.2.196:55555/rtp/239.200.200.103:8400$云南电信11
 #EXTINF:-1 tvg-name="快乐垂钓" group-title="📊 综合频道",快乐垂钓
 http://1.192.242.239:8188/rtp/239.16.20.67:10670$河南电信11
 #EXTINF:-1 tvg-name="快乐垂钓" group-title="📊 综合频道",快乐垂钓
-http://115.171.216.32:4000/rtp/225.1.8.71:8002$北京电信11
-#EXTINF:-1 tvg-name="快乐垂钓" group-title="📊 综合频道",快乐垂钓
-http://118.248.155.220:8889/udp/239.76.246.5:1234$湖南电信12
-#EXTINF:-1 tvg-name="快乐垂钓" group-title="📊 综合频道",快乐垂钓
-http://171.8.138.13:8800/rtp/239.16.20.67:10670$河南电信21
-#EXTINF:-1 tvg-name="快乐垂钓" group-title="📊 综合频道",快乐垂钓
-http://111.196.130.121:20000/rtp/239.3.1.164:8001$北京联通31
+http://124.112.241.143:4022/rtp/238.1.79.31:4360$安徽电信11
 #EXTINF:-1 tvg-name="欢笑剧场" group-title="📊 综合频道",欢笑剧场
 http://1.192.242.239:8188/rtp/239.16.20.39:10390$河南电信11
-#EXTINF:-1 tvg-name="欢笑剧场" group-title="📊 综合频道",欢笑剧场
-http://171.8.138.13:8800/rtp/239.16.20.39:10390$河南电信21
-#EXTINF:-1 tvg-name="游戏风云" group-title="📊 综合频道",游戏风云
-http://118.248.155.220:8889/udp/239.76.254.71:9000$湖南电信11
 #EXTINF:-1 tvg-name="游戏风云" group-title="📊 综合频道",游戏风云
 http://39.77.23.205:4002/rtp/239.253.254.95:8000$山东联通11
 #EXTINF:-1 tvg-name="游戏风云" group-title="📊 综合频道",游戏风云
-http://1.192.242.239:8188/rtp/239.16.20.112:11120$河南电信11
-#EXTINF:-1 tvg-name="游戏风云" group-title="📊 综合频道",游戏风云
 http://171.119.206.69:6000/rtp/226.0.2.78:8536$山西联通11
 #EXTINF:-1 tvg-name="游戏风云" group-title="📊 综合频道",游戏风云
-http://171.119.206.118:6000/rtp/226.0.2.78:8536$山西联通21
+http://1.192.242.239:8188/rtp/239.16.20.112:11120$河南电信11
 #EXTINF:-1 tvg-name="游戏风云" group-title="📊 综合频道",游戏风云
-http://171.8.138.13:8800/rtp/239.16.20.112:11120$河南电信21
+http://171.119.206.118:6000/rtp/226.0.2.78:8536$山西联通21
 #EXTINF:-1 tvg-name="生活时尚" group-title="📊 综合频道",生活时尚
 http://39.77.23.205:4002/rtp/239.253.254.99:8000$山东联通11
 #EXTINF:-1 tvg-name="生活时尚" group-title="📊 综合频道",生活时尚
-http://124.112.241.143:4022/rtp/238.1.78.155:7112$安徽电信11
+http://171.119.206.69:6000/rtp/226.0.2.84:8584$山西联通11
 #EXTINF:-1 tvg-name="生活时尚" group-title="📊 综合频道",生活时尚
 http://1.192.242.239:8188/rtp/239.16.20.114:11140$河南电信11
 #EXTINF:-1 tvg-name="生活时尚" group-title="📊 综合频道",生活时尚
-http://171.119.206.69:6000/rtp/226.0.2.84:8584$山西联通11
+http://124.112.241.143:4022/rtp/238.1.78.155:7112$安徽电信11
 #EXTINF:-1 tvg-name="生活时尚" group-title="📊 综合频道",生活时尚
 http://171.119.206.118:6000/rtp/226.0.2.84:8584$山西联通21
-#EXTINF:-1 tvg-name="生活时尚" group-title="📊 综合频道",生活时尚
-http://171.8.138.13:8800/rtp/239.16.20.114:11140$河南电信21
 #EXTINF:-1 tvg-name="睛彩中原" group-title="📊 综合频道",睛彩中原
-https://dxtx.hntv.tv/live/jczy.m3u8?txSecret=e785008e49564e5e738439b4dd2ae68e&txTime=7C4C6207&wsSecret=b77d411364ecfd4fed496fe07767e4b7&wsTime=1791338642
+https://dxtx.hntv.tv/live/jczy.m3u8?txSecret=e785008e49564e5e738439b4dd2ae68e&txTime=7C4C6207&wsSecret=742a021da656196cacf181cc61da499f&wsTime=1791417834
 #EXTINF:-1 tvg-name="睛彩广场舞" group-title="📊 综合频道",睛彩广场舞
 http://111.196.130.121:20000/rtp/239.3.1.128:8001$北京联通31
 #EXTINF:-1 tvg-name="睛彩竞技" group-title="📊 综合频道",睛彩竞技
 http://111.196.130.121:20000/rtp/239.3.1.125:8001$北京联通31
 #EXTINF:-1 tvg-name="睛彩篮球" group-title="📊 综合频道",睛彩篮球
+http://183.236.43.98:4013/udp/239.77.1.21:5146$广东电信11
+#EXTINF:-1 tvg-name="睛彩篮球" group-title="📊 综合频道",睛彩篮球
 http://111.196.130.121:20000/rtp/239.3.1.126:8001$北京联通31
+#EXTINF:-1 tvg-name="睛彩青少" group-title="📊 综合频道",睛彩青少
+http://183.236.43.98:4013/udp/239.77.1.22:5146$广东电信11
 #EXTINF:-1 tvg-name="睛彩青少" group-title="📊 综合频道",睛彩青少
 http://111.196.130.121:20000/rtp/239.3.1.127:8001$北京联通31
 #EXTINF:-1 tvg-name="茶频道" group-title="📊 综合频道",茶频道
 http://39.77.23.205:4002/rtp/239.253.254.143:8000$山东联通11
 #EXTINF:-1 tvg-name="茶频道" group-title="📊 综合频道",茶频道
-http://124.112.241.143:4022/rtp/238.1.79.30:4352$安徽电信11
+http://115.171.216.32:4000/rtp/225.1.8.72:8002$北京电信11
 #EXTINF:-1 tvg-name="茶频道" group-title="📊 综合频道",茶频道
 http://1.192.242.239:8188/rtp/239.16.20.68:10680$河南电信11
 #EXTINF:-1 tvg-name="茶频道" group-title="📊 综合频道",茶频道
-http://115.171.216.32:4000/rtp/225.1.8.72:8002$北京电信11
-#EXTINF:-1 tvg-name="茶频道" group-title="📊 综合频道",茶频道
-http://171.8.138.13:8800/rtp/239.16.20.68:10680$河南电信21
+http://124.112.241.143:4022/rtp/238.1.79.30:4352$安徽电信11
 #EXTINF:-1 tvg-name="都市剧场" group-title="📊 综合频道",都市剧场
 https://satellitepull.cnr.cn/live/wxcqxwgb/playlist.m3u8
 #EXTINF:-1 tvg-name="都市剧场" group-title="📊 综合频道",都市剧场
-http://118.248.155.220:8889/udp/239.76.254.74:9000$湖南电信11
-#EXTINF:-1 tvg-name="都市剧场" group-title="📊 综合频道",都市剧场
 http://39.77.23.205:4002/rtp/239.253.254.98:8000$山东联通11
-#EXTINF:-1 tvg-name="都市剧场" group-title="📊 综合频道",都市剧场
-http://1.192.242.239:8188/rtp/239.16.20.38:10380$河南电信11
 #EXTINF:-1 tvg-name="都市剧场" group-title="📊 综合频道",都市剧场
 http://171.119.206.69:6000/rtp/226.0.2.81:8560$山西联通11
 #EXTINF:-1 tvg-name="都市剧场" group-title="📊 综合频道",都市剧场
-http://171.119.206.118:6000/rtp/226.0.2.81:8560$山西联通21
+http://1.192.242.239:8188/rtp/239.16.20.38:10380$河南电信11
 #EXTINF:-1 tvg-name="都市剧场" group-title="📊 综合频道",都市剧场
-http://171.8.138.13:8800/rtp/239.16.20.38:10380$河南电信21
-#EXTINF:-1 tvg-name="重温经典" group-title="📊 综合频道",重温经典
-http://115.171.216.32:4000/rtp/225.1.8.39:8002$北京电信11
+http://171.119.206.118:6000/rtp/226.0.2.81:8560$山西联通21
 #EXTINF:-1 tvg-name="重温经典" group-title="📊 综合频道",重温经典
 http://php.jdshipin.com/TVOD/iptv.php?id=cwjd
 #EXTINF:-1 tvg-name="重温经典" group-title="📊 综合频道",重温经典
 http://120.76.248.139/live/bfgd/4200000635.m3u8$北方广电
 #EXTINF:-1 tvg-name="重温经典" group-title="📊 综合频道",重温经典
 https://cdn6.cc.cd/163189/cwjd
-#EXTINF:-1 tvg-name="重温经典" group-title="📊 综合频道",重温经典
-https://168.sryze.cc/163189/cwjd
 #EXTINF:-1 tvg-name="重温经典" group-title="📊 综合频道",重温经典
 http://38.75.136.137:98/gslb/dsdqpub/cwjd.m3u8?auth=testpub
 #EXTINF:-1 tvg-name="重温经典" group-title="📊 综合频道",重温经典
@@ -2382,40 +2554,34 @@ http://107.150.60.122/live/cwjd.m3u8
 http://192.151.150.154/live/cwjd.m3u8
 #EXTINF:-1 tvg-name="重温经典" group-title="📊 综合频道",重温经典
 http://198.204.228.26/live/cwjd.m3u8
+#EXTINF:-1 tvg-name="重温经典" group-title="📊 综合频道",重温经典
+http://115.171.216.32:4000/rtp/225.1.8.39:8002$北京电信11
 #EXTINF:-1 tvg-name="金色学堂" group-title="📊 综合频道",金色学堂
 http://39.77.23.205:4002/rtp/239.253.254.101:8000$山东联通11
 #EXTINF:-1 tvg-name="金色学堂" group-title="📊 综合频道",金色学堂
-http://1.192.242.239:8188/rtp/239.16.20.115:11150$河南电信11
-#EXTINF:-1 tvg-name="金色学堂" group-title="📊 综合频道",金色学堂
 http://171.119.206.69:6000/rtp/226.0.2.182:9368$山西联通11
 #EXTINF:-1 tvg-name="金色学堂" group-title="📊 综合频道",金色学堂
-http://171.119.206.118:6000/rtp/226.0.2.182:9368$山西联通21
+http://1.192.242.239:8188/rtp/239.16.20.115:11150$河南电信11
 #EXTINF:-1 tvg-name="金色学堂" group-title="📊 综合频道",金色学堂
-http://171.8.138.13:8800/rtp/239.16.20.115:11150$河南电信21
+http://171.119.206.118:6000/rtp/226.0.2.182:9368$山西联通21
 #EXTINF:-1 tvg-name="金鹰纪实" group-title="📊 综合频道",金鹰纪实
-http://118.248.155.220:8889/udp/239.76.253.110:9000$湖南电信11
+http://183.11.239.36:808/hls/171/index.m3u8
 #EXTINF:-1 tvg-name="金鹰纪实" group-title="📊 综合频道",金鹰纪实
 http://39.77.23.205:4002/rtp/239.253.254.103:8000$山东联通11
 #EXTINF:-1 tvg-name="金鹰纪实" group-title="📊 综合频道",金鹰纪实
-http://124.112.241.143:4022/rtp/238.1.79.9:4184$安徽电信11
-#EXTINF:-1 tvg-name="金鹰纪实" group-title="📊 综合频道",金鹰纪实
-http://1.192.242.239:8188/rtp/239.16.20.153:11530$河南电信11
+http://115.171.216.32:4000/rtp/225.1.8.31:8156$北京电信11
 #EXTINF:-1 tvg-name="金鹰纪实" group-title="📊 综合频道",金鹰纪实
 http://171.119.206.69:6000/rtp/226.0.2.194:9464$山西联通11
 #EXTINF:-1 tvg-name="金鹰纪实" group-title="📊 综合频道",金鹰纪实
-http://115.171.216.32:4000/rtp/225.1.8.31:8156$北京电信11
-#EXTINF:-1 tvg-name="金鹰纪实" group-title="📊 综合频道",金鹰纪实
 http://106.59.2.196:55555/rtp/239.200.201.126:8840$云南电信11
 #EXTINF:-1 tvg-name="金鹰纪实" group-title="📊 综合频道",金鹰纪实
-http://118.248.155.220:8889/udp/239.76.246.110:1234$湖南电信12
+http://1.192.242.239:8188/rtp/239.16.20.153:11530$河南电信11
+#EXTINF:-1 tvg-name="金鹰纪实" group-title="📊 综合频道",金鹰纪实
+http://124.112.241.143:4022/rtp/238.1.79.9:4184$安徽电信11
 #EXTINF:-1 tvg-name="金鹰纪实" group-title="📊 综合频道",金鹰纪实
 http://171.119.206.118:6000/rtp/226.0.2.194:9464$山西联通21
 #EXTINF:-1 tvg-name="金鹰纪实" group-title="📊 综合频道",金鹰纪实
-http://171.8.138.13:8800/rtp/239.16.20.153:11530$河南电信21
-#EXTINF:-1 tvg-name="金鹰纪实" group-title="📊 综合频道",金鹰纪实
 http://111.196.130.121:20000/rtp/239.3.1.58:8156$北京联通31
-#EXTINF:-1 tvg-name="金鹰纪实" group-title="📊 综合频道",金鹰纪实
-http://183.11.239.36:808/hls/171/index.m3u8
 #EXTINF:-1 tvg-name="天元围棋" group-title="⚽ 体育频道",天元围棋
 http://204.12.221.218:8181/3m1080p/gztywq.m3u8
 #EXTINF:-1 tvg-name="天元围棋" group-title="⚽ 体育频道",天元围棋
@@ -2428,5 +2594,3 @@ http://192.151.150.154/live/gztywq.m3u8
 http://198.204.228.26/live/gztywq.m3u8
 #EXTINF:-1 tvg-name="魅力足球" group-title="⚽ 体育频道",魅力足球
 http://1.192.242.239:8188/rtp/239.16.20.113:11130$河南电信11
-#EXTINF:-1 tvg-name="魅力足球" group-title="⚽ 体育频道",魅力足球
-http://171.8.138.13:8800/rtp/239.16.20.113:11130$河南电信21
